@@ -458,6 +458,17 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 .packBy{color:var(--ui-muted);font-size:13px}
 .packBadges{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
 .packBadge{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--ui-field);border:1px solid var(--ui-border)}
+/* 💾 trk234：容量の見える化（合計・上限・端末の空き）と、まとめて消すための選択 */
+.packUsage{margin-top:10px;padding:10px 12px;border:1px solid var(--ui-border);border-radius:14px;background:var(--ui-field)}
+.packUsage .miniActions{margin-top:8px}
+.packUsageHead{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.packUsageHead b{font-size:15px}
+.packUsageBar{position:relative;height:8px;margin:7px 0 4px;border-radius:999px;background:var(--ui-soft);overflow:hidden}
+.packUsageBar i{display:block;height:100%;width:0;border-radius:999px;background:var(--ui-accent);transition:width .2s ease}
+.packUsageBar i.isHigh{background:var(--don,#ff6b6b)}
+.packPickWrap{display:inline-flex;align-items:center;margin-right:2px}
+.packPick{margin:0;width:18px;height:18px;accent-color:var(--ui-accent);cursor:pointer}
+.packCard.picked{border-color:var(--ui-accent);background:var(--ui-soft);box-shadow:0 0 0 2px var(--ui-glow)}
 /* 🔤 trk233：同梱の書体のライセンス全文（押したときだけ出る。長くても一覧を押し広げすぎない） */
 .packLicenseText{white-space:pre-wrap;word-break:break-word;max-height:16em;overflow:auto;font-size:.82em;line-height:1.45;margin:6px 0 0;padding:8px 10px;border-radius:10px;background:var(--ui-field);border:1px solid var(--ui-border)}
 .packCard details{font-size:13px;color:var(--ui-muted);margin-top:4px;word-break:break-all}

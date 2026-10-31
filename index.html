@@ -1005,6 +1005,9 @@
               </select>
             </label>
             <div class="hint" data-i18n="chartGenHint"></div>
+            <!-- 💾 trk234：パックを全部消す（確認2回。容量を空けたいときの最後の手段） -->
+            <div class="hint"><button id="packWipeBtn" type="button" data-i18n="packWipeAll"></button></div>
+            <div class="hint" data-i18n="packWipeAllHint"></div>
           </details>
 
           <details class="panel" open>
@@ -1146,6 +1149,23 @@
               </label>
               <button id="packOffBtn" type="button" data-i18n="packOff"></button>
             </div>
+            <!-- 💾 trk234：容量の見える化（入っているパックの合計・端末の空き）と、まとめて消す -->
+            <div id="packUsage" class="packUsage" hidden>
+              <div class="packUsageHead">
+                <b id="packUsageTotal"></b>
+                <span id="packUsageShare" class="hint"></span>
+              </div>
+              <div class="packUsageBar" id="packUsageBar"><i id="packUsageFill"></i></div>
+              <div class="hint" id="packUsageFree"></div>
+              <div class="hint" id="packUsageDetail"></div>
+              <div class="miniActions">
+                <button id="packPickAll" type="button" data-i18n="packSelectAll"></button>
+                <button id="packPickUnused" type="button" data-i18n="packSelectUnused"></button>
+                <button id="packPickNone" type="button" data-i18n="packSelectNone"></button>
+                <button id="packDeletePicked" type="button" disabled></button>
+              </div>
+              <div class="hint" id="packPickStatus"></div>
+            </div>
             <!-- verified.js が各パックに「✔公認・指紋・📋 公認リスト用にコピー」を追加します -->
             <div id="packList"></div>
             <div id="packStatus" class="hint status"></div>
@@ -1167,6 +1187,11 @@
               </div>
               <div class="hint" data-i18n="catalogBundleHint"></div>
               <div class="hint" id="catalogSummary"></div>
+              <!-- 💾 trk234：この目録のぶんを、まとめて消す（確認は1回） -->
+              <div class="miniActions" id="catalogBulkActions" hidden>
+                <button id="catalogRemoveAll" type="button"></button>
+              </div>
+              <div class="hint" id="catalogBulkStatus"></div>
               <div id="catalogList"></div>
               <div class="hint status" id="catalogStatus"></div>
             </details>

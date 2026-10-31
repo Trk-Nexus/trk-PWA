@@ -131,12 +131,26 @@
     if (!list) return;
     list.textContent = "";
     if (!current) { if (sum) sum.textContent = ""; return; }
+    const hits = current.packs.map(e => installed.find(rec => samePack(e, rec))).filter(Boolean);
     if (sum) {
       const total = current.packs.length;
-      const n = current.packs.filter(e => installed.some(rec => samePack(e, rec))).length;
+      const n = hits.length;
       const newer = current.packs.filter(e => stateOf(e).update).length;
+      const bytes = current.packs.reduce((a, e) => a + (Number(e.bytes) || 0), 0);
       sum.textContent = total ? tr(n ? "catalogLoadedInstalled" : "catalogLoaded", { n: total, name: current.name, have: n }) : tr("catalogEmpty");
       if (newer) sum.textContent += " " + tr("catalogUpdates", { n: newer });
+      /* 💾 trk234：目録の合計（落とす前に、どのくらいの容量か分かるように） */
+      if (total && bytes) sum.textContent += " · " + tr("catalogTotalBytes", { size: formatBytes(bytes) });
+    }
+    /* 💾 trk234：この目録のぶんが入っているときだけ「まとめて消す」を出す */
+    {
+      const bulk = $("catalogBulkActions"), bulkBtn = $("catalogRemoveAll");
+      if (bulk) bulk.hidden = !hits.length;
+      if (bulkBtn && hits.length) {
+        const hitBytes = hits.reduce((a, h) => a + (Number(h.bytes) || 0), 0);
+        bulkBtn.textContent = tr("catalogRemoveAllLabel", { n: hits.length, size: formatBytes(hitBytes) });
+        bulkBtn.dataset.count = String(hits.length);
+      }
     }
     for (const e of current.packs) {
       const st = stateOf(e);
@@ -227,6 +241,24 @@
     const node = list.querySelector(`[data-for="${CSS.escape(entry.id)}"]`);
     if (node) { node.textContent = text; node.style.color = bad ? "var(--don)" : ""; }
   }
+  function setBulkStatus(text, bad) {
+    const n = $("catalogBulkStatus");
+    if (!n) return;
+    n.textContent = text; n.style.color = bad ? "var(--don)" : "";
+  }
+  /* 💾 trk234：この目録のぶん（入っているもの）を、まとめて消す。
+     ⚠ 消すのは1件ずつではなく js/custom.js の deletePacksByIds に任せる（確認1回・曲リストへの合図1回）。 */
+  async function removeCatalogPacks() {
+    await refreshInstalled();
+    if (!current) return;
+    const ids = [...new Set(current.packs.map(e => installed.find(rec => samePack(e, rec))).filter(Boolean).map(rec => rec.id))];
+    if (!ids.length) { setBulkStatus(tr("catalogRemoveNone"), false); return; }
+    const api = window.Trk && window.Trk.custom;
+    if (!api || typeof api.deletePacksByIds !== "function") return;
+    const r = await api.deletePacksByIds(ids);
+    await refreshInstalled(); render();
+    if (r && !r.cancelled && r.ok) setBulkStatus(tr("catalogRemoveDone", { n:r.ok, size:formatBytes(r.bytes) }), !!r.bad);
+  }
   function setSummary(text, bad) {
     const sum = $("catalogSummary");
     if (!sum) return;
@@ -300,6 +332,12 @@
     if (input) input.addEventListener("change", () => { const f = input.files && input.files[0]; if (f) loadCatalogFile(f); input.value = ""; });
     const bundle = $("catalogBundle");
     if (bundle) bundle.addEventListener("change", () => { const fs = bundle.files ? [...bundle.files] : []; if (fs.length) importBundle(fs); bundle.value = ""; });
+    /* 💾 trk234：この目録のぶんを、まとめて消す */
+    const removeAll = $("catalogRemoveAll");
+    if (removeAll) removeAll.addEventListener("click", () => { removeCatalogPacks().catch(() => {}); });
+    /* 言語を変えたら、件数入りの文（目録の合計・まとめて消す）を描き直す */
+    const c = core();
+    if (c && typeof c.on === "function") c.on("language", () => { if (current) render(); });
     /* 目録の .json ＋ .stpack を画面にまとめてドロップしても読める（目録とパックがそろえば、そのまま入れる）
        ・custom.js は「1ファイルだけ」のときに先に受け取るので、まとめて落としたときはここへ来ます */
     addEventListener("drop", e => {
