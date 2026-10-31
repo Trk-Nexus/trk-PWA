@@ -446,8 +446,26 @@
             <div id="skinNow"></div>
             <details id="skinShelf" class="subPanel" open>
               <summary><span data-i18n="skinShelf"></span> <span id="skinShelfCount"></span></summary>
+              <!-- 🧺 trk229：スキンが53種になったので、さがす・並べる・お気に入り・隠すを足しました -->
+              <div id="skinFind">
+                <label class="skinFindBox"><span data-i18n="skinSearchLabel"></span>
+                  <input id="skinSearch" type="search" data-i18n-placeholder="skinSearchHint" autocomplete="off"></label>
+                <label class="skinFindBox"><span data-i18n="skinSortLabel"></span>
+                  <select id="skinSort">
+                    <option value="default" data-i18n="skinSortDefault"></option>
+                    <option value="name" data-i18n="skinSortName"></option>
+                    <option value="used" data-i18n="skinSortUsed"></option>
+                    <option value="recent" data-i18n="skinSortRecent"></option>
+                  </select></label>
+              </div>
               <div id="skinChips"></div>
               <div id="skinGrid"></div>
+              <p class="hint" id="skinNoMatch" hidden data-i18n="skinNoMatch"></p>
+              <details id="skinManage" class="subPanel">
+                <summary data-i18n="skinManageTitle"></summary>
+                <div class="hint" data-i18n="skinManageHint"></div>
+                <div id="skinManageList"></div>
+              </details>
             </details>
 
             <details id="skinMaker" class="subPanel devOnly">

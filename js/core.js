@@ -109,6 +109,23 @@ const VIDEO_STYLE_IDS = typeof TRK_TV_PRESETS !== "undefined" && Array.isArray(T
   ? TRK_TV_PRESETS.map(p => p && p.id).filter(id => typeof id === "string")
   : ["skin", "color", "mono", "dim", "off"];
 const num = (v, lo, hi, def) => (typeof v === "number" && isFinite(v)) ? Math.min(hi, Math.max(lo, v)) : def;
+/* 🧺 trk229：スキンの棚の整理に使う保存値の掃除（壊れた値・長すぎる値を落とす）。
+   id は本体・カスタム・パックのスキンで形が違うので、使う文字だけを見ます。 */
+const SKIN_ID_RE = /^[A-Za-z0-9_.-]{1,48}$/;
+function cleanSkinIdList(v, max = 400) {
+  if (!Array.isArray(v)) return [];
+  return [...new Set(v.filter(x => typeof x === "string" && SKIN_ID_RE.test(x)))].slice(0, max);
+}
+function cleanSkinMap(v, max = 400) {
+  const out = {};
+  if (!v || typeof v !== "object") return out;
+  for (const [k, n] of Object.entries(v)) {
+    if (!SKIN_ID_RE.test(k) || typeof n !== "number" || !isFinite(n) || n < 0) continue;
+    out[k] = Math.round(Math.min(n, 1e9));
+    if (Object.keys(out).length >= max) break;
+  }
+  return out;
+}
 const clampTvDim = v => Number((Math.round(num(v, 0, .9, 0) * 20) / 20).toFixed(2));
 const clampTvBlur = v => Math.round(num(v, 0, 12, 0));
 const TV_PARAM_FAV_MAX = 8;
@@ -222,7 +239,14 @@ const settings = {
   mediaKeepLimit: pick(prefs.mediaKeepLimit, TRK_ENUM_VALUES.mediaKeepLimit, "1g"), // 🎵 明示保存する曲・動画の合計上限
   mediaKeepOverCapNotice1: prefs.mediaKeepOverCapNotice1 === 1 ? 1 : 0, // 既存保存棚が新上限を超える場合の一度限りの起動通知
   skinShelfOpen: prefs.skinShelfOpen !== false,      // 🖼 スキンの棚の開閉（30種＋カスタムでも設定画面が膨らまないように）
-  skinShelfCat: pick(prefs.skinShelfCat, ["all","basic","miku","dark","light","grad","fun","access","life","custom"], "all"),
+  skinShelfCat: pick(prefs.skinShelfCat, ["all","basic","type","miku","dark","light","grad","fun","access","life","custom"], "all"),
+  /* 🧺 trk229：棚の整理。⭐お気に入り・🚫隠した・使用回数・最後に使った日時・並び順・絞り込み（すべてこの端末だけ） */
+  skinShelfOnly: pick(prefs.skinShelfOnly, ["", "fav", "recent", "hidden"], ""),
+  skinSort: pick(prefs.skinSort, ["default", "name", "used", "recent"], "default"),
+  skinFav: cleanSkinIdList(prefs.skinFav),
+  skinHidden: cleanSkinIdList(prefs.skinHidden),
+  skinUse: cleanSkinMap(prefs.skinUse),
+  skinLast: cleanSkinMap(prefs.skinLast),
   layout: pick(prefs.layout ?? prefs.gameplayLayout, Object.keys(window.Trk.data.LAYOUTS), "classic"),
   videoStyle: pick(prefs.videoStyle, VIDEO_STYLE_IDS, "skin"),
   videoZoom: num(prefs.videoZoom, .5, 3, 1),
@@ -711,6 +735,9 @@ function resetAllPrefs() {
   settings.mmdScale = 1; settings.mmdTurn = 0; settings.mmdMotionBpm = 0; settings.mmdMotionKind = "faceSing";
   settings.mmdQuickUI = true; settings.mmdMotionFavs = [];
   settings.skin = "shadow"; settings.layout = "classic";
+  /* 🧺 trk229：棚の整理（お気に入り・隠した・回数・日時・並び・絞り込み）も工場出荷状態へ */
+  settings.skinShelfOnly = ""; settings.skinSort = "default"; settings.skinFav = []; settings.skinHidden = [];
+  settings.skinUse = {}; settings.skinLast = {};
   /* 🖥 trk221/222：画面の形（自動）・下の再生バー（つねに表示）・拡大率（100%）も工場出荷状態へ戻す */
   settings.uiMode = "auto"; settings.playerBar = "on";
   settings.uiScale = 100; settings.fixedIconSize = true; settings.uiModeLock = true; settings.fxInLibrary = false;
@@ -1223,26 +1250,106 @@ function buildSkinNow() {
   b.addEventListener("click", () => { const shelf = $("skinShelf"); if (shelf) shelf.open = true; });
   now.append(b);
 }
+/* ---------- 🧺 スキンの棚の整理（trk229） ----------
+   スキンが53種になったので、探す・並べる・⭐・🚫 を足しました。
+   判定と並べ替えは純粋関数（skinMatchesQuery／skinShelfEntries）にして、テストから同じものを動かせます。 */
+const SKIN_SORT_IDS = ["default", "name", "used", "recent"];
+const SKIN_ONLY_IDS = ["", "fav", "recent", "hidden"];
+let skinQuery = "";          /* 検索欄の文字（保存はしない。開き直すと空） */
+let skinFindWired = false;   /* 入力欄の配線は1回だけ */
+function skinSearchText(id, s) {
+  const label = s.label || {}, desc = s.desc || {};
+  return [id, ...Object.values(label), ...Object.values(desc), ...(Array.isArray(s.cat) ? s.cat : [])]
+    .filter(v => typeof v === "string").join(" ").toLowerCase();
+}
+/* 空白で区切った語は「すべて含む」で一致（例：「明朝 dark」） */
+function skinMatchesQuery(id, s, query) {
+  const words = String(query || "").trim().toLowerCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return true;
+  const text = skinSearchText(id, s);
+  return words.every(w => text.includes(w));
+}
+/* 絞り込み（カテゴリ・⭐・🕒・🚫・検索）と並べ替えを、1か所で決める */
+function skinShelfEntries(skins, opt) {
+  const o = opt || {}, cat = o.cat || "all", only = o.only || "";
+  const fav = new Set(o.fav || []), hidden = new Set(o.hidden || []);
+  const use = o.use || {}, last = o.last || {}, locale = o.locale || "ja";
+  const nameOf = id => { const s = skins[id]; return String((s.label && (s.label[locale] || s.label.en)) || id); };
+  const byName = (a, b) => nameOf(a[0]).localeCompare(nameOf(b[0]), locale) || a[0].localeCompare(b[0]);
+  const out = [];
+  for (const [id, s] of Object.entries(skins)) {
+    if (cat !== "all" && !skinCatList(s).includes(cat)) continue;
+    /* 隠したスキンは「🚫 隠した」を見ているときだけ出す */
+    if (only === "fav") { if (!fav.has(id)) continue; }
+    else if (only === "recent") { if (!(last[id] > 0)) continue; }
+    else if (only === "hidden") { if (!hidden.has(id)) continue; }
+    else if (hidden.has(id)) continue;
+    if (!skinMatchesQuery(id, s, o.query)) continue;
+    out.push([id, s]);
+  }
+  if (o.sort === "name") out.sort(byName);
+  else if (o.sort === "used") out.sort((a, b) => (use[b[0]] || 0) - (use[a[0]] || 0) || byName(a, b));
+  else if (o.sort === "recent") out.sort((a, b) => (last[b[0]] || 0) - (last[a[0]] || 0) || byName(a, b));
+  return out;
+}
+/* ⭐・🚫 の切り替え（保存して棚を作り直す） */
+function toggleSkinList(key, id) {
+  const set = new Set(Array.isArray(settings[key]) ? settings[key] : []);
+  if (set.has(id)) set.delete(id); else set.add(id);
+  settings[key] = cleanSkinIdList([...set]);
+  saveUserPrefs(); buildSkinGrid();
+}
+function wireSkinFind() {
+  if (skinFindWired) return;
+  const q = $("skinSearch"), sort = $("skinSort");
+  if (!q || !sort) return;
+  skinFindWired = true;
+  q.addEventListener("input", () => { skinQuery = q.value; buildSkinGrid(); });
+  sort.addEventListener("change", () => {
+    settings.skinSort = pick(sort.value, SKIN_SORT_IDS, "default"); saveUserPrefs(); buildSkinGrid();
+  });
+}
 function buildSkinGrid() {
   const grid = $("skinGrid"); if (!grid) return;
+  wireSkinFind();
   grid.textContent = "";
+  const skins = window.Trk.data.SKINS;
   /* 棚のチップ（そのカテゴリーに属するスキンがないときはチップ自体を出さない） */
-  const cats = new Set(); for (const s of Object.values(window.Trk.data.SKINS)) skinCatList(s).forEach(c => cats.add(c));
+  const cats = new Set(); for (const s of Object.values(skins)) skinCatList(s).forEach(c => cats.add(c));
   const cat = settings.skinShelfCat !== "all" && cats.has(settings.skinShelfCat) ? settings.skinShelfCat : "all";
+  const only = SKIN_ONLY_IDS.includes(settings.skinShelfOnly) ? settings.skinShelfOnly : "";
   const chips = $("skinChips");
   if (chips) {
     chips.textContent = "";
+    const addChip = (label, isOn, onPick) => {
+      const c = el("button", "skinChip"); c.type = "button"; c.textContent = label;
+      c.classList.toggle("on", isOn); c.setAttribute("aria-pressed", String(isOn));
+      c.addEventListener("click", onPick); chips.append(c);
+    };
     for (const [id, key] of SKIN_CATS) {
       if (id !== "all" && !cats.has(id)) continue;
-      const c = el("button", "skinChip"); c.type = "button"; c.textContent = tr(key);
-      c.classList.toggle("on", id === cat); c.setAttribute("aria-pressed", String(id === cat));
-      c.addEventListener("click", () => { settings.skinShelfCat = id; saveUserPrefs(); buildSkinGrid(); });
-      chips.append(c);
+      addChip(tr(key), id === cat && only !== "hidden", () => {
+        settings.skinShelfCat = id; if (only === "hidden") settings.skinShelfOnly = ""; saveUserPrefs(); buildSkinGrid();
+      });
+    }
+    /* ⭐ お気に入り・🕒 最近・🚫 隠した（押すと絞り込み、もう一度押すと解除） */
+    for (const [val, key] of [["fav", "skinOnlyFav"], ["recent", "skinOnlyRecent"], ["hidden", "skinOnlyHidden"]]) {
+      addChip(tr(key), only === val, () => {
+        settings.skinShelfOnly = only === val ? "" : val; saveUserPrefs(); buildSkinGrid();
+      });
     }
   }
-  const count = $("skinShelfCount"); if (count) count.textContent = `（${Object.keys(window.Trk.data.SKINS).length}）`;
-  for (const [id, s] of Object.entries(window.Trk.data.SKINS)) {
-    if (cat !== "all" && !skinCatList(s).includes(cat)) continue;
+  const list = skinShelfEntries(skins, {
+    cat, only, query: skinQuery, sort: settings.skinSort, locale: lang,
+    fav: settings.skinFav, hidden: settings.skinHidden, use: settings.skinUse, last: settings.skinLast
+  });
+  const total = Object.keys(skins).length;
+  const count = $("skinShelfCount");
+  if (count) count.textContent = list.length === total ? `（${total}）` : tr("skinCountShown", { shown: list.length, all: total });
+  const noMatch = $("skinNoMatch"); if (noMatch) noMatch.hidden = list.length > 0;
+  const favSet = new Set(settings.skinFav), hidSet = new Set(settings.skinHidden);
+  const marks = id => (favSet.has(id) ? "⭐ " : "") + (hidSet.has(id) ? "🚫 " : "");
+  for (const [id, s] of list) {
     if (s.locked && !settings.skinGradUnlocked) {   /* ❓ ごほうびスキン（スタンプ5つで解禁）は、正体不明カードで出す */
       const q = el("button", "skinCard locked"); q.type = "button"; q.disabled = true; q.title = tr("skinLockedHint");
       q.style.setProperty("--sk-bg", "#10142a"); q.style.setProperty("--sk-text", "var(--ui-muted)"); q.style.setProperty("--sk-border", "var(--ui-border)");
@@ -1256,12 +1363,40 @@ function buildSkinGrid() {
     if (s.custom || s.pack) b.append(el("span", "skinTag", s.pack ? "PACK" : tr("customTag")));
     const dots = el("span", "dots");
     for (const c of [s.ui["--ui-accent"], s.ui["--ui-gold"], s.ui["--ui-text"]]) { const d = el("i", "dot square"); d.style.background = c; dots.append(d); }
-    b.append(dots, el("b", "", s.label[lang] || s.label.en));
+    b.append(dots, el("b", "", marks(id) + (s.label[lang] || s.label.en)));
     const spec = skinSpecNode(s); if (spec) b.append(spec);
     b.append(el("small", "", (s.desc && (s.desc[lang] || s.desc.en)) || ""));
     b.classList.toggle("selected", id === settings.skin); b.setAttribute("aria-pressed", id === settings.skin);
     b.addEventListener("click", () => applySkin(id));
     grid.append(b);
+  }
+  buildSkinManage();
+}
+/* 🧺 棚の横に置く「整理」の一覧（名前・回数・最後に使った日時・⭐・🚫） */
+function buildSkinManage() {
+  const box = $("skinManageList"); if (!box) return;
+  box.textContent = "";
+  const skins = window.Trk.data.SKINS;
+  const fav = new Set(settings.skinFav), hid = new Set(settings.skinHidden);
+  const nameOf = id => String(skins[id].label[lang] || skins[id].label.en);
+  const ids = Object.keys(skins).sort((a, b) => nameOf(a).localeCompare(nameOf(b), lang));
+  for (const id of ids) {
+    const row = el("div", "skinRow" + (hid.has(id) ? " isHidden" : ""));
+    const meta = el("small", "skinRowMeta");
+    const used = settings.skinUse[id] || 0, last = settings.skinLast[id] || 0;
+    let when = tr("skinNever");
+    try { if (last) when = new Date(last).toLocaleDateString(lang); } catch (_) {}
+    meta.textContent = `${tr("skinUsedTimes", { n: used })} · ${when}`;
+    const favBtn = el("button", "miniBtn", fav.has(id) ? "⭐" : "☆");
+    favBtn.type = "button"; favBtn.title = tr(fav.has(id) ? "skinFavOff" : "skinFavOn");
+    favBtn.setAttribute("aria-pressed", String(fav.has(id)));
+    favBtn.addEventListener("click", () => toggleSkinList("skinFav", id));
+    const hideBtn = el("button", "miniBtn", hid.has(id) ? "👁" : "🚫");
+    hideBtn.type = "button"; hideBtn.title = tr(hid.has(id) ? "skinShowAction" : "skinHideAction");
+    hideBtn.setAttribute("aria-pressed", String(hid.has(id)));
+    hideBtn.addEventListener("click", () => toggleSkinList("skinHidden", id));
+    row.append(el("b", "", (fav.has(id) ? "⭐ " : "") + nameOf(id)), meta, favBtn, hideBtn);
+    box.append(row);
   }
 }
 /* 背景映像のフィルター：スキン／表示スタイルの色味 → 暗さ → ぼかし の順に重ねる */
@@ -1287,6 +1422,11 @@ function applySkin(id, persist = true) {
   if (has(window.Trk.data.SKINS, id) && window.Trk.data.SKINS[id].locked && !settings.skinGradUnlocked) id = "shadow";   /* 🔒 ごほうびスキンは、スタンプ5つで解禁されるまで当てられない */
   settings.skin = has(window.Trk.data.SKINS, id) ? id : "shadow";
   const s = skin(), root = document.documentElement.style;
+  /* 🧺 trk229：使った回数と日時をこの端末だけに記録する（起動時の復元 persist=false では数えない） */
+  if (persist) {
+    settings.skinUse[settings.skin] = Math.min(1e9, (settings.skinUse[settings.skin] || 0) + 1);
+    settings.skinLast[settings.skin] = Date.now();
+  }
   for (const [k, v] of Object.entries(s.ui)) root.setProperty(k, v);
   /* 🔤 小さな文字に使うアクセント色（入れ子の欄でも 4.5:1。足りているスキンは --ui-accent と同じ） */
   root.setProperty("--ui-accent-ink", window.Trk.data.accentInk(s.ui));

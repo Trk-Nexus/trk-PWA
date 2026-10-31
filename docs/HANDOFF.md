@@ -1,6 +1,6 @@
 # trk! 開発引き継ぎ
 
-> **最終更新：2026-10-31**（`trk-PWA` の **trk228**）。アプリ本体は trk228（trk227 のリピートの段・シャッフルの範囲に加えて、**書体（フォント）スキン 9 種**と、スキンの棚の「書体」カテゴリ・見本の文字）、`npm run check` は **949 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.10.31-trk228`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
+> **最終更新：2026-10-31**（`trk-PWA` の **trk229**）。アプリ本体は trk229（trk228 の**書体（フォント）スキン 9 種**に加えて、**スキンの棚の整理**＝さがす／並べる／⭐お気に入り／🚫隠す／使用回数）、`npm run check` は **967 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.10.31-trk229`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
 >
 > 現在の仕様・守る条件・未確認事項の要約です。過去の詳細な変更履歴・検証記録は [`HANDOFF-ARCHIVE.md`](HANDOFF-ARCHIVE.md)、利用者向け仕様は [`../README.md`](../README.md) と [`guide/`](guide/)、権利表記は [`../NOTICE.md`](../NOTICE.md)、品質・安全確認は [`QUALITY-CHECKS.md`](QUALITY-CHECKS.md) と [`SECURITY.md`](SECURITY.md)。**レビューと実機確認のお願いは [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md)**、その指摘への対応は [`REVIEW-RESPONSE-2026-10-31.md`](REVIEW-RESPONSE-2026-10-31.md)、trk223 を実際の端末で見る手順は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)。
 
@@ -24,6 +24,7 @@
 
 | 版 | trk番号 | 中身（1行） | 日付 |
 | --- | --- | --- | --- |
+| （trk-PWA） | trk229 | スキンの棚の整理（さがす・並べる・⭐・🚫・使用回数・件数の表示） | 2026-10-31 |
 | （trk-PWA） | trk228 | 書体（フォント）スキン 9 種（端末の書体だけを使い、太さ・字間・行間も変える）＋ 棚の「書体」カテゴリと見本の文字 | 2026-10-31 |
 | （trk-PWA） | trk227 | リピートの段（なし⇄1曲だけ）と、シャッフルの範囲（いまの一覧から）を ❓謎設定で選べるように | 2026-10-31 |
 | （trk-PWA） | trk226 | 下の再生バーをプレイヤーにする（触れてシーク・❓「触れても位置を移動しない」・🎲 シャッフル・🔁 リピート・⧉ 別窓の操作パネル） | 2026-10-31 |
@@ -64,10 +65,10 @@
 | 配り方 | GitHub Pages（`.github/workflows/pages.yml`）＋ `manifest.webmanifest` ＋ `sw.js`。配布ZIPは作りません |
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ） |
-| スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加。詳しくは [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) |
-| テスト | `npm run check` **949 pass / 0 fail**（trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件を追加）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.10.31-trk228@<スコープ>`**（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
-| まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
+| スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
+| テスト | `npm run check` **967 pass / 0 fail**（trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件・trk229 の18件を追加）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.10.31-trk229@<スコープ>`**（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | 新リポジトリ `trk-Standalone` はまだ空。Pages の有効化と初回デプロイは未実施 |
 
 **この系統で変えてはいけないこと**：§3 の条件に加えて、**実行時に外部へ通信しない**（CDN・外部API・解析タグを足さない）、**端末内データだけ**、**GPL-3.0-or-later のクレジットを消さない**、**保存キーを変えるときは移行を書く**（[`MIGRATIONS.md`](MIGRATIONS.md)）。
@@ -595,6 +596,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | ▶🎲 バーの置き場所と「隠さない」（trk225） | `js/player-bar.js`（`barOffset`・`barPos`・`barLocked`・`measure()`）、`css/player-bar.css`（`body.trk-playerbar-at-bottom .trk-mobile-nav { bottom: var(--trk-playerbar-h) }`）、`js/core.js`（`playerBarPos`・`playerBarLock`）、`tests/trk225-player-bar-settings.test.mjs`、[`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) |
 | 🎵 バーをプレイヤーにする（trk226） | `js/player-bar.js`（`seekEnabled`・`shufflePick`・`nextRepeat`・`panelAllowed`・`snapshot`・`seekToRatio`・`playPause`・🎲🔁⧉ のボタン）、**`js/player-panel.js`（新規）**（Document PiP／小窓の鏡パネル・`Trk.playerPanel`）、`js/media-player-mode.js`（`announceMediaOptions`／`pullMediaOptions`）、`js/library.js`（`previewRestartFor`）、`js/core.js`（`playerBarSeekLock`）、`css/player-bar.css`、`tests/trk226-player-bar-player.test.mjs`、[`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) |
 | ❓ リピートの段・シャッフルの範囲（trk227） | `js/player-bar.js`（`repeatChoices`・`repeatOneOnly`・`shuffleInList`・`nextRepeat(value, oneOnly)`）、`js/library.js`（`shufflePool`＝表示順の一覧か全曲）、`js/media-player-mode.js`（`repeatOptions`・`fillRepeatOptions`・`shuffleCandidates`）、`js/ui-prefs.js`・`index.html`（2つの欄）、`tests/trk227-repeat-shuffle-options.test.mjs`、[`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) |
+| 🧺 スキンの棚の整理（trk229） | `js/core.js`（`skinSearchText`／`skinMatchesQuery`／`skinShelfEntries`／`toggleSkinList`／`wireSkinFind`／`buildSkinManage`／`cleanSkinIdList`／`cleanSkinMap`、`buildSkinGrid` の作り直し、`applySkin` の使用回数）、`index.html`（`#skinSearch`・`#skinSort`・`#skinNoMatch`・`#skinManage`）、`css/style.css`（`#skinFind`・`.skinRow`）、`js/i18n.js`（20キー×4言語）、`tests/trk229-skin-shelf-organize.test.mjs`（18件）、[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) |
 | 🔤 書体（フォント）スキン 9 種（trk228） | `js/data.js`（`SKINS` に `cat:["type",…]` の 9 種・`font`・`type`）、`js/core.js`（`SKIN_CATS` の `type`・`skinCardType`・`skinSpecNode`・`applySkin` の `--font-*`）、`css/style.css`（`--font-title`／`--font-weight`／`--font-lh` と `.skinSpec`）、`js/i18n.js`（`catType` 4言語）、`tests/type-skins.test.mjs`、[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) |
 | 🧭 trk223：テストの道具 | `tests/helpers/css-rules.mjs`（CSS を規則として当てる）、`tests/helpers/player-bar-harness.mjs`（偽 DOM）、`tests/trk223-review.test.mjs`（33件） |
 | 📝 レビューと実機確認の依頼（2026-10-31） | [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md)（trk220〜trk222：レビューしてほしいコード・実機で見てほしいこと・判断してほしいこと）、[`REVIEW-RESPONSE-2026-10-31.md`](REVIEW-RESPONSE-2026-10-31.md)（指摘ごとの対応）、[`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)（trk223 を実機で見る手順） |
@@ -606,7 +608,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 
 | 検査 | 結果 | 範囲・注意 |
 |---|---|---|
-| `npm run check` | **949 pass / 0 fail** | trk219 の746 から、trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件を足して 949。Static 0 failure・0 warning・Security 64/0。`TZ=Asia/Tokyo`・`TZ=America/Los_Angeles` でも同じ（F1 の再発防止） |
+| `npm run check` | **967 pass / 0 fail** | trk219 の746 から、trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件・trk229 の18件を足して 967。Static 0 failure・0 warning・Security 64/0。`TZ=Asia/Tokyo`・`TZ=America/Los_Angeles` でも同じ（F1 の再発防止） |
 | 書体（フォント）スキン（trk228） | **OK（9件）** | `tests/type-skins.test.mjs`。9 種の登録・カテゴリ `type`・見本の文字（和文＋欧文）・**外部URL／`@font-face` を含まない**こと・太さ／字間／行間／大文字化の値・`catType` の 4 言語・棚カードへの書体の受け渡し・`applySkin` の `--font-*`・既存 44 種に `type` が付かないこと。配色は `tests/skin-contrast.test.mjs` が 53 種すべてで AA を検査 |
 | リピートの段・シャッフルの範囲（trk227） | **OK（17件）** | `tests/trk227-repeat-shuffle-options.test.mjs`。`nextRepeat` の段（3段／2段・全曲は「なし」へ）、オンで 🔁 が1曲⇄なしを往復し全曲にならないこと、シャッフル中の ⏭ が一覧の中だけから選ぶこと（オフなら外も選ぶ）、`shufflePool` の写し、再生画面の選択肢が2つになること、4言語 × 4キー |
 | 下の再生バーを触ってシーク（trk226） | **OK（27件）** | `tests/trk226-player-bar-player.test.mjs`。触れる条件（画面・読み込み・長さ・謎設定）の純粋関数、謎設定オンで `currentTime` が動かないこと、`previewRestartFor`、`shufflePick` の乱数の位置、🎲🔁 の設定共有と合図、別窓の組み立て（11部品）と描き直し・小窓が二重に開かないこと・PC型だけ ⧉ を出すこと |
@@ -767,6 +769,16 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 
 ## 7. 最近の変更
 
+- **🧺 trk229：スキンの棚の整理（2026-10-31）**：trk228 の報告への返信。「今の状態では見た目のスキン数を整理する機能は確か作っていなかった」。
+  - **さがす**：`#skinSearch`。名前・説明・**カテゴリ語**・id を、4言語ぶんまとめて小文字で照合します（例：「明朝」「mincho」「书卷」「명조」「dark」「type」）。空白で区切ると AND（「type dark」で書体の暗いものだけ）。
+  - **並べる**：おすすめ順（従来の並び）／名前順／よく使う順／最近使った順。名前順は表示言語の `localeCompare`。
+  - **⭐ お気に入り・🕒 最近使った・🚫 隠した**：チップで絞り込み。🚫 はふだんの棚から消え、`🚫 隠した` を見ているときだけ出ます（スキン自体は消えません）。
+  - **整理の一覧**（`#skinManage`）：全スキンの名前・⭐・🚫・使用回数・最終使用日を1か所で。⭐/🚫 はワンタップ。
+  - **記録**：`skinUse`（回数）と `skinLast`（日時）は、スキンを当てたときだけ数えます（起動時の復元＝`persist=false` では数えない）。**すべて端末の中だけ**。
+  - **件数**：絞り込んだときだけ「（表示／全体）」。
+  - 新しい保存キーは prefs の中に4つ（`skinFav`・`skinHidden`・`skinUse`・`skinLast`）と、`skinShelfCat` に `type`、`skinShelfOnly`・`skinSort`。**既存キーの意味は変えていません**（`skinShelfCat` は選択肢が増えるだけ、移行不要）。
+  - 判定と並べ替えは純粋関数（`skinMatchesQuery`・`skinShelfEntries`）にして、`tests/trk229-skin-shelf-organize.test.mjs`（**18件**）が同じ関数を動かして検査します。`npm run check` は **967 pass / 0 fail**。`sw.js` の cache は **`trk-v2026.10.31-trk229@<スコープ>`**。
+  - **未確認**：実機での見え方（検索欄の入力・整理の一覧の高さ・スマホ型での2段くずれ）。手順は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6。
 - **🔤 trk228：書体（フォント）スキン 9 種（2026-10-31）**：trk227 の報告への返信。「ネッスン・ドルマのフォントの変化が人気なので、他のフォント違いのスキンも欲しい。久々なので多めでよい／贅沢に調べてよい」。
   - **調べたこと**：2025〜2026 の日本語サイト（coliss・321web・inte-action・ffont・Canva）の「無料フォント」記事を読み、定番の系統（Noto／源ノ、Zen Maru・M PLUS Rounded、Shippori Mincho・Zen Old Mincho、Yusei Magic・Klee One、Dela Gothic One、BIZ UD）を確認。**すべて OFL で無料・商用可**。ただしこのアプリは CDN・外部API を使わない方針なので、**Google Fonts を実行時に読む形は採らない**。
   - **同梱の重さ（実測）**：`@fontsource` の woff2 は 1 書体 **0.9〜1.5 MB**。かな＋英数に絞ると 28 KB だが漢字が全部欠け、漢字を全部入れると約 1.4 MB で元とほぼ同じ。→ **今回は同梱せず、端末にある書体を名前で指定**（追加 0 バイト・オフラインで動く）。
