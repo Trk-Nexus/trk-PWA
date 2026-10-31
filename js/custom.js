@@ -397,6 +397,63 @@ function packRecordBytes(record) {
 /* 集計値（{ stored, replacing }）から、保存後の見込み合計を出す。
    同じ名前・作者のパックを更新するときは、置き換える前の分を差し引く。 */
 function packProjected(stats, incoming) { return stats.stored - stats.replacing + incoming; }
+
+/* ---------- 💾 trk234：容量の見える化と「まとめて消す」の計算（DOM を触らない） ---------- */
+/* バイト数を読みやすい単位へ（1024 進・小数1桁。1GiB 以上は2桁）。
+   ⚠ 数値でない・負の値は 0 B にする（記録が壊れていても画面を壊さない）。 */
+function packSizeText(bytes) {
+  const v = Number(bytes);
+  if (!Number.isFinite(v) || v <= 0) return "0 B";
+  if (v < 1024) return `${Math.round(v)} B`;
+  if (v < 1048576) return `${(v / 1024).toFixed(1)} KB`;
+  if (v < 1073741824) return `${(v / 1048576).toFixed(1)} MB`;
+  return `${(v / 1073741824).toFixed(2)} GB`;
+}
+/* 1件の大きさ。保存したレコードは size、一覧の控え（listInstalledPacks）は bytes を持つ。
+   どちらも無い古いレコードは files から数え直す。 */
+function packRecordSize(record) {
+  if (!record || typeof record !== "object") return 0;
+  if (Number.isFinite(record.size) && record.size >= 0) return record.size;
+  if (Number.isFinite(record.bytes) && record.bytes >= 0) return record.bytes;
+  return packRecordBytes(record);
+}
+/* 入っているパックの集計。
+   recs は { id, name, size|bytes, active } を持つ配列（packDB.all() のレコードでも listInstalledPacks の控えでもよい）。
+   cap は合計の上限（バイト）。上限なし（Infinity）なら pct は 0 で capped=false。 */
+function packUsageInfo(recs, cap, top) {
+  const list = (Array.isArray(recs) ? recs : []).filter(r => r && typeof r === "object");
+  const items = [];
+  let total = 0, unusedCount = 0, unusedBytes = 0;
+  for (const r of list) {
+    const bytes = packRecordSize(r), active = r.active === true;
+    total += bytes;
+    if (!active) { unusedCount++; unusedBytes += bytes; }
+    items.push({ id: typeof r.id === "string" ? r.id : "", name: String(r.name || ""), bytes, active });
+  }
+  const limit = Number.isFinite(cap) && cap > 0 ? cap : 0;
+  const pct = limit ? Math.min(100, Math.round((total / limit) * 100)) : 0;
+  const want = Number.isFinite(top) ? Math.max(0, Math.floor(top)) : 3;
+  const heaviest = items.slice().sort((a, b) => b.bytes - a.bytes || a.name.localeCompare(b.name)).slice(0, want);
+  return { count: list.length, total, cap: limit, capped: limit > 0, pct, unused: { count: unusedCount, bytes: unusedBytes }, heaviest };
+}
+/* まとめて消すときに、実際に消せるものだけを選び直す（画面の選択が古くても安全に）。
+   activeIds ＝ いま使っているパック。消す前に外す必要がある。 */
+function packDeletePlan(recs, ids) {
+  const want = [...new Set((Array.isArray(ids) ? ids : []).map(v => (typeof v === "string" ? v : "")).filter(Boolean))];
+  const known = new Map();
+  for (const r of Array.isArray(recs) ? recs : []) if (r && typeof r.id === "string") known.set(r.id, r);
+  const picked = [], activeIds = [];
+  let bytes = 0;
+  for (const id of want) {
+    const r = known.get(id);
+    if (!r) continue;
+    picked.push(id);
+    bytes += packRecordSize(r);
+    if (r.active === true) activeIds.push(id);
+  }
+  return { ids: picked, count: picked.length, bytes, activeIds, missing: want.length - picked.length };
+}
+/* ---------- 💾 trk234：ここまで計算（この下は画面） ---------- */
 /* 容量チェック。合計は index のキーだけで数えるので、レコード本体（Blob）を復元しない。
    ⚠ 「size を持たないレコードがある」ときは idbStore 側が自動で全件を数え直す（過小計上＝上限の素通しを防ぐ）。 */
 async function checkPackStorageCapacity(id, incoming) {
@@ -908,15 +965,133 @@ async function deletePackById(id) {
   if (rec && rec.manifest && rec.manifest.songs) core.emit("packsChanged");
   return true;
 }
+/* 💾 trk234：まとめて消す。確認は1回で、何件・何 MB を出す。
+   ⚠ 合図（packsChanged）は**まとめて1回だけ**。1件ずつ deletePackById を呼ぶと、
+      曲を含むパックの数だけ曲リストが作り直されて重くなる。 */
+async function deletePacksByIds(ids, opts) {
+  const silent = !!(opts && opts.skipConfirm);
+  const want = [...new Set((Array.isArray(ids) ? ids : []).map(v => (typeof v === "string" ? v : "")).filter(Boolean))];
+  if (!want.length) return { ok:0, bad:0, bytes:0, cancelled:false, empty:true };
+  let recs = [];
+  try { recs = await packDB.all(); } catch (_) { recs = []; }
+  const plan = packDeletePlan(recs.map(r => ({ id:r.id, size:packRecordSize(r), active:packRuntime.id === r.id })), want);
+  if (!plan.count) { core.setStatus("packStatus", "packDeleteNone"); return { ok:0, bad:0, bytes:0, missing:plan.missing, cancelled:false }; }
+  if (!silent) {
+    const vars = { n:plan.count, size:packSizeText(plan.bytes) };
+    if (!confirm(tr(plan.activeIds.length ? "packDeleteSelectedConfirmActive" : "packDeleteSelectedConfirm", vars))) {
+      return { ok:0, bad:0, bytes:0, cancelled:true };
+    }
+  }
+  if (plan.activeIds.length) { try { deactivatePack(); } catch (_) {} }
+  let ok = 0, bad = 0, bytes = 0, hasSongs = false;
+  for (const id of plan.ids) {
+    const rec = recs.find(r => r.id === id);
+    try {
+      await packDB.del(id);
+      ok++; bytes += rec ? packRecordSize(rec) : 0;
+      if (rec && rec.manifest && rec.manifest.songs) hasSongs = true;
+    } catch (_) { bad++; }
+  }
+  packSelection.clear();
+  if (hasSongs) core.emit("packsChanged");   /* 曲の参照が変わったときだけ・1回だけ */
+  await renderPackList();
+  core.setStatus("packStatus", bad ? "packDeletedSome" : "packDeletedMany",
+    { n:ok, ok, bad, size:packSizeText(bytes) });
+  return { ok, bad, bytes, cancelled:false };
+}
+/* ❓謎設定：パックを全部消す（確認2回。1回目＝件数と合計、2回目＝DELETE と入力） */
+async function wipeAllPacks() {
+  let recs = [];
+  try { recs = await packDB.all(); } catch (_) { recs = []; }
+  const info = packUsageInfo(recs.map(r => ({ id:r.id, size:packRecordSize(r), active:packRuntime.id === r.id })), null);
+  if (!info.count) { core.setStatus("packStatus", "packWipeNone"); return { ok:0, cancelled:false }; }
+  if (!confirm(tr("packWipeConfirm", { n:info.count, size:packSizeText(info.total) }))) return { ok:0, cancelled:true };
+  const typed = typeof prompt === "function" ? String(prompt(tr("packWipeType", { n:info.count, size:packSizeText(info.total) })) || "").trim() : "";
+  if (typed !== "DELETE") { core.setStatus("packStatus", typed ? "packWipeBadWord" : null); return { ok:0, cancelled:true }; }
+  const r = await deletePacksByIds(recs.map(rec => rec.id), { skipConfirm:true });
+  core.setStatus("packStatus", "packWipeDone", { n:r.ok, size:packSizeText(r.bytes) });
+  return r;
+}
+/* 💾 trk234：容量の表示（入っているパックの合計・上限・端末の空き） */
+const packSelection = new Set();     /* まとめて消すために選んだパックの id */
+let packLastView = [];               /* 最後に描いた一覧の控え（選択の計算に使う） */
+let packEstimateSeq = 0;             /* 古い estimate() の結果で上書きしないための番号 */
+function renderPackUsage(view) {
+  const box = core.$("packUsage");
+  if (!box) return;
+  const info = packUsageInfo(view, packCap(PACK_STORE_MAX));
+  box.hidden = info.count === 0;
+  const total = core.$("packUsageTotal"), share = core.$("packUsageShare"), bar = core.$("packUsageBar"),
+    fill = core.$("packUsageFill"), free = core.$("packUsageFree"), detail = core.$("packUsageDetail");
+  const size = packSizeText(info.total);
+  if (total) total.textContent = info.capped
+    ? tr("packUsageTotal", { n:info.count, size, cap:packSizeText(info.cap) })
+    : tr("packUsageTotalNoCap", { n:info.count, size });
+  if (share) share.textContent = info.capped ? tr("packUsageShare", { pct:info.pct }) : "";
+  if (bar) bar.hidden = !info.capped;
+  if (fill) { fill.style.width = `${info.pct}%`; fill.classList.toggle("isHigh", info.pct >= 90); }
+  const parts = [];
+  if (info.unused.count) parts.push(tr("packUsageUnused", { n:info.unused.count, size:packSizeText(info.unused.bytes) }));
+  if (info.total > 0 && info.heaviest.length) parts.push(tr("packUsageHeaviest", { list:info.heaviest.map(h => `${h.name} ${packSizeText(h.bytes)}`).join(" / ") }));
+  if (detail) detail.textContent = parts.join("　");
+  /* 端末の空きは、取れたときだけ出す（取れない環境では空欄のまま） */
+  const seq = ++packEstimateSeq;
+  if (free) free.textContent = "";
+  const storage = typeof navigator !== "undefined" ? navigator.storage : null;
+  if (!storage || typeof storage.estimate !== "function") return;
+  Promise.resolve().then(() => storage.estimate()).then(est => {
+    if (seq !== packEstimateSeq || !free) return;
+    if (est && Number.isFinite(est.quota) && Number.isFinite(est.usage)) {
+      free.textContent = tr("packUsageFree", { free:packSizeText(Math.max(0, est.quota - est.usage)) });
+    }
+  }).catch(() => {});
+}
+/* 選択の数と合計を出す。0 件のときはボタンを押せなくする */
+function renderPackPick(view) {
+  const plan = packDeletePlan(view, [...packSelection]);
+  const btn = core.$("packDeletePicked"), line = core.$("packPickStatus");
+  if (btn) {
+    btn.disabled = plan.count === 0;
+    btn.textContent = plan.count
+      ? tr("packDeletePicked", { n:plan.count, size:packSizeText(plan.bytes) })
+      : tr("packDeletePickedNone");
+  }
+  if (line) line.textContent = plan.count ? tr("packSelectCount", { n:plan.count, size:packSizeText(plan.bytes) }) : "";
+}
+/* 選ぶ（all＝全部／unused＝使っていないもの／none＝解除） */
+async function pickPacks(which) {
+  if (which === "all") for (const v of packLastView) packSelection.add(v.id);
+  else if (which === "unused") { packSelection.clear(); for (const v of packLastView) if (!v.active) packSelection.add(v.id); }
+  else packSelection.clear();
+  await renderPackList();
+}
 async function renderPackList() {
   const box = core.$("packList"); let recs = [];
   try { recs = await packDB.all(); } catch (_) {}
   box.textContent = "";
+  /* 💾 trk234：容量の表示と選択の後始末（消えたパックは選択からも外す） */
+  const view = recs.map(r => ({ id:r.id, name:(r.manifest && r.manifest.name) || "", size:packRecordSize(r), active:packRuntime.id === r.id }));
+  const alive = new Set(view.map(v => v.id));
+  for (const id of [...packSelection]) if (!alive.has(id)) packSelection.delete(id);
+  packLastView = view;
+  renderPackUsage(view);
+  renderPackPick(view);
   if (!recs.length) { box.append(core.el("div", "hint", tr("packEmpty"))); return; }
   recs.sort((a, b) => (b.installedAt || 0) - (a.installedAt || 0));
   for (const r of recs) {
     const m = r.manifest, on = packRuntime.id === r.id, card = core.el("div", "packCard" + (on ? " active" : ""));
-    const head = core.el("div", "packHead"); head.append(core.el("b", "", m.name));
+    const head = core.el("div", "packHead");
+    /* 💾 trk234：まとめて消すための選択。読み上げ名はパック名（どれを選んでいるか分かるように） */
+    const pick = core.el("input", "packPick"); pick.type = "checkbox"; pick.checked = packSelection.has(r.id);
+    pick.setAttribute("aria-label", tr("packSelectOne", { name: m.name }));
+    pick.addEventListener("change", () => {
+      if (pick.checked) packSelection.add(r.id); else packSelection.delete(r.id);
+      card.classList.toggle("picked", pick.checked);
+      renderPackPick(packLastView);
+    });
+    const pickWrap = core.el("label", "packPickWrap"); pickWrap.append(pick);
+    if (packSelection.has(r.id)) card.classList.add("picked");
+    head.append(pickWrap, core.el("b", "", m.name));
     if (m.author) head.append(core.el("span", "packBy", "by " + m.author));
     head.append(core.el("span", "packBy", `${((r.size || 0) / PACK_MB).toFixed(1)} MB`));
     card.append(head);
@@ -980,6 +1155,17 @@ async function initPacks() {
 core.$("packFile").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if (f) installAndUse(f); });
 core.$("songPackFile").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if (f) installAndUse(f); });
 core.$("packOffBtn").addEventListener("click", () => deactivatePack());
+/* 💾 trk234：容量の表示と、まとめて消す（確認は1回・曲リストへの合図は1回） */
+[["packPickAll", "all"], ["packPickUnused", "unused"], ["packPickNone", "none"]].forEach(([id, which]) => {
+  const b = core.$(id);
+  if (b) b.addEventListener("click", () => { pickPacks(which).catch(e => console.error(e)); });
+});
+{
+  const picked = core.$("packDeletePicked");
+  if (picked) picked.addEventListener("click", () => { deletePacksByIds([...packSelection]).catch(e => console.error(e)); });
+  const wipe = core.$("packWipeBtn");
+  if (wipe) wipe.addEventListener("click", () => { wipeAllPacks().catch(e => console.error(e)); });
+}
 core.$("packBuildBtn").addEventListener("click", () => { buildPack().catch(e => { console.error(e); core.setStatus("packStatus", "packBadZip"); }); });
 core.$("spBuildBtn").addEventListener("click", () => { buildSongPack().catch(e => { console.error(e); core.setStatus("spStatus", "packBadZip"); }); });
 on("language", renderPackList);
@@ -1015,7 +1201,9 @@ window.updateMascotUI = updateMascotUI;
 window.Trk = window.Trk || {};
 window.Trk.custom = Object.assign(window.Trk.custom || {}, { initPacks, noteImage, packDB, packRuntime, packIdentityFromManifest, skinShelf, syncNoteUI, updateMascotUI, installAndUse,
   /* 📦 trk231：目録の一覧（js/pack-catalog.js）から使う入口 */
-  activatePack, deactivatePack, deletePackById, listInstalledPacks });
+  activatePack, deactivatePack, deletePackById, listInstalledPacks,
+  /* 💾 trk234：容量の表示と、まとめて消す（目録の一覧と ❓謎設定からも使う） */
+  packSizeText, packUsageInfo, packDeletePlan, deletePacksByIds, wipeAllPacks });
 Object.defineProperty(window.Trk.custom, "getPackSongs", { configurable:true, get:() => getPackSongs, set:v => { getPackSongs = v; } });
 Object.defineProperty(window.Trk.custom, "installPackFile", { configurable:true, get:() => installPackFile, set:v => { installPackFile = v; } });
 Object.defineProperty(window.Trk.custom, "renderPackList", { configurable:true, get:() => renderPackList, set:v => { renderPackList = v; } });
