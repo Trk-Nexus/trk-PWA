@@ -160,7 +160,8 @@ function loadSwitch({ skin, prev = null, skinId = "pack_p1" }) {
     window: { Trk: { data: { SKINS: { shadow:{}, sakura:{}, forest:{}, pack_p1:{}, pack_p2:{} } },
       media: { seBuffers:[{}, {}], seFiles:[null, null], loadSE() {} } } },
     restoreOwnSounds: () => false, updateMascotUI() {}, renderPackList() {},
-    packRuntime: { id:"p1", captions:null, noteImages:[null, null], urls:[], skinId, hadSounds:false }
+    clearPackFonts() {},   /* 🔤 trk232：書体の片付けは deactivatePack が先に呼ぶ（ここでは何もしない） */
+    packRuntime: { id:"p1", captions:null, noteImages:[null, null], urls:[], skinId, hadSounds:false, fontFaces:[] }
   });
   vm.runInContext(src + "\n" + deactSrc + "\nglobalThis.__deactivatePack = deactivatePack;", ctx);
   return { settings, calls, deactivatePack: ctx.__deactivatePack };
