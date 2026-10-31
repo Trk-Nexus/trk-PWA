@@ -1184,8 +1184,14 @@
                   <input id="catalogBundle" type="file" accept=".json,.stpack,application/json" multiple hidden>
                   <span data-i18n="catalogBundleOpen"></span>
                 </label>
+                <!-- 📦 trk235：セット（.stlib / .zip）を 1 回選ぶだけで、目録とパックをまとめて入れる -->
+                <label class="fileBtn small">
+                  <input id="catalogSet" type="file" accept=".stlib,.zip,application/zip,application/octet-stream" hidden>
+                  <span data-i18n="catalogSetOpen"></span>
+                </label>
               </div>
               <div class="hint" data-i18n="catalogBundleHint"></div>
+              <div class="hint" data-i18n="catalogSetHint"></div>
               <div class="hint" id="catalogSummary"></div>
               <!-- 💾 trk234：この目録のぶんを、まとめて消す（確認は1回） -->
               <div class="miniActions" id="catalogBulkActions" hidden>

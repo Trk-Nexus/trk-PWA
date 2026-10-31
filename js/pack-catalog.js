@@ -101,10 +101,123 @@
     } catch (_) { return null; }
   }
 
+  /* ---------- 📦 trk235：セット（.stlib / .zip）を、選ぶだけで入れる ----------
+     倉庫の「はじめてセット」は 1 つの ZIP（中身は目録＋packs/＋font-packs/＋任意の set.json）。
+     ・アプリは**利用者が選んだファイルだけ**を読む（外へ取りに行かない）。
+     ・読むのは「目録の packs[].file と同じパス」。`packs/` と `font-packs/` を区別しない。
+     ・入れる前に、中の実バイトで sha256 を計算して目録と比べる（合わなければ入れない）。
+     ・set.json は任意（あれば名前と版を表示にだけ使う。無くても目録だけで動く）。 */
+  const SET_FORMAT = "trk-set";
+  /* 上限は「開く前」と「1 本ごと」の 2 段。セット 1 GiB・1 本 500 MB（倉庫と合意した値）。 */
+  const SET_LIMITS = Object.freeze({ set: 1024 * 1048576, pack: 500 * 1048576, catalog: 8 * 1048576, entries: 5000 });
+  const SET_EXTS = /\.(stlib|zip)$/i;
+  const zipIO = () => (window.Trk && window.Trk.zipIO) || null;
+
+  /* 先頭の署名で「ZIP か」を見る（拡張子は信じない。OS によっては .stlib の関連付けが無い） */
+  async function looksLikeZip(file) {
+    if (!file || typeof file.slice !== "function" || !(Number(file.size) >= 4)) return false;
+    try {
+      const head = new Uint8Array(await file.slice(0, 4).arrayBuffer());
+      if (head.length < 4 || head[0] !== 0x50 || head[1] !== 0x4b) return false;
+      return (head[2] === 3 && head[3] === 4) || (head[2] === 5 && head[3] === 6) || (head[2] === 7 && head[3] === 8);
+    } catch (_) { return false; }
+  }
+
+  /* ZIP を読むときの失敗を、画面に出す形（i18n のキー）へ寄せる */
+  function setErrorKey(err) {
+    const key = err && err.key;
+    if (key === "zipEncrypted") return "catalogSetEncrypted";
+    if (key === "zipMethod") return "catalogSetMethod";
+    if (key === "zipLimit" || key === "zipTooBig") return "catalogSetTooBig";
+    if (key === "zipCorrupt") return "catalogSetCorrupt";
+    return "catalogSetBad";
+  }
+
+  /* set.json（任意）。形が合わない・読めないときは null（＝目録だけで動く） */
+  function sanitizeSetInfo(raw) {
+    if (!raw || typeof raw !== "object" || raw.format !== SET_FORMAT) return null;
+    const version = Number(raw.version);
+    if (!Number.isFinite(version) || version > 1) return null;
+    return {
+      format: SET_FORMAT, version: 1,
+      name: str(raw.name, 80),
+      release: str(raw.release, 24) || str(raw.rev, 24),
+      note: str(raw.note, 400),
+      packs: (Array.isArray(raw.packs) ? raw.packs : []).slice(0, MAX_PACKS).map(p => str(p, 160)),
+    };
+  }
+
+  /* セットを開いて、目録と（あれば）set.json を読む。パックの中身はまだ展開しない。
+     戻り値： { ok:true, zip, prefix, catalog, info, name, release } ／ { ok:false, reason, vars } */
+  async function openSet(file) {
+    const Z = zipIO();
+    if (!Z || typeof Z.zipOpen !== "function") return { ok:false, reason:"catalogSetNoZip" };
+    const size = Number(file && file.size);
+    if (!Number.isFinite(size) || size <= 0) return { ok:false, reason:"catalogSetBad" };
+    if (size > SET_LIMITS.set) return { ok:false, reason:"catalogSetTooBig", vars:{ max:formatBytes(SET_LIMITS.set) } };
+    if (!(await looksLikeZip(file))) return { ok:false, reason:"catalogSetNotZip" };
+    let zip;
+    try { zip = await Z.zipOpen(file); } catch (e) { return { ok:false, reason:setErrorKey(e) }; }
+    if (!zip || !Array.isArray(zip.entries)) return { ok:false, reason:"catalogSetBad" };
+    if (zip.entries.length > SET_LIMITS.entries) return { ok:false, reason:"catalogSetTooMany" };
+    /* 目録の候補：根の catalog/index.json、または 1 段だけ包まれた <フォルダ>/catalog/index.json
+       （展開したフォルダをそのまま再圧縮した .zip 対策。2 段以上は「どれか分からない」で止める） */
+    let catEntry = zip.byName.get("catalog/index.json") || null, prefix = "";
+    if (!catEntry) {
+      const nested = zip.entries.filter(e => /^[^/]+\/catalog\/index\.json$/.test(e.name));
+      if (nested.length > 1) return { ok:false, reason:"catalogSetAmbiguous" };
+      if (!nested.length) return { ok:false, reason:"catalogSetNoCatalog" };
+      catEntry = nested[0];
+      prefix = catEntry.name.slice(0, -"catalog/index.json".length);
+    }
+    let catalog = null;
+    try {
+      const text = await (await Z.zipEntryBlob(zip, catEntry, SET_LIMITS.catalog, true)).text();
+      catalog = sanitizeCatalog(JSON.parse(text));
+    } catch (e) { return { ok:false, reason: e && e.key ? setErrorKey(e) : "catalogBad" }; }
+    if (!catalog) return { ok:false, reason:"catalogBad" };
+    /* set.json は任意。壊れていても止めない（名前と版が出せないだけ） */
+    let info = null;
+    const setEntry = zip.byName.get(prefix + "set.json") || zip.byName.get("set.json");
+    if (setEntry) {
+      try { info = sanitizeSetInfo(JSON.parse(await (await Z.zipEntryBlob(zip, setEntry, SET_LIMITS.catalog, true)).text())); }
+      catch (_) { info = null; }
+    }
+    return {
+      ok:true, zip, prefix, catalog, info,
+      name: (info && info.name) || catalog.name, release: (info && info.release) || "",
+    };
+  }
+
+  /* 目録と中の1本が合うか（中を展開せずに分かること＝大きさと上限） */
+  function setEntryCheck(entry, zipEntry) {
+    if (!entry || !zipEntry) return { ok:false, reason:"missing" };
+    const got = Number(zipEntry.usize) || 0;
+    const want = Number(entry.bytes) || 0;
+    if (got > SET_LIMITS.pack) return { ok:false, reason:"tooBig", got };
+    if (want > 0 && got !== want) return { ok:false, reason:"sizeMismatch", want, got };
+    return { ok:true, reason:"" };
+  }
+
+  /* 入れる前に、何が入るかを数える（読むのは目録と中央目録だけ） */
+  function planSet(opened) {
+    const plan = { packs:[], missing:[], bytes:0 };
+    if (!opened || !opened.ok || !opened.catalog) return plan;
+    for (const entry of opened.catalog.packs) {
+      const zipEntry = opened.zip.byName.get(opened.prefix + entry.file);
+      if (!zipEntry) { plan.missing.push(entry); continue; }
+      plan.packs.push({ entry, zipEntry });
+      plan.bytes += Number(entry.bytes) || Number(zipEntry.usize) || 0;
+    }
+    return plan;
+  }
+
   window.Trk = window.Trk || {};
   window.Trk.packCatalog = Object.assign(window.Trk.packCatalog || {}, {
     CATALOG_FORMAT, CATALOG_VERSION, sanitizeCatalog, sanitizeCatalogEntry,
     checkAgainstEntry, formatBytes, samePackAs, packKey, sha256Hex, versionDiffers,
+    /* 📦 trk235：セット（.stlib / .zip） */
+    SET_FORMAT, SET_LIMITS, SET_EXTS, looksLikeZip, sanitizeSetInfo, openSet, setEntryCheck, planSet,
   });
 
   /* ---------- 画面（設定 → 📦 カスタムパック → 📚 目録から入れる） ---------- */
@@ -289,6 +402,102 @@
     return !!r;
   }
 
+  /* 📦 trk235：セットの中の1本を、照合してから入れる。戻り値：入れたら true */
+  async function installSetEntry(opened, item) {
+    const Z = zipIO(), c = core();
+    const entry = item.entry, zipEntry = item.zipEntry;
+    const check = setEntryCheck(entry, zipEntry);
+    if (!check.ok) {
+      if (check.reason === "sizeMismatch") setRowNote(entry, tr("catalogSizeBad", { want:formatBytes(check.want), got:formatBytes(check.got) }), true);
+      else setRowNote(entry, tr("catalogSetEntryBig", { file:entry.file, max:formatBytes(SET_LIMITS.pack) }), true);
+      return false;
+    }
+    let blob;
+    try { blob = await Z.zipEntryBlob(opened.zip, zipEntry, SET_LIMITS.pack, true); }
+    catch (_) { setRowNote(entry, tr("catalogSetEntryBad", { name:entry.name }), true); return false; }
+    /* 画面の一覧や installPackFile は「名前」で扱うので、目録の file の末尾を付ける */
+    const packFile = namedFile(blob, String(entry.file).split("/").pop() || "pack.stpack");
+    if (entry.sha256) {
+      const got = await sha256Hex(packFile);
+      if (got == null) setRowNote(entry, tr("catalogNoHash"), false);
+      else if (got !== entry.sha256) { setRowNote(entry, tr("catalogHashBad"), true); return false; }
+      else setRowNote(entry, tr("catalogHashOk"), false);
+    }
+    const install = window.Trk.custom && window.Trk.custom.installPackFile;
+    if (!install) { if (c.setStatus) c.setStatus("packStatus", "packUnsupported"); return false; }
+    const r = await install(packFile);
+    if (r) { setRowNote(entry, tr("catalogInstalled", { name:entry.name }), false); return true; }
+    return false;
+  }
+
+  /* Blob に名前を付ける（File が無い環境でも installPackFile に渡せるように） */
+  function namedFile(blob, name) {
+    try { return new File([blob], name, { type:"application/zip" }); }
+    catch (_) {
+      const f = blob.slice(0, blob.size, "application/zip");
+      try { Object.defineProperty(f, "name", { value:name }); } catch (__) { /* 名前が付けられなくても中身で読める */ }
+      return f;
+    }
+  }
+
+  /* 📦 trk235：開いたセットを、一覧に出して入れる（入れる前に数と容量を出す） */
+  async function applySet(opened, file) {
+    const c = core();
+    current = opened.catalog;          /* 一覧にも同じ目録を出す（行ごとの状態・「使う」がそのまま効く） */
+    await refreshInstalled(); render();
+    const plan = planSet(opened);
+    const miss = plan.missing.length;
+    const sumKey = opened.release ? "catalogSetSummary" : "catalogSetSummaryNoRelease";
+    const vars = { name:opened.name, release:opened.release, n:plan.packs.length, size:formatBytes(plan.bytes), miss };
+    setSummary(tr(sumKey, vars), miss > 0);
+    for (const entry of plan.missing) setRowNote(entry, tr("catalogSetMissingNote", { file:entry.file }), true);
+    if (!plan.packs.length) { if (c.setStatus) c.setStatus("catalogStatus", "catalogSetEmpty"); return true; }
+    /* 入れる前に、何パック・何 MB 入るかを確かめてもらう（trk234 の容量表示と同じ考え） */
+    const fresh = plan.packs.filter(p => { const hit = installed.find(rec => samePack(p.entry, rec)); return !hit || versionDiffers(p.entry, hit); });
+    if (fresh.length && !confirm(tr("catalogSetConfirm", { n:fresh.length, size:formatBytes(plan.bytes) }))) {
+      if (c.setStatus) c.setStatus("catalogStatus", "catalogBundleNoPack");
+      return true;
+    }
+    let ok = 0, bad = 0, skip = 0, done = 0;
+    for (const item of plan.packs) {
+      done++;
+      const hit = installed.find(rec => samePack(item.entry, rec));
+      if (hit && !versionDiffers(item.entry, hit)) { skip++; setRowNote(item.entry, tr("catalogAlreadyIn"), false); continue; }
+      if (c.setStatus) c.setStatus("catalogStatus", "catalogSetProgress", { done, n:plan.packs.length, name:item.entry.name });
+      const doneOne = await installSetEntry(opened, item);
+      if (doneOne) ok++; else bad++;
+    }
+    await refreshInstalled(); render();
+    setSummary(tr("catalogSetDone", { ok, skip, bad, miss, size:formatBytes(plan.bytes) }), bad > 0 || miss > 0);
+    if (c.setStatus) c.setStatus("catalogStatus", bad || miss ? "catalogSetSome" : "catalogSetAll", { ok, skip, bad, miss });
+    return true;
+  }
+
+  /* 📦 trk235：セット（.stlib / .zip）を選んだときの入口 */
+  async function importSetFile(file, opts = {}) {
+    const c = core();
+    if (!file) return false;
+    if (!zipIO()) { if (c.setStatus) c.setStatus("catalogStatus", "catalogSetNoZip"); return false; }
+    if (c.setStatus) c.setStatus("catalogStatus", "catalogSetOpening", { name:String(file.name || "") });
+    const opened = await openSet(file);
+    if (!opened.ok) {
+      setSummary("", false);
+      if (c.setStatus) c.setStatus("catalogStatus", opened.reason, opened.vars || {});
+      return false;
+    }
+    return applySet(opened, file);
+  }
+
+  /* 📦 trk235：画面に落とされたファイルがセットなら、こちらで受け取る（パックの .zip は今までどおり）
+     戻り値：セットとして受け取ったら true（false なら呼び側が 1 本のパックとして扱う） */
+  async function tryImportSet(file) {
+    if (!file || !zipIO()) return false;
+    if (!SET_EXTS.test(String(file.name || ""))) return false;
+    const opened = await openSet(file);
+    if (!opened.ok) return false;             /* 目録が無い .zip はパックかもしれないので、黙って譲る */
+    return applySet(opened, file);
+  }
+
   /* 📥 trk231：目録＋パックをまとめて入れる（選んだファイルを名前で突き合わせる） */
   async function importBundle(files) {
     const c = core();
@@ -332,6 +541,13 @@
     if (input) input.addEventListener("change", () => { const f = input.files && input.files[0]; if (f) loadCatalogFile(f); input.value = ""; });
     const bundle = $("catalogBundle");
     if (bundle) bundle.addEventListener("change", () => { const fs = bundle.files ? [...bundle.files] : []; if (fs.length) importBundle(fs); bundle.value = ""; });
+    /* 📦 trk235：セット（.stlib / .zip）を 1 回選ぶだけで入れる */
+    const setInput = $("catalogSet");
+    if (setInput) setInput.addEventListener("change", () => {
+      const f = setInput.files && setInput.files[0];
+      if (f) importSetFile(f).catch(() => {});
+      setInput.value = "";
+    });
     /* 💾 trk234：この目録のぶんを、まとめて消す */
     const removeAll = $("catalogRemoveAll");
     if (removeAll) removeAll.addEventListener("click", () => { removeCatalogPacks().catch(() => {}); });
@@ -342,6 +558,12 @@
        ・custom.js は「1ファイルだけ」のときに先に受け取るので、まとめて落としたときはここへ来ます */
     addEventListener("drop", e => {
       const files = e.dataTransfer && e.dataTransfer.files ? [...e.dataTransfer.files] : [];
+      /* 📦 trk235：セットを 1 つだけ落としたとき（custom.js より先に来た場合の受け皿） */
+      if (files.length === 1 && SET_EXTS.test(String(files[0].name || ""))) {
+        e.preventDefault(); e.stopPropagation();
+        tryImportSet(files[0]).catch(() => {});
+        return;
+      }
       if (!files.some(f => /\.json$/i.test(f.name)) && files.length < 2) return;
       if (!files.some(f => /\.(json|stpack)$/i.test(f.name))) return;
       e.preventDefault(); e.stopPropagation();
@@ -355,4 +577,7 @@
   else init();
 
   window.Trk.packCatalog.loadFile = loadCatalogFile;
+  /* 📦 trk235：セット（.stlib / .zip）。js/custom.js のドロップ処理からも呼びます */
+  window.Trk.packCatalog.importSetFile = importSetFile;
+  window.Trk.packCatalog.tryImportSet = tryImportSet;
 })();
