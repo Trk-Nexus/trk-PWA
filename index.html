@@ -1150,6 +1150,21 @@
             <div id="packList"></div>
             <div id="packStatus" class="hint status"></div>
 
+            <!-- 📚 trk230：倉庫（trk-Avatar-Library）の目録を読んで、そこから入れる。外部へは取りに行きません -->
+            <details id="packCatalogPanel" class="subPanel">
+              <summary data-i18n="catalogTitle"></summary>
+              <div class="hint" data-i18n="catalogHint"></div>
+              <div class="miniActions">
+                <label class="fileBtn small">
+                  <input id="catalogFile" type="file" accept=".json,application/json" hidden>
+                  <span data-i18n="catalogOpen"></span>
+                </label>
+              </div>
+              <div class="hint" id="catalogSummary"></div>
+              <div id="catalogList"></div>
+              <div class="hint status" id="catalogStatus"></div>
+            </details>
+
             <details id="packBuilder" class="subPanel">
               <summary data-i18n="packBuild"></summary>
               <div class="hint" data-i18n="packBuildHint"></div>
@@ -2061,6 +2076,8 @@
 <script src="js/game.js"></script>
 <script src="js/render.js"></script>
 <script src="js/custom.js"></script>
+<!-- 📚 trk230：倉庫の目録からパックを入れる（custom.js の installPackFile を使う） -->
+<script src="js/pack-catalog.js"></script>
 <!-- ===== モード ===== -->
 <script src="js/truck.js"></script>
 <script src="js/modes.js"></script>

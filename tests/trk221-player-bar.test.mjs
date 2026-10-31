@@ -198,8 +198,8 @@ describe("trk221 見た目と配線", () => {
     const media = html.indexOf('<script src="js/media-player-mode.js"></script>');
     const bar = html.indexOf('<script src="js/player-bar.js"></script>');
     assert.ok(media > 0 && bar > media, "メディアプレーヤーの後に読む（窓口を使うため）");
-    /* 版ごとにキャッシュ名を上げる（今の名前は trk222。日付ではなく版の名前で見る） */
-    assert.ok(/const CACHE = "trk-v[0-9.]+-trk22[0-9]";/.test(swSrc), "キャッシュ名を版ごとに更新する");
+    /* 版ごとにキャッシュ名を上げる（日付ではなく trk の版の名前で見る。版が進んでも直さなくてよい） */
+    assert.ok(/const CACHE = "trk-v[0-9.]+-trk\d{3}";/.test(swSrc), "キャッシュ名を版ごとに更新する");
     assert.ok(swSrc.includes("index.html"), "殻の一覧は index.html から読む（ファイルを足しても直さなくてよい）");
   });
 

@@ -383,6 +383,8 @@ Imported images, text, bookmarks, notes, and jacket assignments are saved **only
 
 Like osu! skins, you can share many things in one file (`.stpack`). There is no server; share through Discord, cloud storage, or similar.
 
+**📚 Installing from a library catalog (trk230):** the distribution side lives in a separate repository, [trk-Avatar-Library](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk-Avatar-Library). Download its `catalog/index.json`, open Settings → 📦 Custom packs → **📚 Install from a catalog**, and pick that file: you get a list of the packs it offers (name, author, size, font count, license, first 8 hex digits of the sha256). Then choose the `.stpack` for a row. Nothing is fetched from the network — only the files you pick are read, so this works offline. The size and sha256 are checked before installing; a mismatch is not installed (on browsers without `crypto.subtle` the app says it will install without verification).
+
 - **Look packs:** skins, note colors / shapes / images, sound effects, VRM, motions, and mascot lines.
 - **Removing a pack puts things back:** the skin, note colors / shapes, effect strength, and SE-on that a pack set return to their values from before the pack (saved as `packPrev`, so it also works after a restart with the pack still on). **Items you changed yourself while the pack was on are kept** — your change is newer. Switching from pack A to pack B follows the same idea: what you changed yourself while A was on becomes the value B hands back to when it is removed (trk132).
 - **Song packs:** audio, charts, background images, BPM, chart creator names, and a creator's message (up to 50 songs per pack).
