@@ -1169,13 +1169,21 @@ core.$("packOffBtn").addEventListener("click", () => deactivatePack());
 core.$("packBuildBtn").addEventListener("click", () => { buildPack().catch(e => { console.error(e); core.setStatus("packStatus", "packBadZip"); }); });
 core.$("spBuildBtn").addEventListener("click", () => { buildSongPack().catch(e => { console.error(e); core.setStatus("spStatus", "packBadZip"); }); });
 on("language", renderPackList);
-addEventListener("drop", e => {      // .stpack / .zip は他の処理より先に受け取る
+addEventListener("drop", e => {      // .stpack / .zip / .stlib は他の処理より先に受け取る
   const list = e.dataTransfer && e.dataTransfer.files ? [...e.dataTransfer.files] : [];
   const f = list[0];
-  if (!f || !/\.(stpack|zip)$/i.test(f.name)) return;
+  if (!f || !/\.(stpack|zip|stlib)$/i.test(f.name)) return;
   /* 📦 trk231：目録＋パックをまとめて落としたときは、目録の側（js/pack-catalog.js）に任せる */
   if (list.length > 1 || list.some(x => /\.json$/i.test(x.name))) return;
   e.preventDefault(); e.stopImmediatePropagation();
+  /* 📦 trk235：セット（.stlib・中に目録が入った .zip）は、目録の側へ渡す。
+     セットでなければ false が返るので、今までどおり 1 本のパックとして入れる（.stpack は今までどおり） */
+  const cat = window.Trk && window.Trk.packCatalog;
+  if (/\.(stlib|zip)$/i.test(f.name) && cat && typeof cat.tryImportSet === "function") {
+    const fallback = () => { if (core.phase === "title") installAndUse(f); };
+    cat.tryImportSet(f).then(taken => { if (!taken) fallback(); }).catch(fallback);
+    return;
+  }
   if (core.phase !== "title") return;
   installAndUse(f);
 }, true);

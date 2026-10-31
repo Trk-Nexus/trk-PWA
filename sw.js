@@ -25,8 +25,11 @@
 
    🧭 trk225（2026-10-31）：下の再生バーの置き場所（画面のいちばん下／操作パネルの上）と、
    「隠さない」設定を足しました。js/player-bar.js・css/player-bar.css・index.html が変わったので、
-   これまでどおり版の名前を上げます。 */
-const CACHE = "trk-v2026.11.01-trk234";
+   これまでどおり版の名前を上げます。
+
+   📦 trk235（2026-11-01）：セット（`.stlib` / `.zip`）を選ぶだけで目録とパックをまとめて入れる
+   入口を足しました。js/pack-catalog.js・js/custom.js・index.html が変わったので、名前を上げます。 */
+const CACHE = "trk-v2026.11.01-trk235";
 const CACHE_PREFIX = "trk-";
 const SCOPE = new URL(self.registration.scope);
 const VENDOR_PREFIX = "assets/vendor/";
