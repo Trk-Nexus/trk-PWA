@@ -186,6 +186,9 @@ root.setProperty("--font", `${family}, ${現在の --font}`);
 
 ## 6. trk235（提案）：`.stlib`（セット）＝ダウンロード 1 回で配る
 
+> **2026-11-01：倉庫へ要件を渡しました**（[`LETTER-TRK235-2026-11-01.md`](LETTER-TRK235-2026-11-01.md)・Drive の `trk-Avatar-Library-手紙-2026-11-01`）。
+> 拡張子 `.stlib`・中身（`catalog/index.json`＋`packs/*.stpack`＋任意の `set.json`）・sha256 は中の `.stpack` の実バイト・上限 1 GiB／1 本 500 MB・受け入れ条件 A1〜A6 を提示し、Q1〜Q5 の返事待ちです。返事が来たら実装に入ります。
+
 ```
 trk-set-書体まるごと.stlib        ← ZIP
   catalog/index.json              ← 目録（2〜N件）
