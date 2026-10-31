@@ -798,6 +798,23 @@ function appendPackCreditCard(parent, card, packName = "") {
   body.append(download);
   d.append(body); parent.append(d);
 }
+/* 📦 trk231：目録の一覧からも「使う・外す・消す・入っているか」を扱えるように、小さな入口を出す。
+   消すときは、使っているパックなら先に外す（外し忘れ＝設定に packPrev が残る、を防ぐ）。 */
+async function listInstalledPacks() {
+  let recs = []; try { recs = await packDB.all(); } catch (_) { return []; }
+  return recs.map(r => ({ id:r.id, name:(r.manifest && r.manifest.name) || "", author:(r.manifest && r.manifest.author) || "",
+    bytes:r.size || 0, installedAt:r.installedAt || 0, active:packRuntime.id === r.id }));
+}
+async function deletePackById(id) {
+  if (!confirm(tr("confirmDeletePack"))) return false;
+  let rec = null; try { rec = await packDB.get(id); } catch (_) {}
+  const wasActive = packRuntime.id === id;
+  if (wasActive) deactivatePack();
+  try { await packDB.del(id); } catch (_) { return false; }
+  core.setStatus("packStatus", "packDeleted"); await renderPackList();
+  if (rec && rec.manifest && rec.manifest.songs) core.emit("packsChanged");
+  return true;
+}
 async function renderPackList() {
   const box = core.$("packList"); let recs = [];
   try { recs = await packDB.all(); } catch (_) {}
@@ -834,13 +851,7 @@ async function renderPackList() {
     const ex = core.el("button", "", tr("packExport")); ex.type = "button";
     ex.addEventListener("click", async () => core.downloadBlob(await packToZip(m, r.files || {}), `${core.safeName(m.name)}.stpack`));
     const del = core.el("button", "", tr("packDelete")); del.type = "button";
-    del.addEventListener("click", async () => {
-      if (!confirm(tr("confirmDeletePack"))) return;
-      if (packRuntime.id === r.id) deactivatePack();
-      try { await packDB.del(r.id); } catch (_) {}
-      core.setStatus("packStatus", "packDeleted"); await renderPackList();
-      if (m.songs) core.emit("packsChanged");
-    });
+    del.addEventListener("click", () => deletePackById(r.id));
     acts.append(ex, del); card.append(acts); box.append(card);
   }
 }
@@ -859,8 +870,11 @@ core.$("packBuildBtn").addEventListener("click", () => { buildPack().catch(e => 
 core.$("spBuildBtn").addEventListener("click", () => { buildSongPack().catch(e => { console.error(e); core.setStatus("spStatus", "packBadZip"); }); });
 on("language", renderPackList);
 addEventListener("drop", e => {      // .stpack / .zip は他の処理より先に受け取る
-  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  const list = e.dataTransfer && e.dataTransfer.files ? [...e.dataTransfer.files] : [];
+  const f = list[0];
   if (!f || !/\.(stpack|zip)$/i.test(f.name)) return;
+  /* 📦 trk231：目録＋パックをまとめて落としたときは、目録の側（js/pack-catalog.js）に任せる */
+  if (list.length > 1 || list.some(x => /\.json$/i.test(x.name))) return;
   e.preventDefault(); e.stopImmediatePropagation();
   if (core.phase !== "title") return;
   installAndUse(f);
@@ -885,7 +899,9 @@ window.syncNoteUI = syncNoteUI;
 window.updateMascotUI = updateMascotUI;
 /* 領域（window.Trk.custom）：公開名の正規の場所。旧名（window.X）は別名として残す（利用者の決定） */
 window.Trk = window.Trk || {};
-window.Trk.custom = Object.assign(window.Trk.custom || {}, { initPacks, noteImage, packDB, packRuntime, packIdentityFromManifest, skinShelf, syncNoteUI, updateMascotUI, installAndUse });
+window.Trk.custom = Object.assign(window.Trk.custom || {}, { initPacks, noteImage, packDB, packRuntime, packIdentityFromManifest, skinShelf, syncNoteUI, updateMascotUI, installAndUse,
+  /* 📦 trk231：目録の一覧（js/pack-catalog.js）から使う入口 */
+  activatePack, deactivatePack, deletePackById, listInstalledPacks });
 Object.defineProperty(window.Trk.custom, "getPackSongs", { configurable:true, get:() => getPackSongs, set:v => { getPackSongs = v; } });
 Object.defineProperty(window.Trk.custom, "installPackFile", { configurable:true, get:() => installPackFile, set:v => { installPackFile = v; } });
 Object.defineProperty(window.Trk.custom, "renderPackList", { configurable:true, get:() => renderPackList, set:v => { renderPackList = v; } });

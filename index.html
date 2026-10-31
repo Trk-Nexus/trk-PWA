@@ -1159,7 +1159,13 @@
                   <input id="catalogFile" type="file" accept=".json,application/json" hidden>
                   <span data-i18n="catalogOpen"></span>
                 </label>
+                <!-- 📥 trk231：目録＋パックをまとめて選ぶ（名前で突き合わせて、まとめて入れる） -->
+                <label class="fileBtn small">
+                  <input id="catalogBundle" type="file" accept=".json,.stpack,application/json" multiple hidden>
+                  <span data-i18n="catalogBundleOpen"></span>
+                </label>
               </div>
+              <div class="hint" data-i18n="catalogBundleHint"></div>
               <div class="hint" id="catalogSummary"></div>
               <div id="catalogList"></div>
               <div class="hint status" id="catalogStatus"></div>
