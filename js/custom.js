@@ -175,11 +175,14 @@ const SONG_EXT = ["mp3", "m4a", "ogg", "oga", "opus", "wav", "flac", "aac", "mp4
 /* 🔤 trk232：書体パック。同梱する書体は woff2（と woff）だけ。family は trk-Avatar-Library の契約と揃える
    （英数字と空白・. _ - の 40 文字まで）＝ 目録の検査を通ったパックが、そのままアプリでも通る */
 const FONT_EXT = ["woff2", "woff"], FONT_FAMILY = /^[A-Za-z0-9][A-Za-z0-9 ._-]{0,39}$/, PACK_FONT_MAX = 8;
-const PACK_LIMIT = { image:4, bg:8, sound:5, vrm:200, vrma:30, audio:250, chart:2, font:16 };
+/* 書体のライセンス全文（trk233）。trk-Avatar-Library の verify-pack と同じ .txt／.md だけ */
+const LICENSE_EXT = ["txt", "md"];
+/* 🔤 trk233：書体のライセンス全文（licenseFile）も、パックに入っているなら保存する（256KB まで） */
+const PACK_LIMIT = { image:4, bg:8, sound:5, vrm:200, vrma:30, audio:250, chart:2, font:16, license:0.25 };
 const MIME = { png:"image/png", webp:"image/webp", jpg:"image/jpeg", jpeg:"image/jpeg", wav:"audio/wav", mp3:"audio/mpeg",
   ogg:"audio/ogg", oga:"audio/ogg", opus:"audio/ogg", m4a:"audio/mp4", aac:"audio/aac", flac:"audio/flac", mp4:"video/mp4",
   webm:"video/webm", vrm:"model/gltf-binary", vrma:"model/gltf-binary", json:"application/json",
-  woff2:"font/woff2", woff:"font/woff" };
+  woff2:"font/woff2", woff:"font/woff", txt:"text/plain", md:"text/markdown;charset=utf-8" };
 const PATH_RE = /^[A-Za-z0-9_\-./]{1,120}$/;
 const safePath = (p, exts) => typeof p === "string" && PATH_RE.test(p) && !p.includes("..") && !p.startsWith("/") && exts.includes(core.extOf(p)) ? p : null;
 const pstr = (v, n) => typeof v === "string" ? v.trim().slice(0, n) : "";
@@ -260,6 +263,9 @@ function sanitizeManifest(raw) {
       seen.add(key);
       const f = { family, file, license, weight:w };
       if (style) f.style = style;
+      /* 🔤 trk233：ライセンス全文（任意）。パックの中の .txt／.md だけ（中身は入れるときに保存する） */
+      const licenseFile = safePath(r.licenseFile, LICENSE_EXT);
+      if (licenseFile) f.licenseFile = licenseFile;
       fonts.push(f);
     }
     if (fonts.length) m.fonts = fonts;
@@ -309,16 +315,21 @@ function packIdentityFromManifest(raw) {
   return { id:"p" + core.hashString(`${man.name}|${man.author}`).toString(36), man };
 }
 function manifestPaths(m) {
-  const out = [];
-  if (m.notes) for (const k of ["don", "ka"]) if (m.notes[k] && m.notes[k].image) out.push({ path:m.notes[k].image, kind:"image" });
-  if (m.sounds) for (const k of ["don", "ka"]) if (m.sounds[k]) out.push({ path:m.sounds[k], kind:"sound" });
-  if (m.mascot && m.mascot.vrm) out.push({ path:m.mascot.vrm, kind:"vrm" });
-  if (m.mascot && m.mascot.motion) out.push({ path:m.mascot.motion, kind:"vrma" });
-  for (const f of m.fonts || []) out.push({ path:f.file, kind:"font" });   /* 🔤 同梱の書体も、他のファイルと同じく保存する */
+  const out = [], seen = new Set();
+  /* 同じファイルを2回数えない（書体2つが同じ OFL.txt を指すことがある） */
+  const push = item => { if (seen.has(item.path)) return; seen.add(item.path); out.push(item); };
+  if (m.notes) for (const k of ["don", "ka"]) if (m.notes[k] && m.notes[k].image) push({ path:m.notes[k].image, kind:"image" });
+  if (m.sounds) for (const k of ["don", "ka"]) if (m.sounds[k]) push({ path:m.sounds[k], kind:"sound" });
+  if (m.mascot && m.mascot.vrm) push({ path:m.mascot.vrm, kind:"vrm" });
+  if (m.mascot && m.mascot.motion) push({ path:m.mascot.motion, kind:"vrma" });
+  for (const f of m.fonts || []) {
+    push({ path:f.file, kind:"font" });   /* 🔤 同梱の書体も、他のファイルと同じく保存する */
+    if (f.licenseFile) push({ path:f.licenseFile, kind:"license" });   /* 🔤 trk233：ライセンス全文も */
+  }
   for (const s of m.songs || []) {
-    out.push({ path:s.audio, kind:"audio" });
-    if (s.background) out.push({ path:s.background, kind:"bg" });
-    for (const p of Object.values(s.charts || {})) out.push({ path:p, kind:"chart" });
+    push({ path:s.audio, kind:"audio" });
+    if (s.background) push({ path:s.background, kind:"bg" });
+    for (const p of Object.values(s.charts || {})) push({ path:p, kind:"chart" });
   }
   return out;
 }
@@ -919,10 +930,24 @@ async function renderPackList() {
     if (m.creditCard) badges.append(core.el("span", "packBadge", tr("badgeCreditCard")));
     card.append(badges);
     appendPackCreditCard(card, m.creditCard, m.name);
-    /* 🔤 trk232：同梱の書体とライセンス（入れたあとでも確かめられる） */
+    /* 🔤 trk232：同梱の書体とライセンス（入れたあとでも確かめられる）
+       trk233：ライセンス全文（licenseFile）を、押したときだけ読んで出す（一覧を重くしない） */
     if (m.fonts && m.fonts.length) {
       const fd = core.el("details"); fd.append(core.el("summary", "", tr("packFontLabel")));
       for (const f of m.fonts) fd.append(core.el("div", "", tr("packFontLine", { family:f.family, license:f.license })));
+      const lf = (m.fonts.find(f => f.licenseFile) || {}).licenseFile;
+      if (lf) {
+        const btn = core.el("button", "small", tr("packLicenseOpen")); btn.type = "button";
+        const out = core.el("pre", "hint packLicenseText"); out.hidden = true;
+        btn.addEventListener("click", async () => {
+          if (!out.hidden) { out.hidden = true; btn.textContent = tr("packLicenseOpen"); return; }
+          const blob = r.files && r.files[lf];
+          if (!blob) out.textContent = tr("packLicenseMissing");
+          else { try { out.textContent = (await blob.text()).slice(0, 100000); } catch (_) { out.textContent = tr("packLicenseMissing"); } }
+          out.hidden = false; btn.textContent = tr("packLicenseClose");
+        });
+        fd.append(btn, out);
+      }
       card.append(fd);
     }
     if (m.license || m.url) {

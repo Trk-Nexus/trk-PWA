@@ -458,6 +458,8 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 .packBy{color:var(--ui-muted);font-size:13px}
 .packBadges{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
 .packBadge{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--ui-field);border:1px solid var(--ui-border)}
+/* 🔤 trk233：同梱の書体のライセンス全文（押したときだけ出る。長くても一覧を押し広げすぎない） */
+.packLicenseText{white-space:pre-wrap;word-break:break-word;max-height:16em;overflow:auto;font-size:.82em;line-height:1.45;margin:6px 0 0;padding:8px 10px;border-radius:10px;background:var(--ui-field);border:1px solid var(--ui-border)}
 .packCard details{font-size:13px;color:var(--ui-muted);margin-top:4px;word-break:break-all}
 .packCard details a{color:var(--ui-accent-ink,var(--ui-accent))}
 .packCreditCardBox{margin-top:8px;padding:8px 10px;border:1px solid rgba(255,209,102,.35);border-radius:10px;background:linear-gradient(135deg,rgba(255,209,102,.10),rgba(255,255,255,.025))}
