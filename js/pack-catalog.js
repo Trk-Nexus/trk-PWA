@@ -71,6 +71,10 @@
     return { ok:true, reason:"" };
   }
 
+  /* 目録の1件と、入っているパックが同じものか（名前と作者。大文字小文字と前後の空白は無視） */
+  const packKey = o => `${String((o && o.name) || "").trim().toLowerCase()}\u0000${String((o && o.author) || "").trim().toLowerCase()}`;
+  const samePackAs = (a, b) => packKey(a) === packKey(b);
+
   const formatBytes = n => {
     const v = Number(n) || 0;
     if (v < 1024) return `${v} B`;
@@ -92,29 +96,39 @@
   window.Trk = window.Trk || {};
   window.Trk.packCatalog = Object.assign(window.Trk.packCatalog || {}, {
     CATALOG_FORMAT, CATALOG_VERSION, sanitizeCatalog, sanitizeCatalogEntry,
-    checkAgainstEntry, formatBytes, sha256Hex,
+    checkAgainstEntry, formatBytes, samePackAs, packKey, sha256Hex,
   });
 
   /* ---------- 画面（設定 → 📦 カスタムパック → 📚 目録から入れる） ---------- */
   const $ = id => document.getElementById(id);
   let current = null;            /* 読み込んだ目録 */
+  let installed = [];            /* 入っているパック（window.Trk.custom.listInstalledPacks） */
+  const samePack = samePackAs;
+  const stateOf = entry => {
+    const hit = installed.find(rec => samePack(entry, rec));
+    if (!hit) return { key:"catalogStateNew", hit:null };
+    return hit.active ? { key:"catalogStateActive", hit } : { key:"catalogStateInstalled", hit };
+  };
+
+  async function refreshInstalled() {
+    const api = window.Trk && window.Trk.custom;
+    installed = api && typeof api.listInstalledPacks === "function" ? await api.listInstalledPacks() : [];
+  }
 
   function render() {
     const list = $("catalogList"), sum = $("catalogSummary");
     if (!list) return;
     list.textContent = "";
-    if (!current) {
-      if (sum) sum.textContent = "";
-      return;
-    }
+    if (!current) { if (sum) sum.textContent = ""; return; }
     if (sum) {
-      sum.textContent = current.packs.length
-        ? tr("catalogLoaded", { n: current.packs.length, name: current.name })
-        : tr("catalogEmpty");
+      const total = current.packs.length;
+      const n = current.packs.filter(e => installed.some(rec => samePack(e, rec))).length;
+      sum.textContent = total ? tr(n ? "catalogLoadedInstalled" : "catalogLoaded", { n: total, name: current.name, have: n }) : tr("catalogEmpty");
     }
     for (const e of current.packs) {
+      const st = stateOf(e);
       const card = document.createElement("div");
-      card.className = "packCard";
+      card.className = "packCard" + (st.hit && st.hit.active ? " active" : "");
       const head = document.createElement("div");
       head.className = "packHead";
       const b = document.createElement("b"); b.textContent = e.name; head.append(b);
@@ -124,77 +138,156 @@
       card.append(head);
       if (e.description) { const d = document.createElement("div"); d.className = "hint"; d.textContent = e.description; card.append(d); }
       const badges = document.createElement("div"); badges.className = "packBadges";
+      const stateBadge = document.createElement("span");
+      stateBadge.className = "packBadge"; stateBadge.textContent = tr(st.key); badges.append(stateBadge);
       if (e.fonts.length) { const t = document.createElement("span"); t.className = "packBadge"; t.textContent = tr("catalogFonts", { n: e.fonts.length }); badges.append(t); }
       if (e.license) { const t = document.createElement("span"); t.className = "packBadge"; t.textContent = e.license; badges.append(t); }
       if (e.sha256) { const t = document.createElement("span"); t.className = "packBadge"; t.textContent = "sha256 " + e.sha256.slice(0, 8); badges.append(t); }
-      if (badges.children.length) card.append(badges);
+      if (e.bytes && st.hit && st.hit.bytes && st.hit.bytes !== e.bytes) {
+        const t = document.createElement("span"); t.className = "packBadge"; t.textContent = tr("catalogStateOther"); badges.append(t);
+      }
+      card.append(badges);
+
+      /* 🔎 中身（目録に書かれていること＝入れる前に確かめられること） */
+      const det = document.createElement("details");
+      det.append(Object.assign(document.createElement("summary"), { textContent: tr("catalogDetails") }));
+      const dl = document.createElement("div"); dl.className = "hint";
+      dl.textContent = tr("catalogDetailsLine", { file: e.file, bytes: formatBytes(e.bytes), sha: e.sha256 || "—" });
+      det.append(dl);
+      for (const f of e.fonts) {
+        const line = document.createElement("div"); line.className = "hint";
+        line.textContent = tr("catalogFontLine", { family: f.family, license: f.license || "—", file: f.file || "—" });
+        det.append(line);
+      }
+      if (e.url) det.append(core().safeLink ? core().safeLink("", e.url) : Object.assign(document.createElement("div"), { textContent: e.url }));
+      card.append(det);
+
       const acts = document.createElement("div"); acts.className = "miniActions";
-      const label = document.createElement("label"); label.className = "fileBtn small";
-      const input = document.createElement("input");
-      input.type = "file"; input.accept = ".stpack"; input.hidden = true;
-      const span = document.createElement("span"); span.textContent = tr("catalogPick");
-      label.append(input, span);
-      input.addEventListener("change", () => { const f = input.files && input.files[0]; if (f) installFromCatalog(e, f); input.value = ""; });
-      acts.append(label); card.append(acts);
+      /* 入れる（未導入のとき） */
+      if (!st.hit) {
+        const label = document.createElement("label"); label.className = "fileBtn small";
+        const input = document.createElement("input");
+        input.type = "file"; input.accept = ".stpack"; input.hidden = true;
+        const span = document.createElement("span"); span.textContent = tr("catalogPick");
+        label.append(input, span);
+        input.addEventListener("change", () => { const f = input.files && input.files[0]; if (f) installFromCatalog(e, f); input.value = ""; });
+        acts.append(label);
+      } else {
+        /* 使う／外す（入っているとき） */
+        const use = document.createElement("button"); use.type = "button";
+        use.textContent = tr(st.hit.active ? "catalogInUse" : "catalogUse"); use.disabled = !!st.hit.active;
+        use.addEventListener("click", async () => {
+          const api = window.Trk.custom;
+          if (!api || typeof api.activatePack !== "function") return;
+          await api.activatePack(st.hit.id);
+          await refreshInstalled(); render();
+        });
+        acts.append(use);
+        const del = document.createElement("button"); del.type = "button"; del.textContent = tr("catalogRemove");
+        del.addEventListener("click", async () => {
+          const api = window.Trk.custom;
+          if (!api || typeof api.deletePackById !== "function") return;
+          if (await api.deletePackById(st.hit.id)) { await refreshInstalled(); render(); }
+        });
+        acts.append(del);
+      }
+      card.append(acts);
       const note = document.createElement("div"); note.className = "hint"; note.dataset.for = e.id; card.append(note);
       list.append(card);
     }
   }
 
+  function core() { return (window.Trk && window.Trk.core) || {}; }
   function setRowNote(entry, text, bad) {
     const list = $("catalogList"); if (!list) return;
     const node = list.querySelector(`[data-for="${CSS.escape(entry.id)}"]`);
     if (node) { node.textContent = text; node.style.color = bad ? "var(--don)" : ""; }
   }
+  function setSummary(text, bad) {
+    const sum = $("catalogSummary");
+    if (!sum) return;
+    sum.textContent = text; sum.style.color = bad ? "var(--don)" : "";
+  }
 
-  async function installFromCatalog(entry, file) {
-    const core = window.Trk && window.Trk.core;
+  /* 1件を照合して入れる。戻り値：入れたら true */
+  async function installFromCatalog(entry, file, opts = {}) {
+    const c = core();
     const check = checkAgainstEntry(entry, file);
     if (!check.ok) {
       if (check.reason === "sizeMismatch") {
         setRowNote(entry, tr("catalogSizeBad", { want: formatBytes(check.want), got: formatBytes(check.got) }), true);
-        return;
+        return false;
       }
-      if (check.reason === "nameMismatch" && !confirm(tr("catalogNameBad", { want: entry.file, got: file.name }))) return;
+      if (check.reason === "nameMismatch" && !opts.silent && !confirm(tr("catalogNameBad", { want: entry.file, got: file.name }))) return false;
     }
     if (entry.sha256) {
       const got = await sha256Hex(file);
       if (got == null) setRowNote(entry, tr("catalogNoHash"), false);
-      else if (got !== entry.sha256) { setRowNote(entry, tr("catalogHashBad"), true); return; }
+      else if (got !== entry.sha256) { setRowNote(entry, tr("catalogHashBad"), true); return false; }
       else setRowNote(entry, tr("catalogHashOk"), false);
     }
     const install = window.Trk.custom && window.Trk.custom.installPackFile;
-    if (!install) { if (core) core.setStatus("packStatus", "packUnsupported"); return; }
+    if (!install) { if (c.setStatus) c.setStatus("packStatus", "packUnsupported"); return false; }
     const r = await install(file);
     if (r) setRowNote(entry, tr("catalogInstalled", { name: entry.name }), false);
+    return !!r;
   }
 
-  async function loadCatalogFile(file) {
-    const core = window.Trk && window.Trk.core;
+  /* 📥 trk231：目録＋パックをまとめて入れる（選んだファイルを名前で突き合わせる） */
+  async function importBundle(files) {
+    const c = core();
+    const all = [...(files || [])];
+    const json = all.find(f => /\.json$/i.test(f.name));
+    const packs = all.filter(f => /\.stpack$/i.test(f.name));
+    if (!json) { if (c.setStatus) c.setStatus("catalogStatus", "catalogBundleNoJson"); return; }
+    await loadCatalogFile(json, { quiet: true });
+    if (!current) return;
+    await refreshInstalled(); render();
+    if (!packs.length) { if (c.setStatus) c.setStatus("catalogStatus", "catalogBundleNoPack"); return; }
+    let ok = 0, bad = 0, miss = 0;
+    for (const file of packs) {
+      const base = file.name.split("/").pop().toLowerCase();
+      const entry = current.packs.find(e => e.file.split("/").pop().toLowerCase() === base);
+      if (!entry) { miss++; continue; }
+      if (installed.some(rec => samePack(entry, rec))) { ok++; setRowNote(entry, tr("catalogAlreadyIn"), false); continue; }
+      const done = await installFromCatalog(entry, file, { silent: true });
+      if (done) ok++; else bad++;
+    }
+    await refreshInstalled(); render();
+    setSummary(tr("catalogBundleDone", { ok, bad, miss }), bad > 0);
+    if (c.setStatus) c.setStatus("catalogStatus", bad || miss ? "catalogBundleSome" : "catalogBundleAll", { ok, bad, miss });
+  }
+
+  async function loadCatalogFile(file, opts = {}) {
+    const c = core();
     try {
       const raw = JSON.parse(await file.text());
       const cat = sanitizeCatalog(raw);
-      if (!cat) { if (core) core.setStatus("packStatus", "catalogBad"); return; }
-      current = cat; render();
-      if (core) core.setStatus("packStatus", cat.packs.length ? null : "catalogEmpty");
-      if (cat.dropped > 0) core.setStatus("catalogStatus", "catalogDropped", { n: cat.dropped });
-    } catch (_) { if (core) core.setStatus("packStatus", "catalogBad"); }
+      if (!cat) { if (c.setStatus) c.setStatus("packStatus", "catalogBad"); return; }
+      current = cat;
+      await refreshInstalled(); render();
+      if (c.setStatus) c.setStatus("packStatus", cat.packs.length ? null : "catalogEmpty");
+      if (cat.dropped > 0 && c.setStatus) c.setStatus("catalogStatus", "catalogDropped", { n: cat.dropped });
+    } catch (_) { if (c.setStatus) c.setStatus("packStatus", "catalogBad"); }
   }
 
   function init() {
     const input = $("catalogFile");
     if (input) input.addEventListener("change", () => { const f = input.files && input.files[0]; if (f) loadCatalogFile(f); input.value = ""; });
-    /* 目録の .json を画面にドロップしても読める（.stpack のドロップは custom.js が先に受け取る） */
+    const bundle = $("catalogBundle");
+    if (bundle) bundle.addEventListener("change", () => { const fs = bundle.files ? [...bundle.files] : []; if (fs.length) importBundle(fs); bundle.value = ""; });
+    /* 目録の .json ＋ .stpack を画面にまとめてドロップしても読める（目録とパックがそろえば、そのまま入れる）
+       ・custom.js は「1ファイルだけ」のときに先に受け取るので、まとめて落としたときはここへ来ます */
     addEventListener("drop", e => {
       const files = e.dataTransfer && e.dataTransfer.files ? [...e.dataTransfer.files] : [];
-      const json = files.find(f => /\.json$/i.test(f.name));
-      if (!json) return;
+      if (!files.some(f => /\.json$/i.test(f.name)) && files.length < 2) return;
+      if (!files.some(f => /\.(json|stpack)$/i.test(f.name))) return;
       e.preventDefault(); e.stopPropagation();
-      loadCatalogFile(json);
+      if (files.some(f => /\.json$/i.test(f.name))) importBundle(files);
     }, true);
     /* ❓謎設定の「目録を読む」を開いたら、前回の目録を出しておく（保存はしない） */
     const panel = $("packCatalogPanel");
-    if (panel) panel.addEventListener("toggle", () => { if (panel.open && current) render(); });
+    if (panel) panel.addEventListener("toggle", async () => { if (panel.open && current) { await refreshInstalled(); render(); } });
   }
   if (document.readyState === "loading") addEventListener("DOMContentLoaded", init, { once: true });
   else init();
