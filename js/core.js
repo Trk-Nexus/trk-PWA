@@ -1431,7 +1431,10 @@ function applySkin(id, persist = true) {
   /* 🔤 小さな文字に使うアクセント色（入れ子の欄でも 4.5:1。足りているスキンは --ui-accent と同じ） */
   root.setProperty("--ui-accent-ink", window.Trk.data.accentInk(s.ui));
   root.setProperty("--stage-bg", s.game.stage); root.setProperty("--hud-text", s.game.ink);
-  root.setProperty("--hud-shadow", s.game.inkShadow); root.setProperty("--font", s.font || window.Trk.data.FONT_DEFAULT);
+  /* 🔤 書体パック（trk232）：パックが持ち込んだ書体を、いま使うスキンの --font の先頭に置く
+     （そのパックのスキンを使っているとき／スキンを持たない書体パックのとき。外すと空になる） */
+  const packFont = window.Trk.packFont && typeof window.Trk.packFont.forSkin === "function" ? window.Trk.packFont.forSkin(settings.skin) : "";
+  root.setProperty("--hud-shadow", s.game.inkShadow); root.setProperty("--font", (packFont ? packFont + "," : "") + (s.font || window.Trk.data.FONT_DEFAULT));
   /* 🔤 書体スキン（trk228）：見出しの書体・太さ・字間・行間。持っていないスキンは inherit（＝これまで通り） */
   const ty = s.type || null;
   root.setProperty("--font-title", (ty && ty.title) || "inherit");

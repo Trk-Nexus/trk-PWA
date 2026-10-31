@@ -172,10 +172,14 @@ const PACK_FORMAT = "shadow-taiko-pack", PACK_MB = 1048576, PACK_MAX = 500 * PAC
 const packCap = (max) => (core.storageLimitsIgnored() ? Infinity : max);
 const IMG_EXT = ["png", "webp", "jpg", "jpeg"], SND_EXT = ["wav", "mp3", "ogg", "m4a"];
 const SONG_EXT = ["mp3", "m4a", "ogg", "oga", "opus", "wav", "flac", "aac", "mp4", "webm"];
-const PACK_LIMIT = { image:4, bg:8, sound:5, vrm:200, vrma:30, audio:250, chart:2 };
+/* 🔤 trk232：書体パック。同梱する書体は woff2（と woff）だけ。family は trk-Avatar-Library の契約と揃える
+   （英数字と空白・. _ - の 40 文字まで）＝ 目録の検査を通ったパックが、そのままアプリでも通る */
+const FONT_EXT = ["woff2", "woff"], FONT_FAMILY = /^[A-Za-z0-9][A-Za-z0-9 ._-]{0,39}$/, PACK_FONT_MAX = 8;
+const PACK_LIMIT = { image:4, bg:8, sound:5, vrm:200, vrma:30, audio:250, chart:2, font:16 };
 const MIME = { png:"image/png", webp:"image/webp", jpg:"image/jpeg", jpeg:"image/jpeg", wav:"audio/wav", mp3:"audio/mpeg",
   ogg:"audio/ogg", oga:"audio/ogg", opus:"audio/ogg", m4a:"audio/mp4", aac:"audio/aac", flac:"audio/flac", mp4:"video/mp4",
-  webm:"video/webm", vrm:"model/gltf-binary", vrma:"model/gltf-binary", json:"application/json" };
+  webm:"video/webm", vrm:"model/gltf-binary", vrma:"model/gltf-binary", json:"application/json",
+  woff2:"font/woff2", woff:"font/woff" };
 const PATH_RE = /^[A-Za-z0-9_\-./]{1,120}$/;
 const safePath = (p, exts) => typeof p === "string" && PATH_RE.test(p) && !p.includes("..") && !p.startsWith("/") && exts.includes(core.extOf(p)) ? p : null;
 const pstr = (v, n) => typeof v === "string" ? v.trim().slice(0, n) : "";
@@ -236,7 +240,30 @@ function sanitizeManifest(raw) {
   const m = { format:PACK_FORMAT, version:1, name, author:pstr(raw.author, 40), description:pstr(raw.description, 200),
               license:pstr(raw.license, 400), url:/^https:\/\/[^\s"'<>]+$/.test(url) ? url : "" };
   const creditCard = sanitizeCreditCard(raw.creditCard); if (creditCard) m.creditCard = creditCard;
+  /* 📦 trk232：配る版（release）。目録の packs[].version と突き合わせて「更新あり」を出すのに使う */
+  const release = pstr(raw.release, 20);
+  if (/^\d{1,4}\.\d{1,4}(\.\d{1,4})?([-+][0-9A-Za-z.-]{1,12})?$/.test(release)) m.release = release;
   if (raw.skin && typeof raw.skin === "object") { const d = window.Trk.data.sanitizeSkinDef({ ...raw.skin, name }); if (d) m.skin = d; }
+  /* 🔤 trk232：同梱する書体。family・file・license がそろっているものだけ受け付ける
+     （file は .woff2／.woff・重複は family＋weight＋style で1つに） */
+  if (Array.isArray(raw.fonts)) {
+    const fonts = [], seen = new Set();
+    for (const r of raw.fonts.slice(0, PACK_FONT_MAX)) {
+      if (!r || typeof r !== "object") continue;
+      const family = typeof r.family === "string" ? r.family.trim() : "";
+      const file = safePath(r.file, FONT_EXT), license = pstr(r.license, 60);
+      if (!FONT_FAMILY.test(family) || !file || !license) continue;
+      const w = typeof r.weight === "number" && isFinite(r.weight) ? Math.min(900, Math.max(100, Math.round(r.weight / 100) * 100)) : 400;
+      const style = r.style === "italic" ? "italic" : "";
+      const key = `${family.toLowerCase()}|${w}|${style}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const f = { family, file, license, weight:w };
+      if (style) f.style = style;
+      fonts.push(f);
+    }
+    if (fonts.length) m.fonts = fonts;
+  }
   if (raw.notes && typeof raw.notes === "object") {
     const notes = {};
     for (const k of ["don", "ka"]) {
@@ -287,6 +314,7 @@ function manifestPaths(m) {
   if (m.sounds) for (const k of ["don", "ka"]) if (m.sounds[k]) out.push({ path:m.sounds[k], kind:"sound" });
   if (m.mascot && m.mascot.vrm) out.push({ path:m.mascot.vrm, kind:"vrm" });
   if (m.mascot && m.mascot.motion) out.push({ path:m.mascot.motion, kind:"vrma" });
+  for (const f of m.fonts || []) out.push({ path:f.file, kind:"font" });   /* 🔤 同梱の書体も、他のファイルと同じく保存する */
   for (const s of m.songs || []) {
     out.push({ path:s.audio, kind:"audio" });
     if (s.background) out.push({ path:s.background, kind:"bg" });
@@ -294,13 +322,55 @@ function manifestPaths(m) {
   }
   return out;
 }
-const hasLook = m => !!(m.skin || m.notes || m.sounds || m.fx || m.mascot);
+const hasLook = m => !!(m.skin || m.notes || m.sounds || m.fx || m.mascot || m.fonts);   /* 🔤 書体だけのパックも「使える」 */
 
 /* ============ パックの保存・追加・適用 ============ */
 /* ⚠ sizeKey/sizeOf を渡すと、合計を「index のキー（数値）だけ」で数えられる（Blob を復元しない）。
    sizeOf は「size を持たない古いレコード」の移行と、件数が食い違ったときの数え直しに使う。 */
 const packDB = core.idbStore("shadow_taiko_packs", "packs", { sizeKey:"size", sizeOf:packRecordBytes });
-const packRuntime = { id:null, captions:null, noteImages:[null, null], urls:[], skinId:null, hadSounds:false };
+const packRuntime = { id:null, captions:null, noteImages:[null, null], urls:[], skinId:null, hadSounds:false, fontFaces:[] };
+/* 🔤 trk232：パックが持ち込んだ書体（FontFace）。
+   ・読めた書体だけを使う（読めないものは数えて知らせる。パック自体は使える）
+   ・--font の先頭に置くのは core.applySkin（下の window.Trk.packFont.forSkin を呼ぶ）
+   ・外すときは document.fonts.delete ＋ objectURL の後片付け（packRuntime.urls は従来どおり） */
+async function registerPackFonts(fonts, files) {
+  const list = Array.isArray(fonts) ? fonts : [];
+  const faces = [];
+  if (!list.length) return { faces, failed:0 };
+  if (typeof FontFace !== "function" || !document.fonts) return { faces, failed:list.length };   /* 書体APIが無い環境 */
+  let failed = 0;
+  for (const f of list) {
+    const blob = files && files[f.file];
+    if (!blob) { failed++; continue; }
+    const url = URL.createObjectURL(blob);
+    try {
+      const face = new FontFace(f.family, `url(${url})`, { weight:String(f.weight || 400), style:f.style || "normal", display:"swap" });
+      await face.load();
+      document.fonts.add(face);
+      packRuntime.urls.push(url); packRuntime.fontFaces.push(face); faces.push(face);
+    } catch (_) { URL.revokeObjectURL(url); failed++; }
+  }
+  return { faces, failed };
+}
+function clearPackFonts() {
+  for (const face of packRuntime.fontFaces) { try { document.fonts.delete(face); } catch (_) {} }
+  packRuntime.fontFaces = [];
+}
+function packFontFamilies() {
+  const out = [];
+  for (const face of packRuntime.fontFaces) if (!out.includes(face.family)) out.push(face.family);
+  return out;
+}
+/* core.applySkin から呼ばれる入口。パックのスキンを使っているとき（またはスキンを持たない書体パックのとき）だけ返す */
+window.Trk.packFont = {
+  forSkin(id) {
+    if (!packRuntime.fontFaces.length) return "";
+    if (packRuntime.skinId && packRuntime.skinId !== id) return "";
+    return packFontFamilies().map(f => `"${f}"`).join(",");
+  },
+  count() { return packRuntime.fontFaces.length; },
+  families: packFontFamilies,
+};
 const noteImage = lane => { const im = packRuntime.noteImages[lane]; return im && im.complete && im.naturalWidth ? im : null; };
 function packRecordBytes(record) {
   if (!record || typeof record !== "object") return 0;
@@ -481,6 +551,9 @@ async function activatePack(id, { restore = false, skipConfirm = false } = {}) {
   if (!restore) { packSnapshot(); packRebase(); }   /* パックを当てる前の値を控える（A→Bの切り替えでは上書きせず、A中に自分で変えた項目だけ取り込む） */
   deactivatePack(false);
   packRuntime.id = id;
+  /* 🔤 書体パック（trk232）：スキンを当てる前に書体を読み込む（core.applySkin が --font の先頭に置ける） */
+  let fontFailed = 0;
+  if (m.fonts && m.fonts.length) { const r = await registerPackFonts(m.fonts, f); fontFailed = r.failed; }
   packRuntime.captions = (m.mascot && m.mascot.captions) || null;
   if (m.skin) {
     const sid = "pack_" + id, s = window.Trk.data.buildCustomSkin({ ...m.skin, mascot:m.mascot && m.mascot.vrm ? "vrm" : m.skin.mascot });
@@ -517,8 +590,12 @@ async function activatePack(id, { restore = false, skipConfirm = false } = {}) {
     whenVrmReady(api => api.loadFromPack(f[mm.vrm], { name:m.name, motion:mm.motion ? f[mm.motion] : null,
       motionBpm:mm.motionBpm, frame:mm.frame, turn:mm.turn, select:!restore }));
   }
+  /* 書体だけのパック（スキンを持たない）は、いまのスキンに書体を足す。スキンを当て直して --font を作り直す */
+  if (!m.skin && packRuntime.fontFaces.length) core.applySkin(core.settings.skin, false);
   core.settings.activePack = id; core.saveUserPrefs(); updateMascotUI();
   if (!restore) core.setStatus("packStatus", "packActivated", { name:m.name });
+  /* 読めなかった書体は、パックを使えたことを伝えたうえで知らせる（黙って効かないのを避ける） */
+  if (!restore && fontFailed) core.setStatus("packStatus", "packFontFailed", { n:fontFailed });
   await renderPackList();
   return true;
 }
@@ -539,6 +616,7 @@ function deactivatePack(persist = true) {
       }
       core.buildSkinGrid();
     }
+    clearPackFonts();   /* 🔤 書体を外す（document.fonts.delete）。URL の後片付けは下の forEach */
     packRuntime.urls.forEach(u => URL.revokeObjectURL(u));
     if (packRuntime.hadSounds) {
       /* 自分で読み込んだSEがあればそれに戻す。ただしパックの切り替え中（persist=false）は読み直さない
@@ -549,7 +627,8 @@ function deactivatePack(persist = true) {
     Object.assign(packRuntime, { id:null, captions:null, noteImages:[null, null], urls:[], skinId:null, hadSounds:false });
     if (window.ShadowTaikoVRM) window.ShadowTaikoVRM.unloadPack();
   }
-  if (persist) { core.settings.activePack = null; core.saveUserPrefs(); updateMascotUI(); core.setStatus("packStatus", "packDeactivated"); renderPackList(); }
+  if (persist) { core.settings.activePack = null; core.saveUserPrefs(); updateMascotUI(); core.setStatus("packStatus", "packDeactivated");
+    core.applySkin(core.settings.skin, false); renderPackList(); }   /* 外した書体が --font に残らないように作り直す */
 }
 async function installAndUse(file, skipConfirm = false) {
   const r = await installPackFile(file);
@@ -589,6 +668,7 @@ https://github.com/  (← 配布するときは、リポジトリのURLに書き
 ・曲：MP3／M4A／OGG／OPUS／WAV／FLAC／AAC／MP4／WebM（250MBまで）、譜面JSON（2MBまで）、1パック50曲まで
 ・譜面は MANUAL／TRUCK／ORBIT／STAGE／CATCH のどのモードでも共通で使われます。
 ・VRM：VRM 1.0 のみ（200MBまで）／モーション：.vrma（30MBまで）
+・書体：WOFF2／WOFF（1書体 16MBまで・8書体まで）。pack.json の "fonts" に family・file・license を書いてください。書体のライセンス全文（OFL.txt など）もパックに入れてください（trk232 以降、アプリが書体を読み込んで使います）。
 ・pack.json の creditCard で、作者名・肩書き・権利メモ・利用条件を名刺のように表示できます。contributors で最大12人の共同制作者も記載できます（画像は含めません）。
 ・書き出したパックには、creditCard から自動生成した CREDITS.md も入ります。trk! の一覧から共有用SVG名刺をダウンロードできます。
 ・自分に再配布の権利がある素材・曲だけを入れてください。
@@ -603,6 +683,7 @@ https://github.com/  (← 配布するときは、リポジトリのURLに書き
 - Songs: MP3/M4A/OGG/OPUS/WAV/FLAC/AAC/MP4/WebM (max 250 MB), chart JSON (max 2 MB), up to 50 songs per pack
 - Charts are shared by every mode: MANUAL / TRUCK / ORBIT / STAGE / CATCH.
 - VRM: VRM 1.0 only (max 200 MB) / Motion: .vrma (max 30 MB)
+- Fonts: WOFF2 / WOFF (max 16 MB each, up to 8). List family, file and license in "fonts" of pack.json, and include the full font license (e.g. OFL.txt) in the pack (trk232 and later load and use the fonts).
 - Use optional creditCard in pack.json to show the creator, role, rights note and terms like a name card. Add up to 12 contributors for co-creators (text only; no image asset).
 - Exported packs include a generated CREDITS.md; the pack list can also download a shareable SVG card.
 - Only include assets and songs you have the right to redistribute.
@@ -803,7 +884,8 @@ function appendPackCreditCard(parent, card, packName = "") {
 async function listInstalledPacks() {
   let recs = []; try { recs = await packDB.all(); } catch (_) { return []; }
   return recs.map(r => ({ id:r.id, name:(r.manifest && r.manifest.name) || "", author:(r.manifest && r.manifest.author) || "",
-    bytes:r.size || 0, installedAt:r.installedAt || 0, active:packRuntime.id === r.id }));
+    bytes:r.size || 0, installedAt:r.installedAt || 0, active:packRuntime.id === r.id,
+    release:(r.manifest && r.manifest.release) || "" }));   /* 📦 trk232：目録の version と比べて「更新あり」を出す */
 }
 async function deletePackById(id) {
   if (!confirm(tr("confirmDeletePack"))) return false;
@@ -833,9 +915,16 @@ async function renderPackList() {
      [m.mascot && m.mascot.motion, "badgeMotion"], [m.mascot && m.mascot.captions, "badgeCaptions"]]
       .forEach(([v, k]) => { if (v) badges.append(core.el("span", "packBadge", tr(k))); });
     if (m.songs) badges.append(core.el("span", "packBadge", tr("badgeSongs", { n:m.songs.length })));
+    if (m.fonts && m.fonts.length) badges.append(core.el("span", "packBadge", tr("badgeFonts", { n:m.fonts.length })));
     if (m.creditCard) badges.append(core.el("span", "packBadge", tr("badgeCreditCard")));
     card.append(badges);
     appendPackCreditCard(card, m.creditCard, m.name);
+    /* 🔤 trk232：同梱の書体とライセンス（入れたあとでも確かめられる） */
+    if (m.fonts && m.fonts.length) {
+      const fd = core.el("details"); fd.append(core.el("summary", "", tr("packFontLabel")));
+      for (const f of m.fonts) fd.append(core.el("div", "", tr("packFontLine", { family:f.family, license:f.license })));
+      card.append(fd);
+    }
     if (m.license || m.url) {
       const d = core.el("details"); d.append(core.el("summary", "", tr("packLicenseLabel")));
       if (m.license) d.append(core.el("div", "", m.license));

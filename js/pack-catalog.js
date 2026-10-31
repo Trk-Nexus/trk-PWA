@@ -75,6 +75,13 @@
   const packKey = o => `${String((o && o.name) || "").trim().toLowerCase()}\u0000${String((o && o.author) || "").trim().toLowerCase()}`;
   const samePackAs = (a, b) => packKey(a) === packKey(b);
 
+  /* 📦 trk232：目録の packs[].version と、入っているパックの release を比べる
+     （どちらかが無ければ「更新なし」。比べるだけなので、アプリは外へ取りに行かない） */
+  function versionDiffers(entry, hit) {
+    const from = str(hit && hit.release, 24), to = str(entry && entry.version, 24);
+    return from && to && from !== to ? { from, to } : null;
+  }
+
   const formatBytes = n => {
     const v = Number(n) || 0;
     if (v < 1024) return `${v} B`;
@@ -96,7 +103,7 @@
   window.Trk = window.Trk || {};
   window.Trk.packCatalog = Object.assign(window.Trk.packCatalog || {}, {
     CATALOG_FORMAT, CATALOG_VERSION, sanitizeCatalog, sanitizeCatalogEntry,
-    checkAgainstEntry, formatBytes, samePackAs, packKey, sha256Hex,
+    checkAgainstEntry, formatBytes, samePackAs, packKey, sha256Hex, versionDiffers,
   });
 
   /* ---------- 画面（設定 → 📦 カスタムパック → 📚 目録から入れる） ---------- */
@@ -104,9 +111,12 @@
   let current = null;            /* 読み込んだ目録 */
   let installed = [];            /* 入っているパック（window.Trk.custom.listInstalledPacks） */
   const samePack = samePackAs;
+  /* 📦 trk232：目録の version と、入っているパックの release が違えば「更新あり」 */
   const stateOf = entry => {
     const hit = installed.find(rec => samePack(entry, rec));
     if (!hit) return { key:"catalogStateNew", hit:null };
+    const diff = versionDiffers(entry, hit);
+    if (diff) return { key:"catalogStateUpdate", hit, update:true, vars:diff };
     return hit.active ? { key:"catalogStateActive", hit } : { key:"catalogStateInstalled", hit };
   };
 
@@ -123,7 +133,9 @@
     if (sum) {
       const total = current.packs.length;
       const n = current.packs.filter(e => installed.some(rec => samePack(e, rec))).length;
+      const newer = current.packs.filter(e => stateOf(e).update).length;
       sum.textContent = total ? tr(n ? "catalogLoadedInstalled" : "catalogLoaded", { n: total, name: current.name, have: n }) : tr("catalogEmpty");
+      if (newer) sum.textContent += " " + tr("catalogUpdates", { n: newer });
     }
     for (const e of current.packs) {
       const st = stateOf(e);
@@ -139,7 +151,7 @@
       if (e.description) { const d = document.createElement("div"); d.className = "hint"; d.textContent = e.description; card.append(d); }
       const badges = document.createElement("div"); badges.className = "packBadges";
       const stateBadge = document.createElement("span");
-      stateBadge.className = "packBadge"; stateBadge.textContent = tr(st.key); badges.append(stateBadge);
+      stateBadge.className = "packBadge"; stateBadge.textContent = tr(st.key, st.vars); badges.append(stateBadge);
       if (e.fonts.length) { const t = document.createElement("span"); t.className = "packBadge"; t.textContent = tr("catalogFonts", { n: e.fonts.length }); badges.append(t); }
       if (e.license) { const t = document.createElement("span"); t.className = "packBadge"; t.textContent = e.license; badges.append(t); }
       if (e.sha256) { const t = document.createElement("span"); t.className = "packBadge"; t.textContent = "sha256 " + e.sha256.slice(0, 8); badges.append(t); }
@@ -163,16 +175,22 @@
       card.append(det);
 
       const acts = document.createElement("div"); acts.className = "miniActions";
-      /* 入れる（未導入のとき） */
-      if (!st.hit) {
+      /* 入れる（未導入のとき）／入れ直す（更新があるとき） */
+      if (!st.hit || st.update) {
         const label = document.createElement("label"); label.className = "fileBtn small";
         const input = document.createElement("input");
         input.type = "file"; input.accept = ".stpack"; input.hidden = true;
-        const span = document.createElement("span"); span.textContent = tr("catalogPick");
+        const span = document.createElement("span");
+        span.textContent = st.update ? tr("catalogUpdatePick", st.vars) : tr("catalogPick");
         label.append(input, span);
-        input.addEventListener("change", () => { const f = input.files && input.files[0]; if (f) installFromCatalog(e, f); input.value = ""; });
+        input.addEventListener("change", async () => {
+          const f = input.files && input.files[0];
+          if (f) { await installFromCatalog(e, f); await refreshInstalled(); render(); }
+          input.value = "";
+        });
         acts.append(label);
-      } else {
+      }
+      if (st.hit) {
         /* 使う／外す（入っているとき） */
         const use = document.createElement("button"); use.type = "button";
         use.textContent = tr(st.hit.active ? "catalogInUse" : "catalogUse"); use.disabled = !!st.hit.active;

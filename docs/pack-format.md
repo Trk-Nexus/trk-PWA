@@ -27,6 +27,7 @@
 | 譜面JSON | 2 MiB |
 | VRM | 200 MiB |
 | VRMAモーション | 30 MiB |
+| 書体（WOFF2 / WOFF） | 16 MiB（1パック8書体まで） |
 
 設定の「容量の上限を無視」は、1パック500 MiB・インストール済み合計1 GiBの**保存量上限だけ**を解除します。上の種類ごとのファイル上限と1パック50曲の上限は、安全のため解除しません。ZIPの構造解析にも別の固定上限（1ファイル25万項目・中央目録64 MiB）があり、この設定では解除されません。
 
@@ -65,6 +66,7 @@ VRMはVRM 1.0を想定しています。MMDモデル（`.pmx` / `.pmd`）や `.v
 | `description` | string | 説明、200文字まで |
 | `license` | string | 曲・素材の利用条件やクレジット、400文字まで |
 | `url` | string | `https://` のURL、200文字まで |
+| `release` | string | 配る版（`1.2.3` の形・20文字まで）。目録の `version` と比べて「更新あり」を出します（trk232） |
 
 ### 権利カード（`creditCard`）
 
@@ -139,6 +141,31 @@ trk! の書き出し機能は、`pack.json` と `README.txt` に加えて、`cre
 ```
 
 画像の `shape` は、本体がその時点で受け付けるノーツ形状だけが有効です。画像や音声の拡張子と、ZIP内の実ファイル名は一致させてください。
+
+### 書体（`fonts`・trk232）
+
+書体を同梱すると、パックを使っている間の**本文の書体**が同梱の書体になります（外すと元に戻ります）。
+
+```json
+{
+  "fonts": [
+    { "family": "TrkZenMaru", "file": "fonts/ZenMaruGothic-Regular.woff2", "weight": 400, "license": "OFL-1.1" },
+    { "family": "TrkZenMaru", "file": "fonts/ZenMaruGothic-Bold.woff2",    "weight": 700, "license": "OFL-1.1" }
+  ]
+}
+```
+
+| 項目 | 型 | 内容 |
+|---|---|---|
+| `family` | string | 必須。英数字と空白・`.` `_` `-` の 40 文字まで（例 `TrkZenMaru`） |
+| `file` | string | 必須。パック内の `.woff2` / `.woff`（1書体 16 MiB まで） |
+| `license` | string | 必須。ライセンス名（例 `OFL-1.1`）。60文字まで |
+| `weight` | number | 任意。100〜900（100単位に丸め）。既定は 400 |
+| `style` | string | 任意。`italic` のときだけ書きます（既定は通常） |
+
+- 同じ `family` ＋ `weight` ＋ `style` の重複は1つにまとめます。1パック8書体までです。
+- **書体のライセンス全文**（OFL なら `OFL.txt`）もパックに入れてください。アプリが保存・表示するのは、宣言された書体ファイルと `family`・`license` の名前だけです。
+- 配る前に、書体の作者の規約（再配布・埋め込みの可否）を確認してください。
 
 ### VRMとモーション
 
