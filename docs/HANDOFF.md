@@ -1,6 +1,6 @@
 # trk! 開発引き継ぎ
 
-> **最終更新：2026-11-01**（`trk-PWA` の **trk232**）。アプリ本体は trk232（trk231 の**📥 まとめて入れる／導入済みの表示／その場で使う・消す／入れる前に中身を見る**に加えて、**🔤 書体パックが本当に効く（`FontFace` で読み込み・外すと片付け）／目録の版と比べて「更新あり」**）、`npm run check` は **1017 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.01-trk232`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
+> **最終更新：2026-11-01**（`trk-PWA` の **trk233**）。アプリ本体は trk233（trk232 の**🔤 書体パック**／**📥 まとめて入れる**に加えて、**書体のライセンス全文（`licenseFile`）を入れて読んで出せる**）、`npm run check` は **1028 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.01-trk233`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
 >
 > 現在の仕様・守る条件・未確認事項の要約です。過去の詳細な変更履歴・検証記録は [`HANDOFF-ARCHIVE.md`](HANDOFF-ARCHIVE.md)、利用者向け仕様は [`../README.md`](../README.md) と [`guide/`](guide/)、権利表記は [`../NOTICE.md`](../NOTICE.md)、品質・安全確認は [`QUALITY-CHECKS.md`](QUALITY-CHECKS.md) と [`SECURITY.md`](SECURITY.md)。**レビューと実機確認のお願いは [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md)**、その指摘への対応は [`REVIEW-RESPONSE-2026-10-31.md`](REVIEW-RESPONSE-2026-10-31.md)、trk223 を実際の端末で見る手順は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)。
 
@@ -24,6 +24,7 @@
 
 | 版 | trk番号 | 中身（1行） | 日付 |
 | --- | --- | --- | --- |
+| （trk-PWA） | trk233 | 書体のライセンス全文（`fonts[].licenseFile`）を入れて・読んで・出す（倉庫のお願い L7 の受け皿）＋書体パック 14 種を作成 | 2026-11-01 |
 | （trk-PWA） | trk232 | 書体パックを本物に（`fonts` の検証・保存・`FontFace` で読み込み・外したら片付け）＋`release` を保って目録の版と比べ「更新あり」 | 2026-11-01 |
 | （trk-PWA） | trk231 | 倉庫まわりを「入れやすい・確かめやすい・消しやすい」に（📥 まとめて入れる・導入済みの表示・使う/消す・🔎 中身）＋開発案 | 2026-11-01 |
 | （trk-PWA） | trk230 | 倉庫の目録（`catalog/index.json`）からパックを入れる（外部へ取りに行かない・sha256 照合） | 2026-10-31 |
@@ -69,8 +70,8 @@
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ） |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1017 pass / 0 fail**（trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件・trk229 の18件・trk230 の15件・trk231 の12件・trk232 の23件を追加）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.01-trk232@<スコープ>`**（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| テスト | `npm run check` **1028 pass / 0 fail**（trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件・trk229 の18件・trk230 の15件・trk231 の12件・trk232 の23件・trk233 の11件を追加）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.01-trk233@<スコープ>`**（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | 新リポジトリ `trk-Standalone` はまだ空。Pages の有効化と初回デプロイは未実施 |
 
@@ -575,7 +576,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | 📦 まるごとバックアップ・ZIP CRC・復元 | `js/backup.js`（歌詞・字幕キーの許可、アドオン概要の確認、復元アドオンの無効化）、`js/zip-io.js`、`js/custom.js`（.stpackのストリーム読書き・`packIdentityFromManifest`）、`tests/backup-codec.test.mjs`、`tests/backup-restore.test.mjs`、`tests/pack-identity.test.mjs`、`tests/pack-zip-stream.test.mjs`、`tests/zip-io.test.mjs`、`tools/check-security.mjs` |
 | CBZ／ZIP書斎のページ展開上限 | `js/study-room.js`（`studyAlbumLimits`・`studyImportArchiveBook`）、`tests/storage-limits.test.mjs` |
 | Endfield楽曲台帳・曲名fixture・検査 | `docs/ARKNIGHTS-ENDFIELD-MUSIC.md`、`tools/endfield-zeroth-directive-tracklist.json`、`tools/endfield-msr-albums-tracklist.json`、`tools/check-repo.mjs` |
-| Service Worker | `sw.js`（**このリポジトリの現行cache名：`trk-v2026.11.01-trk232`＝trk232。名前に `@<スコープ>` が付きます（`/trk-PWA/` なら `@trk-pwa`）**。上流の配布版は `trk-v2026.10.29-trk219`＝trk219。**配布ZIP（1.1.7）は `trk218`**、配布済みの 1.1.6 は `trk217`、1.1.5 は `trk216`、1.1.4 は `trk214`。1.1.2 は `trk211`、1.1.1 は `trk210`、1.1.0 は `trk208`、1.0.9 は `trk207`。アプリ本体が変わらない版では cache 名を上げない） |
+| Service Worker | `sw.js`（**このリポジトリの現行cache名：`trk-v2026.11.01-trk233`＝trk233。名前に `@<スコープ>` が付きます（`/trk-PWA/` なら `@trk-pwa`）**。上流の配布版は `trk-v2026.10.29-trk219`＝trk219。**配布ZIP（1.1.7）は `trk218`**、配布済みの 1.1.6 は `trk217`、1.1.5 は `trk216`、1.1.4 は `trk214`。1.1.2 は `trk211`、1.1.1 は `trk210`、1.1.0 は `trk208`、1.0.9 は `trk207`。アプリ本体が変わらない版では cache 名を上げない） |
 | 🚪 メディアプレイヤーの抜け方（trk206） | `js/media-player-mode.js`（`mediaExitPlan`・`closeMedia`）、`js/library.js`（`previewContinue`）、`js/core.js`（`mediaReloadOnExit`）、`js/i18n-options.js`＋`index.html`（❓謎設定）、`tests/trk206-media-exit.test.mjs` |
 | 📦 配布ZIPの組み立て（1.0.8〜・現在 1.1.7） | `tools/prepare-release.mjs`（`npm run release`。`index.html`＋`README.txt`＋`trk-files/` に組み、形を検査してZIPにする）、`release/README.txt`（配布用のかんたん起動。`--readme` を省くとこれが入る。**版と `README-1.x.y.md` の名前は `--version` とそろえる**）、`tests/release-layout.test.mjs`（形・時刻・README の版） |
 | 📂 フォルダー共有の共通部品（trk208） | `js/shared-folders.js`（`window.TrkSharedFolders`＝`plan`／`uniqueLabel`／`mergeScans`／`walk`／`pathParts`／`readFileAt`。DOM・IndexedDB・書き込みなし）、`js/library.js`（登録簿 `"folders"`・`addSharedFolder`／`readSharedFolders`／`restoreSharedFolders`／`folderAutoKickShared`／`removeSharedFolder`／`renderSharedFolderList`）、`index.html`（`#libShareVideoBtn`・`#libSharedFolderList`）、`tests/trk208-shared-folders.test.mjs` |
@@ -599,6 +600,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | ▶🎲 バーの置き場所と「隠さない」（trk225） | `js/player-bar.js`（`barOffset`・`barPos`・`barLocked`・`measure()`）、`css/player-bar.css`（`body.trk-playerbar-at-bottom .trk-mobile-nav { bottom: var(--trk-playerbar-h) }`）、`js/core.js`（`playerBarPos`・`playerBarLock`）、`tests/trk225-player-bar-settings.test.mjs`、[`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) |
 | 🎵 バーをプレイヤーにする（trk226） | `js/player-bar.js`（`seekEnabled`・`shufflePick`・`nextRepeat`・`panelAllowed`・`snapshot`・`seekToRatio`・`playPause`・🎲🔁⧉ のボタン）、**`js/player-panel.js`（新規）**（Document PiP／小窓の鏡パネル・`Trk.playerPanel`）、`js/media-player-mode.js`（`announceMediaOptions`／`pullMediaOptions`）、`js/library.js`（`previewRestartFor`）、`js/core.js`（`playerBarSeekLock`）、`css/player-bar.css`、`tests/trk226-player-bar-player.test.mjs`、[`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) |
 | ❓ リピートの段・シャッフルの範囲（trk227） | `js/player-bar.js`（`repeatChoices`・`repeatOneOnly`・`shuffleInList`・`nextRepeat(value, oneOnly)`）、`js/library.js`（`shufflePool`＝表示順の一覧か全曲）、`js/media-player-mode.js`（`repeatOptions`・`fillRepeatOptions`・`shuffleCandidates`）、`js/ui-prefs.js`・`index.html`（2つの欄）、`tests/trk227-repeat-shuffle-options.test.mjs`、[`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) |
+| 🔤 書体のライセンス全文（trk233） | `js/custom.js`（`fonts[].licenseFile` の検証・`LICENSE_EXT`・`PACK_LIMIT.license`＝256KB・`manifestPaths` の重複除去と `license` 種別・一覧の「📄 ライセンス全文を読む」）、`js/pack-catalog.js`（目録の `fonts[].licenseFile` を落とさない・🔎 中身に全文のファイル名）、`css/style.css`（`.packLicenseText`）、`js/i18n.js`（4キー×4言語）、`tests/trk233-font-license.test.mjs`（11件）、書体パック 14 種の記録 [`FONT-PACKS-TRK233-2026-11-01.md`](FONT-PACKS-TRK233-2026-11-01.md) |
 | 🔤 書体パックを本物に（trk232） | `js/custom.js`（`fonts`／`release` の検証、`FONT_EXT`／`FONT_FAMILY`／`PACK_LIMIT.font`、`manifestPaths` に `font`、`registerPackFonts`／`clearPackFonts`／`window.Trk.packFont`、一覧の「書体 n」・同梱書体の表示）、`js/core.js`（`applySkin` が `--font` の先頭に足す）、`js/pack-catalog.js`（`versionDiffers`・「更新あり」・入れ直す入口）、`js/i18n.js`（7キー×4言語）、`tests/trk232-pack-fonts.test.mjs`（23件）、[`LIBRARY-UX-PLAN-2026-11-01.md`](LIBRARY-UX-PLAN-2026-11-01.md) §4 |
 | 📥 倉庫まわりを「入れやすい・確かめやすい・消しやすい」に（trk231） | `js/pack-catalog.js`（`importBundle`・状態バッジ・使う/消す・🔎 中身・`samePackAs`）、`js/custom.js`（`listInstalledPacks`／`deletePackById` の公開、ドロップの受け渡し）、`index.html`（`#catalogBundle`）、`js/i18n.js`（19キー×4言語）、`tests/trk231-catalog-bundle.test.mjs`（12件）、開発案 [`LIBRARY-UX-PLAN-2026-11-01.md`](LIBRARY-UX-PLAN-2026-11-01.md) |
 | 📚 倉庫の目録から入れる（trk230） | `js/pack-catalog.js`（新規・`sanitizeCatalog`／`checkAgainstEntry`／`sha256Hex` と画面）、`index.html`（`#packCatalogPanel`・`<script src="js/pack-catalog.js">`）、`js/i18n.js`（16キー×4言語）、`tests/trk230-catalog-import.test.mjs`（15件）、[`LIBRARY-TRK230-2026-10-31.md`](LIBRARY-TRK230-2026-10-31.md) |
@@ -614,7 +616,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 
 | 検査 | 結果 | 範囲・注意 |
 |---|---|---|
-| `npm run check` | **1017 pass / 0 fail** | trk219 の746 から、trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件・trk229 の18件・trk230 の15件・trk231 の12件・trk232 の23件を足して 1017。Static 0 failure・0 warning・Security 64/0。`TZ=Asia/Tokyo`・`TZ=America/Los_Angeles` でも同じ（F1 の再発防止） |
+| `npm run check` | **1028 pass / 0 fail** | trk219 の746 から、trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件・trk229 の18件・trk230 の15件・trk231 の12件・trk232 の23件・trk233 の11件を足して 1028。Static 0 failure・0 warning・Security 64/0。`TZ=Asia/Tokyo`・`TZ=America/Los_Angeles` でも同じ（F1 の再発防止） |
 | 書体（フォント）スキン（trk228） | **OK（9件）** | `tests/type-skins.test.mjs`。9 種の登録・カテゴリ `type`・見本の文字（和文＋欧文）・**外部URL／`@font-face` を含まない**こと・太さ／字間／行間／大文字化の値・`catType` の 4 言語・棚カードへの書体の受け渡し・`applySkin` の `--font-*`・既存 44 種に `type` が付かないこと。配色は `tests/skin-contrast.test.mjs` が 53 種すべてで AA を検査 |
 | リピートの段・シャッフルの範囲（trk227） | **OK（17件）** | `tests/trk227-repeat-shuffle-options.test.mjs`。`nextRepeat` の段（3段／2段・全曲は「なし」へ）、オンで 🔁 が1曲⇄なしを往復し全曲にならないこと、シャッフル中の ⏭ が一覧の中だけから選ぶこと（オフなら外も選ぶ）、`shufflePool` の写し、再生画面の選択肢が2つになること、4言語 × 4キー |
 | 下の再生バーを触ってシーク（trk226） | **OK（27件）** | `tests/trk226-player-bar-player.test.mjs`。触れる条件（画面・読み込み・長さ・謎設定）の純粋関数、謎設定オンで `currentTime` が動かないこと、`previewRestartFor`、`shufflePick` の乱数の位置、🎲🔁 の設定共有と合図、別窓の組み立て（11部品）と描き直し・小窓が二重に開かないこと・PC型だけ ⧉ を出すこと |
@@ -774,6 +776,17 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **🔤 trk233：書体のライセンス全文を、入れて・読んで・出す（2026-11-01）**：倉庫が trk232 のお願い **L7**（`fonts[].licenseFile`）に応えてくれたので、アプリ側で受け取りました。あわせて、倉庫に置ける**書体パック 14 種**を作りました（[`FONT-PACKS-TRK233-2026-11-01.md`](FONT-PACKS-TRK233-2026-11-01.md)）。
+  - **受け取る**：`pack.json` の `fonts[].licenseFile`（パック内の `.txt`／`.md`・倉庫の `verify-pack` と同じ規則）を検証して保ちます。形の合わないものは**その項目だけ**落とし、書体そのものは残します。
+  - **保存する**：全文も他のファイルと同じく保存（1ファイル 256KB まで・`PACK_LIMIT.license`）。`manifestPaths` は**同じファイルを2回数えない**ようにしました（書体2つが同じ `fonts/OFL.txt` を指すのが普通のため）。
+  - **出す**：パック一覧の「🔤 同梱の書体」の中に **「📄 ライセンス全文を読む」**。押したときだけ読む（一覧を重くしない）、16em の枠の中でスクロール、閉じるボタンで戻ります。全文が入っていない古い版のパックでは「入れ直すと入ります」と案内します。
+  - **目録**：`packs[].fonts[].licenseFile` を落とさず、🔎 中身に「ライセンス全文: fonts/OFL.txt」と出します。
+  - **書体パック 14 種**（`docs/FONT-PACKS-TRK233-2026-11-01.md`）：OFL-1.1 の日本語書体（Zen Kaku Gothic New・M PLUS Rounded 1c・Klee One・Yusei Magic・Hachi Maru Pop・DotGothic16・Shippori Mincho・Zen Old Mincho・Dela Gothic One・Rampart One・RocknRoll One・Potta One・Kaisei Decol・Mochiy Pop One）を、**1書体（または2ウェイト）＝1パック**に。全部に `font` 宣言・`licenseFile`・見た目（5色）つき。合計 **27,765,040 B（26.5 MB）**。倉庫の `build-pack`／`verify-pack` に **14/14 合格**、アプリの `sanitizeManifest` でも 14/14 通ることを確認。
+  - **置き場所**：アプリ本体には入れず（26.5 MB のため）、Drive と倉庫で配ります。組み立て方は `tools/build-pack.mjs`（フォルダが正・決定的）で、`.stpack` もこちらで作りました。
+  - `tests/trk233-font-license.test.mjs`（**11件**）。`npm run check` は **1028 pass / 0 fail**。`sw.js` の cache は **`trk-v2026.11.01-trk233@<スコープ>`**。
+  - **未確認**：実ブラウザ・実端末での「全文の表示」と「14 種を入れたときの見え方」。この環境にブラウザがありません。
+  - **次の段**：trk234＝容量の表示・まとめて消す／trk235＝`.stlib`（目録＋パックを1ファイルに）。
 
 - **🔤 trk232：書体パックが本当に効くようにする（2026-11-01）**：倉庫の主役（書体）が、目録に「書体2」と出るだけで**実際には何も変わっていなかった**のを直しました。利用者の「開発案を整える」の第2弾です（[`LIBRARY-UX-PLAN-2026-11-01.md`](LIBRARY-UX-PLAN-2026-11-01.md) §4・F7／F8）。
   - **受け取る側**：`pack.json` の `fonts[]`（`family`・`file`・`license`・`weight`・`style`）を検証して保つ。`file` は **woff2／woff**・`family` は英数字と空白 `. _ -` の 40 文字（倉庫の `verify-pack` と同じ規則）・`license` は必須・8書体まで・1書体 16MB まで・同じ family＋weight＋style は1つに。書体も**他のファイルと同じように保存**します（それまでは `manifestPaths` に載らず、2.8MB を落としても 0 バイトしか残りませんでした）。

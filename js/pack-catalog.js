@@ -37,6 +37,7 @@
     const sha256 = str(raw.sha256, 64).toLowerCase();
     const fonts = (Array.isArray(raw.fonts) ? raw.fonts : []).slice(0, 20).map(f => ({
       family: str(f && f.family, 80), file: str(f && f.file, 120), license: str(f && f.license, 80),
+      licenseFile: str(f && f.licenseFile, 120),   /* 🔤 trk233：ライセンス全文のファイル名（目録に載る） */
     })).filter(f => f.family);
     return {
       id, name, author: str(raw.author, 80), version: str(raw.version, 24), file,
@@ -170,6 +171,11 @@
         const line = document.createElement("div"); line.className = "hint";
         line.textContent = tr("catalogFontLine", { family: f.family, license: f.license || "—", file: f.file || "—" });
         det.append(line);
+        if (f.licenseFile) {
+          const lic = document.createElement("div"); lic.className = "hint";
+          lic.textContent = tr("catalogLicenseFile", { file: f.licenseFile });
+          det.append(lic);
+        }
       }
       if (e.url) det.append(core().safeLink ? core().safeLink("", e.url) : Object.assign(document.createElement("div"), { textContent: e.url }));
       card.append(det);
