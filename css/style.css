@@ -394,6 +394,22 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 .skinChip:hover{filter:brightness(1.15)}
 .skinChip.on{background:var(--ui-accent);color:var(--ui-on-accent);border-color:var(--ui-accent)}
 #skinShelfCount{color:var(--ui-muted);font-weight:600}
+/* 🧺 trk229：棚のさがす・並べる・整理 */
+#skinFind{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin:10px 0 0}
+.skinFindBox{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ui-muted);font-weight:700}
+.skinFindBox input,.skinFindBox select{width:100%;padding:7px 10px;border-radius:10px;border:1px solid var(--ui-border);
+  background:var(--ui-field);color:var(--ui-text);font:inherit;font-size:13px}
+#skinGrid:empty{display:none}
+#skinManageList{display:flex;flex-direction:column;gap:2px;max-height:260px;overflow:auto;margin-top:8px}
+.skinRow{display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:8px;padding:5px 6px;
+  border-bottom:1px dashed var(--ui-border);font-size:13px}
+.skinRow b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.skinRowMeta{color:var(--ui-muted);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.skinRow.isHidden{opacity:.55}
+.skinRow .miniBtn{min-width:34px;padding:4px 8px;border-radius:9px;border:1px solid var(--ui-border);
+  background:var(--ui-field);color:var(--ui-text);font:inherit;font-size:14px;line-height:1.2;cursor:pointer}
+.skinRow .miniBtn[aria-pressed="true"]{border-color:var(--ui-accent);background:var(--ui-soft)}
+@media (max-width:760px){ #skinFind{grid-template-columns:1fr} }
 .skinCard{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:11px 13px;border-radius:14px;text-align:left;
   font-family:var(--sk-font,inherit);
   border:2px solid var(--sk-border);background:var(--sk-bg);color:var(--sk-text)}
