@@ -172,7 +172,9 @@ describe("trk218 配線", () => {
   test("設定の保存・読込・初期化に trkListed と trkFixedNotice がある", () => {
     assert.ok(coreSrc.includes("trkListed: cleanTrkRemoved(prefs.trkListed)"));
     assert.ok(coreSrc.includes("trkFixedNotice: prefs.trkFixedNotice === 1 ? 1 : 0"));
-    assert.ok(coreSrc.includes('if (hasImported("trkListed") && Array.isArray(data.trkListed))'));
+    /* trk247：読み込みは項目ごとに attempt で包む（1項目の例外で全体を止めない）ので、形が変わった */
+    assert.ok(coreSrc.includes('attempt("trkListed", () => { if (!(hasImported("trkListed") && Array.isArray(data.trkListed))) return false;'),
+      "trkListed は ID を検証してから代入する（attempt の中）");
     assert.ok(coreSrc.includes("settings.trkListed = [];"));
     assert.ok(coreSrc.includes("settings.trkFixedNotice = 0;"));
   });

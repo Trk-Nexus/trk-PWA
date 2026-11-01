@@ -124,9 +124,13 @@ const occurrences = (text, re) => [...text.matchAll(re)];
 /* ---------- 4. 設定の読み込み（プロトタイプ汚染よけ） ---------- */
 {
   const core = js["js/core.js"];
+  /* trk247：キーの選別は pickImportedPrefs（純関数）へ移った。検査は「その関数が呼ばれていること」まで見る。
+     ⚠ `base` 呼びになっているのは、代入先を引数で受ける形にしたため（呼び出し側は settings を渡す）。 */
   const guard = core.includes('const UNSAFE_KEYS = new Set(["__proto__", "constructor", "prototype"])') &&
-    core.includes("UNSAFE_KEYS.has(k)") && core.includes("Object.prototype.hasOwnProperty.call(settings, k)");
-  rule(guard, "the settings import skips __proto__ / constructor / prototype and inherited keys");
+    core.includes("UNSAFE_KEYS.has(k)") && core.includes("Object.prototype.hasOwnProperty.call(base, k)") &&
+    core.includes("pickImportedPrefs(data, settings, validImportedSettingEnum, PREFS_IMPORT_HANDLED)") &&
+    core.includes("const changes = {}, rejected = [];");
+  rule(guard, "the settings import skips __proto__ / constructor / prototype and inherited keys (via pickImportedPrefs)");
 
   const enumFnStart = core.indexOf("function validImportedSettingEnum(");
   const enumFnEnd = core.indexOf("\n}", enumFnStart);
@@ -173,8 +177,12 @@ const occurrences = (text, re) => [...text.matchAll(re)];
   } catch (_) {}
   /* 許可リストに載っていても SETTING_ENUM_KEYS から外れていたら関門を通らない（両方そろって初めて効く） */
   const enumKeyListed = /const SETTING_ENUM_KEYS = \[[\s\S]*?"trkTabName"[\s\S]*?"midiSoundProfile"[\s\S]*?"midiMixProfile"[\s\S]*?\]/.test(core);
-  rule(!!enumFn && enumBehavior && enumKeyListed && core.includes('!validImportedSettingEnum(k, incoming)'),
-    "emergency settings import allowlists spectrum, MMD, FX, lite-mode, trk-tab and MIDI profile enum IDs before assignment");
+  /* trk247：列挙IDの関門も純関数の中（`enumOk` を渡して、通らなかったキーだけ rejected に入れる）。
+     両方がそろって初めて効く、という形のまま検査する。 */
+  rule(!!enumFn && enumBehavior && enumKeyListed &&
+    core.includes("if (SETTING_ENUM_KEYS.includes(k)) {") && core.includes('try { ok = !!enumOk(k, incoming); } catch (_) { ok = false; }') &&
+    core.includes('if (!ok) { reject(k, "enum"); continue; }'),
+    "the settings import allowlists spectrum, MMD, FX, lite-mode, trk-tab and MIDI profile enum IDs before assignment");
 
   /* 緊急Importで弾いたキーは黙って捨てない（「読み込みました」なのに反映されない事故を防ぐ）。
      理由（この端末に無いID／型が違う／この設定に無いキー）でも対応が変わるので、区別して出す。 */
@@ -535,11 +543,15 @@ const occurrences = (text, re) => [...text.matchAll(re)];
     tv.indexOf("f.size > TV_SKIN_FILE_MAX") < tv.indexOf("await f.text()") && tv.includes('typeof v === "number" && Number.isFinite(v)') &&
     tv.includes("tvMakerPreset = id => Object.prototype.hasOwnProperty.call(TV_MAKER_PRESETS, id)");
   rule(skinFilesSafe, "custom skin files are capped before parsing; skin maps and imported TV numeric values are validated");
-  const prefsImportCap = core.includes("PREFS_IMPORT_MAX = 2 * 1024 * 1024") && core.includes("f.size > PREFS_IMPORT_MAX") &&
-    core.indexOf("f.size > PREFS_IMPORT_MAX") < core.indexOf("await f.text()") && core.includes("Array.isArray(data)") &&
+    /* trk247：上限を 2 MiB → 20 MiB に上げた（まるごとバックアップの local.json と同じ目盛り）。
+     守るものは同じで、**読む前に**大きさを見ること。加えて 1項目の失敗で全体を止めないことを見る。 */
+  const prefsImportCap = core.includes("PREFS_IMPORT_MAX = 20 * 1024 * 1024") && core.includes("file.size > PREFS_IMPORT_MAX") &&
+    core.indexOf("file.size > PREFS_IMPORT_MAX") < core.indexOf("await file.text()") && core.includes("Array.isArray(data)") &&
+    core.includes("const attempt = (k, run) =>") && core.includes("function pickImportedPrefs(") &&
+    core.includes("catch (_) { reject(k, \"failed\"); }") &&
     core.includes("typeof incoming === typeof current") && core.includes("UNSAFE_KEYS.has(k)") &&
     core.includes("const hasImported = key => Object.prototype.hasOwnProperty.call(data, key)");
-  rule(prefsImportCap, "emergency preferences import has a pre-read size cap, object root and prototype/type guards");
+  rule(prefsImportCap, "the settings import caps the size before reading (20 MiB, matching the whole-backup path), guards the prototype, and isolates a broken key per key");
   const enumMapSafe = media.includes("!DIFF_IDS.includes(diff)") && core.includes("DIFF_IDS.includes(chartDiff)") &&
     core.includes("Object.prototype.hasOwnProperty.call(JUDGE_SCALE, settings.judge)") &&
     core.includes("Object.prototype.hasOwnProperty.call(LIVES_TAG, settings.lives)") &&

@@ -106,7 +106,10 @@ function saveCustomSkins() { try { localStorage.setItem(CUSTOM_SKINS_KEY, JSON.s
    保存場所の名前（shadow_taiko_…）は、これまでのデータを引き継ぐため変えていません。
    各モードの細かい設定（ORBITの見た目・STAGEの譜面・CATCHのキーなど）は、それぞれのファイルが追加します。 */
 const PREFS_KEY = "shadow_taiko_preferences_v2", OLD_PREFS_KEY = "shadow_taiko_preferences_v1", BEST_KEY = "shadow_taiko_best_v1";
-const PREFS_IMPORT_MAX = 2 * 1024 * 1024;
+/* 設定JSONの読み込み上限。⚙ → 💾 端末の保存 から自分の書き出しを読み戻せるように、
+   まるごとバックアップ（js/backup.js の MAX_LS_VALUE＝local.json 20 MiB）と同じ目盛りにした。
+   2 MiB のころは、ノーツ設定の多い人が書き出したファイルを自分で読み返せなかった。 */
+const PREFS_IMPORT_MAX = 20 * 1024 * 1024;
 let prefs = {};
 try { prefs = JSON.parse(localStorage.getItem(PREFS_KEY)) || JSON.parse(localStorage.getItem(OLD_PREFS_KEY)) || {}; } catch (_) { prefs = {}; }
 if (!prefs || typeof prefs !== "object") prefs = {};
@@ -507,10 +510,13 @@ function storedPrefsRaw() {
   } catch (_) { return {}; }
 }
 function saveUserPrefs({ fresh = false } = {}) {
+  /* trk247：成否を返す（書き込み失敗＝容量がいっぱい、を呼び出し側で言葉にできるように）。
+     返す値を見ていない呼び出し側はそのまま動く。 */
   try {
     const out = fresh ? prefsForSave() : Object.assign({}, storedPrefsRaw(), prefsForSave());
     localStorage.setItem(PREFS_KEY, JSON.stringify(out));
-  } catch (_) {}
+    return true;
+  } catch (_) { return false; }
 }
 /* 🛟 trk202：セーフモードが安全側に倒した値を、保存に持ち込まない。
    いまは ?safe=1 で入っても、そのあと何か設定を保存すると folderAutoRead・mediaStartFromZero・
@@ -765,7 +771,9 @@ function resetAllPrefs() {
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
 }
-function exportPrefs(kind) {
+/* trk247：設定JSONの「中身」を決める1か所（書き出しと、書き出しsizes表示が同じ物を見る）。
+   ⚠ kind ごとに載せる物が違う（notes／tv／audio／all）。all は settings 全体。 */
+function prefsExportPayload(kind) {
   const out = {};
   if (kind === "notes") out.notes = settings.notes;
   else if (kind === "tv" || kind === "video") {
@@ -785,10 +793,17 @@ function exportPrefs(kind) {
     out.synthModeKeyboardLock = settings.synthModeKeyboardLock;
     out.synthModeWideKeyboard = settings.synthModeWideKeyboard;
     if ("gameVolume" in settings) out.gameVolume = settings.gameVolume;
+  } else if (kind === "core") {
+    /* trk247：ノート（譜面の作り込み）をのぞいた設定。ノートが大きいせいで
+       上限を超えて読み込めない、を避けるための1本 */
+    Object.assign(out, settings); delete out.notes;
   } else { // all
     Object.assign(out, settings);
   }
-  try { downloadJSON(out, `trk-${kind || "all"}-` + new Date().toISOString().slice(0,10) + ".json"); } catch(e){ console.error(e); }
+  return out;
+}
+function exportPrefs(kind) {
+  try { downloadJSON(prefsExportPayload(kind), `trk-${kind || "all"}-` + new Date().toISOString().slice(0,10) + ".json"); } catch(e){ console.error(e); }
 }
 function parseHashParams(hash) {
   /* ⚠ 小文字にするのは**キーだけ**（値まで小文字にすると、将来ケースを区別する値を
@@ -1866,6 +1881,36 @@ const SETTING_ENUM_KEYS = ["specStyle", "specTheme", "mmdMotionKind", "fxPreset"
   "liteMode", "liteFps", "liteMascot", "liteScale", "liteLibRows", "trkTabName", "chartGen", "mediaKeepLimit", "midiSoundProfile", "midiMixProfile"];
 /* Importで弾いた理由（対応が変わるので、表示では区別して出す） */
 const SKIP_WHY = { enum:"prefSkipWhyId", type:"prefSkipWhyType", unknown:"prefSkipWhyUnknown", failed:"prefSkipWhyType" };
+/* trk247：設定JSONから「この版が知っているキー」だけを選び出す純関数。
+   ・1キーずつ型と列挙IDを見て、**合わなかったキーだけを返す**（他は捨てない）
+   ・`__proto__`／`constructor`／`prototype` は読む前に落とす（原型を汚さない）
+   ・`enumOk` が例外を投げたキーも「そのキーだけ」不適用にする（全体を失敗にしない）
+   返す `{ changes, rejected:[{ k, why }] }`。割り当てと保存は呼び出し側（runPrefsImport）。 */
+function pickImportedPrefs(data, base, enumOk, skip) {
+  const changes = {}, rejected = [];
+  if (!data || typeof data !== "object" || Array.isArray(data) || !base || typeof base !== "object") return { changes, rejected };
+  const reject = (k, why) => { rejected.push({ k, why }); };
+  for (const k of Object.keys(data)) {
+    if (UNSAFE_KEYS.has(k) || (skip && skip.includes(k))) continue;
+    if (!Object.prototype.hasOwnProperty.call(base, k)) { reject(k, "unknown"); continue; }
+    const current = base[k], incoming = data[k];
+    let sameShape = false;
+    try {
+      sameShape = Array.isArray(current) ? Array.isArray(incoming)
+        : current === null ? (incoming === null || typeof incoming === "string")
+        : current && typeof current === "object" ? !!incoming && typeof incoming === "object" && !Array.isArray(incoming)
+        : typeof incoming === typeof current && (typeof incoming !== "number" || Number.isFinite(incoming));
+    } catch (_) { sameShape = false; }
+    if (!sameShape) { reject(k, "type"); continue; }
+    if (SETTING_ENUM_KEYS.includes(k)) {
+      let ok = false;
+      try { ok = !!enumOk(k, incoming); } catch (_) { ok = false; }
+      if (!ok) { reject(k, "enum"); continue; }
+    }
+    changes[k] = incoming;
+  }
+  return { changes, rejected };
+}
 function validImportedSettingEnum(key, value) {
   if (typeof value !== "string") return false;
   const staticList = LITE_ENUM_VALUES[key] || TRK_ENUM_VALUES[key];
@@ -1957,83 +2002,141 @@ function renderStoragePersist(state) {
     resetAudioPrefs(); saveUserPrefs();
     setSt(() => "🔊 音量・SE設定を初期化しました");
   });
-  bind("emergencyExportNotesBtn", () => { exportPrefs("notes"); setSt(() => "🎨 ノーツ設定を書き出しました"); });
-  bind("emergencyExportAllBtn", () => { exportPrefs("all"); setSt(() => "💾 全設定を書き出しました"); });
-  const imp = document.getElementById("emergencyImportFile");
+  bind("emergencyExportNotesBtn", () => runPrefsExport("notes", setSt));
+  bind("emergencyExportAllBtn", () => runPrefsExport("all", setSt));
+    /* trk247：読み込みの手続き本体は runPrefsImport（⚙ → 💾 端末の保存 と同じものを使う） */
+    const imp = document.getElementById("emergencyImportFile");
+    if (imp) {
+      imp.addEventListener("change", async () => {
+        const f = imp.files && imp.files[0]; if (!f) return;
+          try { await runPrefsImport(f, setSt); } finally { imp.value = ""; }
+      });
+    }
+})();
+
+/* ---------- 📤📥 trk247：設定の書き出し・読み込み（🛟 緊急復旧と ⚙ → 💾 端末の保存 が同じ手続きを使う） ----------
+   ・上限を読む前に見る（PREFS_IMPORT_MAX＝まるごとバックアップと同じ 20 MiB）
+   ・**1項目の失敗で全体を止めない**：壊れた項目だけ rejected に入れて、他は適用する
+     （trk246 まで：notes の検査が投げると外側の catch で終わり、読み込み失敗だけ残った）
+   ・報告 → 保存 → 再読み込み。未適用があるときだけ読む時間を取る */
+const PREFS_IMPORT_HANDLED = ["notes", "videoStyle", "tvDockSkin", "bgDim", "bgBlur", "tvParamFavs", "trkRemoved", "trkListed", "trkFixedNotice", "musicVolume", "musicVolumeRestore", "typography", "language"];
+async function runPrefsImport(file, setSt) {
+  let applied = [], rejected = [];
+  try {
+    if (typeof file.size !== "number" || !Number.isFinite(file.size) || file.size < 0 || file.size > PREFS_IMPORT_MAX) {
+      setSt("prefImportTooBig", { mb: Math.round(PREFS_IMPORT_MAX / 1024 / 1024) });
+      return { applied, rejected };
+    }
+    const txt = await file.text();
+    let data = null;
+    try { data = JSON.parse(txt); } catch (_) { data = null; }
+    if (!data || typeof data !== "object" || Array.isArray(data)) { setSt("prefImportNotObject"); return { applied, rejected }; }
+    const hasImported = key => Object.prototype.hasOwnProperty.call(data, key);
+    /* 理由つきで記録する（「この端末に無いID」と「型が違う」では利用者の対応が変わる）。
+       ⚠ rejected に入るのは**表示用の文字列**なので、重複よけは別に生のキーで持つ。 */
+    const rejectedKeys = new Set();
+    const reject = (k, why) => {
+      if (rejectedKeys.has(k)) return;
+      rejectedKeys.add(k);
+      rejected.push(tr(SKIP_WHY[why] || SKIP_WHY.unknown, { k }));
+    };
+    /* 手書きの項目はここで1個ずつ試す。**ここで例外が出ても、その項目だけ捨てて次に進む** */
+    const attempt = (k, run) => {
+      try { if (run() !== false) applied.push(k); } catch (_) { reject(k, "failed"); }
+    };
+    attempt("notes", () => { if (!hasImported("notes")) return false; settings.notes = window.Trk.data.sanitizeNotes(data.notes); });
+    attempt("videoStyle", () => { const v = hasImported("videoStyle") ? pick(data.videoStyle, VIDEO_STYLE_IDS, "") : ""; if (!v) return false; settings.videoStyle = v; });
+    attempt("bgDim", () => { if (!(hasImported("bgDim") && typeof data.bgDim === "number")) return false; settings.bgDim = clampTvDim(data.bgDim); });
+    attempt("bgBlur", () => { if (!(hasImported("bgBlur") && typeof data.bgBlur === "number")) return false; settings.bgBlur = clampTvBlur(data.bgBlur); });
+    attempt("tvParamFavs", () => { if (!hasImported("tvParamFavs")) return false; settings.tvParamFavs = cleanTvParamFavorites(data.tvParamFavs); });
+    /* 🗑 trk の消した印・👁 曲画面の一覧は、要素（trk- で始まるID）まで検証してから代入する */
+    attempt("trkRemoved", () => { if (!(hasImported("trkRemoved") && Array.isArray(data.trkRemoved))) return false; settings.trkRemoved = cleanTrkRemoved(data.trkRemoved); });
+    attempt("trkListed", () => { if (!(hasImported("trkListed") && Array.isArray(data.trkListed))) return false; settings.trkListed = cleanTrkRemoved(data.trkListed); });
+    /* 📢 固定の案内を出した印も、1/0 だけ通す（これまで「読み込める項目」に入れていながら
+       毎度「未適用」に並んでいた。ここで扱うようにした） */
+    /* 🌗 言葉も、起動時と同じ4つだけ通す（違う値は「この端末に無いID」で報告する） */
+    attempt("language", () => {
+      if (!hasImported("language")) return false;
+      const v = pick(data.language, ["ja", "en", "zh", "ko"], "");
+      if (!v) { reject("language", "enum"); return false; }
+      settings.language = v;
+    });
+    attempt("trkFixedNotice", () => { if (!hasImported("trkFixedNotice")) return false; settings.trkFixedNotice = data.trkFixedNotice === 1 ? 1 : 0; });
+    /* 🔤 trk246：書体の組み合わせも同じ流儀（知らない組名は null＝使わない） */
+    attempt("typography", () => { if (!hasImported("typography")) return false; const t = window.Trk.typography ? window.Trk.typography.sanitize(data.typography) : null; if (t) settings.typography = t; if (window.Trk.typography) window.Trk.typography.apply(settings.typography); });
+    attempt("tvDockSkin", () => {
+      const ok = hasImported("tvDockSkin") && typeof data.tvDockSkin === "string" && window.TrkTV && typeof window.TrkTV.skins === "function" &&
+        window.TrkTV.skins().some(item => item && item.id === data.tvDockSkin);
+      if (!ok) return false;
+      settings.tvDockSkin = data.tvDockSkin;
+    });
+    attempt("musicVolume", () => { if (!(hasImported("musicVolume") && typeof data.musicVolume === "number")) return false;
+      settings.musicVolume = num(data.musicVolume, 0, 1, settings.musicVolume);
+      if (settings.musicVolume > 0) rememberMusicVolume(settings.musicVolume);
+    });
+    attempt("musicVolumeRestore", () => { if (!(hasImported("musicVolumeRestore") && typeof data.musicVolumeRestore === "number")) return false; settings.musicVolumeRestore = num(data.musicVolumeRestore, .01, 1, settings.musicVolumeRestore); });
+    /* 既知キー（型・列挙IDを通過したもの）をまとめて当てる。1キーの代入失敗もここで止める */
+    const picked = pickImportedPrefs(data, settings, validImportedSettingEnum, PREFS_IMPORT_HANDLED);
+    for (const k of Object.keys(picked.changes)) {
+      try { settings[k] = picked.changes[k]; applied.push(k); } catch (_) { reject(k, "failed"); }
+    }
+    /* 純関数が弾いた項目は、理由つきで報告へ（黙って捨てない） */
+    for (const item of picked.rejected) {
+      if (PREFS_IMPORT_HANDLED.includes(item.k) || ["videoStyle", "tvDockSkin"].includes(item.k)) continue;
+      reject(item.k, item.why);
+    }
+    /* 上の個別処理で黙って落としたキーも同じように報告する。
+       理由は落とし方ごとに決まる：videoStyle／tvDockSkin は許可リスト不一致、
+       それ以外（bgDim／bgBlur／musicVolume など）は型が合わなかったときだけ残る。 */
+    for (const k of Object.keys(data)) {
+      if (applied.includes(k) || rejectedKeys.has(k) || UNSAFE_KEYS.has(k)) continue;
+      reject(k, ["videoStyle", "tvDockSkin"].includes(k) ? "enum" : "type");
+    }
+    const keyList = keys => keys.slice(0, 12).join(", ") + (keys.length > 12 ? ` …+${keys.length - 12}` : "");
+    if (!saveUserPrefs()) {
+      /* 読み込みは通ったが、この端末に書き込めなかった（容量がいっぱい）。
+         再読み込みすると消えるので、**ここで止めて**言葉を返す（黙って元に戻さない） */
+      setSt("prefImportUnsaved", { list: keyList(applied) });
+      return { applied, rejected, saved: false };
+    }
+    try { applyNoteVars(); if (typeof view !== "undefined") view.style.filter = videoFilter(); } catch (_) {}
+  } catch (e) {
+    console.error(e);
+    setSt(() => "読み込み失敗: " + (e.message || e));
+    return { applied, rejected };
+  }
+  /* 長くなりすぎないよう先頭12件まで表示し、残りは件数だけ添える（表示は言語を選ばない記号のみ） */
+  if (rejected.length) setSt("prefImportedPartial", { list:keyList(applied), skipped:keyList(rejected) });
+  else setSt("prefImported", { list:keyList(applied) });
+  /* 未適用の告知は読む時間が要るので、そのときだけ再読み込みを遅らせる */
+  setTimeout(()=> location.reload(), rejected.length ? 2600 : 900);
+  return { applied, rejected, saved: true };
+}
+
+/* 設定を書き出す（ファイル名の日付は UTC）。保存状況の欄にバイト数を残すので、
+   「自分の書き出しが読み込めない」をその場で気付ける。 */
+function runPrefsExport(kind, setSt) {
+  const payload = prefsExportPayload(kind);
+  let bytes = 0;
+  try { bytes = new Blob([JSON.stringify(payload, null, 2)]).size; } catch (_) {}
+  try { downloadJSON(payload, `trk-${kind || "all"}-` + new Date().toISOString().slice(0,10) + ".json"); } catch (e) { console.error(e); }
+  const vars = { kb: Math.max(1, Math.round(bytes / 1024)), n: Object.keys(payload).length, mb: Math.round(PREFS_IMPORT_MAX / 1048576) };
+  setSt(kind === "notes" ? "prefExportedNotes" : kind === "core" ? "prefExportedCore" : "prefExportedAll", vars);
+}
+
+(function setupPrefsTransfer(){
+  const panel = document.getElementById("storagePanel");
+  if (!panel) return;
+  const status = (key, vars) => setStatus("storageTransferState", key, vars);
+  const bind = (id, fn) => { const n = document.getElementById(id); if (n) n.addEventListener("click", fn); };
+  bind("storageExportAllBtn", () => runPrefsExport("all", status));
+  bind("storageExportCoreBtn", () => runPrefsExport("core", status));
+  bind("storageExportNotesBtn", () => runPrefsExport("notes", status));
+  const imp = document.getElementById("storageImportFile");
   if (imp) {
     imp.addEventListener("change", async () => {
       const f = imp.files && imp.files[0]; if (!f) return;
-      try {
-        if (typeof f.size !== "number" || !Number.isFinite(f.size) || f.size < 0 || f.size > PREFS_IMPORT_MAX) {
-          throw new Error("設定ファイルは2 MiBまでです");
-        }
-        const txt = await f.text(); const data = JSON.parse(txt);
-        if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("設定JSONはオブジェクト形式にしてください");
-        let applied = [], rejected = [];
-        const hasImported = key => Object.prototype.hasOwnProperty.call(data, key);
-        if (hasImported("notes")) { settings.notes = window.Trk.data.sanitizeNotes(data.notes); applied.push("notes"); }
-        const importedVideoStyle = hasImported("videoStyle") ? pick(data.videoStyle, VIDEO_STYLE_IDS, "") : "";
-        if (importedVideoStyle) { settings.videoStyle = importedVideoStyle; applied.push("videoStyle"); }
-        if (hasImported("bgDim") && typeof data.bgDim === "number") { settings.bgDim = clampTvDim(data.bgDim); applied.push("bgDim"); }
-        if (hasImported("bgBlur") && typeof data.bgBlur === "number") { settings.bgBlur = clampTvBlur(data.bgBlur); applied.push("bgBlur"); }
-        if (hasImported("tvParamFavs")) { settings.tvParamFavs = cleanTvParamFavorites(data.tvParamFavs); applied.push("tvParamFavs"); }
-        /* 🗑 trk の消した印は、要素（trk- で始まるID）まで検証してから代入する */
-        if (hasImported("trkRemoved") && Array.isArray(data.trkRemoved)) { settings.trkRemoved = cleanTrkRemoved(data.trkRemoved); applied.push("trkRemoved"); }
-        /* 👁 trk218：曲画面の一覧に出す trk のリストも、ID を検証してから代入する */
-        if (hasImported("trkListed") && Array.isArray(data.trkListed)) { settings.trkListed = cleanTrkRemoved(data.trkListed); applied.push("trkListed"); }
-        const importedTvDockSkin = hasImported("tvDockSkin") && typeof data.tvDockSkin === "string" && window.TrkTV && typeof window.TrkTV.skins === "function" &&
-          window.TrkTV.skins().some(item => item && item.id === data.tvDockSkin) ? data.tvDockSkin : "";
-        if (importedTvDockSkin) { settings.tvDockSkin = importedTvDockSkin; applied.push("tvDockSkin"); }
-        if (hasImported("musicVolume") && typeof data.musicVolume === "number") {
-          settings.musicVolume = num(data.musicVolume, 0, 1, settings.musicVolume);
-          if (settings.musicVolume > 0) rememberMusicVolume(settings.musicVolume);
-          applied.push("musicVolume");
-        }
-        if (hasImported("musicVolumeRestore") && typeof data.musicVolumeRestore === "number") {
-          settings.musicVolumeRestore = num(data.musicVolumeRestore, .01, 1, settings.musicVolumeRestore);
-          applied.push("musicVolumeRestore");
-        }
-        /* 理由つきで記録する（「この端末に無いID」と「型が違う」では利用者の対応が変わる）。
-           ⚠ rejected に入るのは**表示用の文字列**なので、重複よけは別に生のキーで持つ。 */
-        const rejectedKeys = new Set();
-        const reject = (k, why) => {
-          if (rejectedKeys.has(k)) return;
-          rejectedKeys.add(k);
-          rejected.push(tr(SKIP_WHY[why] || SKIP_WHY.unknown, { k }));
-        };
-        // 既知キーだけを取り込み、型と列挙IDは代入前に検証する。
-        // ⚠ 弾いたキーは黙って捨てない（「読み込みました」なのに反映されない事故を防ぐ）。最後にまとめて報告する。
-        for (const k of Object.keys(data)) {
-          if (UNSAFE_KEYS.has(k) || ["notes", "videoStyle", "tvDockSkin", "bgDim", "bgBlur", "tvParamFavs", "trkRemoved", "trkListed", "trkFixedNotice", "musicVolume", "musicVolumeRestore"].includes(k) || applied.includes(k)) continue;
-          if (!Object.prototype.hasOwnProperty.call(settings, k)) { reject(k, "unknown"); continue; }
-          const current = settings[k], incoming = data[k];
-          const sameShape = Array.isArray(current) ? Array.isArray(incoming)
-            : current === null ? (incoming === null || typeof incoming === "string")
-            : current && typeof current === "object" ? !!incoming && typeof incoming === "object" && !Array.isArray(incoming)
-            : typeof incoming === typeof current && (typeof incoming !== "number" || Number.isFinite(incoming));
-          if (!sameShape) { reject(k, "type"); continue; }
-          if (SETTING_ENUM_KEYS.includes(k) && !validImportedSettingEnum(k, incoming)) { reject(k, "enum"); continue; }
-          try { settings[k] = incoming; applied.push(k); } catch(_){ reject(k, "failed"); }
-        }
-        /* 上の個別処理で黙って落としたキーも同じように報告する。
-           理由は落とし方ごとに決まる：videoStyle／tvDockSkin は許可リスト不一致、
-           それ以外（bgDim／bgBlur／musicVolume など）は型が合わなかったときだけ残る。 */
-        for (const k of Object.keys(data)) {
-          if (applied.includes(k) || rejectedKeys.has(k) || UNSAFE_KEYS.has(k)) continue;
-          reject(k, ["videoStyle", "tvDockSkin"].includes(k) ? "enum" : "type");
-        }
-        saveUserPrefs();
-        try { applyNoteVars(); if (typeof view !== "undefined") view.style.filter = videoFilter(); } catch(_){}
-        /* 長くなりすぎないよう先頭12件まで表示し、残りは件数だけ添える（表示は言語を選ばない記号のみ） */
-        const keyList = keys => keys.slice(0, 12).join(", ") + (keys.length > 12 ? ` …+${keys.length - 12}` : "");
-        if (rejected.length) setSt("prefImportedPartial", { list:keyList(applied), skipped:keyList(rejected) });
-        else setSt("prefImported", { list:keyList(applied) });
-        /* 未適用の告知は読む時間が要るので、そのときだけ再読み込みを遅らせる */
-        setTimeout(()=> location.reload(), rejected.length ? 2600 : 900);
-      } catch(e) {
-        console.error(e);
-        setSt(() => "読み込み失敗: " + (e.message || e));
-      } finally { imp.value = ""; }
+      try { await runPrefsImport(f, status); } finally { imp.value = ""; }
     });
   }
 })();

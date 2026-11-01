@@ -207,6 +207,6 @@ describe("app 側の配線", () => {
   });
 
   test("cache 名を上げる（JS を1つ増やしたので）", () => {
-    assert.match(swSrc, /const CACHE = "trk-v2026\.11\.01-trk246";/);
+    assert.match(swSrc, /const CACHE = "trk-v2026\.11\.01-trk2(4[6-9]|\d\d)";/, "trk246 以降のcache名（版を上げたらここも上がる）");
   });
 });
