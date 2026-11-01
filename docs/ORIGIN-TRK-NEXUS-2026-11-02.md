@@ -51,11 +51,13 @@
 - [x] transfer 実行（2026-11-02・trk250）
 - [x] `og:url`・`og:image`・README・docs のURL更新（`docs/PWA.md`・`docs/ORIGIN.md`・`docs/PERMISSIONS.md`・`docs/HANDOFF-TRK-STANDALONE.md`・`docs/PLAN-R6-PHASE4-TYPOGRAPHY-2026-11-01.md`・`docs/PREFS-TRANSFER-TRK247-2026-11-01.md` を追記・更新）
 - [x] この文書（経緯の記録）
-- [ ] **Pages の初回ビルドを確認**：`gh api repos/Trk-Nexus/trk-PWA/pages/builds`（移籍直後は `status=null`＝まだ走っていない）。**main に push が入ると `Deploy GitHub Pages` が走る**想定。走らなければ組織の **設定 → 行動（Actions）→ General → Allow all repositories and workflows** を確認
-- [ ] **配布ZIPを作り直す**（trk248 版は中に旧URLが入ったままなので、trk250 で差し替え）。Drive の新フォルダに standalone／handover／README／SHA256SUMS の4点
+- [x] **Pages のビルド確認（済み・実測）**：组织移籍後も Actions は動きます（`Deploy GitHub Pages` と `Check` が main 入力で **completed / success**、組織側の Actions 設定変更は不要でした）。
+  - ⚠ **`GET /repos/Trk-Nexus/trk-PWA/pages/builds` は `status=null` のまま**です。これは壊れではなく、**Source が `GitHub Actions` の Pages ではこの API が埋まらない**ため（`gh api repos/Trk-Nexus/trk-PWA/pages` → `build_type=workflow`・`html_url=https://trk-nexus.github.io/trk-PWA/`・`https_enforced=true`）。**見るものは Workflow の実行結果**
+  - **ライブ実測**：`https://trk-nexus.github.io/trk-PWA/` が200でアプリを出し、`🛟` の中に `🎨 ノーツ設定を書き出し／💾 全設定を書き出し／📥 設定を読み込み`（trk247 のUI）が見えました。`.../sw.js` は **`const CACHE = "trk-v2026.11.02-trk250"`** ＝trk250 がそのまま配られています
+- [x] **配布ZIPを作り直し**（trk250）。旧URLが入っていた trk248 版に代えて、Drive の `trk-PWA-trk250-2026-11-02` に standalone／handover／README／SHA256SUMS の4点を置きました（**ハッシュはZIPの中の文書ではなく README と SHA256SUMS にだけ**）
 - [ ] **実機確認**（trk247・trk248 の欄）：新しいオリジンで ⚙ → 💾 端末の保存 の 📤📥、モバイルのパネル載せ、初回案内の1行
 - [ ] **④告知の判断**：どこに・いつ案内するか（`docs/ORIGIN.md` §6 の残件）。**本番URLが決まったので、告知文は `https://trk-nexus.github.io/trk-PWA/` を指せます**
-- [ ] 上流 `trk` を組織へ移すかは**未決**（今回は `trk-PWA` だけ）。移すと `/trk/` のURLも変わる（そちらは既に案内済みなら 📤 手順を案内する必要が出る）
+- [ ] 上流 `trk` を組織へ移すかは**未決**（今回は `trk-PWA` だけ）。移すと `/trk/` のURLも変わる（**すでに案内済みなので、移すなら 📤 書き出し → 先で 📥 読み込みの手順を案内する必要が出ます**）
 - [ ] `docs/REVIEW-REQUEST-*` など**履歴の文書は古いURLのまま**にしています（書き換えると記録が偽るため）
 
 **触らないもの**（この作業セッションの範囲）：組織の設定変更・課金・SSO・リポジトリの再移籍・リポジトリの削除／可視性変更。権限が必要になったときは都度ご相談します。
