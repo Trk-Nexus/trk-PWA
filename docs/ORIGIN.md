@@ -11,7 +11,8 @@
   リポジトリ `TonbokiriRaikiriMuramasa-Taikoubou/trk`（既存・フルバージョンの本体）を使います。**いちばん短く、覚えやすい**ためです。
   `trk-Standalone` は名前のとおり「**通信を行わない**ことを守った完成系」として残します。
   このホストは個人アカウントの `github.io` なので、§1 のとおり同じアカウントの他のページと保存領域を共有します（承知のうえの決定）。
-- 分離が必要になったときの受け皿は **GitHub組織 `Trk-Nexus`**（表示名 Trk Nexus）に決まりました。**2026-11-01 に組織が作成済み**（それ以前の案 `trk-company` は使いません）。移籍は**まだ実行していません**（§3.1 に現状と残作業）。
+- 分離が必要になったときの受け皿は **GitHub組織 `Trk-Nexus`**（表示名 Trk Nexus）に決まりました（それ以前の案 `trk-company` は使いません）。
+- **2026-11-02 実行：`trk-PWA` を組織 `Trk-Nexus` へ移籍済み。** 本番URLは **`https://trk-nexus.github.io/trk-PWA/`**、リポジトリは **`https://github.com/Trk-Nexus/trk-PWA`**。上流 `trk`（個人アカウント）はそのままなので、**これで `/trk/` と `/trk-PWA/` のオリジンが分かれた**（§0 上の懸案が解消）。経緯と実測は [`ORIGIN-TRK-NEXUS-2026-11-02.md`](ORIGIN-TRK-NEXUS-2026-11-02.md)。
 - 選択肢は2つ（比較は §2）。
   - **A. trk! 専用のGitHub組織**（無料。`trk-company.github.io` など）
   - **B. 独自ドメイン**（年1,000〜2,000円程度。`trk.example.com` など）
@@ -27,6 +28,7 @@ Webの保存領域（`localStorage`・`IndexedDB`・`CacheStorage`）は、**オ
 | `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk/` | `https://tonbokiriraikirimuramasa-taikoubou.github.io` | 共有 |
 | `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/` | 同上 | **同じ** |
 | `https://trk-company.github.io/trk-PWA/` | `https://trk-company.github.io` | 別 |
+| **`https://trk-nexus.github.io/trk-PWA/`** | `https://trk-nexus.github.io` | **別**（2026-11-02 から本番） |
 | `https://trk.example.com/` | `https://trk.example.com` | 別 |
 
 現在の個人アカウントの `github.io` では、次が起きます。
@@ -99,7 +101,9 @@ Webの保存領域（`localStorage`・`IndexedDB`・`CacheStorage`）は、**オ
 7. 旧リポジトリはアーカイブし、READMEに移転先を書く。
 8. 旧URLの利用者データは移行されない。案内文を用意する。
 
-### 3.1 移籍をこの作業セッションから実行するときに要るもの（2026-11-02 実測）
+### 3.1 移籍をこの作業セッションから実行するときに要ったもの（2026-11-02 実測・**解決済み**）
+
+> **結論**：必要だったのは **Arena の GitHub App を組織にインストールすることだけ**でした（メンバー招待は**元から Owner**）。アプリが入った時点で `POST /repos/…/transfer` が通り、`gh api repos/Trk-Nexus/trk-PWA` は `admin=true`・Pages の `build_type=workflow` も引き継がれていました（下表は詰まる前に見た値）。
 
 | 確認したこと | 結果 |
 | --- | --- |

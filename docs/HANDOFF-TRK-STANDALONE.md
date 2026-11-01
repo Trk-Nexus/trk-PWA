@@ -76,7 +76,7 @@
 | URL | オリジン | 保存領域 |
 | --- | --- | --- |
 | `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk/` | `https://tonbokiriraikirimuramasa-taikoubou.github.io` | 共有 |
-| `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/` | 同上 | **同じ** |
+| `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/` | 同上 | **同じ**（**2026-11-02 で `Trk-Nexus/trk-PWA` へ移籍 → `https://trk-nexus.github.io/trk-PWA/`＝別オリジンになった**） |
 | `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-Standalone/` | 同上 | **同じ** |
 | `https://trk-company.github.io/trk/`（組織を作った場合の例） | `https://trk-company.github.io` | 別 |
 

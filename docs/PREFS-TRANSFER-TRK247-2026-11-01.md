@@ -70,6 +70,8 @@
 
 **2026-11-01 追記**：利用者さんが組織 **`Trk-Nexus`** を作りました（`api.github.com/orgs/Trk-Nexus` が **200**・`name: Trk Nexus`・`location: Japan`・**公開リポジトリは0件**）。この場合の Pages は **`https://trk-nexus.github.io/trk-PWA/`** が狙えます（`trk-company` 案は使わなくてよい）。
 
+**2026-11-02 実行済み（trk250）**：`trk-PWA` を組織へ**移籍**し、上の見込みどおり `https://trk-nexus.github.io/trk-PWA/` が本番URLになりました。詰まった点（GitHub App を組織に入れるまで transfer が 403）と実測は [`ORIGIN-TRK-NEXUS-2026-11-02.md`](ORIGIN-TRK-NEXUS-2026-11-02.md)。
+
 **推測・未確認**：`trk-nexus.github.io` への応答は**このサンドボックスでは実測できません**（通信先が `github.com`／`api.github.com` 等に絞られていて、`.github.io` に届かない）。組織の Pages 有効化・無料枠での公開リポジトリ Pages・ビルド時間は**移管してみないと分からない**部分です。
 
 **③との関係（重要）**：組織へ移すと**オリジンが変わる**ので、`localStorage`／`IndexedDB` は引き継がれません（同一オリジン前提の保存域が変わるため。`docs/PWA.md` §2.1 と同じ話）。移す前日に **📤 設定をまとめて書き出す**を実行して、新しい場所で **📥 読み込む**——という手順が効くようにしたのが今回の ③ です。

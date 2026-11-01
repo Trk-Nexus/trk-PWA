@@ -7,8 +7,9 @@
 | 項目 | 内容 |
 | --- | --- |
 | 日付 | 2026-10-30（Asia/Tokyo） |
-| 承認者 | リポジトリ所有者（`TonbokiriRaikiriMuramasa-Taikoubou`） |
-| 対象リポジトリ | `TonbokiriRaikiriMuramasa-Taikoubou/trk-PWA`（public） |
+| 承認者 | リポジトリ所有者（`TonbokiriRaikiriMuramasa-Taikoubou`）。**2026-11-02 以降は組織 `Trk-Nexus` の Owner でもある** |
+| 対象リポジトリ | **`Trk-Nexus/trk-PWA`**（public）。2026-11-02（trk250）に `TonbokiriRaikiriMuramasa-Taikoubou/trk-PWA` から**移籍**したため、以後の push・PR・Pages はこちらが対象 |
+| 承認範囲の続き | 移籍で**Arena の GitHub App を組織にインストール**することが必要になった（個人側にだけ入っていたため、移籍前は組織の情報が一切読めなかった）。以後、**組織の設定変更・リポジトリの再移籍・課金**は行わない（この文書の範囲） |
 | 作業ブランチ | `arena/049422a2-trk-pwa` |
 | 承認の文面 | 「権限が必要な部分は許諾します〜。必要な権限を文面化して残しておきましょう〜」 |
 | あわせて決めたこと | 配布対象は**不特定多数**／**ホーム画面から開く運用**／**Phase 1（1.1.8の取り込みとPages公開）へ進む** |
