@@ -31,8 +31,11 @@
    入口を足しました。js/pack-catalog.js・js/custom.js・index.html が変わったので、名前を上げます。
 
    🔤 trk236〜238（2026-11-01）：目録の「ひとこと・対応字数・タグ」を読み、タグで絞り、
-   入っている書体の索引（🔤 入れている書体）を出すようにしました。同じ 3 つが変わったので、また上げます。 */
-const CACHE = "trk-v2026.11.01-trk238";
+   入っている書体の索引（🔤 入れている書体）を出すようにしました。同じ 3 つが変わったので、また上げます。
+
+   📦 trk239（2026-11-01）：セットの 2 分割（r6）に備えて、入れる前に聞く数を
+   「これから入る分」だけにしました（すでに入っていて版も同じものは飛ばす）。js/pack-catalog.js が変わったので、また上げます。 */
+const CACHE = "trk-v2026.11.01-trk239";
 const CACHE_PREFIX = "trk-";
 const SCOPE = new URL(self.registration.scope);
 const VENDOR_PREFIX = "assets/vendor/";
