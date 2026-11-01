@@ -26,6 +26,8 @@
 | --- | --- | --- | --- |
 | （trk-PWA） | trk246 | **書体の組み合わせ14組（段階②）**：`js/typography.js` に相手の目録の写しを同梱し、`settings.typography` で保存。`body.trk-typo-on` のときだけ見出し類（`.brand h1`・`details.panel>summary`・`.panel h3`）と `.hint` に CSS 変数2本を当てる。**canvas（`ctx.font`）は触らない**・woff2 は同梱しない | 2026-11-01 |
 | （trk-PWA） | trk246 | 設計・見送り・実機確認6項目・相手への返す言葉＝[`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md)。
+| （trk-PWA） | trk246 | **返事13**（14組の受け入れ完了・契約 §6 の案で合意可・目録27家族がそちらに全部在る検証）＝[`LETTER-TRK246-REPLY-2026-11-01.md`](LETTER-TRK246-REPLY-2026-11-01.md)。
+| （trk-PWA） | trk246 | **PWA Phase 4 の ②③ 下書き**（コードは変えていない）＝[`PHASE4-ONBOARDING-BACKUP-2026-11-01.md`](PHASE4-ONBOARDING-BACKUP-2026-11-01.md)。設定の書き出し・読み込みが **🛟 緊急復旧にしか無い**のが実体。①オリジンと④告知は判断待ち。
 | （trk-PWA） | trk245 | **続きの概要も1枚に**（r6 の受け入れ手順・PWA Phase 4 の判断事項・書体14組の採用方針）＝[`PLAN-R6-PHASE4-TYPOGRAPHY-2026-11-01.md`](PLAN-R6-PHASE4-TYPOGRAPHY-2026-11-01.md)。
 | （trk-PWA） | trk245 | **密度の自動＋曲リストの高さ**：`uiDensity` に `auto`（窓の面積と幅で段を決める・**既定**）を追加。`#libList` の高さは `--trk-lib-h`（設計高さ−440px を 320〜900px に収めて `fitStage` が置く）になり、**後から効いていた `height:320px` の上書きを削除**。リサイズでも段を見直す（保存しない・棚を作り直さない） | 2026-11-01 |
 | （trk-PWA） | trk244 | **表示の密度**：拡大率の 75%・50% を「文字を小さくする」ではなく「余白・行間・列数を詰めて多く見せる」に使える（`uiScaleCompact`・既定オン）。密度は4段（ゆったり／ふつう／ぎゅっと／ぎっしり）で単独でも選べる。font-size はどこも変えない | 2026-11-01 |
