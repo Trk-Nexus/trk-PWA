@@ -115,7 +115,7 @@ input[type=color]{width:52px;height:34px;padding:2px;border:1px solid var(--ui-b
 .screen{position:absolute;z-index:20;inset:0;display:flex;align-items:center;justify-content:center;padding:30px;
   background:radial-gradient(ellipse at 50% 28%,var(--ui-glow),transparent 62%),var(--ui-bg)}
 .screen.dim{background:rgba(0,0,0,.55);backdrop-filter:blur(6px)}
-.card{width:1260px;max-height:1020px;overflow:auto;padding:30px 36px;border:1px solid var(--ui-border);border-radius:28px;
+.card{width:1260px;max-height:1020px;overflow:auto;padding:calc(30px * var(--trk-dens-pad,1)) calc(36px * var(--trk-dens-pad,1));border:1px solid var(--ui-border);border-radius:28px;
   background:var(--ui-panel);box-shadow:var(--ui-shadow);color:var(--ui-text);font-size:18px}
 .card.wide{width:1820px}
 .card.small{width:860px;text-align:center}
@@ -201,9 +201,9 @@ input[type=color]{width:52px;height:34px;padding:2px;border:1px solid var(--ui-b
 /* 🔒 ごほうびスキンの謎カード（スタンプ5つで解禁） */
 .skinCard.locked{opacity:.7;cursor:default;filter:saturate(.35)}
 .skinCard.locked:hover{background:var(--ui-button);border-color:var(--ui-border);color:var(--ui-muted)}
-.grid{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;margin-top:20px;align-items:start}
-.col{display:flex;flex-direction:column;gap:16px}
-.panel{border:1px solid var(--ui-border);border-radius:18px;background:var(--ui-soft);padding:16px 20px}
+.grid{display:grid;grid-template-columns:1.1fr 1fr;gap:calc(24px * var(--trk-dens-gap,1));margin-top:calc(20px * var(--trk-dens-pad,1));align-items:start}
+.col{display:flex;flex-direction:column;gap:calc(16px * var(--trk-dens-gap,1))}
+.panel{border:1px solid var(--ui-border);border-radius:18px;background:var(--ui-soft);padding:calc(16px * var(--trk-dens-pad,1)) calc(20px * var(--trk-dens-pad,1))}
 .panel h3{margin:0 0 10px;font-size:14px;letter-spacing:.16em;color:var(--ui-muted)}
 .panel h3:not(:first-child){margin-top:16px}
 details.panel>summary{cursor:pointer;font-weight:800;font-size:19px;list-style:none;display:flex;justify-content:space-between;align-items:center}
@@ -221,22 +221,22 @@ details.panel[open]>summary{margin-bottom:14px}
 /* ===== 7. フォーム部品 ===== */
 select{padding:8px 10px;border-radius:10px;background:var(--ui-field);color:var(--ui-text);
   border:1px solid var(--ui-border);font-size:16px}
-.field{display:flex;flex-direction:column;gap:6px;text-align:left;font-size:14px;color:var(--ui-muted);font-weight:650;margin-top:8px}
+.field{display:flex;flex-direction:column;gap:calc(6px * var(--trk-dens-gap,1));text-align:left;font-size:14px;color:var(--ui-muted);font-weight:650;margin-top:calc(8px * var(--trk-dens-pad,1))}
 .field input,.field select{width:100%;padding:10px 12px;border-radius:10px;background:var(--ui-field);color:var(--ui-text);
   border:1px solid var(--ui-border);font-size:18px}
 .field input[type=range]{padding:0;background:none;border:none}
 .field input[type=file]{padding:6px;font-size:13px}
 .field textarea{width:100%;padding:10px 12px;border-radius:10px;background:var(--ui-field);color:var(--ui-text);
   border:1px solid var(--ui-border);font-size:16px;resize:vertical}
-.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(12px * var(--trk-dens-gap,1))}
 .fields .field{margin-top:0}
-.fields2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.fields2{display:grid;grid-template-columns:repeat(2,1fr);gap:calc(12px * var(--trk-dens-gap,1))}
 .fileBtn{display:inline-flex;align-items:center;gap:6px;padding:12px 20px;border-radius:999px;cursor:pointer;font-weight:800;
   background:var(--ui-accent);color:var(--ui-on-accent);white-space:nowrap}
 .fileBtn.small{padding:8px 14px;font-size:15px;background:var(--ui-button);color:var(--ui-text);border:1px solid var(--ui-border)}
 .fileBtn.small:hover{border-color:var(--ui-accent);color:var(--ui-text)}
 .fileBtn.disabled{opacity:.45;cursor:not-allowed}
-.hint{color:var(--ui-muted);font-size:14px;margin:6px 0;line-height:1.5}
+.hint{color:var(--ui-muted);font-size:14px;margin:calc(6px * var(--trk-dens-pad,1)) 0;line-height:var(--trk-dens-line,1.5)}
 .status{color:var(--ui-gold);font-weight:700}
 .center{text-align:center}
 #eggStatus.egg{color:var(--ui-accent-ink,var(--ui-accent));font-weight:800}
@@ -252,7 +252,7 @@ select{padding:8px 10px;border-radius:10px;background:var(--ui-field);color:var(
 .actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .miniActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .miniActions button,.miniActions .fileBtn{padding:7px 12px;font-size:14px}
-.check{display:flex;align-items:center;gap:10px;margin:10px 0;text-align:left;font-size:17px;cursor:pointer}
+.check{display:flex;align-items:center;gap:calc(10px * var(--trk-dens-gap,1));margin:calc(10px * var(--trk-dens-pad,1)) 0;text-align:left;font-size:17px;cursor:pointer}
 .check input{width:20px;height:20px;accent-color:var(--ui-accent);flex:none}
 .inline{display:flex;align-items:center;gap:12px;margin:10px 0;font-size:16px}
 .inline.tight{margin:4px 0}
@@ -261,8 +261,8 @@ select{padding:8px 10px;border-radius:10px;background:var(--ui-field);color:var(
 .mono{font-variant-numeric:tabular-nums;min-width:56px;text-align:right;font-weight:800}
 
 /* ===== 8. 選曲画面 ===== */
-.selectGrid{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;margin-top:20px;align-items:start}
-.songCol,.detailCol{display:flex;flex-direction:column;gap:14px;min-width:0}
+.selectGrid{display:grid;grid-template-columns:1.2fr 1fr;gap:calc(24px * var(--trk-dens-gap,1));margin-top:calc(20px * var(--trk-dens-pad,1));align-items:start}
+.songCol,.detailCol{display:flex;flex-direction:column;gap:calc(14px * var(--trk-dens-gap,1));min-width:0}
 .libHead{display:flex;justify-content:space-between;align-items:baseline}
 .libHead h3{margin:0}
 /* 曲リストの見出しは h2（見出し順を h1→h2 にするため）。見た目は従来の h3（.panel h3 ほか）と同じにする */
@@ -270,22 +270,22 @@ select{padding:8px 10px;border-radius:10px;background:var(--ui-field);color:var(
 .libTools{display:grid;grid-template-columns:1fr auto auto;gap:8px;margin-top:10px}
 .libTools input,.libTools select{padding:9px 12px;border-radius:10px;background:var(--ui-field);color:var(--ui-text);border:1px solid var(--ui-border);font-size:16px}
 .libTools button{padding:8px 14px;font-size:16px}
-#libList{display:flex;flex-direction:column;gap:5px;margin-top:10px;height:640px;overflow:auto;padding-right:4px}
-.libRow{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:11px 16px;border-radius:12px;
+#libList{display:flex;flex-direction:column;gap:calc(5px * var(--trk-dens-gap,1));margin-top:calc(10px * var(--trk-dens-pad,1));height:640px;overflow:auto;padding-right:4px}
+.libRow{display:flex;justify-content:space-between;align-items:center;gap:calc(12px * var(--trk-dens-gap,1));width:100%;padding:calc(11px * var(--trk-dens-pad,1)) calc(16px * var(--trk-dens-pad,1));border-radius:12px;
   text-align:left;font-size:17px;border-left:5px solid transparent}
 .libRow.cur{border-color:var(--ui-accent);color:var(--ui-text);background:var(--ui-button-hover)}
 .libRow.src-pack{border-left-color:var(--ui-gold)}
 .libRow.src-file{border-left-color:var(--ka)}
 .libLeft{min-width:0;flex:1;display:flex;align-items:center;gap:10px}
 .libText{min-width:0;flex:1;display:flex;flex-direction:column}
-.libThumb{position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 40px;width:40px;height:40px;overflow:hidden;border:1px solid var(--ui-border);border-radius:8px;background:var(--ui-field);color:var(--ui-muted)}
+.libThumb{position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 var(--trk-lib-thumb,40px);width:var(--trk-lib-thumb,40px);height:var(--trk-lib-thumb,40px);overflow:hidden;border:1px solid var(--ui-border);border-radius:8px;background:var(--ui-field);color:var(--ui-muted)}
 .libThumb img{display:block;width:100%;height:100%;object-fit:cover}
 .libThumbFallback{font-size:19px;line-height:1}
 .libName{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .libSub{font-size:12px;color:var(--ui-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .libMeta{display:flex;gap:5px;flex:none}
 /* 💿🎤 アルバム／アーティストの棚のグループ見出し（trk171）：スクロール中はリストの上端に張りつく */
-.libGroupHead{position:sticky;top:0;z-index:2;display:flex;align-items:baseline;gap:8px;margin:6px 0 1px;padding:7px 12px;
+.libGroupHead{position:sticky;top:0;z-index:2;display:flex;align-items:baseline;gap:calc(8px * var(--trk-dens-gap,1));margin:calc(6px * var(--trk-dens-pad,1)) 0 1px;padding:calc(7px * var(--trk-dens-pad,1)) calc(12px * var(--trk-dens-pad,1));
   border-radius:10px;background:var(--ui-panel);border:1px solid var(--ui-border);font-size:14px;font-weight:800;color:var(--ui-text)}
 .libGroupName{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .libGroupSub{flex:none;max-width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:700;color:var(--ui-muted)}
@@ -385,7 +385,7 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 .histRow.auto{opacity:.6}
 
 /* ===== 10. スキン・ノーツ ===== */
-#skinGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+#skinGrid{display:grid;grid-template-columns:repeat(var(--trk-skin-cols,3),minmax(0,1fr));gap:calc(10px * var(--trk-dens-gap,1))}
 #skinNow{margin-bottom:10px}
 #skinNow .skinCard{width:100%;background:var(--ui-soft)}
 .skinChips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
@@ -429,7 +429,7 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 #skinManageBulk .miniBtn:disabled{opacity:.45;cursor:default}
 #skinManageCount{color:var(--ui-muted);font-weight:600;font-size:12px}
 @media (max-width:760px){ #skinFind,#skinManageFind{grid-template-columns:1fr} }
-.skinCard{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:11px 13px;border-radius:14px;text-align:left;
+.skinCard{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:calc(4px * var(--trk-dens-gap,1));padding:calc(11px * var(--trk-dens-pad,1)) calc(13px * var(--trk-dens-pad,1));border-radius:14px;text-align:left;
   font-family:var(--sk-font,inherit);
   border:2px solid var(--sk-border);background:var(--sk-bg);color:var(--sk-text)}
 .skinCard:hover{background:var(--sk-bg);color:var(--sk-text);border-color:var(--ui-accent)}
@@ -2133,3 +2133,32 @@ body.trk-zoom.trk-icon-fixed .trk-mobile-nav button > span[aria-hidden="true"]{f
 body.trk-zoom.trk-icon-fixed .trk-playerbar button{font-size:calc(16px * var(--trk-icon-zoom))}
 body.trk-zoom.trk-icon-fixed .trk-playerbar .trk-pb-play{font-size:calc(18px * var(--trk-icon-zoom)) !important}
 body.trk-zoom.trk-icon-fixed .trk-pb-art{font-size:calc(20px * var(--trk-icon-zoom))}
+
+/* ==========================================================================
+   🧱 trk244：表示の密度（余白・行間・列数）
+   利用者さんの相談「PC版では縮小化しても表示部分を減らして、全体の大きさを維持する」を、
+   Clementine／MusicBee の Compact の考え方（**文字は小さくしない。余白と行だけ詰める**）で実装したもの。
+   ・js/core.js の applyUiScale() が body へ trk-density-<段> を1つ乗せます（段は4つ）。
+   ・ここにある --trk-dens-* が、上の各欄の padding / gap / line-height / 列数 / サムネイルの大きさになります。
+   ・既定（normal）は、trk243 までと**同じ数値**です（見た目の既定値を変えない）。
+   ・font-size はどこでも変えません＝文字は読める大きさのまま、1画面に出る量だけ変わります。
+   ・--trk-skin-cols …スキンの棚の列数　--trk-lib-thumb …曲リストのジャケの大きさ（行の高さの主役）
+   ========================================================================== */
+:root{--trk-dens-pad:1;--trk-dens-gap:1;--trk-dens-line:1.5;--trk-skin-cols:3;--trk-lib-thumb:40px}
+
+/* ゆったり：125% 相当。余白を広めて、1画面の量を少し減らす（見出しが広く見える） */
+body.trk-density-roomy{--trk-dens-pad:1.18;--trk-dens-gap:1.14;--trk-dens-line:1.62;--trk-skin-cols:2;--trk-lib-thumb:46px}
+/* ふつう：100% 相当（既定＝今までどおり） */
+body.trk-density-normal{--trk-dens-pad:1;--trk-dens-gap:1;--trk-dens-line:1.5;--trk-skin-cols:3;--trk-lib-thumb:40px}
+/* ぎゅっと：75% 相当。行の余白とサムネイルを詰めて、文字はそのまま行数を増やす */
+body.trk-density-compact{--trk-dens-pad:.72;--trk-dens-gap:.8;--trk-dens-line:1.34;--trk-skin-cols:4;--trk-lib-thumb:32px}
+/* ぎっしり：50% 相当（いちばん詰める。MusicBee の Compact リストに近い見え方） */
+body.trk-density-dense{--trk-dens-pad:.55;--trk-dens-gap:.7;--trk-dens-line:1.24;--trk-skin-cols:5;--trk-lib-thumb:24px}
+/* 「縮小は詰めて見せる」が効いているとき（拡大率 75%・50%）は、カードを画面いっぱいに使って行数を稼ぐ
+   （文字は 100% のまま。trk222 の --trk-ui-zoom は 1 なので、ステージの拡大は起きない） */
+body.trk-scale-compact #stage .card{max-height:100%}
+
+/* スマホ型は指で触る大きさを優先するので、詰めすぎない（行の高さは .trk-mobile .libRow{min-height:52px} が守る） */
+body.trk-mobile.trk-density-roomy{--trk-skin-cols:2;--trk-lib-thumb:44px}
+body.trk-mobile.trk-density-compact{--trk-skin-cols:3;--trk-lib-thumb:40px}
+body.trk-mobile.trk-density-dense{--trk-skin-cols:4;--trk-lib-thumb:36px}

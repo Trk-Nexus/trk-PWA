@@ -1,6 +1,6 @@
 # trk! 開発引き継ぎ
 
-> **最終更新：2026-11-01**（`trk-PWA` の **trk243**）。アプリ本体は trk243（**設定のさがす**＝⚙ の上で言葉によりパネルを絞る）で、trk242 は**新しい版の知らせ**、trk241 は**スキンの棚の作り直し**、trk240 は**役割の書面**と `tools/check-set.mjs` の**契約**（`--json`）でした。`npm run check` は **1194 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.01-trk243`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
+> **最終更新：2026-11-01**（`trk-PWA` の **trk244**）。アプリ本体は trk244（**表示の密度**＝PCで縮小しても「文字を小さくせず、余白と行間を詰めて多く見せる」）で、trk243 は**設定のさがす**、trk242 は**新しい版の知らせ**、trk241 は**スキンの棚の作り直し**でした。`npm run check` は **1214 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.01-trk244`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
 >
 > 現在の仕様・守る条件・未確認事項の要約です。過去の詳細な変更履歴・検証記録は [`HANDOFF-ARCHIVE.md`](HANDOFF-ARCHIVE.md)、利用者向け仕様は [`../README.md`](../README.md) と [`guide/`](guide/)、権利表記は [`../NOTICE.md`](../NOTICE.md)、品質・安全確認は [`QUALITY-CHECKS.md`](QUALITY-CHECKS.md) と [`SECURITY.md`](SECURITY.md)。**レビューと実機確認のお願いは [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md)**、その指摘への対応は [`REVIEW-RESPONSE-2026-10-31.md`](REVIEW-RESPONSE-2026-10-31.md)、trk223 を実際の端末で見る手順は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)。
 
@@ -24,6 +24,7 @@
 
 | 版 | trk番号 | 中身（1行） | 日付 |
 | --- | --- | --- | --- |
+| （trk-PWA） | trk244 | **表示の密度**：拡大率の 75%・50% を「文字を小さくする」ではなく「余白・行間・列数を詰めて多く見せる」に使える（`uiScaleCompact`・既定オン）。密度は4段（ゆったり／ふつう／ぎゅっと／ぎっしり）で単独でも選べる。font-size はどこも変えない | 2026-11-01 |
 | （trk-PWA） | trk243 | **設定のさがす**：⚙ の上に「🔍 設定をさがす」。当たったパネルは開いて出し、当たらなければその場で隠す（空にすると元の開閉へ）。もともと隠れているものは出さない・保存は増やさない | 2026-11-01 |
 | （trk-PWA） | trk242 | **新しい版の知らせ**：新しい版が入ったら、画面の下に小さな帯（「いま更新する」／「あとで」）。遊んでいる途中は出さず、タイトルへ戻ったら出す。設定に「🔄 アプリの更新」。登録は `js/sw-update.js` へ | 2026-11-01 |
 | （trk-PWA） | trk241 | **スキンの棚の作り直し**：カードから ⭐／🚫、隠した数を棚の下に出して 1 タップで戻す、整理の一覧に さがす・絞る・**まとめて隠す／戻す**。使用中のスキンは隠しても棚に残す（消さない・当てられる） | 2026-11-01 |
@@ -77,11 +78,11 @@
 | ミッションと決定事項 | [`HANDOFF-TRK-STANDALONE.md`](HANDOFF-TRK-STANDALONE.md)、配布URLの決定は [`ORIGIN.md`](ORIGIN.md) |
 | 配り方 | GitHub Pages（`.github/workflows/pages.yml`）＋ `manifest.webmanifest` ＋ `sw.js`。配布ZIPは作りません |
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
-| trk222〜trk227 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ） |
+| trk222〜trk227・trk244 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244、既定 `normal`）と `uiScaleCompact`（trk244、既定オン）**。trk244 の2つも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1028 pass / 0 fail**（trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件・trk229 の18件・trk230 の15件・trk231 の12件・trk232 の23件・trk233 の11件を追加）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.01-trk243@<スコープ>`**（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
-| まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
+| テスト | `npm run check` **1214 pass / 0 fail**（trk244 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.01-trk244@<スコープ>`**（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk244 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | 新リポジトリ `trk-Standalone` はまだ空。Pages の有効化と初回デプロイは未実施 |
 
 **この系統で変えてはいけないこと**：§3 の条件に加えて、**実行時に外部へ通信しない**（CDN・外部API・解析タグを足さない）、**端末内データだけ**、**GPL-3.0-or-later のクレジットを消さない**、**保存キーを変えるときは移行を書く**（[`MIGRATIONS.md`](MIGRATIONS.md)）。
@@ -588,7 +589,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | 📦 まるごとバックアップ・ZIP CRC・復元 | `js/backup.js`（歌詞・字幕キーの許可、アドオン概要の確認、復元アドオンの無効化）、`js/zip-io.js`、`js/custom.js`（.stpackのストリーム読書き・`packIdentityFromManifest`）、`tests/backup-codec.test.mjs`、`tests/backup-restore.test.mjs`、`tests/pack-identity.test.mjs`、`tests/pack-zip-stream.test.mjs`、`tests/zip-io.test.mjs`、`tools/check-security.mjs` |
 | CBZ／ZIP書斎のページ展開上限 | `js/study-room.js`（`studyAlbumLimits`・`studyImportArchiveBook`）、`tests/storage-limits.test.mjs` |
 | Endfield楽曲台帳・曲名fixture・検査 | `docs/ARKNIGHTS-ENDFIELD-MUSIC.md`、`tools/endfield-zeroth-directive-tracklist.json`、`tools/endfield-msr-albums-tracklist.json`、`tools/check-repo.mjs` |
-| Service Worker | `sw.js`（**このリポジトリの現行cache名：`trk-v2026.11.01-trk243`＝trk243。名前に `@<スコープ>` が付きます（`/trk-PWA/` なら `@trk-pwa`）**。上流の配布版は `trk-v2026.10.29-trk219`＝trk219。**配布ZIP（1.1.7）は `trk218`**、配布済みの 1.1.6 は `trk217`、1.1.5 は `trk216`、1.1.4 は `trk214`。1.1.2 は `trk211`、1.1.1 は `trk210`、1.1.0 は `trk208`、1.0.9 は `trk207`。アプリ本体が変わらない版では cache 名を上げない） |
+| Service Worker | `sw.js`（**このリポジトリの現行cache名：`trk-v2026.11.01-trk244`＝trk244。名前に `@<スコープ>` が付きます（`/trk-PWA/` なら `@trk-pwa`）**。上流の配布版は `trk-v2026.10.29-trk219`＝trk219。**配布ZIP（1.1.7）は `trk218`**、配布済みの 1.1.6 は `trk217`、1.1.5 は `trk216`、1.1.4 は `trk214`。1.1.2 は `trk211`、1.1.1 は `trk210`、1.1.0 は `trk208`、1.0.9 は `trk207`。アプリ本体が変わらない版では cache 名を上げない） |
 | 🚪 メディアプレイヤーの抜け方（trk206） | `js/media-player-mode.js`（`mediaExitPlan`・`closeMedia`）、`js/library.js`（`previewContinue`）、`js/core.js`（`mediaReloadOnExit`）、`js/i18n-options.js`＋`index.html`（❓謎設定）、`tests/trk206-media-exit.test.mjs` |
 | 📦 配布ZIPの組み立て（1.0.8〜・現在 1.1.7） | `tools/prepare-release.mjs`（`npm run release`。`index.html`＋`README.txt`＋`trk-files/` に組み、形を検査してZIPにする）、`release/README.txt`（配布用のかんたん起動。`--readme` を省くとこれが入る。**版と `README-1.x.y.md` の名前は `--version` とそろえる**）、`tests/release-layout.test.mjs`（形・時刻・README の版） |
 | 📂 フォルダー共有の共通部品（trk208） | `js/shared-folders.js`（`window.TrkSharedFolders`＝`plan`／`uniqueLabel`／`mergeScans`／`walk`／`pathParts`／`readFileAt`。DOM・IndexedDB・書き込みなし）、`js/library.js`（登録簿 `"folders"`・`addSharedFolder`／`readSharedFolders`／`restoreSharedFolders`／`folderAutoKickShared`／`removeSharedFolder`／`renderSharedFolderList`）、`index.html`（`#libShareVideoBtn`・`#libSharedFolderList`）、`tests/trk208-shared-folders.test.mjs` |
@@ -628,11 +629,12 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 
 | 検査 | 結果 | 範囲・注意 |
 |---|---|---|
-| `npm run check` | **1028 pass / 0 fail** | trk219 の746 から、trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件・trk229 の18件・trk230 の15件・trk231 の12件・trk232 の23件・trk233 の11件を足して 1028。Static 0 failure・0 warning・Security 64/0。`TZ=Asia/Tokyo`・`TZ=America/Los_Angeles` でも同じ（F1 の再発防止） |
+| `npm run check` | **1214 pass / 0 fail**（trk244 時点） | 版ごとの追加件数は §7 の各見出しに記す（trk244 の密度で **20件**）。Static 0 failure・0 warning・Security 64/0。`TZ=Asia/Tokyo`・`TZ=America/Los_Angeles` でも同じ（F1 の再発防止） |
 | 書体（フォント）スキン（trk228） | **OK（9件）** | `tests/type-skins.test.mjs`。9 種の登録・カテゴリ `type`・見本の文字（和文＋欧文）・**外部URL／`@font-face` を含まない**こと・太さ／字間／行間／大文字化の値・`catType` の 4 言語・棚カードへの書体の受け渡し・`applySkin` の `--font-*`・既存 44 種に `type` が付かないこと。配色は `tests/skin-contrast.test.mjs` が 53 種すべてで AA を検査 |
 | リピートの段・シャッフルの範囲（trk227） | **OK（17件）** | `tests/trk227-repeat-shuffle-options.test.mjs`。`nextRepeat` の段（3段／2段・全曲は「なし」へ）、オンで 🔁 が1曲⇄なしを往復し全曲にならないこと、シャッフル中の ⏭ が一覧の中だけから選ぶこと（オフなら外も選ぶ）、`shufflePool` の写し、再生画面の選択肢が2つになること、4言語 × 4キー |
 | 下の再生バーを触ってシーク（trk226） | **OK（27件）** | `tests/trk226-player-bar-player.test.mjs`。触れる条件（画面・読み込み・長さ・謎設定）の純粋関数、謎設定オンで `currentTime` が動かないこと、`previewRestartFor`、`shufflePick` の乱数の位置、🎲🔁 の設定共有と合図、別窓の組み立て（11部品）と描き直し・小窓が二重に開かないこと・PC型だけ ⧉ を出すこと |
 | `node tools/check-repo.mjs` | **0 failure / 0 warning** | 文書・`sw.js` の cache 名・読み込み順・名前空間の検査を含む |
+| 表示の密度（trk244） | **OK（純関数・CSSの約束・配線・4言語・20件）** | `tests/trk244-density.test.mjs`。段の計算（50→ぎっしり・75→ぎゅっと・100/125→ふつう・壊れた値→ふつう）／**125% は trk222 の拡大を消さない**／詰めオンで `--trk-ui-zoom:1`＋`trk-scale-compact`／密度の規則に `font-size` が無い／`#libList` の 640px を動かさない／スマホ型は下限を上げる／`applyUiScale` は棚を作り直さない／保存キーは `uiDensity`・`uiScaleCompact` の2つだけ／4言語 |
 | 設定のさがす（trk243） | **OK（純関数・配線・4言語・22件）** | `tests/trk243-settings-find.test.mjs`。語の分け方（全角空白も）・AND・部分一致（大小無視）／当たったものだけ＋件数／**もともと隠れているものは出さない**／当たったパネルは開く・当たらなければ `hidden`／空に戻すと**元の開閉**／**保存キーを作らない**／設定を開くたびまっさら／`Esc`／4 言語 |
 | 新しい版の知らせ（trk242） | **OK（純関数・配線・4言語・23件）** | `tests/trk242-update-notice.test.mjs`。初回は出さない／待っている・入れ替わったときは出す／「あとで」はその画面では出さない／遊んでいる途中は後回し（`title` だけその場）／確かめるのは 30 分に 1 回まで・見えていないときは確かめない／結果は failed・ready・latest／登録は `sw-update.js` にあり `main.js` には無い／開き直すのは 1 か所／**保存キーを作らない**／`file:` では登録しない／4 言語 |
 | スキンの棚の出し入れ（trk241） | **OK（純関数・配線・4言語・28件）** | `tests/trk241-skin-shelf-hide.test.mjs`。最後の 1 種は隠せない（`reason:"last"`）／使用中は隠しても棚に残る／隠しても `applySkin` は変わらない／整理の絞り込み（⭐・🚫・まだ使っていない）と検索の重ね／まとめて隠して戻すと元どおり／棚が空にならない／**新しい保存キーが無い**／カードの ☆・🚫 が当てるのと別のボタン／4 言語 |
@@ -795,6 +797,13 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **🧱 trk244：表示の密度（2026-11-01）**：利用者さんの相談「**PC版では縮小化しても表示部分を減らして、全体の大きさを維持する**（Clementine 等の基本思想を設定として）」。trk222 の拡大率は 75%・50% で**文字まで小さく**なるので、縮小の目的（1画面に多く出す）に対して読みやすさを損ねていました。設計＝[`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md)。
+  - **足したもの**：密度の4段（`roomy`／`normal`／`compact`／`dense`）と、**縮小を「詰める」に使う**設定 `uiScaleCompact`（既定オン）。オンだと 75%・50% はステージを拡大縮小せず（`--trk-ui-zoom:1`）、密度だけ `compact`・`dense` にする＝**文字と全体の大きさは 100% のまま、見える行数だけ増える**。125% は従来どおり「文字を大きく」（密度は据え置き）。密度は拡大率と独立にも選べる（100% で `dense` など）。
+  - **作り方の約束**：JS は `body` へ `trk-density-<段>` を1つ出すだけ。余白・行間・棚の列数・曲リストのジャケの大きさは `css/style.css` の `--trk-dens-*` が決める（`normal` の値は trk243 までと同じ＝**既定の見た目を変えない**）。**`font-size` はどこでも変えない**（テストで縛る）。棚は作り直さない（スクロール位置とフォーカスを飛ばすため）。スマホ型は `.trk-mobile .libRow{min-height:52px}` の床を残し、詰めすぎない下限を当てる。
+  - **保存**：`uiDensity`（既定 `normal`）と `uiScaleCompact`（既定オン）の2つ。どちらも `core.settings` の中なので **localStorage のキーは増やさない**。`?reset=all` で既定へ戻る。旧版からの移行は不要（`docs/MIGRATIONS.md` に行を足さない）。
+  - **純粋関数**：`densityFromScale`・`uiScaleShrinks`・`uiDensityAuto`・`uiDensityValue`。`tests/trk244-density.test.mjs`（**20件**）。既存の `tests/trk223-*`（`.songCol` の gap が `calc(14px * var(--trk-dens-gap,1))` に）・`tests/trk226-*`（`DEFAULT_ON` に `uiScaleCompact` 追加）の期待値を同じ commit で更新。`npm run check` は **1214 pass / 0 fail**、`check-repo` 0/0、`check:a11y` 8項目 0/0。`sw.js` の cache は **`trk-v2026.11.01-trk244@<スコープ>`**。**実機は未確認**（設計書 §6）。
+  - **決めなかったこと**：密度の自動切替（窓の大きさで変える）／再生バー・ゲーム画面への密度の適用／`emit("density")` を使う担当（まだ無い）／設定欄からの「窓の大きさに合わせて自動」の導線。
 
 - **🔍 trk243：設定のさがす（2026-11-01）**：⚙ 設定のパネルが **19 枚**（`index.html` の `details.panel` を数えた数）になり、**目当ての項目を目で探すしかない**状態でした。設計＝[`SETTINGS-FIND-TRK243-2026-11-01.md`](SETTINGS-FIND-TRK243-2026-11-01.md)。
   - **足したもの**：`js/settings-find.js`。⚙ の上に **「🔍 設定をさがす」**。①**いま画面に出ている言葉**（`textContent`）で絞る＝辞書のキーを別に持たないので、**文言を足しても検索が置いていかれない**（4 言語のどれでも当たる） ②空白（全角も）で区切った語は **AND** ③当たったパネルは**開いて**出す ④当たらなければ**その場だけ隠す**（空にすると**元の開閉**へ） ⑤`✕`・`Esc`・設定を開いたときに元へ ⑥件数と「見つかりませんでした」。

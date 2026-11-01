@@ -441,6 +441,20 @@
             <div class="hint" data-i18n="uiScaleHint"></div>
             <label class="check"><input id="fixedIconSize" type="checkbox"><span data-i18n="fixedIconSize"></span></label>
             <div class="hint" data-i18n="fixedIconSizeHint"></div>
+            <!-- 🧱 trk244：表示の密度（余白と行間を詰めて、多く見せる） -->
+            <label class="field">
+              <span data-i18n="uiDensityLabel"></span>
+              <select id="uiDensity">
+                <option value="roomy" data-i18n="uiDensityRoomy"></option>
+                <option value="normal" data-i18n="uiDensityNormal"></option>
+                <option value="compact" data-i18n="uiDensityCompact"></option>
+                <option value="dense" data-i18n="uiDensityDense"></option>
+              </select>
+            </label>
+            <div class="hint" data-i18n="uiDensityHint"></div>
+            <label class="check"><input id="uiScaleCompact" type="checkbox"><span data-i18n="uiScaleCompactLabel"></span></label>
+            <div class="hint" data-i18n="uiScaleCompactHint"></div>
+            <div id="uiDensityState" class="hint status" role="status" aria-live="polite"></div>
             <!-- 🎛 trk222：スマホ型で、エフェクトの欄をどのタブに置くか -->
             <label class="check"><input id="fxInLibrary" type="checkbox"><span data-i18n="fxInLibrary"></span></label>
             <div class="hint" data-i18n="fxInLibraryHint"></div>

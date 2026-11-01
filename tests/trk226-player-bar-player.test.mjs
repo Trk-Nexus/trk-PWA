@@ -421,7 +421,9 @@ describe("trk226 設定と文言", () => {
 
   test("設定の欄（ui-prefs）は、既定がオンのものとオフのものを取り違えない", () => {
     const prefs = read("js/ui-prefs.js");
-    assert.match(prefs, /DEFAULT_ON = new Set\(\["fixedIconSize", "uiModeLock"\]\)/);
+    /* 既定オンの集合は今後増えるので、「この2つが入っている」形で見張る（trk244 で uiScaleCompact が増えた） */
+    assert.match(prefs, /DEFAULT_ON = new Set\(\["fixedIconSize", "uiModeLock"[^\]]*\]\)/);
+    assert.match(prefs, /DEFAULT_ON = new Set\(\[[^\]]*"uiScaleCompact"[^\]]*\]\)/, "🧱 trk244：縮小＝詰めて見せる は既定オン");
     assert.match(prefs, /playerBarSeekLock: "playerBarSeekLock"/);
   });
 

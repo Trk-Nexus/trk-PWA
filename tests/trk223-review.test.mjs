@@ -58,7 +58,8 @@ describe("trk223 ① スマホ型のエフェクトのタブで、▶ TV と欄�
     assert.equal(win.value, "flex", "trk222 の display:block をやめた");
     /* 列の向きと gap は css/style.css の .songCol から引き継ぐ */
     const base = computed(parseRules(styleCss, { file: "css/style.css" }), "gap", songCol, [html, bodyFor({ view: "effects" })]);
-    assert.equal(base.value, "14px", "欄の間隔は 14px のまま");
+    /* 🧱 trk244：密度で余白が動くので、既定（--trk-dens-gap:1）で 14px になる式になった */
+    assert.equal(base.value, "calc(14px * var(--trk-dens-gap,1))", "欄の間隔は既定で 14px のまま");
     const baseDisplay = computed(parseRules(styleCss, { file: "css/style.css" }), "display", songCol, [html]);
     assert.equal(baseDisplay.value, "flex");
   });
