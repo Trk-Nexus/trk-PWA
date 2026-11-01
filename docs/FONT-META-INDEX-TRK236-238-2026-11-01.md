@@ -74,7 +74,20 @@
 | 索引の「ひとこと」が出ない | `pack.json` にも目録にも `note` が無い（古いパック＋目録を読んでいない） |
 | 「使う」が押せない | すでに使用中（`使用中`）。別のパックを当てると切り替わる |
 
-## 6. やらないこと
+## 6. 配布（2026-11-01）
+
+Drive の `trk-PWA-trk238-2026-11-01`（親は trk235 と同じ）に 4 点。**ハッシュの値は ZIP の外（Drive の README と `SHA256SUMS`）にだけ書きます**（trk223 の F2＝docs は standalone のZIPの中に入るため、ここには書きません）。
+
+| ファイル | 大きさ | Drive の ID |
+| --- | --- | --- |
+| `trk-standalone-2026-11-01-trk238.zip` | 7,673,478 B・283 エントリ | `1hQGSFv_C665EfVy-Fy1CGMtE0glHaw8G` |
+| `trk-handover-2026-11-01-trk238.zip` | 638,964 B・71 エントリ（docs とリポジトリ直下の .md／.txt） | `10Ef5NSLw0RZsjIfq-hKKr0LKJyttrwo3` |
+| `README-まず読む-2026-11-01-trk238.txt` | 5,200 B | `12Wz_PTdhAvIKDOJZ4OZWg-txUi0v238v` |
+| `SHA256SUMS-trk238-2026-11-01.txt` | 204 B | `1hizZrf_5jEP5yQ90OMmjgsGdGBsXcdMg` |
+
+倉庫への返事：`trk-Avatar-Library-手紙-2026-11-01` に `返事5-trk236〜238を実装しました-2026-11-01.md`（7,241 B・ID `1vYU2hwr6YIOQPj5Y0pM9bUbe4yF_oblI`）。控えは [`LETTER-TRK238-REPLY-2026-11-01.md`](LETTER-TRK238-REPLY-2026-11-01.md)。
+
+## 7. やらないこと
 
 - 索引の保存（古い行が残るため）。**起動時ではなく、開いたときに作り直す**。
 - 目録にない項目を作ること（`note`／`tags` は任意。無ければ出さない）。
