@@ -1166,6 +1166,23 @@
               </div>
               <div class="hint" id="packPickStatus"></div>
             </div>
+            <!-- 🔤 trk238：入れているパックの書体の索引（起動のたびに manifest から作り直す・保存しない） -->
+            <details id="packFontIndexPanel" class="subPanel">
+              <summary data-i18n="fontIndexTitle"></summary>
+              <div class="hint" data-i18n="fontIndexHint"></div>
+              <div class="miniActions">
+                <input id="packFontIndexSearch" type="search" data-i18n-aria="fontIndexSearch" data-i18n-placeholder="fontIndexSearch" autocomplete="off">
+                <select id="packFontIndexOrder" data-i18n-aria="fontIndexOrder">
+                  <option value="family" data-i18n="fontIndexOrderFamily"></option>
+                  <option value="pack" data-i18n="fontIndexOrderPack"></option>
+                  <option value="size" data-i18n="fontIndexOrderSize"></option>
+                </select>
+              </div>
+              <div class="miniActions" id="packFontIndexTags" hidden></div>
+              <div class="hint" id="packFontIndexSummary"></div>
+              <div id="packFontIndexList"></div>
+              <div class="hint status" id="packFontIndexStatus"></div>
+            </details>
             <!-- verified.js が各パックに「✔公認・指紋・📋 公認リスト用にコピー」を追加します -->
             <div id="packList"></div>
             <div id="packStatus" class="hint status"></div>
@@ -1192,6 +1209,8 @@
               </div>
               <div class="hint" data-i18n="catalogBundleHint"></div>
               <div class="hint" data-i18n="catalogSetHint"></div>
+              <!-- 🔤 trk237：雰囲気のタグで一覧を絞る（目録の fonts[].tags） -->
+              <div class="miniActions" id="catalogTagFilter" hidden></div>
               <div class="hint" id="catalogSummary"></div>
               <!-- 💾 trk234：この目録のぶんを、まとめて消す（確認は1回） -->
               <div class="miniActions" id="catalogBulkActions" hidden>
