@@ -68,7 +68,7 @@ Phase 1の時点で、上流1.1.8から変えているのは次だけです。
 | `js/mobile-settings-panels.js` | 設定で開いた欄の記憶（スマホだけ） |
 | `js/ios-pwa.js` | iPhoneのインストール案内・音のセッション・言い換え |
 | `manifest.webmanifest` | `id`・`display: standalone`・アイコン一式（180/192/512/maskable/1024） |
-| `sw.js` | install でアプリの殻を先にキャッシュ（trk220） |
+| `sw.js` | install でアプリの殻を先にキャッシュ（trk220）。登録は trk242 から **`js/sw-update.js`**（新しい版の知らせと一緒に置いています。[`UPDATE-NOTICE-TRK242-2026-11-01.md`](UPDATE-NOTICE-TRK242-2026-11-01.md)） |
 | `index.html` | apple-touch-icon 180・`apple-mobile-web-app-*`・取込の折りたたみ・iOSの欄 |
 | `icons/icon-180.png` ほか | ホーム画面用のアイコン（同じ絵柄の大きさ違い） |
 | `js/i18n.js` | iOS向けの文言（4言語） |

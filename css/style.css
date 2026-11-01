@@ -1804,6 +1804,19 @@ body.plDragging .libTab[data-pl]{outline:1px dashed var(--ui-border);outline-off
   border:0;cursor:pointer}
 .favMenuItem:hover,.favMenuItem:focus-visible{background:rgba(127,127,127,.22)}
 .favMenuItem.on{background:var(--ui-accent);color:var(--ui-on-accent)}
+/* 🔄 trk242：新しい版の知らせ（画面の下の小さな帯）。窓で覆わない・遊びを止めない */
+.swUpdateBar{position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(96px + env(safe-area-inset-bottom, 0px));z-index:75;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+  max-width:min(94vw, 560px);padding:9px 12px;border-radius:14px;
+  background:var(--ui-field);color:var(--ui-text);border:1px solid var(--ui-accent);
+  box-shadow:0 10px 28px rgba(0,0,0,.38);font-size:13px;font-weight:700;line-height:1.35}
+.swUpdateBar[hidden]{display:none}
+.swUpdateBar>span{flex:1 1 190px;min-width:0}
+.swUpdateBar button{padding:6px 12px;border-radius:10px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;
+  background:var(--ui-soft);color:var(--ui-text);border:1px solid var(--ui-border)}
+.swUpdateBar #swUpdateNow{background:var(--ui-accent);color:var(--ui-on-accent);border-color:var(--ui-accent)}
+@media (max-width:760px){ .swUpdateBar{bottom:calc(84px + env(safe-area-inset-bottom, 0px));font-size:12px} }
 .favToast{position:fixed;left:50%;bottom:6%;transform:translateX(-50%);z-index:70;padding:10px 16px;border-radius:999px;
   background:rgba(20,20,24,.94);color:#fff;border:1px solid var(--ui-border);font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .favDots{padding:2px 9px;font-size:15px;line-height:1.5;border-radius:999px;background:var(--ui-field);
