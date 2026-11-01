@@ -56,6 +56,7 @@
   - **ライブ実測**：`https://trk-nexus.github.io/trk-PWA/` が200でアプリを出し、`🛟` の中に `🎨 ノーツ設定を書き出し／💾 全設定を書き出し／📥 設定を読み込み`（trk247 のUI）が見えました。`.../sw.js` は **`const CACHE = "trk-v2026.11.02-trk250"`** ＝trk250 がそのまま配られています
 - [x] **配布ZIPを作り直し**（trk250）。旧URLが入っていた trk248 版に代えて、Drive の `trk-PWA-trk250-2026-11-02` に standalone／handover／README／SHA256SUMS の4点を置きました（**ハッシュはZIPの中の文書ではなく README と SHA256SUMS にだけ**）
 - [ ] **実機確認**（trk247・trk248 の欄）：新しいオリジンで ⚙ → 💾 端末の保存 の 📤📥、モバイルのパネル載せ、初回案内の1行
+- [ ] **安定版 `trk` の初回更新**（レビュー C-2）：`node tools/make-stable.mjs --repo=../trk` で差分を見てから `--apply` → 上流側で `npm run check` → ブランチ・PR。**①スコープ印の掃除と④設定保存のマージは trk-PWA の実体ごと入るので、上流に個別の PR は要りません**。実機の通しが終わって1回目
 - [ ] **④告知の判断**：2026-11-02 のレビューで書き分けが決まりました（必須4）。**trk-PWA は開発版**なので、一般向けは**安定版 `https://trk-nexus.github.io/trk/`**、先に試してくれる人だけ `https://trk-nexus.github.io/trk-PWA/`（「変わることがある」と添える）。**告知は「安定版 `/trk/` を trk-PWA の内容で一度更新し、実機で確かめたあと」**（いまの `/trk/` は trk219 のまま＝iPhone 向け仕上げ・再生バー未収録）。文章そのものは Drive 版でよい判断は変わっていません
 - [x] **上流 `trk` も同日に組織へ移籍**（2026-11-02・trk251 で追記）。`https://trk-nexus.github.io/trk/` がライブ確認済み。**同じ組織に入ったので、再び同じオリジン `https://trk-nexus.github.io` を共有**しています → §6
 - [ ] `docs/REVIEW-REQUEST-*` など**履歴の文書は古いURLのまま**にしています（書き換えると記録が偽るため）
