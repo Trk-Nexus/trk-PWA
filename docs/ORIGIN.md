@@ -199,7 +199,7 @@ SSO を有効にしている場合は、招待されたアカウント側で Aut
 ### 7.1 実施状況（2026-11-02・trk252）
 
 - **B は実装済み**：trk-PWA のキャッシュ名を `trkPWA-` 始まりにしました（`CACHE = "trk-v…"` の版名は従来の形のまま・実体は `trkPWA-trk-v2026.11.02-trk252@trk-pwa`）。上流の無印 `trk-` 掃除の射程から外れるので、**上流が直らないうちもオフライン殻・3D vendor・📥 共有受け口は消えません**。うち側の掃除は「`trkPWA-…`」と「旧方式の `trk-…@trk-pwa`」だけを見るので、上流のキャッシュには触りません（`js/share-inbox.js` の名前も同じ接頭辞にそろえてあり、`tests/trk165` が両者の一致を見ています）
-- **A はパッチまで作成**：上流 `Trk-Nexus/trk` の activate にスコープ印を見る条件を足す＋URL更新（24か所）＋`tools/make-icons.html` の焼き込み住所をやめる、の1コミット。`06cef87` に `git apply --check` が通ることを実測。**PR は作れませんでした**（実測：`git push` も `POST /repos/Trk-Nexus/trk/git/refs` も **403 `Resource not accessible by integration`**＝Arena の GitHub App のリポジトリ選択に `trk` が入っていない。`permissions.admin=true` は *ユーザー自身の* 権限の話で、アプリのアクセス範囲とは別物）→ パッチと手順を Drive に置きました。**App の設定で `Trk-Nexus` の全リポジトリにアクセス許可すれば、こちらで PR まで打てます**
+- **A は「当てる道具」にした**（trk252r2）：上流 `Trk-Nexus/trk` の activate にスコープ印を見る条件を足す＋URL24か所の更新＋`tools/make-icons.html` の焼き込み住所をやめる、を **`tools/backport-trk-scope-tag.mjs`** にした。上流 main `06cef87` に素で当てて、上流自身の `npm run check`（**tests 747 pass / 0 fail**）と二重適用時のスキップまで実測済み。**このセッションからは PR を代行できません**（実測：`git push` と `POST /repos/Trk-Nexus/trk/git/refs` が 403、同じ資格情報で `trk-PWA` の ref 作成は OK＝**App のリポジトリ選択に `trk` が入っていない**。`permissions.admin=true` は*ユーザー自身*の値）。手順・1行検査・直し方は [`UPSTREAM-TRK-SCOPE-TAG-2026-11-02.md`](UPSTREAM-TRK-SCOPE-TAG-2026-11-02.md)
 - **C は不採用**（0円方針＝独自ドメインを取らない／別アカウントの Pages は運用が増える）
 - 保存データの共有（同一オリジン）は**そのまま許容**します。設定・記録は同名キーで読み合いますが、同じアプリの分家なので形で互換で、実害の報告も出ていません
 

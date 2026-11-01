@@ -51,7 +51,7 @@
 - [x] transfer 実行（2026-11-02・trk250）
 - [x] `og:url`・`og:image`・README・docs のURL更新（`docs/PWA.md`・`docs/ORIGIN.md`・`docs/PERMISSIONS.md`・`docs/HANDOFF-TRK-STANDALONE.md`・`docs/PLAN-R6-PHASE4-TYPOGRAPHY-2026-11-01.md`・`docs/PREFS-TRANSFER-TRK247-2026-11-01.md` を追記・更新）
 - [x] この文書（経緯の記録）
-- [x] **Pages のビルド確認（済み・実測）**：组织移籍後も Actions は動きます（`Deploy GitHub Pages` と `Check` が main 入力で **completed / success**、組織側の Actions 設定変更は不要でした）。
+- [x] **Pages のビルド確認（済み・実測）**：組織移籍後も Actions は動きます（`Deploy GitHub Pages` と `Check` が main 入力で **completed / success**、組織側の Actions 設定変更は不要でした）。
   - ⚠ **`GET /repos/Trk-Nexus/trk-PWA/pages/builds` は `status=null` のまま**です。これは壊れではなく、**Source が `GitHub Actions` の Pages ではこの API が埋まらない**ため（`gh api repos/Trk-Nexus/trk-PWA/pages` → `build_type=workflow`・`html_url=https://trk-nexus.github.io/trk-PWA/`・`https_enforced=true`）。**見るものは Workflow の実行結果**
   - **ライブ実測**：`https://trk-nexus.github.io/trk-PWA/` が200でアプリを出し、`🛟` の中に `🎨 ノーツ設定を書き出し／💾 全設定を書き出し／📥 設定を読み込み`（trk247 のUI）が見えました。`.../sw.js` は **`const CACHE = "trk-v2026.11.02-trk250"`** ＝trk250 がそのまま配られています
 - [x] **配布ZIPを作り直し**（trk250）。旧URLが入っていた trk248 版に代えて、Drive の `trk-PWA-trk250-2026-11-02` に standalone／handover／README／SHA256SUMS の4点を置きました（**ハッシュはZIPの中の文書ではなく README と SHA256SUMS にだけ**）
@@ -83,4 +83,5 @@
 > **組織に App を入れても、リポジトリ単位の選択に入っていないと、そのリポジトリには push も ref 作成もできない。**
 > `gh api repos/Trk-Nexus/trk` は `permissions.admin=true` を返します（＝**ユーザー自身**の権限の値）。ところが git push は 403、`POST /repos/Trk-Nexus/trk/git/refs` は **403 `Resource not accessible by integration`** でした。
 > 判別式：**403 `...by integration` なら「アプリのアクセス範囲」の問題**／404 なら「そもそも見えていない」。
-> 解決は GitHub の 組織 → 設定 → 第三方的访问（Third-party Access）→ Arena → Repository access を **All repositories**（または `trk` を追加）にするだけ。
+> 解決は GitHub の 組織 → 設定 → サードパーティのアクセス（Third-party Access）→ Arena → Configure → Repository access を **All repositories**（または `trk` を追加）にするだけ。
+> **2026-11-02 に権限を適用したあと再試行したが、まだ `trk` への書き込みは 403**（おなじ資格情報で `trk-PWA` の ref 作成は OK）。→ 上流への適用は `tools/backport-trk-scope-tag.mjs`（道具）にまとめました＝[`UPSTREAM-TRK-SCOPE-TAG-2026-11-02.md`](UPSTREAM-TRK-SCOPE-TAG-2026-11-02.md)
