@@ -48,7 +48,9 @@
 
 相手の `docs/2026-11-01-書体の組み合わせとエディター設定.md` に応じる形。**app 側で決める4点**（役の数／描画の割り当て／`pack.json` に書くか／UI）への回答はこれ。
 
-### 3.1 採用する（trk246 として実装したい範囲）
+### 3.1 採用する（**trk246 として実装済み**・2026-11-01）
+
+> **実装の記録は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md)**（段階② `pair` まで・16件のテスト・見送りと実機確認項目）。この §3 は方針を決めた当時のまま置いてある。
 
 - **段階②`pair`だけ**を先に実装する（`display`＝見出し用 と `body`＝本文用の2役）。③`roles`・④`digits` は**データを受けられる形にして出すだけ**（UI は作らない）。
 - 保存は **`settings.typography`**（新規・`core.settings` の中。localStorage のキーは増やさない）。書式は相手の §6 と同じ：`{ format:"trk-typography", version:1, pairing, base, scale, slots:{ display:{family,weight,…}, body:{…} } }`。
