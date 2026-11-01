@@ -46,7 +46,7 @@
 
    🔍 trk243（2026-11-01）：**設定のさがす**（js/settings-find.js）を足しました。設定のパネルが
    19 枚になり、目で探すしかなかったためです。index.html・css/style.css が変わったので、また上げます。 */
-const CACHE = "trk-v2026.11.01-trk246";
+const CACHE = "trk-v2026.11.01-trk247";
 const CACHE_PREFIX = "trk-";
 const SCOPE = new URL(self.registration.scope);
 const VENDOR_PREFIX = "assets/vendor/";

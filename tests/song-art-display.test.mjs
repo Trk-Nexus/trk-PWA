@@ -81,7 +81,7 @@ test("譜面オプション3種は既定オフで、謎設定に置き、4言語
     assert.match(mainSource, new RegExp(`\\["${key}", "${key}"\\]`), `${key} persists on change`);
     assert.equal((optionsSource.match(new RegExp(`\\b${key}:`, "g")) || []).length, 4, `${key} is localized in four languages`);
   }
-  const videoExport = between(coreSource, "function exportPrefs(kind) {", "\nfunction parseHashParams");
+  const videoExport = between(coreSource, "function prefsExportPayload(kind) {", "\nfunction exportPrefs(kind)");   /* trk247：書き出しの対象は1か所にまとめた */
   const videoReset = between(coreSource, "function resetVideoPrefs() {", "\nfunction resetAudioPrefs");
   const safeMode = between(coreSource, "function enterSafeMode() {", "\nfunction resetKeysPrefs");
   for (const key of ["artWallpaperBg", "useStudyArtwork", "hideArtworkDuringChart", "specArtwork"]) {

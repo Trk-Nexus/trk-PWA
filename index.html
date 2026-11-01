@@ -1331,6 +1331,19 @@
             </div>
             <label class="check"><input id="ignoreLimitsChk" type="checkbox"><span data-i18n="ignoreLimits"></span></label>
             <div class="hint" data-i18n="ignoreLimitsHint"></div>
+            <!-- 📤📥 trk247：設定の書き出し・読み込み（これまで 🛟 緊急復旧にしか無かった導線を、保存の話をしに来る場所へ） -->
+            <h3 data-i18n="storageTransferTitle"></h3>
+            <div class="hint" data-i18n="storageTransferHint"></div>
+            <div class="miniActions">
+              <button id="storageExportAllBtn" type="button" data-i18n="storageExportAllBtn"></button>
+              <button id="storageExportCoreBtn" type="button" data-i18n="storageExportCoreBtn"></button>
+              <button id="storageExportNotesBtn" type="button" data-i18n="storageExportNotesBtn"></button>
+              <label class="fileBtn small">
+                <input id="storageImportFile" type="file" accept="application/json,.json" hidden>
+                <span data-i18n="storageImportBtn"></span>
+              </label>
+            </div>
+            <div id="storageTransferState" class="hint status" role="status" aria-live="polite"></div>
           </details>
 
           <!-- 🍎 iPhone / iPad の案内（js/ios-pwa.js）。ほかの端末では hidden のまま出しません -->
@@ -1600,6 +1613,7 @@
                 <span>📥 設定を読み込み</span>
               </label>
             </div>
+            <p class="hint" data-i18n="emergencyTransferNote"></p>
             <div class="hint" style="margin-top:8px">
               <details>
                 <summary>URLコマンド一覧</summary>
