@@ -42,8 +42,11 @@
 
    🔄 trk242（2026-11-01）：**新しい版の知らせ**（js/sw-update.js）を足しました。登録は main.js から
    この知らせの側へ移し、帯・設定の「🔄 アプリの更新」・30分に1回の確認を足しています。
-   index.html・css/style.css・js/main.js が変わったので、また上げます。 */
-const CACHE = "trk-v2026.11.01-trk242";
+   index.html・css/style.css・js/main.js が変わったので、また上げます。
+
+   🔍 trk243（2026-11-01）：**設定のさがす**（js/settings-find.js）を足しました。設定のパネルが
+   19 枚になり、目で探すしかなかったためです。index.html・css/style.css が変わったので、また上げます。 */
+const CACHE = "trk-v2026.11.01-trk243";
 const CACHE_PREFIX = "trk-";
 const SCOPE = new URL(self.registration.scope);
 const VENDOR_PREFIX = "assets/vendor/";

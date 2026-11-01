@@ -45,7 +45,8 @@ const TEXT = {
     libFallbackNote:"このブラウザではフォルダを記憶できないため、毎回選び直してください（Chrome／Edgeなら記憶できます）。",
     /* 📤 ミュージックフォルダを共有（許可は1回だけ。フォルダの中身のリストをぜんぶ取り込みます） */
     secStorage:"💾 端末の保存",
-    secUpdate:"🔄 アプリの更新", swUpdateHint:"新しい版があると、画面の下に小さな帯でお知らせします。「いま更新する」で開き直します。遊んでいる途中なら「あとで」で構いません（記録は消えません）。遊んでいる途中は帯を出さず、タイトルへ戻ったときに出します。", swUpdateCheck:"🔄 新しい版を確かめる", swUpdateChecking:"新しい版を確かめています…", swUpdateLatest:"いまが最新です。", swUpdateReady:"新しい版が届いています。下の「いま更新する」から開き直せます。", swUpdateFailed:"確かめられませんでした。通信できる場所でもう一度お試しください。", swUpdateBarText:"🔄 新しい版の準備ができました。", swUpdateNow:"いま更新する", swUpdateLater:"あとで", swUpdateLaterStatus:"あとで、にしました。設定の「🔄 アプリの更新」からいつでも確かめられます。",
+    secUpdate:"🔄 アプリの更新",
+    setFindLabel:"🔍 設定をさがす", setFindHint:"言葉で絞る（例：書体・音量・バックアップ）", setFindCount:"{n} 件", setFindClear:"検索をやめる", setFindNothing:"見つかりませんでした。言葉を変えるか、✕ で絞るのをやめてください。", swUpdateHint:"新しい版があると、画面の下に小さな帯でお知らせします。「いま更新する」で開き直します。遊んでいる途中なら「あとで」で構いません（記録は消えません）。遊んでいる途中は帯を出さず、タイトルへ戻ったときに出します。", swUpdateCheck:"🔄 新しい版を確かめる", swUpdateChecking:"新しい版を確かめています…", swUpdateLatest:"いまが最新です。", swUpdateReady:"新しい版が届いています。下の「いま更新する」から開き直せます。", swUpdateFailed:"確かめられませんでした。通信できる場所でもう一度お試しください。", swUpdateBarText:"🔄 新しい版の準備ができました。", swUpdateNow:"いま更新する", swUpdateLater:"あとで", swUpdateLaterStatus:"あとで、にしました。設定の「🔄 アプリの更新」からいつでも確かめられます。",
     storagePersistHint:"書斎・カスタムパック・記録は、この端末のブラウザ内に保存されます。容量が足りなくなったときにブラウザが黙って消すのを防ぐため、保存の固定を求めます。許可するかどうかはブラウザが決めます。",
     storagePersistOn:"✅ 保存を固定しています（容量不足でも消されにくい状態）。",
     storagePersistOff:"⚠️ 固定されていません。ブラウザが容量不足のときに消すことがあります。大事なものは書き出しで控えてください。",
@@ -505,7 +506,8 @@ const TEXT = {
     libFallbackNote:"This browser can't remember folders, so please pick it each time (Chrome/Edge can remember).",
     /* 📤 Share your music folder (one permission, the whole list comes in at once) */
     secStorage:"💾 Device storage",
-    secUpdate:"🔄 App updates", swUpdateHint:"When a new version is ready, a small bar appears at the bottom of the screen. Press “Update now” to reload. If you are in the middle of a song, “Later” is fine (nothing is lost). While playing, the bar waits until you are back on the title screen.", swUpdateCheck:"🔄 Check for a new version", swUpdateChecking:"Checking for a new version…", swUpdateLatest:"You are up to date.", swUpdateReady:"A new version has arrived. Press “Update now” below to reload.", swUpdateFailed:"Could not check. Please try again where you have a connection.", swUpdateBarText:"🔄 A new version is ready.", swUpdateNow:"Update now", swUpdateLater:"Later", swUpdateLaterStatus:"Not now. You can check any time under Settings → 🔄 App updates.",
+    secUpdate:"🔄 App updates",
+    setFindLabel:"🔍 Find a setting", setFindHint:"Narrow by words (e.g. font, volume, backup)", setFindCount:"{n} found", setFindClear:"Clear the search", setFindNothing:"Nothing matched. Try other words, or press ✕ to clear.", swUpdateHint:"When a new version is ready, a small bar appears at the bottom of the screen. Press “Update now” to reload. If you are in the middle of a song, “Later” is fine (nothing is lost). While playing, the bar waits until you are back on the title screen.", swUpdateCheck:"🔄 Check for a new version", swUpdateChecking:"Checking for a new version…", swUpdateLatest:"You are up to date.", swUpdateReady:"A new version has arrived. Press “Update now” below to reload.", swUpdateFailed:"Could not check. Please try again where you have a connection.", swUpdateBarText:"🔄 A new version is ready.", swUpdateNow:"Update now", swUpdateLater:"Later", swUpdateLaterStatus:"Not now. You can check any time under Settings → 🔄 App updates.",
     storagePersistHint:"The study room, custom packs and records are kept in this browser on your device. To stop the browser from quietly clearing them when storage runs low, we ask it to keep them. The browser decides whether to allow it.",
     storagePersistOn:"✅ Storage is persistent (less likely to be cleared when space runs low).",
     storagePersistOff:"⚠️ Not persistent. The browser may clear this data when space runs low. Export anything important as a backup.",
@@ -957,7 +959,8 @@ const TEXT = {
     libFallbackNote:"此浏览器无法记住文件夹，请每次重新选择（Chrome／Edge可以记住）。",
     /* 📤 共享音乐文件夹（只需许可一次，整个列表一起导入） */
     secStorage:"💾 设备存储",
-    secUpdate:"🔄 应用更新", swUpdateHint:"有新版本时，屏幕下方会出现一条小小的提示。「现在更新」会重新打开应用。正在演奏时可以选「稍后」（记录不会丢失）。演奏过程中不显示提示，回到标题画面时再显示。", swUpdateCheck:"🔄 检查新版本", swUpdateChecking:"正在检查新版本…", swUpdateLatest:"已是最新版本。", swUpdateReady:"新版本已到达。可用下方的「现在更新」重新打开。", swUpdateFailed:"无法确认。请在能联网的地方再试一次。", swUpdateBarText:"🔄 新版本已准备好。", swUpdateNow:"现在更新", swUpdateLater:"稍后", swUpdateLaterStatus:"已设为稍后。可随时在设置 →「🔄 应用更新」中检查。",
+    secUpdate:"🔄 应用更新",
+    setFindLabel:"🔍 查找设置", setFindHint:"用词语筛选（例：字体・音量・备份）", setFindCount:"{n} 项", setFindClear:"取消筛选", setFindNothing:"没有找到。请换个词，或按 ✕ 取消筛选。", swUpdateHint:"有新版本时，屏幕下方会出现一条小小的提示。「现在更新」会重新打开应用。正在演奏时可以选「稍后」（记录不会丢失）。演奏过程中不显示提示，回到标题画面时再显示。", swUpdateCheck:"🔄 检查新版本", swUpdateChecking:"正在检查新版本…", swUpdateLatest:"已是最新版本。", swUpdateReady:"新版本已到达。可用下方的「现在更新」重新打开。", swUpdateFailed:"无法确认。请在能联网的地方再试一次。", swUpdateBarText:"🔄 新版本已准备好。", swUpdateNow:"现在更新", swUpdateLater:"稍后", swUpdateLaterStatus:"已设为稍后。可随时在设置 →「🔄 应用更新」中检查。",
     storagePersistHint:"书斋、自定义资源包和记录保存在本设备的浏览器中。为防止存储空间不足时浏览器悄悄清除，会请求固定保存。是否允许由浏览器决定。",
     storagePersistOn:"✅ 已固定保存（存储不足时也不易被清除）。",
     storagePersistOff:"⚠️ 未固定。存储空间不足时，浏览器可能会清除。重要数据请通过导出备份。",
@@ -1407,7 +1410,8 @@ const TEXT = {
     libFallbackNote:"이 브라우저는 폴더를 기억할 수 없어 매번 다시 선택해야 합니다 (Chrome／Edge는 기억 가능).",
     /* 📤 음악 폴더 공유 (허락은 한 번, 폴더 안의 목록을 통째로 불러옵니다) */
     secStorage:"💾 기기 저장",
-    secUpdate:"🔄 앱 업데이트", swUpdateHint:"새 버전이 준비되면 화면 아래에 작은 띠로 알려 드립니다. 「지금 업데이트」를 누르면 다시 열립니다. 연주 중이라면 「나중에」로 괜찮습니다(기록은 사라지지 않습니다). 연주 중에는 띠를 띄우지 않고, 타이틀로 돌아왔을 때 보여 드립니다.", swUpdateCheck:"🔄 새 버전 확인", swUpdateChecking:"새 버전을 확인하는 중…", swUpdateLatest:"지금이 최신입니다.", swUpdateReady:"새 버전이 도착했습니다. 아래 「지금 업데이트」로 다시 열 수 있습니다.", swUpdateFailed:"확인하지 못했습니다. 통신할 수 있는 곳에서 다시 시도해 주세요.", swUpdateBarText:"🔄 새 버전이 준비되었습니다.", swUpdateNow:"지금 업데이트", swUpdateLater:"나중에", swUpdateLaterStatus:"나중에로 했습니다. 설정의 「🔄 앱 업데이트」에서 언제든 확인할 수 있습니다.",
+    secUpdate:"🔄 앱 업데이트",
+    setFindLabel:"🔍 설정 찾기", setFindHint:"말로 좁히기 (예: 서체, 음량, 백업)", setFindCount:"{n}개", setFindClear:"검색 해제", setFindNothing:"찾지 못했습니다. 다른 말로 하거나 ✕로 해제해 주세요.", swUpdateHint:"새 버전이 준비되면 화면 아래에 작은 띠로 알려 드립니다. 「지금 업데이트」를 누르면 다시 열립니다. 연주 중이라면 「나중에」로 괜찮습니다(기록은 사라지지 않습니다). 연주 중에는 띠를 띄우지 않고, 타이틀로 돌아왔을 때 보여 드립니다.", swUpdateCheck:"🔄 새 버전 확인", swUpdateChecking:"새 버전을 확인하는 중…", swUpdateLatest:"지금이 최신입니다.", swUpdateReady:"새 버전이 도착했습니다. 아래 「지금 업데이트」로 다시 열 수 있습니다.", swUpdateFailed:"확인하지 못했습니다. 통신할 수 있는 곳에서 다시 시도해 주세요.", swUpdateBarText:"🔄 새 버전이 준비되었습니다.", swUpdateNow:"지금 업데이트", swUpdateLater:"나중에", swUpdateLaterStatus:"나중에로 했습니다. 설정의 「🔄 앱 업데이트」에서 언제든 확인할 수 있습니다.",
     storagePersistHint:"서재, 커스텀 팩, 기록은 이 기기의 브라우저 안에 저장됩니다. 저장 공간이 부족할 때 브라우저가 몰래 지우는 것을 막기 위해 저장 고정을 요청합니다. 허용 여부는 브라우저가 정합니다.",
     storagePersistOn:"✅ 저장이 고정되어 있습니다(공간이 부족해도 잘 지워지지 않는 상태).",
     storagePersistOff:"⚠️ 고정되어 있지 않습니다. 저장 공간이 부족하면 브라우저가 지울 수 있습니다. 중요한 것은 내보내기로 백업하세요.",

@@ -1804,6 +1804,16 @@ body.plDragging .libTab[data-pl]{outline:1px dashed var(--ui-border);outline-off
   border:0;cursor:pointer}
 .favMenuItem:hover,.favMenuItem:focus-visible{background:rgba(127,127,127,.22)}
 .favMenuItem.on{background:var(--ui-accent);color:var(--ui-on-accent)}
+/* 🔍 trk243：設定のさがす（見出しの下・当たったパネルだけ残す） */
+.setFind{display:flex;align-items:flex-end;gap:8px;margin:10px 0 0}
+.setFind .skinFindBox{flex:1 1 auto;min-width:0}
+.setFind .miniBtn{padding:7px 11px;border-radius:10px;border:1px solid var(--ui-border);
+  background:var(--ui-field);color:var(--ui-text);font:inherit;font-size:13px;font-weight:700;cursor:pointer;flex:none}
+.setFind .miniBtn[hidden],#setFindCount[hidden],#setFindNothing[hidden]{display:none}
+#setFindCount{flex:none;font-size:12px;color:var(--ui-muted);font-weight:700;white-space:nowrap}
+#setFindNothing{margin:8px 0 0}
+@media (max-width:760px){ .setFind{flex-wrap:wrap} .setFind .skinFindBox{flex:1 1 100%} }
+
 /* 🔄 trk242：新しい版の知らせ（画面の下の小さな帯）。窓で覆わない・遊びを止めない */
 .swUpdateBar{position:fixed;left:50%;transform:translateX(-50%);
   bottom:calc(96px + env(safe-area-inset-bottom, 0px));z-index:75;
