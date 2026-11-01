@@ -16,7 +16,7 @@
 
 **実体は「書き出せない」ではなく「読み返せない」でした。** 書き出し（`exportPrefs`）には元々サイズ制限が無く、大きい `notes` を含む `all` でもファイルは出ています。それが 🛟 の読み込みだけ 2 MiB で縛られていたので、**自分の書き出しを自分が読み込めない**状態でした（`docs/HANDOFF.md` の trk162 の記録どおり、バックアップは 20 MiB まで読む設計）。
 
-- 上限は**読む前**に見ます（`file.size` → `file.text()` の順）。順が逆だと「読んでから捨てる」ので、上限の意味が落ちます（アドオンの読み込み `docs/ADDONS.md` §1 と同じ型。`tools/check-security.mjs` の規則が順序まで見ています）。
+- 上限は**読む前**に見ます（`file.size` → `file.text()` の順）。順が逆だと「読んでから捨てる」ので、上限の意味が落ちます（アドオンの読み込みが 4MiB を `file.text()` の前に拒否するのと同じ型＝`docs/ADDONS.md` の制限の項。`tools/check-security.mjs` の規則が順序まで見ています）。
 - `size` が読めない環境（0 や `NaN`）も**通しません**。
 - 数字を i18n の文面に直書きせず `{mb}` で渡しています（次回また動くので）。
 
@@ -48,7 +48,7 @@
 
 - 断り文（`storageTransferHint`）：保存は**このブラウザの中だけ**で、自動同期は無い、と4言語で言い切っています（独自同期を作らない方針の裏づけ）。
 - 書き出しの報告は実際のファイルの KB 数と項目数を出します（`prefExportedAll`／`Core`／`Notes`）。読み込み上限も併記するので、**自分の書き出しが読み込める大きさか**がその場で分かります。
-- `#storageKeepInput` など既存の入力の口は変えていません（`accept="application/json,.json"` のみ）。
+- 読み込みの口は既存の JSON 入力（`#recImportFile`・`#makerImportFile`・`#tvmImportFile`）と同じ `accept="application/json,.json"` にそろえました（ほかの形式を受け入口に混ぜていません）。
 - **localStorage のキーは増やしていません**（`docs/MIGRATIONS.md` の行は不要。書き出し先の中身は既存の `core.settings` の写し）。
 
 ---
