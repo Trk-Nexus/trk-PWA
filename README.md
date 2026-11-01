@@ -16,7 +16,7 @@ trk!（トラック）は、ブラウザだけで動く**非営利のリズム�
 
 ▶ **遊ぶ：** https://trk-nexus.github.io/trk-PWA/
 
-> ⚠ 開発中です。不具合を見つけたら [Issues](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk/issues) か X [@ttrk143](https://x.com/ttrk143) に教えてください。
+> ⚠ 開発中です。不具合を見つけたら [Issues](https://github.com/Trk-Nexus/trk/issues) か X [@ttrk143](https://x.com/ttrk143) に教えてください。
 
 ---
 
@@ -48,7 +48,7 @@ trk!（トラック）は、ブラウザだけで動く**非営利のリズム�
 ビルドは不要です。ただし、フォルダの記憶・VRM・公認パックの確認には **http(s) で開く**必要があるので、簡単なサーバーを使ってください。
 
 ```bash
-git clone https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk.git
+git clone https://github.com/Trk-Nexus/trk.git
 cd trk
 python -m http.server 8000
 # → http://localhost:8000 を開く
@@ -110,7 +110,7 @@ trk! 本体を軽く保つため、オリジナル曲集「trk's OST Vol.1」は
 ## 💬 感想・要望・不具合の報告
 
 - 感想：X [@ttrk143](https://x.com/ttrk143)（ハッシュタグ **#trkAGRG**）
-- 不具合・要望：[GitHub Issues](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk/issues)（[不具合](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk/issues/new?template=bug_report.yml)・[譜面](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk/issues/new?template=chart_feedback.yml)・[要望](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk/issues/new?template=feature_request.yml)のテンプレートあり）
+- 不具合・要望：[GitHub Issues](https://github.com/Trk-Nexus/trk/issues)（[不具合](https://github.com/Trk-Nexus/trk/issues/new?template=bug_report.yml)・[譜面](https://github.com/Trk-Nexus/trk/issues/new?template=chart_feedback.yml)・[要望](https://github.com/Trk-Nexus/trk/issues/new?template=feature_request.yml)のテンプレートあり）
 
 ---
 
@@ -141,7 +141,7 @@ The bundled song is the FIRST SPARK demo in `assets/optional-demo-audio/` (about
 
 **trk's OST Vol.1 is distributed from music-library.** To keep trk! small, the original album "trk's OST Vol.1" now lives in [music-library](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/music-library). The tutorial song "FIRST SPARK" is still bundled. Download `trk-ost-vol1.stpack` from its [Releases](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/music-library/releases), then in trk! open **Settings → 📦 Custom packs → 📂 Choose pack** (or drop the file onto the window). The songs also appear in the "🎓 trk's OST Vol.1" playlist. Songs are stored only on your device; trk! never uploads them or connects to music-library by itself. The audio is © 2026 TRMTKB under **CC BY 4.0** — share, adapt and use it (including commercially) with credit. trk!'s GPL-3.0 covers the app's code, not the music.
 
-**Feedback:** [@ttrk143](https://x.com/ttrk143) (hashtag **#trkAGRG**), bugs and ideas on [GitHub Issues](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk/issues).
+**Feedback:** [@ttrk143](https://x.com/ttrk143) (hashtag **#trkAGRG**), bugs and ideas on [GitHub Issues](https://github.com/Trk-Nexus/trk/issues).
 
 **License:** code under **GPL-3.0-or-later**. The name “trk!” is not licensed — please rename forks. See [NOTICE.md](NOTICE.md) for the rights of the characters and third-party material.
 

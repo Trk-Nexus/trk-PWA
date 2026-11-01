@@ -22,7 +22,7 @@ osu! のスキンのように、いろいろなものを1つのファイル（`.
 
 ## 📚 倉庫の目録から入れる（trk230）
 
-書体や見た目は大きくなりがちなので、**配る側の倉庫**（[trk-Avatar-Library](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk-Avatar-Library)）に `.stpack` を置き、アプリは**目録を1回読むだけ**で「何が配られているか」を一覧できます。
+書体や見た目は大きくなりがちなので、**配る側の倉庫**（[trk-Avatar-Library](https://github.com/Trk-Nexus/trk-Avatar-Library)）に `.stpack` を置き、アプリは**目録を1回読むだけ**で「何が配られているか」を一覧できます。
 
 1. 倉庫から **`catalog/index.json`** を落とす
 2. 設定 → 📦 カスタムパック → **📚 目録から入れる** → 「📚 目録（index.json）を選ぶ」

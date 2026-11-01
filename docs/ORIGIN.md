@@ -8,6 +8,7 @@
 - **不特定多数に案内するなら、個人アカウントの `tonbokiriraikirimuramasa-taikoubou.github.io` は使わない**。他のプロジェクトサイトと保存領域・キャッシュを共有します。
 - **2026-10-30 決定：0円。** したがって独自ドメインは取りません。
 - **2026-10-31 決定（所有者）：配布URLは `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk/`。**
+> **⚠ 2026-11-02（同日）このURLは死にました。** 上流 `trk` も組織 `Trk-Nexus` へ移ったため、配布URLは **`https://trk-nexus.github.io/trk/`** が正（実測：このURLで上流のアプリが動いています）。**個人アカウントには Pages が1つも残っていない**ので（`/trk/`・`/trk-PWA/`・`/trk-Standalone/`・`/trk-apk/` の Pages 設定は全部 404）、旧URLを開くとインストール済みでも **GitHub の 404 ページ**が出ます（上流の `sw.js` は 404 を「ネットワーク成功」としてそのまま返す作り＝`response.ok` を見ずに `return response`。キャッシュへのフォールバックは通信エラー時だけ）。旧オリジンに残った設定・記録の救出案は §7 にあります
   リポジトリ `TonbokiriRaikiriMuramasa-Taikoubou/trk`（既存・フルバージョンの本体）を使います。**いちばん短く、覚えやすい**ためです。
   `trk-Standalone` は名前のとおり「**通信を行わない**ことを守った完成系」として残します。
   このホストは個人アカウントの `github.io` なので、§1 のとおり同じアカウントの他のページと保存領域を共有します（承知のうえの決定）。
@@ -27,6 +28,8 @@ Webの保存領域（`localStorage`・`IndexedDB`・`CacheStorage`）は、**オ
 | --- | --- | --- |
 | `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk/` | `https://tonbokiriraikirimuramasa-taikoubou.github.io` | 共有 |
 | `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/` | 同上 | **同じ** |
+| **`https://trk-nexus.github.io/trk/`**（2026-11-02 から上流） | `https://trk-nexus.github.io` | **共有**（組織内なので） |
+| **`https://trk-nexus.github.io/trk-PWA/`**（2026-11-02 から本番） | 同上 | **同じ** ← 移籍で解いたはずの共有が戻った（§7） |
 | `https://trk-company.github.io/trk-PWA/` | `https://trk-company.github.io` | 別 |
 | **`https://trk-nexus.github.io/trk-PWA/`** | `https://trk-nexus.github.io` | **別**（2026-11-02 から本番） |
 | `https://trk.example.com/` | `https://trk.example.com` | 別 |
@@ -167,3 +170,30 @@ SSO を有効にしている場合は、招待されたアカウント側で Aut
 3. Arenaの接続を移してよいか（作業セッションが変わります）。
 4. アイコンの方向性（現行の `trk!` ロゴを磨くか、新規に作るか）。
 5. 公開告知の時期（Phase 0の実機チェック前か後か）。
+
+## 7. 2026-11-02（同日・午後）：上流 `trk` も組織に入り、共有が戻った
+
+**実測**（`gh api`・`git ls-remote`・ページ取得）：
+
+| こと | 値 |
+| --- | --- |
+| `repos/Trk-Nexus/trk` | public・`default_branch=main`・**`has_pages=true`**・`permissions.admin=true`・最終 push **2026-10-29**（移籍後の push なし） |
+| 上流の Pages | `build_type=workflow`・`source=main:/`・`html_url=https://trk-nexus.github.io/trk/`・**ライブ確認済み**（チュートリアル8歩まで出る上流の実物） |
+| 旧パス `Tonbokiri…/trk` | **301 → `Trk-Nexus/trk`**（GitHub の移転転送が生きている。`git ls-remote https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk.git` は **同じ SHA `06cef87` を返す**＝クローンも旧URLで当面いける） |
+| 旧パス `Tonbokiri…/trk-PWA` | **転送されない**（同じ名前の**空リポジトリが個人側に存在**するため。`created_at 2026-11-01T17:59Z`・`size=0`・`pages=false`。`ls-remote` は refs 空） |
+| 組織のリポジトリ | `trk` / `trk-PWA` / `trk-Avatar-Library`（**`trk-Avatar-Library` も移籍済み**）／`music-library`・`trk-Standalone`・`trk-apk` は**個人のまま** |
+| 上流のキャッシュ掃除 | 上流 `sw.js:128` が `key.startsWith("trk-") && key !== CACHE && key !== SHARE_CACHE` を無条件に削除 → **trk-PWA の `trk-v2026.11.02-trk251@trk-pwa` も共有受け口 `trk-share-inbox-v1@trk-pwa` も消える**（上流には trk223 のスコープ印の修正が入っていないため） |
+| 保存キー | 上流と trk-PWA は**同一の名前**（`shadow_taiko_preferences_v2`・`shadow_taiko_records_v1`・`shadow_taiko_song_prefs_v1`・`trk_addons_v1`・`trk_lyrics_v1` …）→ 同じオリジンでは設定と記録が**相互に読み書き**される（分家なので形は互換。上流は trk-PWA 専用のキーを知らないので無害に無視） |
+
+**つまり**：trk250 の移籍で解いた「上流との同一オリジン」は、上流を同じ組織に入れたことで**元に戻りました**。ただし元の状態より悪いのは①旧オリジン（個人）に設定・記録が取り残されている点、②上流が版を上げた瞬間に trk-PWA のキャッシュが消える点です。
+
+**選べる対処**（まだ何も実行していません。決まれば trk-PWA 側だけなら即やれます）：
+
+| 案 | 内容 | 効く範囲 | 費用・リスク |
+| --- | --- | --- | --- |
+| **A** | 上流 `Trk-Nexus/trk` の `sw.js` に **スコープ印の掃除** をバックポート（trk-PWA の trk223 と同じ発想。`docs/` の URL 更新も同時にやる） | キャッシュ相互消去を根本解消 | 別リポジトリへの PR（`admin=true` なので打てる。上流の CI も走る）。**保存データの共有は残る** |
+| **B** | trk-PWA 側のキャッシュ名を **`trk-` 始まりから変える**（例 `trkpx-…`）＋旧名の掃除を self で行う | 上流を触らずに**うちが消される事故**を防ぐ（ただし上流の共有受け口名 `trk-share-inbox-v1` は無印なので、上流が版を上げたとき**上流の**受け口はうちが消さない＝安全側） | 自リポジトリだけで完結。cache 名の移行が1回必要 |
+| **C** | どちらかを**別のホスト**に分ける（無料だと第2アカウントの Pages、独自ドメインは 0円方針に反する＝相談） | 保存データまで完全に分離 | 運用が増える・URL がまた変わる |
+| **D** | **このまま共有を前提にする**（docs に明記。上流の SW 修正だけ頼む） | 実用上は「同じアプリの2バージョン」なので、設定共有はむしろ便利 | 上流の版上げでオフライン殻が消える（要再読み込み） |
+
+**旧オリジンの救出**（上流的用户向け・未実行）：個人アカウントには Pages が無いので、**同じ名前の空リポジトリ `Tonbokiri…/trk-PWA`（または `Tonbokiri….github.io`）に Pages を有効化して「書き出し専用ページ」を1枚置く**と、旧オリジンの `localStorage` / `IndexedDB` を読めます（同じホストなら**パスは何でもよい**）。そこで JSON を出してもらい、新URLの 📥 で読み込ませる設計。上流 `trk` にも `?export=all` があるので、**旧URLが404にならないうちに**やるのが本来でした（今でも救出ページは作れます）。

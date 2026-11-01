@@ -14,7 +14,7 @@ const MEDIA_EXT = ["mp4", "m4a", "m4b", "mp3", "ogg", "oga", "opus", "wav", "web
 const LIB_MAX = 3000, LIB_SHOW = 300, ADDED_MAX = 50, CHART_SUFFIX = ".shadow-taiko.json"; /* ADDED_MAX はセッション内リストのみ */
 const MEDIA_KEEP_BYTES_1G = 1024 ** 3, MEDIA_KEEP_BYTES_5G = 5 * 1024 ** 3;
 const TRK_PUBLIC_PAGE_URL = "https://freegame-mugen.jp/puzzle/game_15772.html";
-const TRK_OLD_PROJECT_URL = "https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk";
+const TRK_OLD_PROJECT_URL = "https://github.com/Trk-Nexus/trk";
 const TRK_OLD_GAME_GUIDE_NOTE = "非営利の紹介プレイリスト。音源は同梱しません。公式の入手先からどうぞ。";
 function mediaKeepCapBytes() {
   return core.settings.mediaKeepLimit === "unlimited" ? Infinity

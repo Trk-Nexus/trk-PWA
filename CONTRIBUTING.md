@@ -8,7 +8,7 @@ trk! に興味を持ってくれてありがとうございます！🚚
 
 - 気軽な感想：X [@ttrk143](https://x.com/ttrk143)（#trkAGRG）
 
-- 不具合・アイデア：[GitHub Issues](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk/issues) のフォームから
+- 不具合・アイデア：[GitHub Issues](https://github.com/Trk-Nexus/trk/issues) のフォームから
 
 
 ## コードを送るとき（Pull Request）
