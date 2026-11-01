@@ -461,10 +461,32 @@
               <div id="skinChips"></div>
               <div id="skinGrid"></div>
               <p class="hint" id="skinNoMatch" hidden data-i18n="skinNoMatch"></p>
+              <!-- 🧺 trk241：隠したスキンがあるときだけ出る案内（隠しっぱなしにしないため） -->
+              <p class="hint skinHiddenNote" id="skinHiddenNote" hidden>
+                <span id="skinHiddenNoteText"></span>
+                <button type="button" class="miniBtn" id="skinHiddenRestore"></button>
+              </p>
               <details id="skinManage" class="subPanel">
-                <summary data-i18n="skinManageTitle"></summary>
+                <summary><span data-i18n="skinManageTitle"></span> <span id="skinManageCount"></span></summary>
                 <div class="hint" data-i18n="skinManageHint"></div>
+                <!-- 🧺 trk241：スキンが増えても整理できるよう、さがす・絞る・まとめてを足しました -->
+                <div id="skinManageFind">
+                  <label class="skinFindBox"><span data-i18n="skinSearchLabel"></span>
+                    <input id="skinManageSearch" type="search" data-i18n-placeholder="skinSearchHint" autocomplete="off"></label>
+                  <label class="skinFindBox"><span data-i18n="skinManageFilterLabel"></span>
+                    <select id="skinManageFilter">
+                      <option value="all" data-i18n="skinManageFilterAll"></option>
+                      <option value="fav" data-i18n="skinManageFilterFav"></option>
+                      <option value="hidden" data-i18n="skinManageFilterHidden"></option>
+                      <option value="unused" data-i18n="skinManageFilterUnused"></option>
+                    </select></label>
+                </div>
+                <div id="skinManageBulk">
+                  <button type="button" class="miniBtn" id="skinManageHideUnused"></button>
+                  <button type="button" class="miniBtn" id="skinManageRestoreAll"></button>
+                </div>
                 <div id="skinManageList"></div>
+                <p class="hint" id="skinManageNothing" hidden data-i18n="skinNoMatch"></p>
               </details>
             </details>
 

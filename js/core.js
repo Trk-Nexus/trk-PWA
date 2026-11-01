@@ -1279,11 +1279,13 @@ function skinShelfEntries(skins, opt) {
   const out = [];
   for (const [id, s] of Object.entries(skins)) {
     if (cat !== "all" && !skinCatList(s).includes(cat)) continue;
-    /* 隠したスキンは「🚫 隠した」を見ているときだけ出す */
+    /* 隠したスキンは「🚫 隠した」を見ているときだけ出す。
+       ⚠ trk241：**いま使っているスキンだけは、隠しても棚に残す**（消えたように見えると、
+          当たっているのに「効かない」と誤解されるため。印は 🚫 で出す）。 */
     if (only === "fav") { if (!fav.has(id)) continue; }
     else if (only === "recent") { if (!(last[id] > 0)) continue; }
     else if (only === "hidden") { if (!hidden.has(id)) continue; }
-    else if (hidden.has(id)) continue;
+    else if (hidden.has(id) && id !== o.current) continue;
     if (!skinMatchesQuery(id, s, o.query)) continue;
     out.push([id, s]);
   }
@@ -1298,6 +1300,70 @@ function toggleSkinList(key, id) {
   if (set.has(id)) set.delete(id); else set.add(id);
   settings[key] = cleanSkinIdList([...set]);
   saveUserPrefs(); buildSkinGrid();
+}
+/* ---------- 🧺 trk241：棚の出し入れを、棚からも整理からも、まとめても ----------
+   利用者の相談：「スキンの数を作ると、デフォルトで入っている使わないものに煩わしさを与えてしまう」
+   　→ **削除ではなく、スキンごとに一時的な非表示**（trk229 の 🚫 を、もっと軽く・安全に）。
+   決めたこと：
+     ・隠すのは**この端末の設定だけ**（スキンそのものは消さない。当てることもできる）
+     ・**いま使っているスキンは隠しても棚に残す**（使用中の印。効かないと誤解されないため）
+     ・**最後の 1 種は隠せない**（棚が空になると「スキンが消えた」に見える）
+     ・隠した数は棚の下に必ず出し、そこから 1 タップで戻せる
+     ・まとめて隠せるのは**使ったことのないスキン**だけ（使っているものは人の判断に残す） */
+const SKIN_MANAGE_FILTERS = ["all", "fav", "hidden", "unused"];
+/* 隠してよいか（棚に残るものが 1 種も無くならないか）。純粋関数。 */
+function skinCanHide(skins, id, hidden, current) {
+  const hid = new Set(Array.isArray(hidden) ? hidden : []);
+  if (hid.has(id)) return { ok:true, reason:"" };      /* もう隠れている＝何もしない（戻す側の操作） */
+  const ids = Object.keys(skins || {});
+  if (!ids.includes(id)) return { ok:false, reason:"unknown" };
+  /* 隠したあとに棚へ残る数（いま使っているスキンを隠すときは、棚に残す決まりなので 1 は残る） */
+  const left = ids.filter(x => !hid.has(x) && x !== id).length;
+  const keepCurrent = current === id ? 1 : 0;
+  if (left + keepCurrent <= 0) return { ok:false, reason:"last" };
+  return { ok:true, reason:"" };
+}
+/* 隠した状態を変える（1 種）。保存して棚を作り直し、結果を返す。 */
+function setSkinHidden(id, on) {
+  const hid = new Set(settings.skinHidden);
+  if (on) {
+    const g = skinCanHide(window.Trk.data.SKINS, id, settings.skinHidden, settings.skin);
+    if (!g.ok) return g;
+    hid.add(id);
+  } else hid.delete(id);
+  settings.skinHidden = cleanSkinIdList([...hid]);
+  saveUserPrefs(); buildSkinGrid();
+  return { ok:true, reason:"" };
+}
+/* 整理の一覧に出す行（検索・絞り込み・名前順）。純粋関数。 */
+function skinManageRows(skins, opt) {
+  const o = opt || {}, filter = SKIN_MANAGE_FILTERS.includes(o.filter) ? o.filter : "all";
+  const fav = new Set(o.fav || []), hid = new Set(o.hidden || []), use = o.use || {};
+  const locale = o.locale || "ja";
+  const nameOf = id => String((skins[id].label && (skins[id].label[locale] || skins[id].label.en)) || id);
+  const rows = [];
+  for (const id of Object.keys(skins || {})) {
+    const used = Number(use[id]) || 0;
+    if (filter === "fav" && !fav.has(id)) continue;
+    if (filter === "hidden" && !hid.has(id)) continue;
+    if (filter === "unused" && used > 0) continue;
+    if (!skinMatchesQuery(id, skins[id], o.query)) continue;
+    rows.push(id);
+  }
+  return rows.sort((a, b) => nameOf(a).localeCompare(nameOf(b), locale) || a.localeCompare(b));
+}
+/* まとめて隠す／戻す。純粋関数。
+   mode:"unused"＝使ったことのない（いま使っているもの・⭐・もう隠しているものは除く）を隠す
+   mode:"restore"＝隠しているものを全部戻す */
+function skinBulkPlan(skins, opt) {
+  const o = opt || {}, hid = new Set(o.hidden || []), fav = new Set(o.fav || []), use = o.use || {};
+  const ids = Object.keys(skins || {});
+  if (o.mode === "restore") return { ids: ids.filter(id => hid.has(id)), mode:"restore" };
+  const target = ids.filter(id => !hid.has(id) && id !== o.current && !fav.has(id) && !(Number(use[id]) > 0));
+  /* 隠したあとに棚が空にならないよう、残る数を確かめてから（多すぎるときは後ろから削る） */
+  const visible = ids.filter(id => !hid.has(id)).length;
+  const room = Math.max(0, visible - 1 - (o.current && !hid.has(o.current) ? 0 : 0));
+  return { ids: target.slice(0, room), mode:"unused" };
 }
 function wireSkinFind() {
   if (skinFindWired) return;
@@ -1332,21 +1398,37 @@ function buildSkinGrid() {
         settings.skinShelfCat = id; if (only === "hidden") settings.skinShelfOnly = ""; saveUserPrefs(); buildSkinGrid();
       });
     }
-    /* ⭐ お気に入り・🕒 最近・🚫 隠した（押すと絞り込み、もう一度押すと解除） */
-    for (const [val, key] of [["fav", "skinOnlyFav"], ["recent", "skinOnlyRecent"], ["hidden", "skinOnlyHidden"]]) {
-      addChip(tr(key), only === val, () => {
+    /* ⭐ お気に入り・🕒 最近・🚫 隠した（押すと絞り込み、もう一度押すと解除）
+       🧺 trk241：⭐ と 🚫 は**数を添える**（隠したことに気づけるように。0 のときは数えません） */
+    const recentN = Object.keys(skins).filter(id => settings.skinLast[id] > 0).length;
+    const favN = (Array.isArray(settings.skinFav) ? settings.skinFav : []).filter(id => has(skins, id)).length;
+    const hidN = (Array.isArray(settings.skinHidden) ? settings.skinHidden : []).filter(id => has(skins, id)).length;
+    for (const [val, key, n] of [["fav", "skinOnlyFav", favN], ["recent", "skinOnlyRecent", recentN], ["hidden", "skinOnlyHidden", hidN]]) {
+      addChip(n > 0 ? tr(key + "N", { n }) : tr(key), only === val, () => {
         settings.skinShelfOnly = only === val ? "" : val; saveUserPrefs(); buildSkinGrid();
       });
     }
   }
   const list = skinShelfEntries(skins, {
-    cat, only, query: skinQuery, sort: settings.skinSort, locale: lang,
+    cat, only, query: skinQuery, sort: settings.skinSort, locale: lang, current: settings.skin,
     fav: settings.skinFav, hidden: settings.skinHidden, use: settings.skinUse, last: settings.skinLast
   });
   const total = Object.keys(skins).length;
   const count = $("skinShelfCount");
   if (count) count.textContent = list.length === total ? `（${total}）` : tr("skinCountShown", { shown: list.length, all: total });
   const noMatch = $("skinNoMatch"); if (noMatch) noMatch.hidden = list.length > 0;
+  /* 🧺 trk241：隠しているものがあるときは、棚の下に数と「戻す」を必ず出す（隠しっぱなしにしない） */
+  const note = $("skinHiddenNote"), noteText = $("skinHiddenNoteText"), noteBtn = $("skinHiddenRestore");
+  if (note && noteText && noteBtn) {
+    const n = (Array.isArray(settings.skinHidden) ? settings.skinHidden : []).filter(id => has(skins, id)).length;
+    note.hidden = n === 0;
+    if (n > 0) {
+      noteText.textContent = tr("skinHiddenNote", { n });
+      noteBtn.textContent = tr("skinHiddenRestore");
+      noteBtn.setAttribute("aria-label", tr("skinHiddenRestore"));
+      noteBtn.onclick = () => { settings.skinShelfOnly = "hidden"; saveUserPrefs(); buildSkinGrid(); };
+    }
+  }
   const favSet = new Set(settings.skinFav), hidSet = new Set(settings.skinHidden);
   const marks = id => (favSet.has(id) ? "⭐ " : "") + (hidSet.has(id) ? "🚫 " : "");
   for (const [id, s] of list) {
@@ -1356,6 +1438,7 @@ function buildSkinGrid() {
       q.append(el("b", "", "❓ ？？？"), el("small", "", tr("skinLockedHint")));
       grid.append(q); continue;
     }
+    const cell = el("div", "skinCell");          /* 🧺 trk241：カード＋⭐／🚫 の小さなボタン */
     const b = el("button", "skinCard"); b.type = "button"; b.dataset.skin = id;
     b.style.setProperty("--sk-bg", s.game.stage); b.style.setProperty("--sk-text", s.ui["--ui-text"]);
     b.style.setProperty("--sk-border", s.ui["--ui-border"]);
@@ -1368,18 +1451,91 @@ function buildSkinGrid() {
     b.append(el("small", "", (s.desc && (s.desc[lang] || s.desc.en)) || ""));
     b.classList.toggle("selected", id === settings.skin); b.setAttribute("aria-pressed", id === settings.skin);
     b.addEventListener("click", () => applySkin(id));
-    grid.append(b);
+    const quick = el("div", "skinQuick");
+    const qFav = el("button", "skinQuickBtn", favSet.has(id) ? "⭐" : "☆");
+    qFav.type = "button"; qFav.title = tr(favSet.has(id) ? "skinFavOff" : "skinFavOn");
+    qFav.setAttribute("aria-label", qFav.title); qFav.setAttribute("aria-pressed", String(favSet.has(id)));
+    qFav.addEventListener("click", () => toggleSkinList("skinFav", id));
+    const qHide = el("button", "skinQuickBtn", hidSet.has(id) ? "👁" : "🚫");
+    qHide.type = "button"; qHide.title = tr(hidSet.has(id) ? "skinShowAction" : "skinHideAction");
+    qHide.setAttribute("aria-label", qHide.title); qHide.setAttribute("aria-pressed", String(hidSet.has(id)));
+    qHide.addEventListener("click", () => {
+      const r = setSkinHidden(id, !hidSet.has(id));
+      if (!r.ok) skinToast(tr("skinCantHideLast"));
+    });
+    quick.append(qFav, qHide);
+    cell.append(b, quick);
+    grid.append(cell);
   }
   buildSkinManage();
 }
-/* 🧺 棚の横に置く「整理」の一覧（名前・回数・最後に使った日時・⭐・🚫） */
+/* 🧺 棚の横に置く「整理」の一覧（名前・回数・最後に使った日時・⭐・🚫）
+   🧺 trk241：スキンが増えたときのために、**一覧にも さがす・絞り込み・まとめて**を足しました。 */
+/* 画面の短い通知（js/render.js の showToast を、window.Trk.play から呼ぶ） */
+const skinToast = text => { try { const p = window.Trk && window.Trk.play; if (p && typeof p.showToast === "function") p.showToast(text); } catch (_) {} };
+let skinManageQuery = "";              /* 整理の一覧の検索語（保存しない） */
+let skinManageFilter = "all";          /* all／fav／hidden／unused（保存しない） */
+let skinManageWired = false;
+function wireSkinManage() {
+  if (skinManageWired) return;
+  const q = $("skinManageSearch"), f = $("skinManageFilter"),
+    bHide = $("skinManageHideUnused"), bRestore = $("skinManageRestoreAll");
+  if (!q || !f) return;
+  skinManageWired = true;
+  q.addEventListener("input", () => { skinManageQuery = q.value; buildSkinManage(); });
+  f.addEventListener("change", () => {
+    skinManageFilter = SKIN_MANAGE_FILTERS.includes(f.value) ? f.value : "all"; buildSkinManage();
+  });
+  if (bHide) bHide.addEventListener("click", () => {
+    const plan = skinBulkPlan(window.Trk.data.SKINS, {
+      mode:"unused", hidden:settings.skinHidden, fav:settings.skinFav, use:settings.skinUse, current:settings.skin,
+    });
+    if (!plan.ids.length) { skinToast(tr("skinBulkNone")); return; }
+    settings.skinHidden = cleanSkinIdList([...settings.skinHidden, ...plan.ids]);
+    saveUserPrefs(); buildSkinGrid();
+    skinToast(tr("skinHiddenDone", { n:plan.ids.length }));
+  });
+  if (bRestore) bRestore.addEventListener("click", () => {
+    const plan = skinBulkPlan(window.Trk.data.SKINS, { mode:"restore", hidden:settings.skinHidden });
+    if (!plan.ids.length) { skinToast(tr("skinBulkNone")); return; }
+    const back = new Set(plan.ids);
+    settings.skinHidden = cleanSkinIdList(settings.skinHidden.filter(id => !back.has(id)));
+    saveUserPrefs(); buildSkinGrid();
+    skinToast(tr("skinRestoredDone", { n:plan.ids.length }));
+  });
+}
 function buildSkinManage() {
   const box = $("skinManageList"); if (!box) return;
   box.textContent = "";
+  wireSkinManage();
   const skins = window.Trk.data.SKINS;
   const fav = new Set(settings.skinFav), hid = new Set(settings.skinHidden);
   const nameOf = id => String(skins[id].label[lang] || skins[id].label.en);
-  const ids = Object.keys(skins).sort((a, b) => nameOf(a).localeCompare(nameOf(b), lang));
+  /* 絞り込みの選択と、まとめて操作の数を毎回そろえる */
+  const filterSel = $("skinManageFilter");
+  if (filterSel && SKIN_MANAGE_FILTERS.includes(skinManageFilter)) filterSel.value = skinManageFilter;
+  const ids = skinManageRows(skins, {
+    query: skinManageQuery, filter: skinManageFilter, locale: lang,
+    fav: settings.skinFav, hidden: settings.skinHidden, use: settings.skinUse,
+  });
+  const searchEl = $("skinManageSearch");
+  if (searchEl && searchEl.value !== skinManageQuery) searchEl.value = skinManageQuery;
+  const unusedPlan = skinBulkPlan(skins, { mode:"unused", hidden:settings.skinHidden, fav:settings.skinFav, use:settings.skinUse, current:settings.skin });
+  const restorePlan = skinBulkPlan(skins, { mode:"restore", hidden:settings.skinHidden });
+  const hideUnusedBtn = $("skinManageHideUnused"), restoreBtn = $("skinManageRestoreAll"), manageCount = $("skinManageCount");
+  if (hideUnusedBtn) {
+    hideUnusedBtn.textContent = tr("skinManageHideUnused", { n:unusedPlan.ids.length });
+    hideUnusedBtn.disabled = unusedPlan.ids.length === 0;
+  }
+  if (restoreBtn) {
+    restoreBtn.textContent = tr("skinManageRestoreAll", { n:restorePlan.ids.length });
+    restoreBtn.disabled = restorePlan.ids.length === 0;
+  }
+  if (manageCount) {
+    const all = Object.keys(skins).length;
+    manageCount.textContent = ids.length === all ? `（${all}）` : tr("skinManageCount", { shown:ids.length, all });
+  }
+  const empty = $("skinManageNothing"); if (empty) empty.hidden = ids.length > 0;
   for (const id of ids) {
     const row = el("div", "skinRow" + (hid.has(id) ? " isHidden" : ""));
     const meta = el("small", "skinRowMeta");
@@ -1394,8 +1550,13 @@ function buildSkinManage() {
     const hideBtn = el("button", "miniBtn", hid.has(id) ? "👁" : "🚫");
     hideBtn.type = "button"; hideBtn.title = tr(hid.has(id) ? "skinShowAction" : "skinHideAction");
     hideBtn.setAttribute("aria-pressed", String(hid.has(id)));
-    hideBtn.addEventListener("click", () => toggleSkinList("skinHidden", id));
-    row.append(el("b", "", (fav.has(id) ? "⭐ " : "") + nameOf(id)), meta, favBtn, hideBtn);
+    /* 🧺 trk241：最後の 1 種は隠せない（棚が空になると「消えた」に見えるため） */
+    hideBtn.addEventListener("click", () => {
+      const r = setSkinHidden(id, !hid.has(id));
+      if (!r.ok) skinToast(tr("skinCantHideLast"));
+    });
+    const name = (fav.has(id) ? "⭐ " : "") + nameOf(id) + (id === settings.skin ? "・" + tr("skinInUseMark") : "");
+    row.append(el("b", "", name), meta, favBtn, hideBtn);
     box.append(row);
   }
 }

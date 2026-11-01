@@ -1,6 +1,6 @@
 # trk! 開発引き継ぎ
 
-> **最終更新：2026-11-01**（`trk-PWA` の **trk240**）。アプリ本体は trk239（trk236〜238 の**目録のひとこと・タグ・🔤 入れている書体**と、**セットを 2 つ続けて入れるときに「これから入る分」だけを数える**）で、trk240 は**役割の書面**と `tools/check-set.mjs` の**契約**（`--json`）だけ＝アプリの殻は変えていません。`npm run check` は **1121 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.01-trk239`**（trk240 では上げません）。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
+> **最終更新：2026-11-01**（`trk-PWA` の **trk241**）。アプリ本体は trk241（**スキンの棚の作り直し**＝カードから ⭐／🚫、隠した数を棚の下に出して戻す、整理のさがす・絞る・まとめて）で、trk240 は**役割の書面**と `tools/check-set.mjs` の**契約**（`--json`）でした。`npm run check` は **1149 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.01-trk241`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
 >
 > 現在の仕様・守る条件・未確認事項の要約です。過去の詳細な変更履歴・検証記録は [`HANDOFF-ARCHIVE.md`](HANDOFF-ARCHIVE.md)、利用者向け仕様は [`../README.md`](../README.md) と [`guide/`](guide/)、権利表記は [`../NOTICE.md`](../NOTICE.md)、品質・安全確認は [`QUALITY-CHECKS.md`](QUALITY-CHECKS.md) と [`SECURITY.md`](SECURITY.md)。**レビューと実機確認のお願いは [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md)**、その指摘への対応は [`REVIEW-RESPONSE-2026-10-31.md`](REVIEW-RESPONSE-2026-10-31.md)、trk223 を実際の端末で見る手順は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)。
 
@@ -24,6 +24,7 @@
 
 | 版 | trk番号 | 中身（1行） | 日付 |
 | --- | --- | --- | --- |
+| （trk-PWA） | trk241 | **スキンの棚の作り直し**：カードから ⭐／🚫、隠した数を棚の下に出して 1 タップで戻す、整理の一覧に さがす・絞る・**まとめて隠す／戻す**。使用中のスキンは隠しても棚に残す（消さない・当てられる） | 2026-11-01 |
 | （trk-PWA） | trk240 | **役割の書面**（書体・スキンはミュージアム側／アプリ本体はこちら）と `tools/check-set.mjs` の**契約**（`--json`・`version: 2`）。**殻は変えない**ので cache は trk239 のまま | 2026-11-01 |
 | （trk-PWA） | trk239 | セットの 2 分割（r6）に備え、**確認に出す数と大きさを「これから入る分」だけに**（すでに入っていて版も同じものは飛ばす）。受け入れの道具 `tools/check-set.mjs` | 2026-11-01 |
 | （trk-PWA） | trk238 | **🔤 入れている書体**：入っているパックの書体を `pack.json` から索引（保存しない・Blob を読まない）。検索・タグ・並べ替え・「使う」 | 2026-11-01 |
@@ -77,7 +78,7 @@
 | trk222〜trk227 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ） |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
 | テスト | `npm run check` **1028 pass / 0 fail**（trk220 の47件・trk221 の28件・trk222 の13件・trk223 の33件・trk224 の5件・trk225 の22件・trk226 の27件・trk227 の17件・trk228 の9件・trk229 の18件・trk230 の15件・trk231 の12件・trk232 の23件・trk233 の11件を追加）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.01-trk239@<スコープ>`**（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| Service Worker | cache は **`trk-v2026.11.01-trk241@<スコープ>`**（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | 新リポジトリ `trk-Standalone` はまだ空。Pages の有効化と初回デプロイは未実施 |
 
@@ -585,7 +586,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | 📦 まるごとバックアップ・ZIP CRC・復元 | `js/backup.js`（歌詞・字幕キーの許可、アドオン概要の確認、復元アドオンの無効化）、`js/zip-io.js`、`js/custom.js`（.stpackのストリーム読書き・`packIdentityFromManifest`）、`tests/backup-codec.test.mjs`、`tests/backup-restore.test.mjs`、`tests/pack-identity.test.mjs`、`tests/pack-zip-stream.test.mjs`、`tests/zip-io.test.mjs`、`tools/check-security.mjs` |
 | CBZ／ZIP書斎のページ展開上限 | `js/study-room.js`（`studyAlbumLimits`・`studyImportArchiveBook`）、`tests/storage-limits.test.mjs` |
 | Endfield楽曲台帳・曲名fixture・検査 | `docs/ARKNIGHTS-ENDFIELD-MUSIC.md`、`tools/endfield-zeroth-directive-tracklist.json`、`tools/endfield-msr-albums-tracklist.json`、`tools/check-repo.mjs` |
-| Service Worker | `sw.js`（**このリポジトリの現行cache名：`trk-v2026.11.01-trk239`＝trk239。名前に `@<スコープ>` が付きます（`/trk-PWA/` なら `@trk-pwa`）**。上流の配布版は `trk-v2026.10.29-trk219`＝trk219。**配布ZIP（1.1.7）は `trk218`**、配布済みの 1.1.6 は `trk217`、1.1.5 は `trk216`、1.1.4 は `trk214`。1.1.2 は `trk211`、1.1.1 は `trk210`、1.1.0 は `trk208`、1.0.9 は `trk207`。アプリ本体が変わらない版では cache 名を上げない） |
+| Service Worker | `sw.js`（**このリポジトリの現行cache名：`trk-v2026.11.01-trk241`＝trk241。名前に `@<スコープ>` が付きます（`/trk-PWA/` なら `@trk-pwa`）**。上流の配布版は `trk-v2026.10.29-trk219`＝trk219。**配布ZIP（1.1.7）は `trk218`**、配布済みの 1.1.6 は `trk217`、1.1.5 は `trk216`、1.1.4 は `trk214`。1.1.2 は `trk211`、1.1.1 は `trk210`、1.1.0 は `trk208`、1.0.9 は `trk207`。アプリ本体が変わらない版では cache 名を上げない） |
 | 🚪 メディアプレイヤーの抜け方（trk206） | `js/media-player-mode.js`（`mediaExitPlan`・`closeMedia`）、`js/library.js`（`previewContinue`）、`js/core.js`（`mediaReloadOnExit`）、`js/i18n-options.js`＋`index.html`（❓謎設定）、`tests/trk206-media-exit.test.mjs` |
 | 📦 配布ZIPの組み立て（1.0.8〜・現在 1.1.7） | `tools/prepare-release.mjs`（`npm run release`。`index.html`＋`README.txt`＋`trk-files/` に組み、形を検査してZIPにする）、`release/README.txt`（配布用のかんたん起動。`--readme` を省くとこれが入る。**版と `README-1.x.y.md` の名前は `--version` とそろえる**）、`tests/release-layout.test.mjs`（形・時刻・README の版） |
 | 📂 フォルダー共有の共通部品（trk208） | `js/shared-folders.js`（`window.TrkSharedFolders`＝`plan`／`uniqueLabel`／`mergeScans`／`walk`／`pathParts`／`readFileAt`。DOM・IndexedDB・書き込みなし）、`js/library.js`（登録簿 `"folders"`・`addSharedFolder`／`readSharedFolders`／`restoreSharedFolders`／`folderAutoKickShared`／`removeSharedFolder`／`renderSharedFolderList`）、`index.html`（`#libShareVideoBtn`・`#libSharedFolderList`）、`tests/trk208-shared-folders.test.mjs` |
@@ -630,6 +631,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | リピートの段・シャッフルの範囲（trk227） | **OK（17件）** | `tests/trk227-repeat-shuffle-options.test.mjs`。`nextRepeat` の段（3段／2段・全曲は「なし」へ）、オンで 🔁 が1曲⇄なしを往復し全曲にならないこと、シャッフル中の ⏭ が一覧の中だけから選ぶこと（オフなら外も選ぶ）、`shufflePool` の写し、再生画面の選択肢が2つになること、4言語 × 4キー |
 | 下の再生バーを触ってシーク（trk226） | **OK（27件）** | `tests/trk226-player-bar-player.test.mjs`。触れる条件（画面・読み込み・長さ・謎設定）の純粋関数、謎設定オンで `currentTime` が動かないこと、`previewRestartFor`、`shufflePick` の乱数の位置、🎲🔁 の設定共有と合図、別窓の組み立て（11部品）と描き直し・小窓が二重に開かないこと・PC型だけ ⧉ を出すこと |
 | `node tools/check-repo.mjs` | **0 failure / 0 warning** | 文書・`sw.js` の cache 名・読み込み順・名前空間の検査を含む |
+| スキンの棚の出し入れ（trk241） | **OK（純関数・配線・4言語・28件）** | `tests/trk241-skin-shelf-hide.test.mjs`。最後の 1 種は隠せない（`reason:"last"`）／使用中は隠しても棚に残る／隠しても `applySkin` は変わらない／整理の絞り込み（⭐・🚫・まだ使っていない）と検索の重ね／まとめて隠して戻すと元どおり／棚が空にならない／**新しい保存キーが無い**／カードの ☆・🚫 が当てるのと別のボタン／4 言語 |
 | 役割の書面と道具の契約（trk240） | **OK（9件）** | `tests/trk240-roles.test.mjs`。`tools/check-set.mjs` を実際に走らせて 0（入れられる）／1（大きさ違い・入っていない）／2（ZIP でない・ファイルが無い）を確認、`--json` が 1 行で `ok`・`problems`・`pending`（count／bytes／skip）を人が読む文と同じ数字で返す、契約の 4 つが道具と書面の両方にある、書面の分担と 3 原則、`sw.js` の cache が trk239 のまま |
 | セット 2 分割の数え方（trk239） | **OK（純関数・配線・4言語・11件）** | `tests/trk239-set-skip.test.mjs`。はじめてセット（絞った目録）＝4 本・見つからない 0、書体セットを続けて選ぶ＝飛ばす 3 本・**これから入る 4 本（大きさは水増ししない）**、同じセットを 2 回＝pending 0、版が違えば飛ばさない、絞っていない目録でも止まらない、`set.json` 無しでも 2 つを見分けられる、4 言語。合成した 2 つのセットで `tools/check-set.mjs` が 0 |
 | 書体のひとこと・タグ・索引（trk236〜238） | **OK（純関数・配線・4言語・25件）** | `tests/trk236-238-font-meta-index.test.mjs`。目録の `note`(60)/`cmap`/`bytes`/`weight`/`tags`(8×16) を読み落とさない・無い項目は足さない・タグの件数と絞り込み（書体の無いパックでも落ちない）・索引の行（入っている側が正・目録で補う・`family|weight` が一意）・検索（日本語部分一致＋空白 AND）・並べ替え（書体名／パック名／大きさ）・索引は保存しない・4 言語。**実物の目録（倉庫 `848343c`）でも確認**：16 パック・落とした 0・22 書体すべてに 5 項目・タグ 16 語・`明朝` で 6 書体 |
@@ -790,6 +792,12 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 
 ## 7. 最近の変更
 
+- **🧺 trk241：スキンの棚を作り直す — 消さずに、見えるものだけ（2026-11-01）**：返事10 の②（「お気に入り機能や、現在デフォルトに入っているものを個別に出し入れ出来るように」「**削除ではなく、一時的にスキン毎に非表示**」）を受けて。設計＝[`SKIN-SHELF-TRK241-2026-11-01.md`](SKIN-SHELF-TRK241-2026-11-01.md)。
+  - **前版（trk229）との違い**：⭐／🚫 は既にあったので、**見つけ方と戻し方**を作り直しました。①カードの左上に **☆／🚫** を重ねた（カード本体＝当てる、小さなボタン＝出し入れ） ②チップに**数**、棚の下に **「🚫 隠しているスキンが N 種あります（スキンは消えていません）＋戻す」** ③整理の一覧に **さがす・絞り込み（すべて／⭐だけ／🚫だけ／まだ使っていない）・件数** ④**「🚫 使っていないものを隠す（N）」／「👁 隠したものを全部戻す（N）」**（押す前に件数・0 なら押せない）。
+  - **安全側の決まり**：**スキンは消さない**（`applySkin` は `skinHidden` を見ない＝隠しても当てられる）／**いま使っているスキンは隠しても棚に残す**（「効かない」と誤解させない・整理では `・使用中`）／**棚が空になる操作は断る**（`skinCanHide`）／**新しい保存キーは作らない**（整理の検索語と絞り込みは保存しない）。
+  - **純粋関数**：`skinCanHide`・`skinManageRows`・`skinBulkPlan`（＋`skinShelfEntries` に `current`）。`tests/trk241-skin-shelf-hide.test.mjs`（**28件**）。`npm run check` は **1149 pass / 0 fail**、`check-repo` 0/0。`sw.js` の cache は **`trk-v2026.11.01-trk241@<スコープ>`**。**実機は未確認**（§6 の確認項目は設計書）。
+  - **決めなかったこと**：隠したものを検索からも外す／棚の既定を「⭐ と使用中だけ」にする／並び順のドラッグ。理由は設計書 §7。
+
 - **🧭 trk240：役割の書面と、受け入れの道具の「契約」（2026-11-01）**：倉庫（trk-Avatar-Library）の返事8 で、**相手の CI が `tools/check-set.mjs` をそのまま呼ぶ**ことになったため。書面＝[`ROLES-TRK240-2026-11-01.md`](ROLES-TRK240-2026-11-01.md)、返事の控え＝[`LETTER-TRK240-REPLY-2026-11-01.md`](LETTER-TRK240-REPLY-2026-11-01.md)。
   - **分担を文字にした**：書体の製作・追加・ライセンス、スキンの製作、目録、セット `.stlib`（2 分割・目録の絞り込み）、`gallery/` の 3 枚は**ミュージアム（倉庫）側**。目録の読み取り・検証、入れる・使う・消す・容量・タグ・🔤 索引、Service Worker・オフライン・インストール・画面・プレイヤー・書斎・ゲームは**trk-PWA 側**。
   - **3 原則**：①中身は作らない（こちらは書体もスキンも作らない／倉庫はアプリのコードを直さない） ②形は共有（目録の項目・L16・セット・`setPending`） ③相手の領域の決定は相手（セットの分割・目録の絞り方・`gallery` の文言は倉庫／アプリの画面・i18n・保存の形はこちら）。
@@ -804,7 +812,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
   - **変えないこと**：1 本ずつの sha256・上限（1 GiB／500 MB／目録 8 MB／5,000 ファイル）・入れる前に確認 1 回・**自動では適用しない**。
   - **受け入れの道具**：`tools/check-set.mjs`。アプリのコード（`js/zip-io.js`＋`js/pack-catalog.js`）をそのまま読み込み、`openSet`／`planSet`／`setEntryCheck`／`setPending` で「アプリが何と表示するか」を先に出す（`--hash` で実バイトの sha256、`--have=<目録.json>` で 2 つ目の「飛ばす分」）。終了コード 0／1／2。
   - **合成した r6 の形で確認**：はじめて（絞った目録 4 本）＝4 本・見つからない 0。続けて書体（7 本）＝**これから入る 4 本（7.8 KB）・飛ばす 3 本**。同じセット 2 回＝pending 0。
-  - `tests/trk239-set-skip.test.mjs`（**11件**）。`npm run check` は **1112 pass / 0 fail**、`check-repo` 0/0、`check-a11y` 8/8、`check-security` 64/64。`sw.js` の cache は **`trk-v2026.11.01-trk239@<スコープ>`**（`tests/trk234-pack-storage.test.mjs` の版の期待値も更新）。
+  - `tests/trk239-set-skip.test.mjs`（**11件**）。`npm run check` は **1112 pass / 0 fail**、`check-repo` 0/0、`check-a11y` 8/8、`check-security` 64/64。`sw.js` の cache は **`trk-v2026.11.01-trk241@<スコープ>`**（`tests/trk234-pack-storage.test.mjs` の版の期待値も更新）。
   - **未確認**：r6 の実物（まだ届いていない）と、実機での 2 つ続けての通し。
 
 - **🔤 trk236〜trk238：書体の「ひとこと・タグ」を読み、絞り、索引する（2026-11-01）**：倉庫（trk-Avatar-Library）の [`実機OKと起動時の索引-開発案-2026-11-01.md`](https://drive.google.com/drive/folders/1PMcWuefY4AufGLfTiMfN8vsI8sk7yKEo) への返事として、3 段をまとめて実装しました。手順書＝[`FONT-META-INDEX-TRK236-238-2026-11-01.md`](FONT-META-INDEX-TRK236-238-2026-11-01.md)、返事の控え＝[`LETTER-TRK238-REPLY-2026-11-01.md`](LETTER-TRK238-REPLY-2026-11-01.md)。
