@@ -466,6 +466,16 @@
             <div><label><span data-i18n="displayModeLabel"></span> <select id="displayMode"><option value="simple" data-i18n="displaySimple"></option><option value="full" data-i18n="displayFull"></option></select></label></div>
             <p class="hint" data-i18n="displayModeHint"></p>
             <label class="check"><input id="devView" type="checkbox"><span data-i18n="devViewLabel"></span></label>
+            <!-- 🔤 trk246：書体の組み合わせ（見出し用の字を、相手の目録の14組から選ぶ。スキンの font はそのまま） -->
+            <label class="field">
+              <span data-i18n="typoLabel"></span>
+              <select id="typoPairing">
+                <option value="" data-i18n="typoOff"></option>
+                <!-- 14組の選択肢は js/typography.js の目録から足します（名前は今あるものだけ・外部取得なし） -->
+              </select>
+            </label>
+            <div class="hint" data-i18n="typoHint"></div>
+            <div id="typoState" class="hint status" role="status" aria-live="polite"></div>
             <h3 data-i18n="skin"></h3>
             <div id="skinNow"></div>
             <details id="skinShelf" class="subPanel" open>
@@ -2163,6 +2173,8 @@
 <script src="js/i18n-options.js"></script>
 <!-- ===== データ ===== -->
 <script src="js/data.js"></script>
+<!-- 🔤 trk246：書体の組み合わせの目録（14組）。data.js の後・core.js の前に読みます（core.js が settings を作るときに使うため） -->
+<script src="js/typography.js"></script>
 <!-- ▼ キャラクター（data.js の後、core.js の前）
      初音ミク：PCL（非営利・無償のみ）。商用の派生版では、この1行とファイルを削除してください。 -->
 <script src="js/characters/miku.js"></script>

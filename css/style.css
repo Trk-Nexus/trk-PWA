@@ -2165,3 +2165,10 @@ body.trk-scale-compact #stage .card{max-height:100%}
 body.trk-mobile.trk-density-roomy{--trk-skin-cols:2;--trk-lib-thumb:44px}
 body.trk-mobile.trk-density-compact{--trk-skin-cols:3;--trk-lib-thumb:40px}
 body.trk-mobile.trk-density-dense{--trk-skin-cols:4;--trk-lib-thumb:36px}
+
+/* 🔤 trk246：書体の組み合わせ（trk-Avatar-Library の目録から14組）。
+   `js/typography.js` が `--trk-typo-display`／`--trk-typo-body` を置き、**body.trk-typo-on のときだけ**効きます
+   （選んでいない端末は1ピクセルも変わらない）。あて先は見出し類と設定の説明文だけで、
+   ゲーム画面の中（canvas の ctx.font）は今回触りません。 */
+body.trk-typo-on .brand h1,body.trk-typo-on details.panel>summary,body.trk-typo-on .panel h3{font-family:var(--trk-typo-display,var(--font))}
+body.trk-typo-on .hint,body.trk-typo-on .brand p{font-family:var(--trk-typo-body,var(--font))}

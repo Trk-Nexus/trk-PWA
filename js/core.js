@@ -323,6 +323,9 @@ const settings = {
      `uiScaleCompact` がオンのあいだは、拡大率（125/100/75/50%）が**密度の段**になります
      （縮小＝文字を小さくする、ではなく「詰めて多く見せる」）。 */
   uiDensity: pick(prefs.uiDensity, ["auto", "roomy", "normal", "compact", "dense"], "auto"),
+  /* 🔤 trk246：書体の組み合わせ（見出し＋本文の2役）。未選定は null。
+     相手の目録の書式をそのまま使えるようにして、知らない項目は sanitize() が落とします。 */
+  typography: (window.Trk && window.Trk.typography && window.Trk.typography.sanitize(prefs.typography)) || null,
   /* 🧱 trk244：縮小（75%・50%）を「詰めて多く見せる」に使う（既定オン＝文字は小さくしない） */
   uiScaleCompact: prefs.uiScaleCompact !== false,
   /* 🖥 trk222：右上の 📱／🖥 で選んだ画面の形を、次に開いたときも使い続ける（❓謎設定） */
@@ -755,6 +758,8 @@ function resetAllPrefs() {
   settings.uiScale = 100; settings.fixedIconSize = true; settings.uiModeLock = true; settings.fxInLibrary = false;
   /* 🧱 trk244：表示の密度（ふつう）と、縮小は「詰めて見せる」（オン）も工場出荷状態へ */
   settings.uiDensity = "auto"; settings.uiScaleCompact = true;
+  /* 🔤 trk246：書体の組み合わせも工場出荷状態（使わない）へ */
+  settings.typography = null;
   /* 🎵 trk225：バーの置き場所（いちばん下）と、隠さない設定（オフ）も工場出荷状態へ */
   settings.playerBarPos = "bottom"; settings.playerBarLock = false; settings.playerBarSeekLock = false;
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
@@ -1618,6 +1623,9 @@ function applySkin(id, persist = true) {
   root.setProperty("--font-title-transform", (ty && ty.titleTransform) || "none");
   root.setProperty("--font-weight", (ty && ty.weight) || "inherit");
   root.setProperty("--font-lh", (ty && ty.lh) || "inherit");
+  /* 🔤 trk246：書体の組み合わせ（CSS 変数2本）。スキンの --font を読み替えるので、後に置きます。
+     選んでいないときは body.trk-typo-on を外すだけ（＝この行があるかないかで見た目が不変） */
+  try { if (window.Trk.typography) window.Trk.typography.apply(settings.typography); } catch (_) {}
   root.setProperty("--j-perfect", s.game.perfect); root.setProperty("--j-good", s.game.good); root.setProperty("--j-miss", s.game.miss);
   applyNoteVars();
   document.documentElement.dataset.skin = settings.skin;

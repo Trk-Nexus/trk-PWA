@@ -31,8 +31,41 @@
   /* 既定が「オン」の設定と「オフ」の設定が混ざっているので、どちらかを明示する */
   const DEFAULT_ON = new Set(["fixedIconSize", "uiModeLock", "uiScaleCompact"]);
 
+  /* 🔤 trk246：書体の組み合わせ。選択肢は目録（js/typography.js）から1回だけ並べます。
+     名前は相手の catalog の日本語そのまま（意訳して事実をずらさないため、4言語でも同じ名前を出します） */
+  const typo = () => (window.Trk && window.Trk.typography) || null;
+  let typoBuilt = false;
+  function buildTypoOptions() {
+    const T = typo();
+    const select = document.getElementById("typoPairing");
+    if (typoBuilt || !T || !select) return;
+    for (const p of T.PAIRINGS) {
+      const opt = document.createElement("option");
+      opt.value = p.id; opt.textContent = p.name;
+      select.appendChild(opt);
+    }
+    typoBuilt = true;
+  }
+  function syncTypo() {
+    const T = typo();
+    const select = document.getElementById("typoPairing");
+    if (!T || !select) return;
+    const saved = T.sanitize(core.settings.typography);
+    if (select.value !== (saved ? saved.pairing : "")) select.value = saved ? saved.pairing : "";
+    const state = document.getElementById("typoState");
+    if (!state) return;
+    let text = "";
+    if (saved) {
+      const p = T.byId(saved.pairing) || { name: saved.pairing };
+      text = tr("typoState", { name: p.name, display: (saved.slots.display || {}).family || "-", body: (saved.slots.body || {}).family || "-" });
+      if (T.available(saved) === false) text += tr("typoMissing");
+    }
+    if (state.textContent !== text) state.textContent = text;
+  }
+
   /* 設定の欄へ、いまの値を写す（起動時・言語やスキンの切り替え・設定を開いたとき） */
   function sync() {
+    buildTypoOptions(); syncTypo();
     const scale = document.getElementById("uiScale");
     if (scale) {
       const value = String(core.uiScaleValue ? core.uiScaleValue() : core.settings.uiScale);
@@ -88,6 +121,18 @@
         core.settings.uiDensity = density.value;
         core.applyUiScale({ persist: true });
         sync();
+      });
+    }
+    /* 🔤 trk246：組み合わせを選ぶ（「使わない」で元に戻る）。保存は settings.typography だけ・キーは増やしません */
+    const typoSelect = document.getElementById("typoPairing");
+    if (typoSelect) {
+      typoSelect.addEventListener("change", () => {
+        const T = typo();
+        if (!T) return;
+        core.settings.typography = typoSelect.value ? T.sanitize({ pairing: typoSelect.value }) : null;
+        T.apply(core.settings.typography);
+        save();
+        syncTypo();
       });
     }
     for (const [id, key] of Object.entries(fields)) {
