@@ -11,7 +11,7 @@
   リポジトリ `TonbokiriRaikiriMuramasa-Taikoubou/trk`（既存・フルバージョンの本体）を使います。**いちばん短く、覚えやすい**ためです。
   `trk-Standalone` は名前のとおり「**通信を行わない**ことを守った完成系」として残します。
   このホストは個人アカウントの `github.io` なので、§1 のとおり同じアカウントの他のページと保存領域を共有します（承知のうえの決定）。
-- 分離が必要になったときの受け皿として、**GitHub組織は名前だけ決めています（Trk Company）**。作成は未実施です（§4.4）。
+- 分離が必要になったときの受け皿は **GitHub組織 `Trk-Nexus`**（表示名 Trk Nexus）に決まりました。**2026-11-01 に組織が作成済み**（それ以前の案 `trk-company` は使いません）。移籍は**まだ実行していません**（§3.1 に現状と残作業）。
 - 選択肢は2つ（比較は §2）。
   - **A. trk! 専用のGitHub組織**（無料。`trk-company.github.io` など）
   - **B. 独自ドメイン**（年1,000〜2,000円程度。`trk.example.com` など）
@@ -79,9 +79,11 @@ Webの保存領域（`localStorage`・`IndexedDB`・`CacheStorage`）は、**オ
 
 ### 手順（案）
 
-1. GitHubで無料の組織を作る（例 `trk-company`）。個人アカウントと同じく2FAが必要な場合あり。
-2. 組織に空のリポジトリ `trk-PWA` を作る。
-3. 現在のリポジトリをmirrorで移す。
+> **2026-11-02 現在の状況**：1 は**済み**（組織 `Trk-Nexus` 作成済み）。**2〜3 は「mirror で作り直す」ではなく `transfer`（移籍）でやる**ことにしました（旧URLが 301 で追従するため）。ただし **このサンドボックスからは移籍を実行できません**（§3.1）。手順としては 1 → §3.1 の権限2点 → 4 以降を順に実行します。
+
+1. GitHubで無料の組織を作る（**完了：`Trk-Nexus`**）。個人アカウントと同じく2FAが必要な場合あり。
+2. 組織に空のリポジトリ `trk-PWA` を作る。（**transfer でやるなら不要**）
+3. 現在のリポジトリをmirrorで移す。（**transfer でやるなら不要**）
 
    ```sh
    git clone --mirror https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk-PWA.git trk-PWA.git
@@ -91,9 +93,29 @@ Webの保存領域（`localStorage`・`IndexedDB`・`CacheStorage`）は、**オ
 
 4. 組織のリポジトリで **Settings → Pages → Source: GitHub Actions** を設定。
 5. 組織にArenaのGitHub Appをインストール（作業を続ける場合）。
-6. `README.md` のURL、`index.html` の `og:url` / `og:image`、`docs/PWA.md` を新URLに更新。
+6. `README.md` のURL、`index.html` の `og:url` / `og:image`、`docs/PWA.md` を新URLに更新。**この文書（`docs/ORIGIN.md`）と `docs/PERMISSIONS.md`、`docs/HANDOFF-TRK-STANDALONE.md` も古いオリジンを踏んでいる**ので同じ commit でそろう（`docs/REVIEW-REQUEST-*` は履歴なので変えない）。
+   - **検査が縛る**：`tests/trk249-origin-consistency.test.mjs` は「URLの値」を固定せず、`og:url`・README の ▶ Play・badge・この文書の記述が**同じオリジンを指しているか**だけを見るので、1か所だけ更新して他を古いままにする事故は落ちます。
+   - `manifest.webmanifest` は `start_url`/`scope`/`id` がすべて `./` 相対、`js/`・`css/`・`sw.js` にオリジン直書きは**ゼロ**（この検査が見ています）。なので**マニフェストとアプリのコードは移籍で書き換える必要がありません**。
 7. 旧リポジトリはアーカイブし、READMEに移転先を書く。
 8. 旧URLの利用者データは移行されない。案内文を用意する。
+
+### 3.1 移籍をこの作業セッションから実行するときに要るもの（2026-11-02 実測）
+
+| 確認したこと | 結果 |
+| --- | --- |
+| `POST /repos/TonbokiriRaikiriMuramasa-Taikoubou/trk-PWA/transfer`（`new_owner=Trk-Nexus`） | **403 `Resource not accessible by integration`** |
+| `/orgs/Trk-Nexus/memberships/TonbokiriRaikiriMuramasa-Taikoubou` | **403**（未所属） |
+| `/users/TonbokiriRaikiriMuramasa-Taikoubou/orgs` | **空** |
+| `/orgs/Trk-Nexus/installations` | **404**（組織のアプリ一覧が見えない） |
+| リポジトリ側の権限 | `admin=true`・`has_pages=true`（**個人側は足りる**） |
+| `gh auth status` | `Logged in as TonbokiriRaikiriMuramasa-Taikoubou (GH_TOKEN)`＝**GitHub App 経由** |
+
+**必要な操作は2つ**（どちらも組織を作ったアカウント側で）：
+
+1. **メンバー招待**：`https://github.com/organizations/Trk-Nexus/people` → Invite member → `TonbokiriRaikiriMuramasa-Taikoubou` → ロール **Owner** → そのアカウントで承認。GitHub の仕様上、**移籍を実行するユーザーは移し先の組織のメンバー**である必要がある
+2. **組織へのアプリインストール**：`https://github.com/organizations/Trk-Nexus/settings/installations` → Add GitHub Apps → Arena の GitHub App → Repository access は All repositories（または `trk-PWA`）、**Repository permissions の `Administration` を Read & write**（transfer に必要）。**これを忘れると移籍した瞬間に push も PR もできなくなります**
+
+SSO を有効にしている場合は、招待されたアカウント側で Authorize が1回要ります。
 
 ## 4. B. 独自ドメインにする場合
 
@@ -131,12 +153,12 @@ Webの保存領域（`localStorage`・`IndexedDB`・`CacheStorage`）は、**オ
 ## 5. 決定と、残っている選択
 
 - **決定（2026-10-31）**：URL は `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk/`（リポジトリ `trk`）。0円。独自ドメインは取らない。
-- **保留**：保存領域を分けたくなったら、組織 **Trk Company**（slug の例 `trk-company`）へ移す。**移すとオリジンが変わり、保存データは移行されません。** 告知の前に決める、という原則は変えません。
+- **2026-11-02 判断（所有者）**：**まだ配っていないプロダクトなので、組織 `Trk-Nexus` へ移籍してよい**。移籍するとオリジンが変わり保存データは移行されませんが、**配布前なので実害がありません**（告知の前に決める、という原則は守れた形になります）。実行手順と必要権限は §3.1。
 - **移行の手順**：`docs/HANDOFF-TRK-STANDALONE.md` §5。実行の時期は所有者の判断です。
 
 ## 6. まだ決めていないこと
 
-1. 組織（Trk Company）を作るか、個人アカウントの `trk` のままで進めるか。作るなら slug をどれにするか（`trk-company` は 2026-10-31 時点で空き）。
+1. ~~組織を作るか~~ → **`Trk-Nexus` を作成済み（2026-11-01）・trk-PWA の移籍を執行（§3.1 の権限待ち）**。上流 `trk` の方をどこへ置くかは未決定のまま。
 2. `trk` へコードを移す時期と、旧 `trk-PWA` / `trk-Standalone` をアーカイブする時期。
 3. Arenaの接続を移してよいか（作業セッションが変わります）。
 4. アイコンの方向性（現行の `trk!` ロゴを磨くか、新規に作るか）。
