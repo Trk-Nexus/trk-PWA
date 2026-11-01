@@ -211,3 +211,45 @@ describe("app 側の配線", () => {
     assert.ok(ver && Number(ver[2]) >= 246, `trk246 以降のcache名（日付は縛らない・実測 ${ver && ver[0]}）`);
   });
 });
+
+describe("trk253（2026-11-02 レビュー対応）", () => {
+  test("描き方の段階は契約の4つだけ（役の名前は段階として通さない）", () => {
+    const { T } = load();
+    assert.deepEqual(JSON.parse(JSON.stringify(T.PRESETS)), ["one", "pair", "roles", "digits"], "契約（trk-typography v1）が認める4つだけ");
+    for (const slot of T.SLOTS) {
+      const v = T.sanitize({ pairing: "shinbun", preset: slot });
+      assert.equal(v.preset, "pair", `役の名前 "${slot}" は段階として覚えない（既定の pair に倒す）`);
+    }
+    for (const name of T.PRESETS) {
+      assert.equal(T.sanitize({ pairing: "shinbun", preset: name }).preset, name, `${name} は通る`);
+    }
+  });
+
+  test("説明に書いた書体が、その組の実物のパックに入っている", () => {
+    /* レビュー必須3の再発防止。「雑誌の飾り」は説明だけ「ひな明朝の見出し」で、実物は Kaisei Decol だった。
+       別名テーブルに無い言い回し（「飾り明朝」「丸ゴ」「毛筆」などの雰囲気表現）は対象外にしています */
+    const { T } = load();
+    const ALIAS = [
+      [/Noto Serif/, "noto-serif-jp"], [/Noto Sans/, "noto-sans-jp"],
+      [/Zen Old Mincho/, "zen-old-mincho"], [/Zen Kaku/, "zen-kaku"],
+      [/ひな明朝/, "hina-mincho"], [/しっぽり明朝/, "shippori-mincho"],
+      [/Klee/, "klee-one"], [/Yomogi/, "yomogi"], [/Dela/, "dela-gothic"]
+    ];
+    for (const p of T.PAIRINGS) {
+      for (const [re, id] of ALIAS) {
+        if (!re.test(p.why)) continue;
+        assert.ok(p.packs.some(x => x.includes(id)),
+          `${p.id}: 説明に ${String(re.source)} とあるのに ${id}.stpack がパック一覧に無い（実測 ${p.packs.join(", ")}）`);
+      }
+    }
+  });
+
+  test("「雑誌の飾り」は実物どおりの説明にした", () => {
+    const { T } = load();
+    const z = T.PAIRINGS.find(p => p.id === "zasshi");
+    assert.equal(z.why, "飾り明朝の題字と見出しに、しっぽり明朝の本文。紙の雑誌の感じ");
+    assert.equal(z.heading.family, z.display.family, "見出しは題字と同じ飾り明朝（重みだけ違い）");
+    assert.equal(z.heading.weight, 400);
+    assert.equal(z.body.family, "TrkShipporiMincho");
+  });
+});

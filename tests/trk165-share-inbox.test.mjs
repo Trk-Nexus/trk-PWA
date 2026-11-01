@@ -375,15 +375,20 @@ test("trk223: the inbox cache name is scoped, and the worker and the page comput
   };
   const swTag = run(swTagFn, "scopeTagOf");
   const pageTag = run(pageTagFn, "shareScopeTag");
-  for (const pathname of ["/", "/trk/", "/trk-PWA/", "/Trk%20PWA/", "/a/b/", "/trk-PWA"]) {
+  /* 印の名前は「置き場所のパス」から作るだけなので、自分のスコープは何でもよい
+     （`tools/make-stable.mjs` で安定版へ写すと /trk-PWA/ は /trk/ になる＝検査も同じ向きに変わる）。
+     なので素性は mine / theirs にして、実在の2つは下の別検査で見ます。 */
+  for (const pathname of ["/", "/mine/", "/theirs/", "/Trk%20PWA/", "/a/b/", "/mine"]) {
     assert.equal(swTag(pathname), pageTag(pathname), `${pathname} で同じ印になる`);
   }
   assert.equal(swTag("/"), "root");
+  assert.equal(swTag("/mine/"), "mine");
+  assert.equal(swTag("/theirs/"), "theirs");
   assert.equal(swTag("/trk/"), "trk");
   assert.equal(swTag("/trk-PWA/"), "trk-pwa");
-  /* 別のスコープのキャッシュを消さない（trk と trk-pwa は互いの名前を含まない） */
-  assert.ok(!`trk-v1@trk-pwa`.endsWith("@trk"));
-  assert.ok(!`trk-v1@trk`.endsWith("@trk-pwa"));
+  /* 別のスコープのキャッシュを消さない（印は互いの名前を含まない） */
+  assert.ok(!`trk-v1@theirs`.endsWith("@mine"));
+  assert.ok(!`trk-v1@mine`.endsWith("@theirs"));
   /* sw.js は掃除の例外にスコープ付きの名前を使う */
   assert.ok(swSrc.includes("key === SHARE_CACHE_NAME"), "the activate cleanup spares this scope's inbox");
   assert.ok(swSrc.includes("ok_never_used_placeholder") === false);

@@ -202,11 +202,11 @@ globalThis.__names = { CACHE_NAME, VENDOR_CACHE, SHARE_CACHE_NAME, SCOPE_TAG };
 
   test("別のスコープのキャッシュは、自分のものと認めない", async () => {
     const h = harness({ scope: "https://x/trk-PWA/" });
-    assert.equal(await h.isOurs(`${CACHE_IN_SW}@trk`), false, "trk! の trk223");
+    assert.equal(await h.isOurs(`${CACHE_IN_SW}@theirs`), false, "別のアプリ（別の置き場所）のキャッシュは消さない");
     assert.equal(await h.isOurs(`${CACHE_IN_SW}@trk-pwa`), true);
     assert.equal(await h.isOurs("trk-vendor-v1@trk-pwa"), true);
     assert.equal(await h.isOurs("trk-share-inbox-v1@trk-pwa"), true);
-    assert.equal(await h.isOurs("trk-vendor-v1@trk"), false, "vendor も取り違えない");
+    assert.equal(await h.isOurs("trk-vendor-v1@theirs"), false, "vendor も取り違えない");
   });
 
   test("印の無い古い名前は、中身に自分のパスの URL があるかで見分ける", async () => {
@@ -214,7 +214,7 @@ globalThis.__names = { CACHE_NAME, VENDOR_CACHE, SHARE_CACHE_NAME, SCOPE_TAG };
       scope: "https://x/trk-PWA/",
       contents: {
         "trk-v2026.10.30-trk222": ["https://x/trk-PWA/js/core.js"],
-        "trk-v2026.10.30-trk221": ["https://x/trk/js/core.js"]
+        "trk-v2026.10.30-trk221": ["https://x/theirs/js/core.js"]
       }
     });
     assert.equal(await h.isOurs("trk-v2026.10.30-trk222"), true, "自分のパスを持つ旧キャッシュは片付ける");

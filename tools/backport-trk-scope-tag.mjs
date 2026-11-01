@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 // SPDX-License-Identifier: GPL-3.0-or-later
-/* 🔧 trk-PWA 側でやった「置き場所の印」の掃除を、上流 `trk` へ当ててための道具（2026-11-02・trk252）
+/* 🔧 trk-PWA 側でやった直しを、上流 `trk` へ当てるための道具（2026-11-02・trk252 / trk253）
 
    なぜこれがあるか：
    同じオリジン（`*.github.io`）に上流 `/trk/` と trk-PWA `/trk-PWA/` が並ぶと、
    上流 `sw.js` の activate が「`trk-` 始まりは全部消す」を無条件にやるため、
    **trk-PWA のオフライン用の殻・3D vendor・📥共有の一時置き場まで消えます**。
    trk-PWA 側は trk252 で自分の名前を `trkPWA-` 始まりに変えて逃げました（自衛）。
+   同じ理由で **設定（localStorage）の消し合い**も起きます（同一オリジン保存の共有）。これは上流側で
+   まだ直っていないので、2026-11-02 のレビュー（必須1）をうけて **④** を足しました（trk253）。
    本筋は上流側の掃除を直すことで、その差し替えを**手で打ち込まなくて済む**ようにするのがこの道具です
    （2026-11-02 時点で、この作業セッションの GitHub App が `Trk-Nexus/trk` に ref を作れないため、
    PR を代行できませんでした＝`docs/UPSTREAM-TRK-SCOPE-TAG-2026-11-02.md`）。
@@ -111,6 +113,47 @@ if (!urlCount) log("② URL: 変更なし（すでに新住所かも）");
   }
 }
 
+/* ---------- ④ js/core.js：設定の保存を「足すだけ」にする（レビュー必須1・2026-11-02） ---------- */
+/* 同じオリジンに /trk/ と /trk-PWA/ が並ぶと、localStorage の `shadow_taiko_preferences_v2` を
+   読み合います。上流は「自分が知っている項目だけ」で丸ごと上書きしていたので、
+   **上流で設定を1つ変えるだけで trk-PWA の拡大率・PC型/スマホ型・再生バー・書体・密度が消えました**。
+   trk-PWA 側は trk247 で「いま保存されている値に重ねる」方式に直済み（js/core.js の storedPrefsRaw）。
+   保存キーは増やさず、書き方だけ変えます（＝利用者さんの手元で何かを移行する必要はありません）。 */
+const PREFS_OLD = `function saveUserPrefs() { try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefsForSave())); } catch (_) {} }`;
+const PREFS_NEW = `function storedPrefsRaw() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(PREFS_KEY) || "null");
+    return raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+  } catch (_) { return {}; }
+}
+/* 🫱 同じオリジンに別の trk! が在ると、自分の知っている項目だけで丸ごと上書きしたときに
+   相手の設定が消えます。いま保存されている値に重ねて書く形にしました（工場出荷リセットだけは置き換える）。 */
+function saveUserPrefs({ fresh = false } = {}) {
+  try {
+    const out = fresh ? prefsForSave() : Object.assign({}, storedPrefsRaw(), prefsForSave());
+    localStorage.setItem(PREFS_KEY, JSON.stringify(out));
+  } catch (_) {}
+}`;
+const PREFS_FRESH_RE = /resetAllPrefs\(\); saveUserPrefs\(\);/g;
+
+{
+  let s;
+  try { s = rd("js/core.js"); } catch { bad("④ js/core.js が読めません（--repo= の場所を確認してください）"); s = null; }
+  if (s !== null) {
+    if (s.includes("function storedPrefsRaw(")) log("④ js/core.js: もう入っています（スキップ）");
+    else if (!s.includes(PREFS_OLD)) bad("④ js/core.js: 想定した saveUserPrefs の1行が見つかりませんでした（上流が変わった可能性。手で確認してください）");
+    else {
+      const n = (s.match(PREFS_FRESH_RE) || []).length;
+      if (!n) bad("④ js/core.js: 工場出荷リセットの呼び出し resetAllPrefs(); saveUserPrefs(); が見つかりません。重ねて書く方式では、リセット側が { fresh: true } を渡さないと消えた設定が復活してしまうので、ここは手で確認してください");
+      else {
+        const out = s.replace(PREFS_OLD, PREFS_NEW, 1).replace(PREFS_FRESH_RE, "resetAllPrefs(); saveUserPrefs({ fresh: true });");
+        wr("js/core.js", out);
+        log("④ js/core.js: 設定保存を「いま保存されている値に重ねる」方式に（工場出荷リセット " + n + " か所には fresh を渡す）");
+      }
+    }
+  }
+}
+
 /* ---------- 結果 ---------- */
 if (failed) {
   log("\n⚠ " + failed + " 件で止まりました。" + (checkOnly ? "（--check なので書き換えはしていません）" : "書き換えた部分が残っている可能性があるので git diff を確認してください"));
@@ -119,5 +162,6 @@ if (failed) {
   log(`\n✅ ${checkOnly ? "当たります（--check：書き換えはしていません）" : "当てました"}：${ROOT}`);
   log("   次： cd " + ROOT + " && npm run check   （Static・Security・a11y・tests が全部通ることを確認）");
   log("   いつからでも： ブランチを作って push → PR（`gh pr create --repo Trk-Nexus/trk --base main`）");
-  log("   版名（sw.js の CACHE）は上げなくてよいです。掃除の条件だけの変えで、殻の中身は無変更だからです。");
+  log("   版名（sw.js の CACHE）は上げなくてよいです。①は掃除の条件だけ、④は js/core.js の実体が変わりますが、");
+  log("   上流の sw.js は install で addAll をせず fetch 時に cache.put する作りなので、次回オンラインで読み直された分が入ります。");
 }

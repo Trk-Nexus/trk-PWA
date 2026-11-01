@@ -56,7 +56,8 @@
   - **ライブ実測**：`https://trk-nexus.github.io/trk-PWA/` が200でアプリを出し、`🛟` の中に `🎨 ノーツ設定を書き出し／💾 全設定を書き出し／📥 設定を読み込み`（trk247 のUI）が見えました。`.../sw.js` は **`const CACHE = "trk-v2026.11.02-trk250"`** ＝trk250 がそのまま配られています
 - [x] **配布ZIPを作り直し**（trk250）。旧URLが入っていた trk248 版に代えて、Drive の `trk-PWA-trk250-2026-11-02` に standalone／handover／README／SHA256SUMS の4点を置きました（**ハッシュはZIPの中の文書ではなく README と SHA256SUMS にだけ**）
 - [ ] **実機確認**（trk247・trk248 の欄）：新しいオリジンで ⚙ → 💾 端末の保存 の 📤📥、モバイルのパネル載せ、初回案内の1行
-- [ ] **④告知の判断**：どこに・いつ案内するか（`docs/ORIGIN.md` §6 の残件）。**本番URLが決まったので、告知文は `https://trk-nexus.github.io/trk-PWA/` を指せます**
+- [ ] **安定版 `trk` の初回更新**（レビュー C-2）：`node tools/make-stable.mjs --repo=../trk` で差分を見てから `--apply` → 上流側で `npm run check` → ブランチ・PR。**①スコープ印の掃除と④設定保存のマージは trk-PWA の実体ごと入るので、上流に個別の PR は要りません**。実機の通しが終わって1回目
+- [ ] **④告知の判断**：2026-11-02 のレビューで書き分けが決まりました（必須4）。**trk-PWA は開発版**なので、一般向けは**安定版 `https://trk-nexus.github.io/trk/`**、先に試してくれる人だけ `https://trk-nexus.github.io/trk-PWA/`（「変わることがある」と添える）。**告知は「安定版 `/trk/` を trk-PWA の内容で一度更新し、実機で確かめたあと」**（いまの `/trk/` は trk219 のまま＝iPhone 向け仕上げ・再生バー未収録）。文章そのものは Drive 版でよい判断は変わっていません
 - [x] **上流 `trk` も同日に組織へ移籍**（2026-11-02・trk251 で追記）。`https://trk-nexus.github.io/trk/` がライブ確認済み。**同じ組織に入ったので、再び同じオリジン `https://trk-nexus.github.io` を共有**しています → §6
 - [ ] `docs/REVIEW-REQUEST-*` など**履歴の文書は古いURLのまま**にしています（書き換えると記録が偽るため）
 
@@ -72,7 +73,7 @@
 
 これで**起きたこと**（详细は `docs/ORIGIN.md` §7 に表と案）：
 
-1. ✅ **trk-PWA の本番URLは無傷**（`https://trk-nexus.github.io/trk-PWA/`）。上流のURLは `https://trk-nexus.github.io/trk/` に変わり、**個人側の全 Pages が死んだ**ので、上流を案内済みの方は旧URLで 404 を見ます（上流の SW は 404 をそのまま返す作りなので、インストール済みでも救われません）。**告知文は新URLで統一が必要**。
+1. ✅ **trk-PWA の本番URLは無傷**（`https://trk-nexus.github.io/trk-PWA/`）。上流のURLは `https://trk-nexus.github.io/trk/` に変わり、**個人側の `/trk/`・`/trk-PWA/` などの Pages は死んだ**ので（`SHADOW-TAIKO` の Pages は生存・200 を実測）、上流を案内済みの方は旧URLで 404 を見ます（上流の SW は 404 をそのまま返す作りなので、インストール済みでも救われません）。**告知文は新URLで統一が必要**。
 2. ⚠ **同一オリジンへの復帰**：`/trk/` と `/trk-PWA/` はまた `https://trk-nexus.github.io` を共有します。保存キーは同名（`shadow_taiko_preferences_v2` など）なので設定・記録は読み合います（分家なので形状的には互換）。
 3. ⚠ **キャッシュの相互消去**：上流 `sw.js:128` は `trk-` 始まりを全部消す旧式（trk223 のスコープ印が入っていない）なので、**上流が次に版を上げると trk-PWA のオフライン殻と共有受け口まで消えます**。対処案 A（上流へバックポート PR）／B（うちの cache 名を `trk-` 始まりから変える）／C（別ホスト）／D（共有を前提と明記）を `docs/ORIGIN.md` §7 に置きました。**まだ実行していません**。
 4. 📤 **旧オリジンの救出は「しない」判断**（2026-11-02・trk252。旧オリジンのデータは捨てる）。やるなら：個人アカウントには Pages が1つも無いので、**空の `Tonbokiri…/trk-PWA`（または `Tonbokiri….github.io`）で Pages を有効化して書き出し専用ページを1枚**置けば、旧オリジンの `localStorage`/`IndexedDB` を読めます（同じホストならパスは何でもよい）
@@ -83,5 +84,5 @@
 > **組織に App を入れても、リポジトリ単位の選択に入っていないと、そのリポジトリには push も ref 作成もできない。**
 > `gh api repos/Trk-Nexus/trk` は `permissions.admin=true` を返します（＝**ユーザー自身**の権限の値）。ところが git push は 403、`POST /repos/Trk-Nexus/trk/git/refs` は **403 `Resource not accessible by integration`** でした。
 > 判別式：**403 `...by integration` なら「アプリのアクセス範囲」の問題**／404 なら「そもそも見えていない」。
-> 解決は GitHub の 組織 → 設定 → サードパーティのアクセス（Third-party Access）→ Arena → Configure → Repository access を **All repositories**（または `trk` を追加）にするだけ。
+> 解決は GitHub の 組織 → 設定 → サードパーティのアクセス（Third-party Access）→ Arena → Configure → Repository access で **`trk` だけを追加**（レビュー推奨 A-3 のとおり最小権限。**All repositories にしなくてよい**）。
 > **2026-11-02 に権限を適用したあと再試行したが、まだ `trk` への書き込みは 403**（おなじ資格情報で `trk-PWA` の ref 作成は OK）。→ 上流への適用は `tools/backport-trk-scope-tag.mjs`（道具）にまとめました＝[`UPSTREAM-TRK-SCOPE-TAG-2026-11-02.md`](UPSTREAM-TRK-SCOPE-TAG-2026-11-02.md)
