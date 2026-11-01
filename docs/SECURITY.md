@@ -162,7 +162,7 @@ trk! は **サーバーを持たない** ブラウザ音ゲーです。アカウ
 
 ## 7. 脆弱性を見つけたら
 
-- **公開の Issue でよいもの**：[GitHub Issues](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk/issues)（再現手順つきで）。
+- **公開の Issue でよいもの**：[GitHub Issues](https://github.com/Trk-Nexus/trk/issues)（再現手順つきで）。
 - **悪用できる詳細・個人情報を含むもの**：GitHub の **Security Advisories（非公開）** から。すぐには直せない場合でも、内容を確認してこの文書に記録します。
 
 ## 8. 同梱した第三者コードを確かめる（`assets/vendor` と `tools/vendor-lock.json`）

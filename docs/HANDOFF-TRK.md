@@ -4,7 +4,7 @@
 
 ## 1. 位置づけ
 
-- **上流 `TonbokiriRaikiriMuramasa-Taikoubou/trk`**：trk! の本体。ブラウザで動く音ゲー＋プレイヤー。オフライン駆動性を高めてきた現行プロジェクト。
+- **上流 `Trk-Nexus/trk`**：trk! の本体。ブラウザで動く音ゲー＋プレイヤー。オフライン駆動性を高めてきた現行プロジェクト。
 - **`trk-PWA`**：上流1.1.8を履歴ごと取り込んだ、iPhone配布用の作業リポジトリ。現在の公開準備地。
 - **`trk-Standalone`**：iPhoneホーム画面から使う standalone PWA の新しい家（予定）。上流のコード＋モバイルシェル＋iOS調整を持つ。
 - **`trk-apk`**：Android APK版の別系統。iOSとは配布形態が違う。
@@ -47,7 +47,7 @@
 配布用リポジトリで上流の更新を取り込む：
 
 ```sh
-git remote add upstream https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk.git
+git remote add upstream https://github.com/Trk-Nexus/trk.git
 git fetch upstream
 git merge upstream/main
 # 競合を解消

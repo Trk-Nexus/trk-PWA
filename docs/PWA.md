@@ -6,7 +6,7 @@
 
 trk! を **PWA（Webアプリ）として配布する**ためのリポジトリです。iPhone／Androidのブラウザで開き、「ホーム画面に追加」して使う形を本線にしています。
 
-- アプリ本体：上流 [`trk`](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk) の **1.1.8（trk219）** をそのまま取り込み、このリポジトリで配信します。
+- アプリ本体：上流 [`trk`](https://github.com/Trk-Nexus/trk)（**2026-11-02 に組織 `Trk-Nexus` へ移籍**） の **1.1.8（trk219）** をそのまま取り込み、このリポジトリで配信します。
 - 上流コミット：`06cef87`（2026-10-29）。
 - **本番URL（GitHub Pages・組織 `Trk-Nexus`）：https://trk-nexus.github.io/trk-PWA/**（**2026-11-02 移籍済み・trk250**）
   - 移籍前は `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/`（試験用）。**リポジトリごと移したので、この旧URLの Pages は無くなりました**（まだ外部に案内していないので、利用者側の移行作業は要りません）。
@@ -14,7 +14,10 @@ trk! を **PWA（Webアプリ）として配布する**ためのリポジトリ�
 - 配布方針・iOSの制約・実機チェックリスト：[iPhone向け配布のブレインストーミング](IPHONE-PWA-BRAINSTORM-2026-10-30.md)
 - 作業の許可範囲：[作業権限の記録](PERMISSIONS.md)
 
-> ⚠ **データの住所は「ホスト」です。** Webの保存領域はオリジン（scheme + host + port）ごとに別で、**パスは関係ありません**。`...github.io/trk/`（個人＝上流本体）と `...github.io/trk-PWA/` は同じオリジンなので保存データもキャッシュも共有していました。**2026-11-02 の移籍で `trk-PWA` は `trk-nexus.github.io` に移ったので、いまは上流 `/trk/` と別オリジンです**（分離の目的はここで達成）。注意は「**同じ組織内に別の Pages を置くと、また共有する**」に変わります。ホストを後から変えると保存データは自動では移らないので、**移籍前に 📤 書き出し／先のオリジンで 📥 読み込み**（trk247 の導線）を使います。
+> ⚠ **データの住所は「ホスト」です。** Webの保存領域はオリジン（scheme + host + port）ごとに別で、**パスは関係ありません**（`/trk/` と `/trk-PWA/` は別の「道」でも同じ「家」）。
+> **2026-11-02 の経過**：①`trk-PWA` を組織 `Trk-Nexus` へ移籍 → 上流 `trk`（個人）と**別オリジンになった** ②同日 `trk` も `Trk-Nexus` へ移籍 → **いまは再び同じオリジン `https://trk-nexus.github.io` を共有しています**（`https://trk-nexus.github.io/trk/` と `.../trk-PWA/`）。
+> 実害の出かた：保存キーが同名（`shadow_taiko_preferences_v2` など）なので**設定・記録は相互に読み合います**（同じアプリの分家なので実用上は互換）。危険なのはキャッシュ掃除で、**上流 `trk` の `sw.js` はスコープを絞らずに `trk-` 始まりのキャッシュを全部消す**（上流 sw.js:128）ので、上流が版を上げると trk-PWA のオフライン殻と共有受け口まで消えます。対策の案は `docs/ORIGIN.md` §7 と `docs/ORIGIN-TRK-NEXUS-2026-11-02.md` §6。
+> ホストを後から変えると保存データは自動では移りません。**移籍前に 📤 書き出し／先のオリジンで 📥 読み込み**（trk247 の導線）を使います。
 
 ## 2. 現在地
 
@@ -24,7 +27,7 @@ trk! を **PWA（Webアプリ）として配布する**ためのリポジトリ�
 | Phase 1 | 1.1.8の取り込み・Pages公開（試験URL） | **取り込み・mainマージ・Pages有効化済み／初回デプロイ待ち** |
 | Phase 2 | モバイル画面シェル（下部ナビ・エフェクト画面・取込の折りたたみ） | **実装済み（未実機）**。§9 |
 | Phase 3 | iOS向けの調整（manifest・アイコン・インストール案内・保存説明・音・向き・precache） | **実装済み（未実機）**。§10 |
-| Phase 4 | 配布の最終判断（オリジン確定／告知／バックアップ導線） | **①確定済み（2026-11-02・trk250）**＝組織 `Trk-Nexus` へ移籍し、本番URLを `https://trk-nexus.github.io/trk-PWA/` にした。 **③導線＝trk247 実装済み**（⚙ → 💾 端末の保存 に 📤・上限 20 MiB・項目ごとに隔離／未実機）。 **②初回案内＝trk248 実装済み**（`welcomeBackup` を1行）。**残りは④告知だけ**。 経緯・実測＝`docs/ORIGIN-TRK-NEXUS-2026-11-02.md`、導線の設計＝`docs/PREFS-TRANSFER-TRK247-2026-11-01.md` |
+| Phase 4 | 配布の最終判断（オリジン確定／告知／バックアップ導線） | **①確定済み（2026-11-02・trk250）**＝組織 `Trk-Nexus` へ移籍し、本番URLを `https://trk-nexus.github.io/trk-PWA/` にした（同日、上流 `trk` も同組織に入り **2つは同じオリジンを再共有** → `docs/ORIGIN.md` §7）。 **③導線＝trk247 実装済み**（⚙ → 💾 端末の保存 に 📤・上限 20 MiB・項目ごとに隔離／未実機）。 **②初回案内＝trk248 実装済み**（`welcomeBackup` を1行）。**残りは④告知だけ**。 経緯・実測＝`docs/ORIGIN-TRK-NEXUS-2026-11-02.md`、導線の設計＝`docs/PREFS-TRANSFER-TRK247-2026-11-01.md` |
 
 **ビルドが通ったことと、iPhone実機で動いたことは別**です。実機の結果は日付・iOSバージョン・端末名とセットで記録してください。
 
@@ -80,7 +83,7 @@ Phase 1の時点で、上流1.1.8から変えているのは次だけです。
 
 ```sh
 # 初回だけ（.git/config は環境によって保持されないので、都度確認）
-git remote add upstream https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk.git
+git remote add upstream https://github.com/Trk-Nexus/trk.git
 
 git fetch upstream main
 git merge upstream/main
@@ -104,12 +107,12 @@ git push origin <作業ブランチ>
 
 **Pagesの有効化は、リポジトリ設定で人が行う必要があります。**
 
-1. https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk-PWA/settings/pages を開く
+1. https://github.com/Trk-Nexus/trk-PWA/settings/pages を開く
 2. **Build and deployment** → **Source** のドロップダウンで **GitHub Actions** を選ぶ
 
 **2026-10-30に設定済み。** APIでも `build_type: workflow`、`html_url`、`https_enforced: true` を確認しました。次に `main` へpush（PRのマージ）されると `Deploy GitHub Pages` が走ります。
 
-参考：有効化前の初回デプロイ（[run 41086274414](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk-PWA/actions/runs/41086274414)）は `Configure Pages` で失敗していました。ログは `Get Pages site failed. Please verify that the repository has Pages enabled and configured to build using GitHub Actions`。アプリ側のファイルの不備ではありませんでした。
+参考：有効化前の初回デプロイ（[run 41086274414](https://github.com/Trk-Nexus/trk-PWA/actions/runs/41086274414)）は `Configure Pages` で失敗していました。ログは `Get Pages site failed. Please verify that the repository has Pages enabled and configured to build using GitHub Actions`。アプリ側のファイルの不備ではありませんでした。
 
 理由：
 

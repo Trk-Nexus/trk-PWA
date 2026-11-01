@@ -35,8 +35,8 @@
 | 項目 | 前後 |
 | --- | --- |
 | リポジトリ | `TonbokiriRaikiriMuramasa-Taikoubou/trk-PWA` → **`Trk-Nexus/trk-PWA`**（このサンドボックスの `origin` は差し替え済み） |
-| **旧 git URL** | `...Taikoubou/trk-PWA.git` は**使えません**（`git ls-remote` が空）。HTTPS のクローン先は新URLにしてください。**README・ドキュメントの URL を指すリンクは trk250 で更新済み** |
-| **旧 Pages URL** | `tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/` は**無くなります**（リポジトリごと移動したため）。**外部に案内していなかったので影響はゼロ** |
+| **旧 git URL（trk-PWA）** | `...Taikoubou/trk-PWA.git` は**使えません**（`git ls-remote` が空・HTML は 200）。理由が分かった：**同じ名前の空リポジトリが個人側に存在**します（`size=0`・`created_at 2026-11-01T17:59Z`・`pages=false`）＝GitHub の移転転送が無効化されている。**上流 `trk` の方は転送が効いています**（旧パスが 301 → `Trk-Nexus/trk`、`ls-remote` も同じ SHA `06cef87` を返す） |
+| **旧 Pages URL** | `tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/` は**無くなります**（リポジトリごと移動したため）。**外部に案内していなかったので影響はゼロ**。<br>⚠ ただし同日、上流 `trk` も組織へ移ったので、**個人アカウントには Pages が1つも残っていません**（`/trk/`・`/trk-PWA/`・`/trk-Standalone/`・`/trk-apk/` すべて 404）→ **上流の旧URLを案内されていた人には実害**（§6） |
 | 本番URL | **`https://trk-nexus.github.io/trk-PWA/`** |
 | `index.html` の `og:url`／`og:image` | 新オリジンへ更新（trk250） |
 | `README.md` | ▶ 遊ぶ／▶ Play のリンク3本（badge含む）を新URLへ |
@@ -57,7 +57,7 @@
 - [x] **配布ZIPを作り直し**（trk250）。旧URLが入っていた trk248 版に代えて、Drive の `trk-PWA-trk250-2026-11-02` に standalone／handover／README／SHA256SUMS の4点を置きました（**ハッシュはZIPの中の文書ではなく README と SHA256SUMS にだけ**）
 - [ ] **実機確認**（trk247・trk248 の欄）：新しいオリジンで ⚙ → 💾 端末の保存 の 📤📥、モバイルのパネル載せ、初回案内の1行
 - [ ] **④告知の判断**：どこに・いつ案内するか（`docs/ORIGIN.md` §6 の残件）。**本番URLが決まったので、告知文は `https://trk-nexus.github.io/trk-PWA/` を指せます**
-- [ ] 上流 `trk` を組織へ移すかは**未決**（今回は `trk-PWA` だけ）。移すと `/trk/` のURLも変わる（**すでに案内済みなので、移すなら 📤 書き出し → 先で 📥 読み込みの手順を案内する必要が出ます**）
+- [x] **上流 `trk` も同日に組織へ移籍**（2026-11-02・trk251 で追記）。`https://trk-nexus.github.io/trk/` がライブ確認済み。**同じ組織に入ったので、再び同じオリジン `https://trk-nexus.github.io` を共有**しています → §6
 - [ ] `docs/REVIEW-REQUEST-*` など**履歴の文書は古いURLのまま**にしています（書き換えると記録が偽るため）
 
 **触らないもの**（この作業セッションの範囲）：組織の設定変更・課金・SSO・リポジトリの再移籍・リポジトリの削除／可視性変更。権限が必要になったときは都度ご相談します。
@@ -65,3 +65,15 @@
 ## 5. 同じ轍を踏まないための1行
 
 > **GitHub の「リポジトリ移籍」は、リポジトリの所有者が組織の Owner でも、作業セッション（GitHub App）がその組織にインストールされていなければ 403 になる。**（`X-Oauth-Scopes:` が空のトークンは、組織の情報を何も見られない。「メンバー一覧が空」＝「未所属」とは限らない）
+
+## 6. 同日の続き：上流 `trk` も `Trk-Nexus` に入った（trk251）
+
+**実測**：`Trk-Nexus/trk`（public・`has_pages=true`・`admin=true`・最終 push 2026-10-29）／Pages は `build_type=workflow`・`source=main:/` で移籍後もそのままBuild済み（`https://trk-nexus.github.io/trk/` に上流の実物が立っている）／`trk-Avatar-Library` も組織、`music-library`・`trk-Standalone`・`trk-apk` は個人のまま。
+
+これで**起きたこと**（详细は `docs/ORIGIN.md` §7 に表と案）：
+
+1. ✅ **trk-PWA の本番URLは無傷**（`https://trk-nexus.github.io/trk-PWA/`）。上流のURLは `https://trk-nexus.github.io/trk/` に変わり、**個人側の全 Pages が死んだ**ので、上流を案内済みの方は旧URLで 404 を見ます（上流の SW は 404 をそのまま返す作りなので、インストール済みでも救われません）。**告知文は新URLで統一が必要**。
+2. ⚠ **同一オリジンへの復帰**：`/trk/` と `/trk-PWA/` はまた `https://trk-nexus.github.io` を共有します。保存キーは同名（`shadow_taiko_preferences_v2` など）なので設定・記録は読み合います（分家なので形状的には互換）。
+3. ⚠ **キャッシュの相互消去**：上流 `sw.js:128` は `trk-` 始まりを全部消す旧式（trk223 のスコープ印が入っていない）なので、**上流が次に版を上げると trk-PWA のオフライン殻と共有受け口まで消えます**。対処案 A（上流へバックポート PR）／B（うちの cache 名を `trk-` 始まりから変える）／C（別ホスト）／D（共有を前提と明記）を `docs/ORIGIN.md` §7 に置きました。**まだ実行していません**。
+4. 📤 **旧オリジンの救出**：個人アカウントに Pages が無いので、**空の `Tonbokiri…/trk-PWA`（または `Tonbokiri….github.io`）で Pages を有効化して書き出し専用ページを1枚置く**と旧オリジンの `localStorage`/`IndexedDB` を読めます（同じホストならパスは何でもよい）。**要判断**。
+5. 🔧 `docs/og.png`（SNSプレビュー画像）に `tonbokiriraikirimuramasa-taikoubou.github.io/trk` の**文字が焼き込まれています**。描く文字列は `tools/make-icons.html`（trk251 で `trk-nexus.github.io/trk` に更新済み）にありますが、**画像の作り直しはブラウザでそのページを開く作業**なので未実施です。
