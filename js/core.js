@@ -46,6 +46,12 @@ function fitStage() {
   else { stage.style.width = ""; stage.style.height = ""; }
   const s = Math.min(innerWidth / W, innerHeight / H) * z;
   stage.style.transform = `translate(-50%,-50%) scale(${s})`;
+  /* 📐🧱 trk245：ステージの設計高さ（1080 / 拡大率）から、曲リストの高さと表示の密度を見直す。
+     拡大率で縮めて設計が広くなったぶんはリストに返し、窓が狭いときは密度を詰める。 */
+  if (document.documentElement && document.documentElement.style && typeof document.documentElement.style.setProperty === "function") {
+    document.documentElement.style.setProperty("--trk-lib-h", `${libListHeight(H / z)}px`);
+  }
+  applyDensityClasses();
 }
 addEventListener("resize", fitStage);
 fitStage();
@@ -316,7 +322,7 @@ const settings = {
   /* 🧱 trk244：表示の密度（ゆったり／ふつう／ぎゅっと／ぎっしり）。
      `uiScaleCompact` がオンのあいだは、拡大率（125/100/75/50%）が**密度の段**になります
      （縮小＝文字を小さくする、ではなく「詰めて多く見せる」）。 */
-  uiDensity: pick(prefs.uiDensity, ["roomy", "normal", "compact", "dense"], "normal"),
+  uiDensity: pick(prefs.uiDensity, ["auto", "roomy", "normal", "compact", "dense"], "auto"),
   /* 🧱 trk244：縮小（75%・50%）を「詰めて多く見せる」に使う（既定オン＝文字は小さくしない） */
   uiScaleCompact: prefs.uiScaleCompact !== false,
   /* 🖥 trk222：右上の 📱／🖥 で選んだ画面の形を、次に開いたときも使い続ける（❓謎設定） */
@@ -748,7 +754,7 @@ function resetAllPrefs() {
   settings.uiMode = "auto"; settings.playerBar = "on";
   settings.uiScale = 100; settings.fixedIconSize = true; settings.uiModeLock = true; settings.fxInLibrary = false;
   /* 🧱 trk244：表示の密度（ふつう）と、縮小は「詰めて見せる」（オン）も工場出荷状態へ */
-  settings.uiDensity = "normal"; settings.uiScaleCompact = true;
+  settings.uiDensity = "auto"; settings.uiScaleCompact = true;
   /* 🎵 trk225：バーの置き場所（いちばん下）と、隠さない設定（オフ）も工場出荷状態へ */
   settings.playerBarPos = "bottom"; settings.playerBarLock = false; settings.playerBarSeekLock = false;
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
@@ -1739,6 +1745,8 @@ function uiScaleValue() {
    実装：JS は body へ trk-density-<段> を1つ乗せるだけ。余白・行間・棚の列数は CSS が決めます
    　（css/style.css §trk244）。font-size はどこでも変えないので、文字は読める大きさのままです。 */
 const UI_DENSITIES = ["roomy", "normal", "compact", "dense"];
+/* 設定の欄に出すchoices（auto は「窓の広さに合わせる」）。body のクラスは上の4つだけ */
+const UI_DENSITY_CHOICES = ["auto", "roomy", "normal", "compact", "dense"];
 /* 「縮小＝詰める」がオンのとき、拡大率が密度の段になる表。
    125% は「字を大きくしたい」方の設定なので、密度は据え置き（ふつう）にします */
 const DENSITY_BY_SCALE = { 50:"dense", 75:"compact", 100:"normal", 125:"normal" };
@@ -1751,12 +1759,58 @@ function densityFromScale(percent) {
   const n = Number(percent);
   return DENSITY_BY_SCALE[UI_SCALES.includes(n) ? n : 100];
 }
-/* いま密度が拡大率から自動で決まっているか（設定画面で「下の選択は使いません」と伝えるため） */
+/* いま密度が拡大率から自動で決まっているか（75%・50% のとき。設定画面で「下の選択は使いません」と伝えるため） */
 function uiDensityAuto() { return uiScaleCompactOn() && uiScaleShrinks(uiScaleValue()); }
-/* いま効いている密度（自動のあいだは拡大率から、手動に戻したら settings.uiDensity から） */
+/* 🪟 trk245：窓の広さから密度を決める（純粋関数）。数式は「短い辺の2乗＝画面の面積」で、
+   　単位は 100 万 px²（1.0 = 1000×1000 相当）。狭いほど詰める＝Clementine／MusicBee の自動のまね。 */
+const DENSITY_WINDOW_STEPS = [[2.6, "roomy"], [1.0, "normal"], [0.45, "compact"]];
+const DENSITY_WINDOW_NARROW = 900;    // これより**幅が**狭い（半画面・小さな窓）はもう1段詰める
+function densityFromWindow(width, height) {
+  const w = Number(width), h = Number(height);
+  if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) return "normal";
+  const mpx = (w * h) / 1e6;
+  let level = "dense";
+  for (const [min, name] of DENSITY_WINDOW_STEPS) { if (mpx >= min) { level = name; break; } }
+  if (w < DENSITY_WINDOW_NARROW) {
+    const i = UI_DENSITIES.indexOf(level);
+    level = UI_DENSITIES[Math.min(UI_DENSITIES.length - 1, i + 1)];   // 1段だけ詰める方へ
+  }
+  return level;
+}
+/* 📐 trk245：曲リストの高さ（設計px）。カードの中身（バナー・見出し・ツール・詳細欄）がだいたい 440px
+   　なので、ステージの設計高さからそれを引いたぶんをリストに返す。狭い（拡大率 125%）なら短く、
+   　広い（50%）なら長く。スマホ型は CSS が実ピクセルで並べるので、ここで高さを固定しない。 */
+const LIB_LIST_PAD = 440, LIB_LIST_MIN = 320, LIB_LIST_MAX = 900;
+function libListHeight(designHeight) {
+  const h = Number(designHeight);
+  if (!Number.isFinite(h) || h <= 0) return LIB_LIST_MIN;
+  return Math.max(LIB_LIST_MIN, Math.min(LIB_LIST_MAX, Math.round(h - LIB_LIST_PAD)));
+}
+/* いま効いている密度：①75%・50%の「縮小＝詰める」が最優先、②settings.uiDensity が auto なら窓の広さ、
+   　③それ以外は選んだ段。知らない値は auto として扱う（既定と同じ窓に落ちる） */
+/* 窓の大きさ（vm・ workers・古い環境でも落ちないように、無いものは 0 として扱う） */
+function uiWindowSize() {
+  let w = NaN, h = NaN;
+  try { w = Number(innerWidth); h = Number(innerHeight); } catch (_) {}
+  if (!(w > 0 && h > 0)) {
+    try { w = Number(window.innerWidth); h = Number(window.innerHeight); } catch (_) {}
+  }
+  return { width: Number.isFinite(w) ? w : 0, height: Number.isFinite(h) ? h : 0 };
+}
 function uiDensityValue() {
-  const manual = UI_DENSITIES.includes(settings.uiDensity) ? settings.uiDensity : "normal";
-  return uiDensityAuto() ? densityFromScale(uiScaleValue()) : manual;
+  if (uiDensityAuto()) return densityFromScale(uiScaleValue());
+  const stored = UI_DENSITY_CHOICES.includes(settings.uiDensity) ? settings.uiDensity : "auto";
+  if (stored !== "auto") return stored;
+  const box = uiWindowSize();
+  return densityFromWindow(box.width, box.height);
+}
+/* 密度のクラスだけをそろえる（リサイズでも見直す。保存も作り直しもしない） */
+function applyDensityClasses() {
+  const density = uiDensityValue();
+  if (document.body) {
+    for (const level of UI_DENSITIES) document.body.classList.toggle("trk-density-" + level, density === level);
+  }
+  return density;
 }
 function applyUiScale({ persist = false } = {}) {
   const percent = uiScaleValue();
@@ -1769,13 +1823,12 @@ function applyUiScale({ persist = false } = {}) {
   root.style.setProperty("--trk-ui-zoom", String(z));
   const iconsFixed = settings.fixedIconSize !== false;
   root.style.setProperty("--trk-icon-zoom", String(iconsFixed ? 1 / z : 1));
-  const density = uiDensityValue();
   if (document.body) {
     document.body.classList.toggle("trk-zoom", z !== 1);
     document.body.classList.toggle("trk-icon-fixed", iconsFixed);
     document.body.classList.toggle("trk-scale-compact", packed);
-    for (const level of UI_DENSITIES) document.body.classList.toggle("trk-density-" + level, density === level);
   }
+  const density = applyDensityClasses();   /* 直後の fitStage() が --trk-lib も見直す */
   fitStage();
   /* 棚の列数・行の高さ・余白は、密度のクラス（trk-density-*）を受けた CSS が決める（css/style.css）。
      DOM を作り直さなくてよいので、設定を開いたまま密度を変えても棚のスクロール位置は残ります。 */
@@ -2114,7 +2167,7 @@ window.view = view;
 window.windows = windows;
 /* 領域（window.Trk.core）：コア状態の正規の場所。window直下の旧互換名は frozen js/fx.js が読む5件だけ。 */
 window.Trk = window.Trk || {};
-window.Trk.core = Object.assign(window.Trk.core || {}, { $, applyUiScale, fitStage, uiScaleValue, UI_SCALES, UI_DENSITIES, DENSITY_BY_SCALE, densityFromScale, uiDensityValue, uiDensityAuto, uiScaleCompactOn, uiScaleShrinks, renderStoragePersist, storageLimitsIgnored, requestStoragePersist, storagePersistState, BEST_KEY, CAPTION_MS, CUSTOM_SKIN_MAX, KEY_PRESETS, PAD_DEFAULTS, SKIN_FORMAT, TRK_ENUM_VALUES, TV_PARAM_FAV_MAX, VIDEO_KEY_DEFAULTS, activeMascot, applyLanguage, applyNoteVars, baseName, buildSkinGrid, buildSkinNow, chartSummary, clampTvBlur, clampTvDim, cleanTvParamFavorites, closeSettings, ctx, customSkinDefs, downloadBlob, downloadJSON, el, emit, esc, extOf, fmtDate, fmtTime, fontFamily, formatKey, formatPadBind, fx, gameplayFxMultiplier, gameplayFxPower, hashString, idbStore, isPclMascot, keyCodeOf, keysLabel, laneCol, laneColor, laneName, modsUnranked, mulberry32, noteShape, num, on, openSettings, pick, prefsForSave, refreshSeedSecrets, rememberMusicVolume, renderAllStatuses, renderStatus, safeHttpUrl, safeLink, safeModeHref, safeName, saveCustomSkins, saveUserPrefs, savedSkinAtBoot, setPhase, setStatus, settings, showScreen, skin, slotLane, slotOfKey, stage, syncPickers, takeAmpReset, travelMs, updateChartButtons, updateKeyUI, updateTouchKeys, validCode, validPadBind, vctx, video, view, windows });
+window.Trk.core = Object.assign(window.Trk.core || {}, { $, applyUiScale, fitStage, uiScaleValue, UI_SCALES, UI_DENSITIES, UI_DENSITY_CHOICES, DENSITY_BY_SCALE, DENSITY_WINDOW_STEPS, densityFromScale, densityFromWindow, libListHeight, applyDensityClasses, uiDensityValue, uiDensityAuto, uiScaleCompactOn, uiScaleShrinks, renderStoragePersist, storageLimitsIgnored, requestStoragePersist, storagePersistState, BEST_KEY, CAPTION_MS, CUSTOM_SKIN_MAX, KEY_PRESETS, PAD_DEFAULTS, SKIN_FORMAT, TRK_ENUM_VALUES, TV_PARAM_FAV_MAX, VIDEO_KEY_DEFAULTS, activeMascot, applyLanguage, applyNoteVars, baseName, buildSkinGrid, buildSkinNow, chartSummary, clampTvBlur, clampTvDim, cleanTvParamFavorites, closeSettings, ctx, customSkinDefs, downloadBlob, downloadJSON, el, emit, esc, extOf, fmtDate, fmtTime, fontFamily, formatKey, formatPadBind, fx, gameplayFxMultiplier, gameplayFxPower, hashString, idbStore, isPclMascot, keyCodeOf, keysLabel, laneCol, laneColor, laneName, modsUnranked, mulberry32, noteShape, num, on, openSettings, pick, prefsForSave, refreshSeedSecrets, rememberMusicVolume, renderAllStatuses, renderStatus, safeHttpUrl, safeLink, safeModeHref, safeName, saveCustomSkins, saveUserPrefs, savedSkinAtBoot, setPhase, setStatus, settings, showScreen, skin, slotLane, slotOfKey, stage, syncPickers, takeAmpReset, travelMs, updateChartButtons, updateKeyUI, updateTouchKeys, validCode, validPadBind, vctx, video, view, windows });
 /* catch.js／stage.js はこの正規アクセサを差し替える（旧window.activeMods別名はtrk90で廃止）。 */
 Object.defineProperty(window.Trk.core, "activeMods", { configurable:true, get:() => activeMods, set:v => { activeMods = v; } });
 Object.defineProperty(window.Trk.core, "analysis", { configurable:true, get:() => analysis, set:v => { analysis = v; } });

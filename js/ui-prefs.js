@@ -7,7 +7,7 @@
      #fixedIconSize  … アイコンの大きさを 100% で固定する（既定オン）
      #uiModeLock     … 画面の形は、常に選んだものを使う（❓ 謎設定。既定オン）
      #fxInLibrary    … スマホ型で、エフェクトの欄をライブラリにも出す（既定オフ）
-     #uiDensity      … 表示の密度 ゆったり／ふつう／ぎゅっと／ぎっしり（既定 ふつう）
+     #uiDensity      … 表示の密度 自動（窓の広さ）／ゆったり／ふつう／ぎゅっと／ぎっしり（既定 自動。trk245）
      #uiScaleCompact … 縮小（75%・50%）は「詰めて多く見せる」で行う（既定オン。Clementine／MusicBee の
                        Compact の考え方。オンの 75%・50% では密度は拡大率から決まるので #uiDensity は伏せます）
 
@@ -38,18 +38,26 @@
       const value = String(core.uiScaleValue ? core.uiScaleValue() : core.settings.uiScale);
       if (scale.value !== value) scale.value = value;
     }
-    /* 🧱 trk244：表示の密度。「縮小＝詰めて見せる」がオンの 75%・50% のあいだは、密度は拡大率から決まります
-       （その間は下の選択を使わないので、-disabled と status の一行で理由を伝えます） */
+    /* 🧱 trk244・🪟 trk245：表示の密度。
+       ①「縮小＝詰めて見せる」がオンの 75%・50% は、密度が拡大率から決まるので欄を伏せて理由を出す
+       ②それ以外は選んだ段どおり（既定は 自動＝窓の広さに合わせる）。自動のときは、何段にしているかを書く */
     const auto = !!(core.uiDensityAuto ? core.uiDensityAuto() : false);
+    const choices = core.UI_DENSITY_CHOICES || ["auto", "roomy", "normal", "compact", "dense"];
+    const levelKeys = { auto:"uiDensityAutoOption", roomy:"uiDensityRoomy", normal:"uiDensityNormal", compact:"uiDensityCompact", dense:"uiDensityDense" };
+    const stored = choices.includes(core.settings.uiDensity) ? core.settings.uiDensity : "auto";
     const density = document.getElementById("uiDensity");
     if (density) {
-      const value = core.uiDensityValue ? core.uiDensityValue() : "normal";
-      if (density.value !== value) density.value = value;
+      if (density.value !== stored) density.value = stored;
       density.disabled = auto;
     }
     const densityState = document.getElementById("uiDensityState");
     if (densityState) {
-      const text = auto ? tr("uiDensityAuto", { n: core.uiScaleValue ? core.uiScaleValue() : 100 }) : "";
+      const level = core.uiDensityValue ? core.uiDensityValue() : "normal";
+      const text = auto
+        ? tr("uiDensityAuto", { n: core.uiScaleValue ? core.uiScaleValue() : 100 })
+        : (stored === "auto" && typeof tr === "function"
+          ? tr("uiDensityWindow", { level: tr(levelKeys[level] || "uiDensityNormal"), w: innerWidth, h: innerHeight })
+          : "");
       if (densityState.textContent !== text) densityState.textContent = text;
     }
     for (const [id, key] of Object.entries(fields)) {
