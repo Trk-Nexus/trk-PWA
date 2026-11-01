@@ -270,7 +270,9 @@ select{padding:8px 10px;border-radius:10px;background:var(--ui-field);color:var(
 .libTools{display:grid;grid-template-columns:1fr auto auto;gap:8px;margin-top:10px}
 .libTools input,.libTools select{padding:9px 12px;border-radius:10px;background:var(--ui-field);color:var(--ui-text);border:1px solid var(--ui-border);font-size:16px}
 .libTools button{padding:8px 14px;font-size:16px}
-#libList{display:flex;flex-direction:column;gap:calc(5px * var(--trk-dens-gap,1));margin-top:calc(10px * var(--trk-dens-pad,1));height:640px;overflow:auto;padding-right:4px}
+/* 📐 trk245：高さはこの場で決めない。js/core.js の fitStage() が「ステージの設計高さ − ほかの欄」から
+   --trk-lib-h を置いていく（拡大率で縮めたぶんはリストに返る）。無いとき（初回描画・js 無し）は 640px */
+#libList{display:flex;flex-direction:column;gap:calc(5px * var(--trk-dens-gap,1));margin-top:calc(10px * var(--trk-dens-pad,1));height:var(--trk-lib-h,640px);overflow:auto;padding-right:4px}
 .libRow{display:flex;justify-content:space-between;align-items:center;gap:calc(12px * var(--trk-dens-gap,1));width:100%;padding:calc(11px * var(--trk-dens-pad,1)) calc(16px * var(--trk-dens-pad,1));border-radius:12px;
   text-align:left;font-size:17px;border-left:5px solid transparent}
 .libRow.cur{border-color:var(--ui-accent);color:var(--ui-text);background:var(--ui-button-hover)}
@@ -778,7 +780,8 @@ body.instOpen{overflow:hidden;overscroll-behavior:none}
 
 /* メイン画面の欄（fx-dock.js）：さわれる本体 */
 #fxDock{display:flex;flex-direction:column;gap:8px}
-#libList{height:320px}
+/* 📐 trk245：ここに高さを書かない。#libList の高さは上の行の --trk-lib-h（窓と拡大率から決める）が正。
+   昔ここで 320px を固定していたため、拡大率で画面を縮めたときもリストが 320px のまま増えていなかった。 */
 .dockDev{position:relative;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--ui-border);background:var(--ui-soft);color:var(--ui-text)}
 .dockTop{display:flex;align-items:center;gap:10px}
 .dockLcd{flex:1;min-width:0;padding:7px 12px;border-radius:8px;font-family:"Cascadia Mono",Consolas,monospace;font-weight:800;font-size:15px;

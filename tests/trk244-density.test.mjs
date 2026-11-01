@@ -43,6 +43,7 @@ function ctx({ scale = 100, density = "normal", compact = true, fixedIconSize = 
         },
       },
     },
+    innerWidth: 1440, innerHeight: 900,
     settings: { uiScale: scale, uiDensity: density, uiScaleCompact: compact, fixedIconSize },
     saveUserPrefs() { sandbox.saved = (sandbox.saved || 0) + 1; },
     emit(name, value) { events.push([name, value]); },
@@ -212,7 +213,9 @@ describe("trk244 CSS（密度は余白・行間・列数だけ変える）", () 
       assert.ok(rule.includes(want), `${sel} に ${want}`);
     }
     /* 曲リストの高さは動かさない（行が短くなるぶん、同じ高さで多く見える） */
-    assert.ok(cssSrc.includes("height:640px"), "#libList の高さは 640px のまま");
+    /* 📐 trk245：高さは fitStage が置く --trk-lib-h の既定値になった（640px はそのまま素のときの値） */
+    assert.ok(cssSrc.includes("height:var(--trk-lib-h,640px)"), "#libList の高さは --trk-lib-h（既定 640px）");
+    assert.equal(/^#libList\{height:/m.test(cssSrc), false, "後の行で高さを上書きしない（trk245 で 320px 固定を外した）");
   });
 
   test("縮小＝詰めのときはカードを画面いっぱいにする（trk222 の trk-zoom と同じ書き方）", () => {
@@ -227,11 +230,12 @@ describe("trk244 CSS（密度は余白・行間・列数だけ変える）", () 
 });
 
 describe("trk244 設定・保存・文言", () => {
-  test("既定は ふつう・縮小＝詰めるはオン。工場出荷状態でもどる", () => {
-    assert.ok(coreSrc.includes('uiDensity: pick(prefs.uiDensity, ["roomy", "normal", "compact", "dense"], "normal")'),
-      "uiDensity は4択・既定 normal");
+  test("既定は 窓の広さに自動・縮小＝詰めるはオン。工場出荷状態でもどる", () => {
+    /* trk245 で 自動 が加わって5択・既定 auto（1920×1080 なら従来の ふつう と同じ） */
+    assert.ok(coreSrc.includes('uiDensity: pick(prefs.uiDensity, ["auto", "roomy", "normal", "compact", "dense"], "auto")'),
+      "uiDensity は5択・既定 auto");
     assert.ok(coreSrc.includes("uiScaleCompact: prefs.uiScaleCompact !== false"), "縮小＝詰めるは既定オン");
-    assert.ok(coreSrc.includes('settings.uiDensity = "normal"; settings.uiScaleCompact = true;'),
+    assert.ok(coreSrc.includes('settings.uiDensity = "auto"; settings.uiScaleCompact = true;'),
       "工場出荷状態では既定へ戻す");
   });
 
