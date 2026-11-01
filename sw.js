@@ -46,8 +46,15 @@
 
    🔍 trk243（2026-11-01）：**設定のさがす**（js/settings-find.js）を足しました。設定のパネルが
    19 枚になり、目で探すしかなかったためです。index.html・css/style.css が変わったので、また上げます。 */
-const CACHE = "trk-v2026.11.02-trk251";
+const CACHE = "trk-v2026.11.02-trk252";
 const CACHE_PREFIX = "trk-";
+/* 🧭 trk252（2026-11-02）：CacheStorage に**実在させる名前**には `trkPWA-` を先頭に付けるようにしました。
+   同じオリジンに別の trk!（上流 `/trk/` など）が在ると、相手が「`trk-` 始まりは全部消す」旧式の掃除を
+   している場合、うちの殻・3Dの vendor・共有受け口まで一緒に消えます（trk223 は**こちら側**の取り違えを止めました）。
+   2026-11-02 に上流 `trk` も同じ組織へ移って同じオリジンに並ぶことになったので、
+   名前を `trk-` 始まりから逃がして二重に防ぐことにします（上流側の掃除にも trk252 の PR で印を見る修正を入れた）。
+   版名そのもの（下の CACHE）は従来の `trk-v…-trk…` のままにしています（tools と tests がそこを見る）。 */
+const CACHE_KEY_PREFIX = "trkPWA-";
 const SCOPE = new URL(self.registration.scope);
 const VENDOR_PREFIX = "assets/vendor/";
 
@@ -60,11 +67,11 @@ function scopeTagOf(pathname) {
 }
 const SCOPE_TAG = scopeTagOf(SCOPE.pathname);
 /* 版ごとのキャッシュ（自分のスコープの分だけを片付ける） */
-const CACHE_NAME = `${CACHE}@${SCOPE_TAG}`;
+const CACHE_NAME = `${CACHE_KEY_PREFIX}${CACHE}@${SCOPE_TAG}`;
 /* 🧊 3Dの vendor（ハッシュ固定）は、版を上げても捨てない（オフラインのMMDが消えないように）。
    中身は VENDOR_PINS と照合してから使うので、古いコピーが残っても安全側です。 */
 const VENDOR_CACHE_BASE = "trk-vendor-v1";
-const VENDOR_CACHE = `${VENDOR_CACHE_BASE}@${SCOPE_TAG}`;
+const VENDOR_CACHE = `${CACHE_KEY_PREFIX}${VENDOR_CACHE_BASE}@${SCOPE_TAG}`;
 /* 殻の先読みで、index.html から拾えないもの（アプリが後から fetch する小さなJSON） */
 const PRECACHE_EXTRA = ["verified.json", "assets/mmd/lat-miku/preset.json"];
 /* 電波が弱いときに待ち続けない（ナビゲーションだけ・3秒でキャッシュへ切り替える） */
@@ -74,7 +81,7 @@ const NAV_TIMEOUT_MS = 3000;
    中身は js/share-inbox.js が起動時に読んで、既存の取り込み経路へ渡したあと消す。 */
 const SHARE_CACHE = "trk-share-inbox-v1";
 /* 共有の一時置き場もスコープごとに分ける（別の trk! が取り違えないように） */
-const SHARE_CACHE_NAME = `${SHARE_CACHE}@${SCOPE_TAG}`;
+const SHARE_CACHE_NAME = `${CACHE_KEY_PREFIX}${SHARE_CACHE}@${SCOPE_TAG}`;
 const SHARE_PATH = new URL("share-target/", SCOPE).pathname;
 const SHARE_INBOX_PREFIX = new URL("share-inbox/", SCOPE).pathname;
 
@@ -249,7 +256,9 @@ self.addEventListener("activate", event => {
     const keys = await caches.keys();
     const old = [];
     for (const key of keys) {
-      if (!key.startsWith(CACHE_PREFIX)) continue;
+      /* 掃除するのは「うちの旧名（trkPWA-…）」と「旧方式の trk-…（うちのスコープ印が付いたもの）」だけ。
+         cacheIsOurs() が中身の見通しまで見て判別するので、別の trk! の無印 `trk-…` には触らない */
+      if (!key.startsWith(CACHE_PREFIX) && !key.startsWith(CACHE_KEY_PREFIX)) continue;
       if (key === CACHE_NAME || key === VENDOR_CACHE || key === SHARE_CACHE_NAME) continue;
       if (await cacheIsOurs(key)) old.push(key);
     }

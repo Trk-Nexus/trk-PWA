@@ -2,7 +2,8 @@
 /* ============================================================================
    trk! share-inbox.js — 📥 OSの共有／「このアプリで開く」の受け口（trk165）
    ・share_target（Android Chrome等）：Service Worker（sw.js の handleShareTarget）が
-     POSTで受け取ったファイルを CacheStorage「trk-share-inbox-v1」に一時保存する。
+     POSTで受け取ったファイルを CacheStorage「trkPWA-trk-share-inbox-v1@<置き場所の印>」に一時保存する
+     （trk252 から `trkPWA-` 始まり。名前の組み方は sw.js の CACHE_KEY_PREFIX と必ずそろえる）。
      ここは起動時にそれを読んで、**既存の取り込み経路**へ渡すだけ：
        曲 → Trk.library.addSongFiles ／ 動画 → Trk.library.addVideoFiles
        CBZ・ZIP → Trk.study.importArchives（pack.json が入った ZIP はパック扱い）
@@ -52,7 +53,7 @@ function shareScopeTag(pathname) {
 function shareScopePath() {
   try { return new URL(".", document.baseURI).pathname; } catch (_) { return "/"; }
 }
-const SHARE_CACHE_NAME = `${SHARE_CACHE}@${shareScopeTag(shareScopePath())}`;
+const SHARE_CACHE_NAME = `trkPWA-${SHARE_CACHE}@${shareScopeTag(shareScopePath())}`;   /* trk252: sw.js の CACHE_KEY_PREFIX と必ずそろえる（上流の `trk-` 掃除の射程から外れるための接頭辞） */
 const PACK_JSON_RE = /(^|\/)pack\.json$/;   /* custom.js の installPackFileSerial と同じ探し方 */
 
 function shareToast(key, vars) {

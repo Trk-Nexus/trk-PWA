@@ -75,5 +75,12 @@
 1. ✅ **trk-PWA の本番URLは無傷**（`https://trk-nexus.github.io/trk-PWA/`）。上流のURLは `https://trk-nexus.github.io/trk/` に変わり、**個人側の全 Pages が死んだ**ので、上流を案内済みの方は旧URLで 404 を見ます（上流の SW は 404 をそのまま返す作りなので、インストール済みでも救われません）。**告知文は新URLで統一が必要**。
 2. ⚠ **同一オリジンへの復帰**：`/trk/` と `/trk-PWA/` はまた `https://trk-nexus.github.io` を共有します。保存キーは同名（`shadow_taiko_preferences_v2` など）なので設定・記録は読み合います（分家なので形状的には互換）。
 3. ⚠ **キャッシュの相互消去**：上流 `sw.js:128` は `trk-` 始まりを全部消す旧式（trk223 のスコープ印が入っていない）なので、**上流が次に版を上げると trk-PWA のオフライン殻と共有受け口まで消えます**。対処案 A（上流へバックポート PR）／B（うちの cache 名を `trk-` 始まりから変える）／C（別ホスト）／D（共有を前提と明記）を `docs/ORIGIN.md` §7 に置きました。**まだ実行していません**。
-4. 📤 **旧オリジンの救出**：個人アカウントに Pages が無いので、**空の `Tonbokiri…/trk-PWA`（または `Tonbokiri….github.io`）で Pages を有効化して書き出し専用ページを1枚置く**と旧オリジンの `localStorage`/`IndexedDB` を読めます（同じホストならパスは何でもよい）。**要判断**。
-5. 🔧 `docs/og.png`（SNSプレビュー画像）に `tonbokiriraikirimuramasa-taikoubou.github.io/trk` の**文字が焼き込まれています**。描く文字列は `tools/make-icons.html`（trk251 で `trk-nexus.github.io/trk` に更新済み）にありますが、**画像の作り直しはブラウザでそのページを開く作業**なので未実施です。
+4. 📤 **旧オリジンの救出は「しない」判断**（2026-11-02・trk252。旧オリジンのデータは捨てる）。やるなら：個人アカウントには Pages が1つも無いので、**空の `Tonbokiri…/trk-PWA`（または `Tonbokiri….github.io`）で Pages を有効化して書き出し専用ページを1枚**置けば、旧オリジンの `localStorage`/`IndexedDB` を読めます（同じホストならパスは何でもよい）
+5. 🔧 **`docs/og.png` の焼き込み住所は「やめる」にしました**（trk252）：画像の背景を補間してURLの文字列だけを消し、`tools/make-icons.html` からも描画を削除しました（今后、移籍のたびに画像を作り直す必要がなくなります）。上流 `trk` 側の `docs/og.png` はまだ旧URLが入ったままです（用意したパッチに描画削除を入れてあります）
+
+### 権限の実測メモ（次回のための教訓その2）
+
+> **組織に App を入れても、リポジトリ単位の選択に入っていないと、そのリポジトリには push も ref 作成もできない。**
+> `gh api repos/Trk-Nexus/trk` は `permissions.admin=true` を返します（＝**ユーザー自身**の権限の値）。ところが git push は 403、`POST /repos/Trk-Nexus/trk/git/refs` は **403 `Resource not accessible by integration`** でした。
+> 判別式：**403 `...by integration` なら「アプリのアクセス範囲」の問題**／404 なら「そもそも見えていない」。
+> 解決は GitHub の 組織 → 設定 → 第三方的访问（Third-party Access）→ Arena → Repository access を **All repositories**（または `trk` を追加）にするだけ。

@@ -94,7 +94,8 @@ async function drawOG(id) {
   x.font = `700 40px ${FONT}`; x.fillStyle = "#ffd166"; x.fillText("All-Generation Rhythm Game", 545, 345);
   x.font = `600 30px ${FONT}`; x.fillStyle = "#c9cbd6"; x.fillText("万能なブラウザ再生プレイヤー。完全無料。", 545, 402);
   x.font = `56px ${FONT}`; x.fillText("🥁 🚚 🪐 🎪 🚛", 540, 488);
-  x.font = `600 22px ${FONT}`; x.fillStyle = "#8a8d9c"; x.fillText("trk-nexus.github.io/trk", 545, 570);
+  /* 住所（URL）は描き込みません（2026-11-02 trk252 の決定）。
+     生やした文字だと、リポジトリを移すたびに画像を作り直さなくなるためです。 */
 }
 
 for (const [id, ic] of Object.entries(ICONS)) {

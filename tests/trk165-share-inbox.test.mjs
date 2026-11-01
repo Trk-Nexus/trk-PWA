@@ -40,6 +40,7 @@ const swCacheConst = grab(swSrc, /const SHARE_CACHE = "[^"]+";/, "SHARE_CACHE (s
 const swTagFn = grab(swSrc, /function scopeTagOf\(pathname\) \{[\s\S]*?\n\}/, "scopeTagOf()");
 const pageTagFn = grab(shareSrc, /function shareScopeTag\(pathname\) \{[\s\S]*?\n\}/, "shareScopeTag()");
 const pageScopePathFn = grab(shareSrc, /function shareScopePath\(\) \{[\s\S]*?\n\}/, "shareScopePath()");
+const swKeyPrefixConst = grab(swSrc, /const CACHE_KEY_PREFIX = "[^"]+";/, "CACHE_KEY_PREFIX");   /* trk252 */
 const swNameConst = grab(swSrc, /const SHARE_CACHE_NAME = [^;]+;/, "SHARE_CACHE_NAME");
 const pageNameConst = grab(shareSrc, /const SHARE_CACHE_NAME = [^;]+;/, "SHARE_CACHE_NAME (page)");
 const swPathConst = grab(swSrc, /const SHARE_PATH = [^;]+;/, "SHARE_PATH");
@@ -212,7 +213,7 @@ test("drainShareInbox() reads only the inbox prefix, restores names, routes once
   });
   const n = await api.__drain();
   assert.equal(n, 2);
-  assert.equal(api.__state.opened[0], "trk-share-inbox-v1@trk", "the inbox cache is scoped to /trk/ (trk223)");
+  assert.equal(api.__state.opened[0], "trkPWA-trk-share-inbox-v1@trk", "trk252: trkPWA- 始まり＋スコープ印（上流の trk- 掃除の射程から外れる）");
   const routed = api.__routed();
   assert.equal(routed.length, 1, "one batch");
   assert.equal(routed[0][0].name, "song.mp3");
@@ -260,6 +261,7 @@ function swHarness({ fields = null, formThrows = false, putFailsFor = "" } = {})
 ${swTagFn}
 const SCOPE_TAG = scopeTagOf(SCOPE.pathname);
 ${swCacheConst}
+${swKeyPrefixConst}
 ${swNameConst}
 ${swPathConst}
 ${swInboxConst}
