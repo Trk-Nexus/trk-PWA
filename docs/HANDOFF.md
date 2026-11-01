@@ -1,6 +1,6 @@
 # trk! 開発引き継ぎ
 
-> **最終更新：2026-11-01**（`trk-PWA` の **trk247**）。アプリ本体は trk247（**設定の書き出し・読み込みの導線**＝⚙ → 💾 端末の保存に 📤📥・上限 20 MiB・**壊れた項目だけ除く**）、trk246（**書体の組み合わせ14組**＝見出し用の字を目録から選べる）、trk245（**密度の自動**＝窓の広さに合わせる／**曲リストの高さを画面に合わせる**）で、trk244 は**表示の密度**（PCで縮小しても文字を小さくせず詰める）、trk243 は**設定のさがす**、trk242 は**新しい版の知らせ**でした。`npm run check` は **1261 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.01-trk247`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
+> **最終更新：2026-11-01**（`trk-PWA` の **trk248**）。アプリ本体は trk248（**初回案内に「保存はこの端末だけ」の1行**）、trk247（**設定の書き出し・読み込みの導線**＝⚙ → 💾 端末の保存に 📤📥・上限 20 MiB・**壊れた項目だけ除く**）、trk246（**書体の組み合わせ14組**＝見出し用の字を目録から選べる）、trk245（**密度の自動**＝窓の広さに合わせる／**曲リストの高さを画面に合わせる**）で、trk244 は**表示の密度**（PCで縮小しても文字を小さくせず詰める）、trk243 は**設定のさがす**、trk242 は**新しい版の知らせ**でした。`npm run check` は **1269 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.01-trk248`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
 >
 > 現在の仕様・守る条件・未確認事項の要約です。過去の詳細な変更履歴・検証記録は [`HANDOFF-ARCHIVE.md`](HANDOFF-ARCHIVE.md)、利用者向け仕様は [`../README.md`](../README.md) と [`guide/`](guide/)、権利表記は [`../NOTICE.md`](../NOTICE.md)、品質・安全確認は [`QUALITY-CHECKS.md`](QUALITY-CHECKS.md) と [`SECURITY.md`](SECURITY.md)。**レビューと実機確認のお願いは [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md)**、その指摘への対応は [`REVIEW-RESPONSE-2026-10-31.md`](REVIEW-RESPONSE-2026-10-31.md)、trk223 を実際の端末で見る手順は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)。
 
@@ -24,6 +24,8 @@
 
 | 版 | trk番号 | 中身（1行） | 日付 |
 | --- | --- | --- | --- |
+| （trk-PWA） | trk248 | **初回案内に1行**（PWA Phase 4 の ②）：`#welcomeBox` の列表に `welcomeBackup`（保存はこのブラウザの中だけ・自動では移らない・移すときは ⚙ → 💾 端末の保存 の 📤📥）。**新しい dialog は作らない・保存する値も増やさない**（`settings.welcomeSeen` のまま）。案の1行目（`welcomeOffline`）は**すでに実在**していたので足していない | 2026-11-01 |
+| （trk-PWA） | trk248 | **①オリジンの進み**：組織 **`Trk-Nexus`** を利用者さんが作成（`api.github.com/orgs/Trk-Nexus` は 200・公開リポジトリ0件）。`https://trk-nexus.github.io/trk-PWA/` が狙える見込みで、**移管と Pages 有効化は未実施**（利用者さんの操作）。`.github.io` への応答はこのサンドボックスから実測不可（通信先が絞られている） |
 | （trk-PWA） | trk247 | **設定の書き出し・読み込みの実体を直す（PWA Phase 4 の ③）**：⚙ → 💾 端末の保存 に 📤（`all`／`core`＝ノートをのぞく／`notes`）・📥・結果欄（`#storageTransferState`）。読み込み上限 **2 MiB → 20 MiB**（`js/backup.js` の `MAX_LS_VALUE` と同じ目盛り。以前は自分の書き出しを読み返せなかった）。**1項目の失敗で全体を止めない**（純関数 `pickImportedPrefs`＋手書き13項目は `attempt` で1個ずつ try／全体失敗は「上限超過・JSON不可・根元がオブジェクトで無い」の3つだけ）。🛟 緊急復旧の入口も同じ手続きを共有して残す。localStorage のキーは増やしていない | 2026-11-01 |
 | （trk-PWA） | trk247 | 設計・上限の根拠・①ドメイン（組織 `trk-company` は 404＝空き見込み／オリジンが変わると保存域も変わる）＝[`PREFS-TRANSFER-TRK247-2026-11-01.md`](PREFS-TRANSFER-TRK247-2026-11-01.md)。**実ブラウザ未確認**（§5 に実機のお願い6項目）。 |
 | （trk-PWA） | trk247 | **Phase 4 の ②（`#welcomeBox` に2行）は未実施**（①オリジン未確定を理由に保留。案は [`PHASE4-ONBOARDING-BACKUP-2026-11-01.md`](PHASE4-ONBOARDING-BACKUP-2026-11-01.md) §2 のまま）。`js/backup.js` の `restoreBackup` は Import の検証関数を通しておらず、項目隔離は入れていない（未決着） |
