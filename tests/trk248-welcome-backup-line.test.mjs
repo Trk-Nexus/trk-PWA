@@ -75,6 +75,7 @@ describe("値と導線（増やさない）", () => {
   });
 
   test("cache 名を上げた（index.html と i18n を変えたので）", () => {
-    assert.match(sw, /const CACHE = "trk-v2026\.11\.01-trk2(4[89]|\d\d)";/, "trk248 以降の版名");
+    const ver = sw.match(/const CACHE = "trk-v([\d.]+)-trk(\d+)";/);
+    assert.ok(ver && Number(ver[2]) >= 248, `trk248 以降の版名（実測 ${ver && ver[0]}）`);
   });
 });

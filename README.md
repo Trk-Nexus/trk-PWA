@@ -6,7 +6,7 @@
 > 手持ちの曲ひとつで、叩いても、走っても、回っても、舞台に立っても、荷物を運んでもOK🚚
 
 [![License: GPL v3+](https://img.shields.io/badge/License-GPLv3+-blue.svg)](LICENSE)
-[![Play](https://img.shields.io/badge/▶_Play-GitHub_Pages-ff3b55.svg)](https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/)
+[![Play](https://img.shields.io/badge/▶_Play-GitHub_Pages-ff3b55.svg)](https://trk-nexus.github.io/trk-PWA/)
 [![X](https://img.shields.io/badge/X-@ttrk143-000000.svg)](https://x.com/ttrk143)
 
 trk!（トラック）は、ブラウザだけで動く**非営利のリズムゲーム**です。
@@ -14,7 +14,7 @@ trk!（トラック）は、ブラウザだけで動く**非営利のリズム�
 インストールもアカウント登録もいりません。曲やデータは**どこにもアップロードされません**。
 エフェクトを付けて聴く**音楽プレイヤー**としても使えます。
 
-▶ **遊ぶ：** https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/
+▶ **遊ぶ：** https://trk-nexus.github.io/trk-PWA/
 
 > ⚠ 開発中です。不具合を見つけたら [Issues](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk/issues) か X [@ttrk143](https://x.com/ttrk143) に教えてください。
 
@@ -129,7 +129,7 @@ Load your own music or video and trk! **auto-generates a chart** for it. Nothing
 
 Catalog matching automatically handles supported title variations, using official titles and documented aliases as its reference. Language, Short and Instrumental versions remain distinct; original files and display names are not renamed. Use the song profile’s catalog match note for unsupported names.
 
-▶ **Play:** https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/
+▶ **Play:** https://trk-nexus.github.io/trk-PWA/
 
 **Run locally:** `python -m http.server 8000`, then open `http://localhost:8000`.
 

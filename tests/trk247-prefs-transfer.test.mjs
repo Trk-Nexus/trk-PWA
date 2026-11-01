@@ -181,6 +181,7 @@ describe("導線（⚙ → 💾 端末の保存）", () => {
   });
 
   test("cache 名を上げる（index.html・core.js・i18n を変えたので）", () => {
-    assert.match(swSrc, /const CACHE = "trk-v2026\.11\.01-trk2(4[7-9]|\d\d)";/, "trk247 以降の版名なら可");
+    const ver = swSrc.match(/const CACHE = "trk-v([\d.]+)-trk(\d+)";/);
+    assert.ok(ver && Number(ver[2]) >= 247, `trk247 以降の版名（実測 ${ver && ver[0]}）`);
   });
 });

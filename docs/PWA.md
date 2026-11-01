@@ -8,12 +8,13 @@ trk! を **PWA（Webアプリ）として配布する**ためのリポジトリ�
 
 - アプリ本体：上流 [`trk`](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk) の **1.1.8（trk219）** をそのまま取り込み、このリポジトリで配信します。
 - 上流コミット：`06cef87`（2026-10-29）。
-- 試験用URL（GitHub Pages。**本番の住所は未決定**）：**https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/**
-  - 実際のURLは、デプロイ後に [Actions](https://github.com/TonbokiriRaikiriMuramasa-Taikoubou/trk-PWA/actions) の `Deploy GitHub Pages` 実行結果でも確認できます。
+- **本番URL（GitHub Pages・組織 `Trk-Nexus`）：https://trk-nexus.github.io/trk-PWA/**（**2026-11-02 移籍済み・trk250**）
+  - 移籍前は `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/`（試験用）。**リポジトリごと移したので、この旧URLの Pages は無くなりました**（まだ外部に案内していないので、利用者側の移行作業は要りません）。
+  - デプロイは [Actions](https://github.com/Trk-Nexus/trk-PWA/actions) の `Deploy GitHub Pages`（main push で走る）。状態は `gh api repos/Trk-Nexus/trk-PWA/pages` でも確認できます。
 - 配布方針・iOSの制約・実機チェックリスト：[iPhone向け配布のブレインストーミング](IPHONE-PWA-BRAINSTORM-2026-10-30.md)
 - 作業の許可範囲：[作業権限の記録](PERMISSIONS.md)
 
-> ⚠ **データの住所は「ホスト」です。** Webの保存領域はオリジン（scheme + host + port）ごとに別で、**パスは関係ありません**。`...github.io/trk/` と `...github.io/trk-PWA/` は同じオリジンなので、保存データもキャッシュも共有します。ホスト（独自ドメイン等）を後から変えると別オリジンになり、利用者の曲・設定・記録は自動では移りません。
+> ⚠ **データの住所は「ホスト」です。** Webの保存領域はオリジン（scheme + host + port）ごとに別で、**パスは関係ありません**。`...github.io/trk/`（個人＝上流本体）と `...github.io/trk-PWA/` は同じオリジンなので保存データもキャッシュも共有していました。**2026-11-02 の移籍で `trk-PWA` は `trk-nexus.github.io` に移ったので、いまは上流 `/trk/` と別オリジンです**（分離の目的はここで達成）。注意は「**同じ組織内に別の Pages を置くと、また共有する**」に変わります。ホストを後から変えると保存データは自動では移らないので、**移籍前に 📤 書き出し／先のオリジンで 📥 読み込み**（trk247 の導線）を使います。
 
 ## 2. 現在地
 
@@ -23,13 +24,13 @@ trk! を **PWA（Webアプリ）として配布する**ためのリポジトリ�
 | Phase 1 | 1.1.8の取り込み・Pages公開（試験URL） | **取り込み・mainマージ・Pages有効化済み／初回デプロイ待ち** |
 | Phase 2 | モバイル画面シェル（下部ナビ・エフェクト画面・取込の折りたたみ） | **実装済み（未実機）**。§9 |
 | Phase 3 | iOS向けの調整（manifest・アイコン・インストール案内・保存説明・音・向き・precache） | **実装済み（未実機）**。§10 |
-| Phase 4 | 配布の最終判断（オリジン確定／告知／バックアップ導線） | **③導線＝trk247 実装済み**（⚙ → 💾 端末の保存 に 📤📥・上限 20 MiB・項目ごとに隔離／未実機）。**②初回案内＝trk248 実装済み**（`welcomeBackup` を1行）。①オリジンは**組織 `Trk-Nexus` 作成済み（2026-11-01）・移管と Pages 有効化が未実施**（＝`https://trk-nexus.github.io/trk-PWA/` が狙える見込み）。④告知は判断待ち。詳細＝`docs/PREFS-TRANSFER-TRK247-2026-11-01.md` §2・§3 |
+| Phase 4 | 配布の最終判断（オリジン確定／告知／バックアップ導線） | **①確定済み（2026-11-02・trk250）**＝組織 `Trk-Nexus` へ移籍し、本番URLを `https://trk-nexus.github.io/trk-PWA/` にした。 **③導線＝trk247 実装済み**（⚙ → 💾 端末の保存 に 📤・上限 20 MiB・項目ごとに隔離／未実機）。 **②初回案内＝trk248 実装済み**（`welcomeBackup` を1行）。**残りは④告知だけ**。 経緯・実測＝`docs/ORIGIN-TRK-NEXUS-2026-11-02.md`、導線の設計＝`docs/PREFS-TRANSFER-TRK247-2026-11-01.md` |
 
 **ビルドが通ったことと、iPhone実機で動いたことは別**です。実機の結果は日付・iOSバージョン・端末名とセットで記録してください。
 
 ## 2.1 同一オリジンの注意（重要）
 
-GitHub Pagesのプロジェクトサイトは、**同じアカウントの `*.github.io` が1つのオリジン**です。`/trk/` と `/trk-PWA/` はパスが違うだけで、次のものを共有します。
+GitHub Pagesのプロジェクトサイトは、**同じアカウント（または同じ組織）の `*.github.io` が1つのオリジン**です。移籍前はこのリポジトリも上流 `trk` と同じ個人アカウントに在ったので、`/trk/` と `/trk-PWA/` が次のものを共有していました。**2026-11-02 に `trk-PWA` を組織 `Trk-Nexus` へ移いたので、いまは別オリジンです**（下の表は「共有が起きる条件」の一般論として残します）。
 
 | 共有するもの | 影響 |
 | --- | --- |

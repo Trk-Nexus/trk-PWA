@@ -1,6 +1,7 @@
 # trk! 開発引き継ぎ
 
-> **最終更新：2026-11-02**（`trk-PWA` の **trk249**）。アプリ本体は trk248（**初回案内に「保存はこの端末だけ」の1行**）、trk247（**設定の書き出し・読み込みの導線**＝⚙ → 💾 端末の保存に 📤📥・上限 20 MiB・**壊れた項目だけ除く**）、trk246（**書体の組み合わせ14組**＝見出し用の字を目録から選べる）、trk245（**密度の自動**＝窓の広さに合わせる／**曲リストの高さを画面に合わせる**）で、trk244 は**表示の密度**（PCで縮小しても文字を小さくせず詰める）、trk243 は**設定のさがす**、trk242 は**新しい版の知らせ**でした。`npm run check` は **1269 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.01-trk248`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
+> **最終更新：2026-11-02**（`trk-PWA` の **trk250**）。**リポジトリは組織 `Trk-Nexus` に移籍済み**（本番URL **`https://trk-nexus.github.io/trk-PWA/`**・旧 git URL は死亡）。
+> 0円方針のまま独自ドメインは取らず、上流 `trk`（個人）との保存領域共有を解きました＝経緯と残作業は [`ORIGIN-TRK-NEXUS-2026-11-02.md`](ORIGIN-TRK-NEXUS-2026-11-02.md)。アプリ本体は trk248（**初回案内に「保存はこの端末だけ」の1行**）、trk247（**設定の書き出し・読み込みの導線**＝⚙ → 💾 端末の保存に 📤📥・上限 20 MiB・**壊れた項目だけ除く**）、trk246（**書体の組み合わせ14組**＝見出し用の字を目録から選べる）、trk245（**密度の自動**＝窓の広さに合わせる／**曲リストの高さを画面に合わせる**）で、trk244 は**表示の密度**（PCで縮小しても文字を小さくせず詰める）、trk243 は**設定のさがす**、trk242 は**新しい版の知らせ**でした。`npm run check` は **1269 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.02-trk250`**。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
 >
 > 現在の仕様・守る条件・未確認事項の要約です。過去の詳細な変更履歴・検証記録は [`HANDOFF-ARCHIVE.md`](HANDOFF-ARCHIVE.md)、利用者向け仕様は [`../README.md`](../README.md) と [`guide/`](guide/)、権利表記は [`../NOTICE.md`](../NOTICE.md)、品質・安全確認は [`QUALITY-CHECKS.md`](QUALITY-CHECKS.md) と [`SECURITY.md`](SECURITY.md)。**レビューと実機確認のお願いは [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md)**、その指摘への対応は [`REVIEW-RESPONSE-2026-10-31.md`](REVIEW-RESPONSE-2026-10-31.md)、trk223 を実際の端末で見る手順は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)。
 
@@ -24,6 +25,9 @@
 
 | 版 | trk番号 | 中身（1行） | 日付 |
 | --- | --- | --- | --- |
+| （trk-PWA） | trk250 | **組織 `Trk-Nexus` へ移籍**（transfer 実行）。本番URLを **`https://trk-nexus.github.io/trk-PWA/`** に確定し、`index.html` の `og:url`／`og:image`・`README.md`（▶ Play×3）を更新。`manifest.webmanifest` は相対、`js/`・`css/`・`sw.js` はオリジン直書きゼロなので**無変更**。cache を `trk-v2026.11.02-trk250` に。docs（`PWA.md`・`ORIGIN.md`・`PERMISSIONS.md`・`HANDOFF-TRK-STANDALONE.md`・Phase 4 の計画書）を新オリジンに追記し、履歴文書（`REVIEW-REQUEST-*`）は古いURLのまま | 2026-11-02 |
+| （trk-PWA） | trk250 | **移籍で詰まった所と解き方**：GitHub App を組織にインストールするまで `POST /repos/…/transfer` が **403 `Resource not accessible by integration`**。UI では個人アカウントが組織の **Owner** でも、`/orgs/Trk-Nexus/members` が空に見えた（＝見えないだけ。「未所属」と読み違えた）。教訓を `docs/ORIGIN-TRK-NEXUS-2026-11-02.md` §5 に1行で |
+| （trk-PWA） | trk250 | **残作業**：Pages の初回ビルド確認（移籍直後は `status=null`）、**配布ZIPの作り直し**（trk248 版の中に旧URLが入っている）、実機確認（trk247・trk248）、④告知。上流 `trk` を組織へ移すかは未決 |
 | （trk-PWA） | trk249 | **オリジンの記述を相互で縛る検査**：`tests/trk249-origin-consistency.test.mjs`（8本）。`og:url`・README の ▶ Play と badge・`docs/ORIGIN.md` の記述が**同じオリジンを指す**ことだけを見る（値は固定しないので移籍前後どちらも緑）。`manifest.webmanifest` が `./` 相対、`js/`・`css/`・`sw.js` にオリジン／github.io／CDN の直書きがゼロ、も同時に守る | 2026-11-02 |
 | （trk-PWA） | trk249 | **①オリジンの判断が下りた**：まだ配っていないので**組織 `Trk-Nexus` へ移籍してよい**（2026-11-02・所有者）。ただし**このサンドボックスからは transfer できない**（403・実測値を `docs/ORIGIN.md` §3.1 に表で記録）。必要なのは「組織へのメンバー招待」と「組織への Arena App インストール（`Administration` Read & write）」の2点 |
 | （trk-PWA） | trk248 | **初回案内に1行**（PWA Phase 4 の ②）：`#welcomeBox` の列表に `welcomeBackup`（保存はこのブラウザの中だけ・自動では移らない・移すときは ⚙ → 💾 端末の保存 の 📤📥）。**新しい dialog は作らない・保存する値も増やさない**（`settings.welcomeSeen` のまま）。案の1行目（`welcomeOffline`）は**すでに実在**していたので足していない | 2026-11-01 |
