@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-/* ============ 🖥 画面と再生バーの追加の設定（trk222） ============
+/* ============ 🖥 画面と再生バーの追加の設定（trk222・trk244） ============
 
-   設定（⚙ → 🖥 画面と再生バー／❓ 謎設定）の次の4つを配線します。
+   設定（⚙ → 🖥 画面と再生バー／❓ 謎設定）の次の6つを配線します。
 
      #uiScale        … 拡大率 50／75／100／125%（既定 100%）
      #fixedIconSize  … アイコンの大きさを 100% で固定する（既定オン）
      #uiModeLock     … 画面の形は、常に選んだものを使う（❓ 謎設定。既定オン）
      #fxInLibrary    … スマホ型で、エフェクトの欄をライブラリにも出す（既定オフ）
+     #uiDensity      … 表示の密度 ゆったり／ふつう／ぎゅっと／ぎっしり（既定 ふつう）
+     #uiScaleCompact … 縮小（75%・50%）は「詰めて多く見せる」で行う（既定オン。Clementine／MusicBee の
+                       Compact の考え方。オンの 75%・50% では密度は拡大率から決まるので #uiDensity は伏せます）
 
-   ・保存は本体の設定（core.settings）だけ。新しい保存キーは増やしません。
+   ・保存は本体の設定（core.settings）だけ。trk244 で uiDensity・uiScaleCompact の2つが増えました（既定値あり）。
    ・画面の形そのものの切り替えは js/mobile-shell.js、再生バーは js/player-bar.js が担当します。
    ・ここは「値を読む／書く／反映を頼む」だけで、見た目の計算は core.applyUiScale() に任せます。 */
 (() => {
@@ -22,10 +25,11 @@
     fxInLibrary: "fxInLibrary",
     playerBarSeekLock: "playerBarSeekLock",     /* 🎵 trk226：バーに触れても位置を移動しない（既定オフ） */
     playerBarRepeatOneOnly: "playerBarRepeatOneOnly",   /* 🎵 trk227：リピートは なし⇄1曲 だけ（既定オフ） */
-    playerBarShuffleInList: "playerBarShuffleInList"    /* 🎵 trk227：シャッフルはいまの一覧から（既定オフ） */
+    playerBarShuffleInList: "playerBarShuffleInList",   /* 🎵 trk227：シャッフルはいまの一覧から（既定オフ） */
+    uiScaleCompact: "uiScaleCompact"                    /* 🧱 trk244：縮小は「詰めて多く見せる」（既定オン） */
   };
   /* 既定が「オン」の設定と「オフ」の設定が混ざっているので、どちらかを明示する */
-  const DEFAULT_ON = new Set(["fixedIconSize", "uiModeLock"]);
+  const DEFAULT_ON = new Set(["fixedIconSize", "uiModeLock", "uiScaleCompact"]);
 
   /* 設定の欄へ、いまの値を写す（起動時・言語やスキンの切り替え・設定を開いたとき） */
   function sync() {
@@ -33,6 +37,20 @@
     if (scale) {
       const value = String(core.uiScaleValue ? core.uiScaleValue() : core.settings.uiScale);
       if (scale.value !== value) scale.value = value;
+    }
+    /* 🧱 trk244：表示の密度。「縮小＝詰めて見せる」がオンの 75%・50% のあいだは、密度は拡大率から決まります
+       （その間は下の選択を使わないので、-disabled と status の一行で理由を伝えます） */
+    const auto = !!(core.uiDensityAuto ? core.uiDensityAuto() : false);
+    const density = document.getElementById("uiDensity");
+    if (density) {
+      const value = core.uiDensityValue ? core.uiDensityValue() : "normal";
+      if (density.value !== value) density.value = value;
+      density.disabled = auto;
+    }
+    const densityState = document.getElementById("uiDensityState");
+    if (densityState) {
+      const text = auto ? tr("uiDensityAuto", { n: core.uiScaleValue ? core.uiScaleValue() : 100 }) : "";
+      if (densityState.textContent !== text) densityState.textContent = text;
     }
     for (const [id, key] of Object.entries(fields)) {
       const input = document.getElementById(id);
@@ -56,12 +74,20 @@
         sync();
       });
     }
+    const density = document.getElementById("uiDensity");
+    if (density) {
+      density.addEventListener("change", () => {
+        core.settings.uiDensity = density.value;
+        core.applyUiScale({ persist: true });
+        sync();
+      });
+    }
     for (const [id, key] of Object.entries(fields)) {
       const input = document.getElementById(id);
       if (!input) continue;
       input.addEventListener("change", () => {
         core.settings[key] = input.checked;
-        if (id === "fixedIconSize") core.applyUiScale({ persist: true });
+        if (id === "fixedIconSize" || id === "uiScaleCompact") core.applyUiScale({ persist: true });
         else save();
         /* 画面の形の固定と、エフェクト欄の置き場所は、それぞれの担当へ知らせる（開き直さない） */
         try {

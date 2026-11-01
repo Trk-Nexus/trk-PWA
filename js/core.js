@@ -313,6 +313,12 @@ const settings = {
   uiScale: pick(prefs.uiScale, [50, 75, 100, 125], 100),
   /* 🖥 trk222：拡大率を変えても、アイコンの大きさは 100% のまま固定する（既定オン） */
   fixedIconSize: prefs.fixedIconSize !== false,
+  /* 🧱 trk244：表示の密度（ゆったり／ふつう／ぎゅっと／ぎっしり）。
+     `uiScaleCompact` がオンのあいだは、拡大率（125/100/75/50%）が**密度の段**になります
+     （縮小＝文字を小さくする、ではなく「詰めて多く見せる」）。 */
+  uiDensity: pick(prefs.uiDensity, ["roomy", "normal", "compact", "dense"], "normal"),
+  /* 🧱 trk244：縮小（75%・50%）を「詰めて多く見せる」に使う（既定オン＝文字は小さくしない） */
+  uiScaleCompact: prefs.uiScaleCompact !== false,
   /* 🖥 trk222：右上の 📱／🖥 で選んだ画面の形を、次に開いたときも使い続ける（❓謎設定） */
   uiModeLock: prefs.uiModeLock !== false,
   /* 🎛 trk222：スマホ型で、エフェクトの欄をライブラリにも出す（エフェクトのタブには常に出る） */
@@ -741,6 +747,8 @@ function resetAllPrefs() {
   /* 🖥 trk221/222：画面の形（自動）・下の再生バー（つねに表示）・拡大率（100%）も工場出荷状態へ戻す */
   settings.uiMode = "auto"; settings.playerBar = "on";
   settings.uiScale = 100; settings.fixedIconSize = true; settings.uiModeLock = true; settings.fxInLibrary = false;
+  /* 🧱 trk244：表示の密度（ふつう）と、縮小は「詰めて見せる」（オン）も工場出荷状態へ */
+  settings.uiDensity = "normal"; settings.uiScaleCompact = true;
   /* 🎵 trk225：バーの置き場所（いちばん下）と、隠さない設定（オフ）も工場出荷状態へ */
   settings.playerBarPos = "bottom"; settings.playerBarLock = false; settings.playerBarSeekLock = false;
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
@@ -1721,21 +1729,59 @@ function uiScaleValue() {
   const n = Number(typeof settings !== "undefined" && settings ? settings.uiScale : 100);
   return UI_SCALES.includes(n) ? n : 100;
 }
+/* 🧱 trk244：表示の密度（余白・行間・列数の詰め具合）。
+   利用者さんの相談：「PC版では縮小化しても表示部分を減らして、全体の大きさを維持する等」
+   　→ 拡大率の「75%・50%」を、**文字を小さくする**のではなく**余白と行間を詰めて、1画面に多く出す**に
+   使えるようにしました（`uiScaleCompact`。既定オン）。125% は trk222 と同じ「文字を大きく」のまま。
+   段は 4 つ：roomy（ゆったり）／normal（ふつう）／compact（ぎゅっと）／dense（ぎっしり）。
+   考え方：Clementine や MusicBee は、窓を小さくしても文字を小さくせず、
+   　行の高さやサイドバーの詰め方だけを変える設計です（一覧は見やすさを保ったまま行数だけ増える）。
+   実装：JS は body へ trk-density-<段> を1つ乗せるだけ。余白・行間・棚の列数は CSS が決めます
+   　（css/style.css §trk244）。font-size はどこでも変えないので、文字は読める大きさのままです。 */
+const UI_DENSITIES = ["roomy", "normal", "compact", "dense"];
+/* 「縮小＝詰める」がオンのとき、拡大率が密度の段になる表。
+   125% は「字を大きくしたい」方の設定なので、密度は据え置き（ふつう）にします */
+const DENSITY_BY_SCALE = { 50:"dense", 75:"compact", 100:"normal", 125:"normal" };
+/* 縮小を「詰めて多く見せる」に使うか（既定オン）。オフにすると、これまでどおり全体を小さく描きます */
+function uiScaleCompactOn() { return settings.uiScaleCompact !== false; }
+/* 拡大率が「縮小」側か（詰める対象にするのは 75%・50% の2つだけ） */
+function uiScaleShrinks(percent) { const n = Number(percent); return n === 50 || n === 75; }
+/* 拡大率から決める密度の段（純粋関数）。知らない値は 100% として扱う */
+function densityFromScale(percent) {
+  const n = Number(percent);
+  return DENSITY_BY_SCALE[UI_SCALES.includes(n) ? n : 100];
+}
+/* いま密度が拡大率から自動で決まっているか（設定画面で「下の選択は使いません」と伝えるため） */
+function uiDensityAuto() { return uiScaleCompactOn() && uiScaleShrinks(uiScaleValue()); }
+/* いま効いている密度（自動のあいだは拡大率から、手動に戻したら settings.uiDensity から） */
+function uiDensityValue() {
+  const manual = UI_DENSITIES.includes(settings.uiDensity) ? settings.uiDensity : "normal";
+  return uiDensityAuto() ? densityFromScale(uiScaleValue()) : manual;
+}
 function applyUiScale({ persist = false } = {}) {
   const percent = uiScaleValue();
   settings.uiScale = percent;
-  const z = percent / 100;
+  /* 縮小＝詰める がオンで、拡大率が 75%・50% のときだけ、ステージを小さく描きません
+     （文字と全体の大きさは 100% のまま、余白と行間だけを詰めて多く出す） */
+  const packed = uiDensityAuto();
+  const z = packed ? 1 : percent / 100;
   const root = document.documentElement;
   root.style.setProperty("--trk-ui-zoom", String(z));
   const iconsFixed = settings.fixedIconSize !== false;
   root.style.setProperty("--trk-icon-zoom", String(iconsFixed ? 1 / z : 1));
+  const density = uiDensityValue();
   if (document.body) {
     document.body.classList.toggle("trk-zoom", z !== 1);
     document.body.classList.toggle("trk-icon-fixed", iconsFixed);
+    document.body.classList.toggle("trk-scale-compact", packed);
+    for (const level of UI_DENSITIES) document.body.classList.toggle("trk-density-" + level, density === level);
   }
   fitStage();
+  /* 棚の列数・行の高さ・余白は、密度のクラス（trk-density-*）を受けた CSS が決める（css/style.css）。
+     DOM を作り直さなくてよいので、設定を開いたまま密度を変えても棚のスクロール位置は残ります。 */
   if (persist) saveUserPrefs();
   emit("uiscale", percent);
+  emit("density", density);
   return percent;
 }
 
@@ -2068,7 +2114,7 @@ window.view = view;
 window.windows = windows;
 /* 領域（window.Trk.core）：コア状態の正規の場所。window直下の旧互換名は frozen js/fx.js が読む5件だけ。 */
 window.Trk = window.Trk || {};
-window.Trk.core = Object.assign(window.Trk.core || {}, { $, applyUiScale, fitStage, uiScaleValue, UI_SCALES, renderStoragePersist, storageLimitsIgnored, requestStoragePersist, storagePersistState, BEST_KEY, CAPTION_MS, CUSTOM_SKIN_MAX, KEY_PRESETS, PAD_DEFAULTS, SKIN_FORMAT, TRK_ENUM_VALUES, TV_PARAM_FAV_MAX, VIDEO_KEY_DEFAULTS, activeMascot, applyLanguage, applyNoteVars, baseName, buildSkinGrid, buildSkinNow, chartSummary, clampTvBlur, clampTvDim, cleanTvParamFavorites, closeSettings, ctx, customSkinDefs, downloadBlob, downloadJSON, el, emit, esc, extOf, fmtDate, fmtTime, fontFamily, formatKey, formatPadBind, fx, gameplayFxMultiplier, gameplayFxPower, hashString, idbStore, isPclMascot, keyCodeOf, keysLabel, laneCol, laneColor, laneName, modsUnranked, mulberry32, noteShape, num, on, openSettings, pick, prefsForSave, refreshSeedSecrets, rememberMusicVolume, renderAllStatuses, renderStatus, safeHttpUrl, safeLink, safeModeHref, safeName, saveCustomSkins, saveUserPrefs, savedSkinAtBoot, setPhase, setStatus, settings, showScreen, skin, slotLane, slotOfKey, stage, syncPickers, takeAmpReset, travelMs, updateChartButtons, updateKeyUI, updateTouchKeys, validCode, validPadBind, vctx, video, view, windows });
+window.Trk.core = Object.assign(window.Trk.core || {}, { $, applyUiScale, fitStage, uiScaleValue, UI_SCALES, UI_DENSITIES, DENSITY_BY_SCALE, densityFromScale, uiDensityValue, uiDensityAuto, uiScaleCompactOn, uiScaleShrinks, renderStoragePersist, storageLimitsIgnored, requestStoragePersist, storagePersistState, BEST_KEY, CAPTION_MS, CUSTOM_SKIN_MAX, KEY_PRESETS, PAD_DEFAULTS, SKIN_FORMAT, TRK_ENUM_VALUES, TV_PARAM_FAV_MAX, VIDEO_KEY_DEFAULTS, activeMascot, applyLanguage, applyNoteVars, baseName, buildSkinGrid, buildSkinNow, chartSummary, clampTvBlur, clampTvDim, cleanTvParamFavorites, closeSettings, ctx, customSkinDefs, downloadBlob, downloadJSON, el, emit, esc, extOf, fmtDate, fmtTime, fontFamily, formatKey, formatPadBind, fx, gameplayFxMultiplier, gameplayFxPower, hashString, idbStore, isPclMascot, keyCodeOf, keysLabel, laneCol, laneColor, laneName, modsUnranked, mulberry32, noteShape, num, on, openSettings, pick, prefsForSave, refreshSeedSecrets, rememberMusicVolume, renderAllStatuses, renderStatus, safeHttpUrl, safeLink, safeModeHref, safeName, saveCustomSkins, saveUserPrefs, savedSkinAtBoot, setPhase, setStatus, settings, showScreen, skin, slotLane, slotOfKey, stage, syncPickers, takeAmpReset, travelMs, updateChartButtons, updateKeyUI, updateTouchKeys, validCode, validPadBind, vctx, video, view, windows });
 /* catch.js／stage.js はこの正規アクセサを差し替える（旧window.activeMods別名はtrk90で廃止）。 */
 Object.defineProperty(window.Trk.core, "activeMods", { configurable:true, get:() => activeMods, set:v => { activeMods = v; } });
 Object.defineProperty(window.Trk.core, "analysis", { configurable:true, get:() => analysis, set:v => { analysis = v; } });
