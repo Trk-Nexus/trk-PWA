@@ -28,8 +28,11 @@
    これまでどおり版の名前を上げます。
 
    📦 trk235（2026-11-01）：セット（`.stlib` / `.zip`）を選ぶだけで目録とパックをまとめて入れる
-   入口を足しました。js/pack-catalog.js・js/custom.js・index.html が変わったので、名前を上げます。 */
-const CACHE = "trk-v2026.11.01-trk235";
+   入口を足しました。js/pack-catalog.js・js/custom.js・index.html が変わったので、名前を上げます。
+
+   🔤 trk236〜238（2026-11-01）：目録の「ひとこと・対応字数・タグ」を読み、タグで絞り、
+   入っている書体の索引（🔤 入れている書体）を出すようにしました。同じ 3 つが変わったので、また上げます。 */
+const CACHE = "trk-v2026.11.01-trk238";
 const CACHE_PREFIX = "trk-";
 const SCOPE = new URL(self.registration.scope);
 const VENDOR_PREFIX = "assets/vendor/";

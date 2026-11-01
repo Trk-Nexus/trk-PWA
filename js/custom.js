@@ -175,6 +175,8 @@ const SONG_EXT = ["mp3", "m4a", "ogg", "oga", "opus", "wav", "flac", "aac", "mp4
 /* 🔤 trk232：書体パック。同梱する書体は woff2（と woff）だけ。family は trk-Avatar-Library の契約と揃える
    （英数字と空白・. _ - の 40 文字まで）＝ 目録の検査を通ったパックが、そのままアプリでも通る */
 const FONT_EXT = ["woff2", "woff"], FONT_FAMILY = /^[A-Za-z0-9][A-Za-z0-9 ._-]{0,39}$/, PACK_FONT_MAX = 8;
+/* 🔤 trk237：pack.json の fonts[].tags の上限（倉庫の L15 と同じ 8 個・各 16 文字） */
+const PACK_FONT_TAG_MAX = 8, PACK_FONT_TAG_LEN = 16;
 /* 書体のライセンス全文（trk233）。trk-Avatar-Library の verify-pack と同じ .txt／.md だけ */
 const LICENSE_EXT = ["txt", "md"];
 /* 🔤 trk233：書体のライセンス全文（licenseFile）も、パックに入っているなら保存する（256KB まで） */
@@ -263,6 +265,13 @@ function sanitizeManifest(raw) {
       seen.add(key);
       const f = { family, file, license, weight:w };
       if (style) f.style = style;
+      /* 🔤 trk236／trk237：倉庫が pack.json にも書けるようになった「ひとこと」（60 文字）とタグ（8 個・各 16 文字）。
+         任意。目録（catalog/index.json）の値と同じ意味で、索引（trk238）が目録を読まなくても雰囲気を出せる。
+         知らない項目は今までどおり捨てる（入れても壊れない）。 */
+      const fnote = pstr(r.note, 60);
+      if (fnote) f.note = fnote;
+      const ftags = [...new Set((Array.isArray(r.tags) ? r.tags : []).slice(0, PACK_FONT_TAG_MAX).map(t => pstr(t, PACK_FONT_TAG_LEN)).filter(Boolean))];
+      if (ftags.length) f.tags = ftags;
       /* 🔤 trk233：ライセンス全文（任意）。パックの中の .txt／.md だけ（中身は入れるときに保存する） */
       const licenseFile = safePath(r.licenseFile, LICENSE_EXT);
       if (licenseFile) f.licenseFile = licenseFile;
@@ -955,6 +964,32 @@ async function listInstalledPacks() {
     bytes:r.size || 0, installedAt:r.installedAt || 0, active:packRuntime.id === r.id,
     release:(r.manifest && r.manifest.release) || "" }));   /* 📦 trk232：目録の version と比べて「更新あり」を出す */
 }
+/* 🔤 trk238：入っているパックの manifest から、書体の索引を作る（Blob＝書体本体は読まない）。
+   保存はしない。呼ぶたびに packDB の manifest から作り直すので、消した・入れ替えたパックの行は残らない。 */
+function packFontRows(recs) {
+  const rows = [];
+  for (const rec of (Array.isArray(recs) ? recs : [])) {
+    const m = (rec && rec.manifest) || {}, files = (rec && rec.files) || {};
+    for (const f of (Array.isArray(m.fonts) ? m.fonts : [])) {
+      const blob = files[f.file];
+      rows.push({
+        family: f.family, weight: Number(f.weight) || 400,
+        ...(f.style ? { style: f.style } : {}), file: f.file || "",
+        license: f.license || "", ...(f.licenseFile ? { licenseFile: f.licenseFile } : {}),
+        ...(f.note ? { note: f.note } : {}),
+        ...(Array.isArray(f.tags) && f.tags.length ? { tags: [...f.tags] } : {}),
+        bytes: blob && Number.isFinite(blob.size) ? blob.size : 0,
+        packId: (rec && rec.id) || "", packName: m.name || "", active: !!(rec && rec.active),
+      });
+    }
+  }
+  return rows;
+}
+async function listInstalledFonts() {
+  let recs = [];
+  try { recs = await packDB.all(); } catch (_) { return []; }
+  return packFontRows(recs.map(r => ({ id:r.id, manifest:r.manifest, files:r.files || {}, active: packRuntime.id === r.id })));
+}
 async function deletePackById(id) {
   if (!confirm(tr("confirmDeletePack"))) return false;
   let rec = null; try { rec = await packDB.get(id); } catch (_) {}
@@ -1211,7 +1246,9 @@ window.Trk.custom = Object.assign(window.Trk.custom || {}, { initPacks, noteImag
   /* 📦 trk231：目録の一覧（js/pack-catalog.js）から使う入口 */
   activatePack, deactivatePack, deletePackById, listInstalledPacks,
   /* 💾 trk234：容量の表示と、まとめて消す（目録の一覧と ❓謎設定からも使う） */
-  packSizeText, packUsageInfo, packDeletePlan, deletePacksByIds, wipeAllPacks });
+  packSizeText, packUsageInfo, packDeletePlan, deletePacksByIds, wipeAllPacks,
+  /* 🔤 trk238：入れている書体の索引（目録の一覧の「🔤 入れている書体」が使う） */
+  packFontRows, listInstalledFonts });
 Object.defineProperty(window.Trk.custom, "getPackSongs", { configurable:true, get:() => getPackSongs, set:v => { getPackSongs = v; } });
 Object.defineProperty(window.Trk.custom, "installPackFile", { configurable:true, get:() => installPackFile, set:v => { installPackFile = v; } });
 Object.defineProperty(window.Trk.custom, "renderPackList", { configurable:true, get:() => renderPackList, set:v => { renderPackList = v; } });

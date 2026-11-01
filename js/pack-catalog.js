@@ -20,6 +20,8 @@
   "use strict";
   const CATALOG_FORMAT = "trk-avatar-library", CATALOG_VERSION = 1;
   const MAX_PACKS = 500, MAX_STR = 300;
+  /* 🔤 trk236／trk237：書体の「ひとこと」「タグ」の上限（倉庫の L10／L15 と同じ値） */
+  const FONT_NOTE_MAX = 60, FONT_TAG_MAX = 8, FONT_TAG_LEN = 16;
   const HEX64 = /^[0-9a-f]{64}$/i;
   const SAFE_FILE = /^[A-Za-z0-9_.\-\/]{1,160}$/;
 
@@ -35,10 +37,23 @@
     const name = str(raw.name, 80);
     if (!name) return null;
     const sha256 = str(raw.sha256, 64).toLowerCase();
-    const fonts = (Array.isArray(raw.fonts) ? raw.fonts : []).slice(0, 20).map(f => ({
-      family: str(f && f.family, 80), file: str(f && f.file, 120), license: str(f && f.license, 80),
-      licenseFile: str(f && f.licenseFile, 120),   /* 🔤 trk233：ライセンス全文のファイル名（目録に載る） */
-    })).filter(f => f.family);
+    const fonts = (Array.isArray(raw.fonts) ? raw.fonts : []).slice(0, 20).map(f => {
+      if (!f || typeof f !== "object") return { family:"" };
+      const weight = Math.round(Number(f.weight));
+      const note = str(f.note, FONT_NOTE_MAX);
+      /* 🔤 trk237：タグは 8 個まで・各 16 文字（目録の L15）。空・重複は落とす */
+      const tags = [...new Set((Array.isArray(f.tags) ? f.tags : []).slice(0, FONT_TAG_MAX).map(t => str(t, FONT_TAG_LEN)).filter(Boolean))];
+      return {
+        family: str(f.family, 80), file: str(f && f.file, 120), license: str(f && f.license, 80),
+        licenseFile: str(f && f.licenseFile, 120),   /* 🔤 trk233：ライセンス全文のファイル名（目録に載る） */
+        /* 🔤 trk236：L10 の「ひとこと」・L11 の対応字数・L13 の書体1本の大きさ・太さ（どれも任意） */
+        ...(Number.isFinite(weight) && weight >= 100 && weight <= 900 ? { weight } : {}),
+        ...(note ? { note } : {}),
+        ...(num(f.cmap) ? { cmap: num(f.cmap) } : {}),
+        ...(num(f.bytes) ? { bytes: num(f.bytes) } : {}),
+        ...(tags.length ? { tags } : {}),
+      };
+    }).filter(f => f.family);
     return {
       id, name, author: str(raw.author, 80), version: str(raw.version, 24), file,
       sha256: HEX64.test(sha256) ? sha256 : "",
@@ -60,6 +75,77 @@
       updatedAt: str(raw.updatedAt, 40), packs,
       dropped: (Array.isArray(raw.packs) ? raw.packs.length : 0) - packs.length,
     };
+  }
+
+  /* ---------- 🔤 trk236〜238：書体の索引に使う純粋な関数（DOM を触らない） ---------- */
+  /* family＋weight が目録全体で重複しない（倉庫の L16 が機械的に止めている）ので、これが索引のキーで足りる */
+  const fontKey = f => `${String((f && f.family) || "").trim().toLowerCase()}|${Number(f && f.weight) || 400}`;
+
+  /* 目録の中の書体を、パックの情報つきで平らに並べる */
+  function catalogFonts(catalog) {
+    const out = [];
+    for (const p of (catalog && Array.isArray(catalog.packs) ? catalog.packs : [])) {
+      for (const f of (Array.isArray(p.fonts) ? p.fonts : [])) {
+        out.push({ ...f, weight: Number(f.weight) || 400, packId: p.id, packName: p.name, packBytes: Number(p.bytes) || 0 });
+      }
+    }
+    return out;
+  }
+
+  /* 🔤 trk237：目録に載っている雰囲気のタグと、その件数（多い順・同数は名前順） */
+  function catalogTagCounts(catalog) {
+    const counts = new Map();
+    for (const f of catalogFonts(catalog)) for (const t of (Array.isArray(f.tags) ? f.tags : [])) counts.set(t, (counts.get(t) || 0) + 1);
+    return [...counts.entries()].map(([tag, n]) => ({ tag, n }))
+      .sort((a, b) => b.n - a.n || String(a.tag).localeCompare(String(b.tag), "ja"));
+  }
+
+  /* 🔤 trk237：タグでパックを絞る（空なら全部）。タグは「そのパックの書体」に付いているもの */
+  function filterPacksByTag(packs, tag) {
+    const list = Array.isArray(packs) ? packs : [];
+    if (!tag) return list.slice();
+    return list.filter(p => (Array.isArray(p.fonts) ? p.fonts : []).some(f => Array.isArray(f.tags) && f.tags.includes(tag)));
+  }
+
+  /* 🔤 trk238：入っている書体と、目録の書体を family|weight で重ねる。
+     行は「入っているもの」が正（目録は配る側の一覧なので、無い項目を補うだけ）。
+     `pack.json` に note／tags が無い古いパックは、目録の値で補う。 */
+  function fontIndexRows(installedFonts, catalog) {
+    const fromCatalog = new Map();
+    for (const f of catalogFonts(catalog)) fromCatalog.set(fontKey(f), f);
+    return (Array.isArray(installedFonts) ? installedFonts : []).map(f => {
+      const c = fromCatalog.get(fontKey(f)) || {};
+      const ownTags = Array.isArray(f.tags) ? f.tags : [];
+      const tags = ownTags.length ? ownTags : (Array.isArray(c.tags) ? c.tags : []);
+      return {
+        family: f.family, weight: Number(f.weight) || 400, style: f.style || "", key: fontKey(f),
+        file: f.file || "", license: f.license || c.license || "", licenseFile: f.licenseFile || c.licenseFile || "",
+        note: f.note || c.note || "", tags: [...tags], cmap: Number(c.cmap) || 0,
+        bytes: Number(f.bytes) || Number(c.bytes) || 0,
+        packId: f.packId || "", packName: f.packName || "", active: !!f.active, inCatalog: !!c.family,
+      };
+    });
+  }
+
+  /* 🔤 trk238：タグと検索語で絞る（日本語の部分一致・空白で AND） */
+  function filterFontRows(rows, opts = {}) {
+    const tag = String(opts.tag || "");
+    const words = String(opts.query || "").trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return (Array.isArray(rows) ? rows : []).filter(r => {
+      if (tag && !r.tags.includes(tag)) return false;
+      if (!words.length) return true;
+      const hay = [r.family, r.packName, r.note, ...(r.tags || [])].join(" ").toLowerCase();
+      return words.every(w => hay.includes(w));
+    });
+  }
+
+  /* 🔤 trk238：並べ替え（family＝名前順／pack＝パック名順／size＝大きい順） */
+  function sortFontRows(rows, order = "family") {
+    const list = (Array.isArray(rows) ? rows : []).slice();
+    const ja = (a, b) => String(a).localeCompare(String(b), "ja");
+    if (order === "size") return list.sort((a, b) => (b.bytes - a.bytes) || ja(a.family, b.family) || (a.weight - b.weight));
+    if (order === "pack") return list.sort((a, b) => ja(a.packName, b.packName) || ja(a.family, b.family) || (a.weight - b.weight));
+    return list.sort((a, b) => ja(a.family, b.family) || (a.weight - b.weight));
   }
 
   /* 目録の1件と、選ばれたファイルが合っているか（大きさと名前だけ。ハッシュは別に計算する） */
@@ -218,12 +304,18 @@
     checkAgainstEntry, formatBytes, samePackAs, packKey, sha256Hex, versionDiffers,
     /* 📦 trk235：セット（.stlib / .zip） */
     SET_FORMAT, SET_LIMITS, SET_EXTS, looksLikeZip, sanitizeSetInfo, openSet, setEntryCheck, planSet,
+    /* 🔤 trk236〜238：書体の「ひとこと」「タグ」「索引」 */
+    FONT_NOTE_MAX, FONT_TAG_MAX, FONT_TAG_LEN,
+    fontKey, catalogFonts, catalogTagCounts, filterPacksByTag, fontIndexRows, filterFontRows, sortFontRows,
   });
 
   /* ---------- 画面（設定 → 📦 カスタムパック → 📚 目録から入れる） ---------- */
   const $ = id => document.getElementById(id);
   let current = null;            /* 読み込んだ目録 */
   let installed = [];            /* 入っているパック（window.Trk.custom.listInstalledPacks） */
+  /* 🔤 trk237／trk238：絞り込みと並べ替えの状態（保存はしない。開くたびに既定へ戻る） */
+  let catalogTag = "";           /* 目録の一覧を、この雰囲気タグで絞る */
+  let fontTag = "", fontQuery = "", fontOrder = "family";
   const samePack = samePackAs;
   /* 📦 trk232：目録の version と、入っているパックの release が違えば「更新あり」 */
   const stateOf = entry => {
@@ -243,8 +335,11 @@
     const list = $("catalogList"), sum = $("catalogSummary");
     if (!list) return;
     list.textContent = "";
-    if (!current) { if (sum) sum.textContent = ""; return; }
+    if (!current) { if (sum) sum.textContent = ""; renderTagFilter(); return; }
     const hits = current.packs.map(e => installed.find(rec => samePack(e, rec))).filter(Boolean);
+    /* 🔤 trk237：雰囲気のタグで絞る（目録の fonts[].tags） */
+    const shown = filterPacksByTag(current.packs, catalogTag);
+    renderTagFilter();
     if (sum) {
       const total = current.packs.length;
       const n = hits.length;
@@ -254,6 +349,7 @@
       if (newer) sum.textContent += " " + tr("catalogUpdates", { n: newer });
       /* 💾 trk234：目録の合計（落とす前に、どのくらいの容量か分かるように） */
       if (total && bytes) sum.textContent += " · " + tr("catalogTotalBytes", { size: formatBytes(bytes) });
+      if (catalogTag) sum.textContent += " · " + tr("catalogTagShown", { tag: catalogTag, n: shown.length });
     }
     /* 💾 trk234：この目録のぶんが入っているときだけ「まとめて消す」を出す */
     {
@@ -265,7 +361,7 @@
         bulkBtn.dataset.count = String(hits.length);
       }
     }
-    for (const e of current.packs) {
+    for (const e of shown) {
       const st = stateOf(e);
       const card = document.createElement("div");
       card.className = "packCard" + (st.hit && st.hit.active ? " active" : "");
@@ -298,6 +394,9 @@
         const line = document.createElement("div"); line.className = "hint";
         line.textContent = tr("catalogFontLine", { family: f.family, license: f.license || "—", file: f.file || "—" });
         det.append(line);
+        /* 🔤 trk236：ひとこと（L10）・対応字数（L11）・書体1本の大きさ・太さ（どれも目録にあるときだけ） */
+        const meta = fontMetaText(f);
+        if (meta) { const m2 = document.createElement("div"); m2.className = "hint"; m2.textContent = meta; det.append(m2); }
         if (f.licenseFile) {
           const lic = document.createElement("div"); lic.className = "hint";
           lic.textContent = tr("catalogLicenseFile", { file: f.licenseFile });
@@ -318,7 +417,7 @@
         label.append(input, span);
         input.addEventListener("change", async () => {
           const f = input.files && input.files[0];
-          if (f) { await installFromCatalog(e, f); await refreshInstalled(); render(); }
+          if (f) { await installFromCatalog(e, f); await refreshInstalled(); render(); renderFontIndex().catch(() => {}); }
           input.value = "";
         });
         acts.append(label);
@@ -338,13 +437,126 @@
         del.addEventListener("click", async () => {
           const api = window.Trk.custom;
           if (!api || typeof api.deletePackById !== "function") return;
-          if (await api.deletePackById(st.hit.id)) { await refreshInstalled(); render(); }
+          if (await api.deletePackById(st.hit.id)) { await refreshInstalled(); render(); renderFontIndex().catch(() => {}); }
         });
         acts.append(del);
       }
       card.append(acts);
       const note = document.createElement("div"); note.className = "hint"; note.dataset.for = e.id; card.append(note);
       list.append(card);
+    }
+  }
+
+  /* 🔤 trk236：書体1本の「ひとこと・対応字数・大きさ・太さ・タグ」を 1 行に（ある項目だけ） */
+  function fontMetaText(f) {
+    const parts = [];
+    if (f.weight) parts.push(tr("catalogFontWeight", { n:f.weight }));
+    if (f.cmap) parts.push(tr("catalogFontCmap", { n:f.cmap }));
+    if (f.bytes) parts.push(tr("catalogFontBytes", { size:formatBytes(f.bytes) }));
+    if (Array.isArray(f.tags) && f.tags.length) parts.push(tr("catalogFontTags", { list:f.tags.join("・") }));
+    const head = parts.join(" ／ ");
+    return [head, f.note ? tr("catalogFontNote", { note:f.note }) : ""].filter(Boolean).join(" ／ ");
+  }
+
+  /* 🔤 trk237：目録の一覧の上に、雰囲気タグのボタンを並べる（件数つき・「すべて」で解除） */
+  function renderTagFilter() {
+    const box = $("catalogTagFilter");
+    if (!box) return;
+    box.textContent = "";
+    const tags = current ? catalogTagCounts(current) : [];
+    if (!tags.length) { box.hidden = true; catalogTag = ""; return; }
+    if (catalogTag && !tags.some(t => t.tag === catalogTag)) catalogTag = "";
+    box.hidden = false;
+    const all = document.createElement("button");
+    all.type = "button";
+    all.className = catalogTag ? "" : "selected";
+    all.textContent = tr("catalogTagAll", { n:(current ? current.packs.length : 0) });
+    all.setAttribute("aria-pressed", String(!catalogTag));
+    all.addEventListener("click", () => { catalogTag = ""; render(); });
+    box.append(all);
+    for (const t of tags) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = catalogTag === t.tag ? "selected" : "";
+      b.textContent = `${t.tag} ${t.n}`;
+      b.setAttribute("aria-pressed", String(catalogTag === t.tag));
+      b.addEventListener("click", () => { catalogTag = catalogTag === t.tag ? "" : t.tag; render(); });
+      box.append(b);
+    }
+  }
+
+  /* 🔤 trk238：入っているパックの書体の索引。
+     ⚠ 保存はしない（起動のたび・開くたびに packDB の manifest から作り直す）。
+        保存すると、パックを消した・入れ替えたときに古い行が残る。
+     ⚠ Blob（書体本体）は読まない。名前と大きさだけなので、22 本でも一瞬。 */
+  async function renderFontIndex() {
+    const box = $("packFontIndexList"), sum = $("packFontIndexSummary"), status = $("packFontIndexStatus");
+    if (!box) return;
+    const api = window.Trk && window.Trk.custom;
+    let fonts = [];
+    try { fonts = api && typeof api.listInstalledFonts === "function" ? await api.listInstalledFonts() : []; } catch (_) { fonts = []; }
+    const rows = fontIndexRows(fonts, current);
+    const packs = new Set(rows.map(r => r.packId)).size;
+    if (sum) sum.textContent = rows.length ? tr("fontIndexSummary", { n:rows.length, packs }) : tr("fontIndexEmpty");
+    renderFontTags(rows);
+    box.textContent = "";
+    if (!rows.length) { if (status) status.textContent = ""; return; }
+    const shown = filterFontRows(sortFontRows(rows, fontOrder), { tag:fontTag, query:fontQuery });
+    if (status) status.textContent = shown.length ? "" : tr("fontIndexNoMatch");
+    for (const r of shown) {
+      const row = document.createElement("div");
+      row.className = "packCard" + (r.active ? " active" : "");
+      const head = document.createElement("div"); head.className = "packHead";
+      const b = document.createElement("b"); b.textContent = r.family; head.append(b);
+      const w = document.createElement("span"); w.className = "packBy"; w.textContent = tr("catalogFontWeight", { n:r.weight }); head.append(w);
+      const p = document.createElement("span"); p.className = "packBy"; p.textContent = r.packName; head.append(p);
+      if (r.bytes) { const sz = document.createElement("span"); sz.className = "packBy"; sz.textContent = formatBytes(r.bytes); head.append(sz); }
+      row.append(head);
+      const meta = fontMetaText({ weight:0, cmap:r.cmap, bytes:0, tags:r.tags, note:r.note });
+      if (meta) { const m2 = document.createElement("div"); m2.className = "hint"; m2.textContent = meta; row.append(m2); }
+      if (r.license || r.licenseFile) {
+        const l = document.createElement("div"); l.className = "hint";
+        l.textContent = tr("fontIndexLicense", { license:r.license || "—", file:r.licenseFile || "—" });
+        row.append(l);
+      }
+      const acts = document.createElement("div"); acts.className = "miniActions";
+      const use = document.createElement("button"); use.type = "button";
+      use.textContent = tr(r.active ? "fontIndexInUse" : "fontIndexUse");
+      use.disabled = r.active || !r.packId;
+      use.addEventListener("click", async () => {
+        const c2 = window.Trk.custom;
+        if (!c2 || typeof c2.activatePack !== "function" || !r.packId) return;
+        await c2.activatePack(r.packId);
+        await refreshInstalled(); render(); renderFontIndex();
+      });
+      acts.append(use);
+      row.append(acts);
+      box.append(row);
+    }
+  }
+
+  /* 🔤 trk238：索引の上に、入っている書体のタグを並べる（目録が無くても、manifest の tags で出せる） */
+  function renderFontTags(rows) {
+    const wrap = $("packFontIndexTags");
+    if (!wrap) return;
+    wrap.textContent = "";
+    const counts = new Map();
+    for (const r of rows) for (const t of (r.tags || [])) counts.set(t, (counts.get(t) || 0) + 1);
+    if (!counts.size) { wrap.hidden = true; fontTag = ""; return; }
+    if (fontTag && !counts.has(fontTag)) fontTag = "";
+    wrap.hidden = false;
+    const tags = [...counts.entries()].map(([tag, n]) => ({ tag, n })).sort((a, b) => b.n - a.n || String(a.tag).localeCompare(String(b.tag), "ja"));
+    const all = document.createElement("button"); all.type = "button";
+    all.className = fontTag ? "" : "selected"; all.textContent = tr("catalogTagAll", { n:rows.length });
+    all.setAttribute("aria-pressed", String(!fontTag));
+    all.addEventListener("click", () => { fontTag = ""; renderFontIndex(); });
+    wrap.append(all);
+    for (const t of tags) {
+      const b = document.createElement("button"); b.type = "button";
+      b.className = fontTag === t.tag ? "selected" : ""; b.textContent = `${t.tag} ${t.n}`;
+      b.setAttribute("aria-pressed", String(fontTag === t.tag));
+      b.addEventListener("click", () => { fontTag = fontTag === t.tag ? "" : t.tag; renderFontIndex(); });
+      wrap.append(b);
     }
   }
 
@@ -369,7 +581,7 @@
     const api = window.Trk && window.Trk.custom;
     if (!api || typeof api.deletePacksByIds !== "function") return;
     const r = await api.deletePacksByIds(ids);
-    await refreshInstalled(); render();
+    await refreshInstalled(); render(); renderFontIndex().catch(() => {});
     if (r && !r.cancelled && r.ok) setBulkStatus(tr("catalogRemoveDone", { n:r.ok, size:formatBytes(r.bytes) }), !!r.bad);
   }
   function setSummary(text, bad) {
@@ -467,7 +679,7 @@
       const doneOne = await installSetEntry(opened, item);
       if (doneOne) ok++; else bad++;
     }
-    await refreshInstalled(); render();
+    await refreshInstalled(); render(); renderFontIndex().catch(() => {});
     setSummary(tr("catalogSetDone", { ok, skip, bad, miss, size:formatBytes(plan.bytes) }), bad > 0 || miss > 0);
     if (c.setStatus) c.setStatus("catalogStatus", bad || miss ? "catalogSetSome" : "catalogSetAll", { ok, skip, bad, miss });
     return true;
@@ -518,7 +730,7 @@
       const done = await installFromCatalog(entry, file, { silent: true });
       if (done) ok++; else bad++;
     }
-    await refreshInstalled(); render();
+    await refreshInstalled(); render(); renderFontIndex().catch(() => {});
     setSummary(tr("catalogBundleDone", { ok, bad, miss }), bad > 0);
     if (c.setStatus) c.setStatus("catalogStatus", bad || miss ? "catalogBundleSome" : "catalogBundleAll", { ok, bad, miss });
   }
@@ -530,7 +742,7 @@
       const cat = sanitizeCatalog(raw);
       if (!cat) { if (c.setStatus) c.setStatus("packStatus", "catalogBad"); return; }
       current = cat;
-      await refreshInstalled(); render();
+      await refreshInstalled(); render(); renderFontIndex().catch(() => {});
       if (c.setStatus) c.setStatus("packStatus", cat.packs.length ? null : "catalogEmpty");
       if (cat.dropped > 0 && c.setStatus) c.setStatus("catalogStatus", "catalogDropped", { n: cat.dropped });
     } catch (_) { if (c.setStatus) c.setStatus("packStatus", "catalogBad"); }
@@ -551,9 +763,19 @@
     /* 💾 trk234：この目録のぶんを、まとめて消す */
     const removeAll = $("catalogRemoveAll");
     if (removeAll) removeAll.addEventListener("click", () => { removeCatalogPacks().catch(() => {}); });
-    /* 言語を変えたら、件数入りの文（目録の合計・まとめて消す）を描き直す */
+    /* 🔤 trk238：入れている書体の索引（開いたとき・ことばを変えたとき・パックが変わったとき） */
+    const idxPanel = $("packFontIndexPanel");
+    if (idxPanel) idxPanel.addEventListener("toggle", () => { if (idxPanel.open) renderFontIndex().catch(() => {}); });
+    const idxSearch = $("packFontIndexSearch");
+    if (idxSearch) idxSearch.addEventListener("input", () => { fontQuery = idxSearch.value || ""; renderFontIndex().catch(() => {}); });
+    const idxOrder = $("packFontIndexOrder");
+    if (idxOrder) idxOrder.addEventListener("change", () => { fontOrder = idxOrder.value || "family"; renderFontIndex().catch(() => {}); });
+    /* 言語を変えたら、件数入りの文（目録の合計・まとめて消す・書体の索引）を描き直す */
     const c = core();
-    if (c && typeof c.on === "function") c.on("language", () => { if (current) render(); });
+    if (c && typeof c.on === "function") {
+      c.on("language", () => { if (current) render(); renderFontIndex().catch(() => {}); });
+      c.on("packsChanged", () => { renderFontIndex().catch(() => {}); });
+    }
     /* 目録の .json ＋ .stpack を画面にまとめてドロップしても読める（目録とパックがそろえば、そのまま入れる）
        ・custom.js は「1ファイルだけ」のときに先に受け取るので、まとめて落としたときはここへ来ます */
     addEventListener("drop", e => {
@@ -580,4 +802,6 @@
   /* 📦 trk235：セット（.stlib / .zip）。js/custom.js のドロップ処理からも呼びます */
   window.Trk.packCatalog.importSetFile = importSetFile;
   window.Trk.packCatalog.tryImportSet = tryImportSet;
+  /* 🔤 trk238：入れている書体の索引（画面を開いたときに作り直す） */
+  window.Trk.packCatalog.renderFontIndex = renderFontIndex;
 })();
