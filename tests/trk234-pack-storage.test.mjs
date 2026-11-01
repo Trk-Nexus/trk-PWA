@@ -217,8 +217,8 @@ describe("trk234 画面の入口と文（index.html・4言語）", () => {
   test("見た目（CSS）とキャッシュの版", () => {
     assert.ok(css.includes(".packUsageBar"));
     assert.ok(css.includes(".packPick"));
-    /* 📦 trk235・🔤 trk236〜238 でアプリの殻（pack-catalog.js・custom.js・index.html）が変わったので、版の名前も上がる */
-    assert.ok(sw.includes('"trk-v2026.11.01-trk238"'));
+    /* 📦 trk235・🔤 trk236〜238・📦 trk239 でアプリの殻（pack-catalog.js・custom.js・index.html）が変わったので、版の名前も上がる */
+    assert.ok(sw.includes('"trk-v2026.11.01-trk239"'));
   });
 
   test("1件だけ消す道（これまでどおり）は残っている", () => {

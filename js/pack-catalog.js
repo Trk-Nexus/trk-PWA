@@ -298,12 +298,25 @@
     return plan;
   }
 
+  /* 📦 trk239：このセットで「これから入る分」を数える。
+     すでに入っていて版も同じパックは飛ばす（r6 の 2 分割で、はじめてセットの書体が
+     書体セットにも入るため）。返す大きさは **入る分だけ**（水増ししない）。 */
+  function setPending(plan, installedList) {
+    const pending = [], skip = [];
+    for (const item of plan && Array.isArray(plan.packs) ? plan.packs : []) {
+      const hit = (installedList || []).find(rec => samePackAs(item.entry, rec));
+      if (hit && !versionDiffers(item.entry, hit)) skip.push(item); else pending.push(item);
+    }
+    const bytes = pending.reduce((sum, p) => sum + (Number(p.entry && p.entry.bytes) || Number(p.zipEntry && p.zipEntry.usize) || 0), 0);
+    return { pending, skip, bytes };
+  }
+
   window.Trk = window.Trk || {};
   window.Trk.packCatalog = Object.assign(window.Trk.packCatalog || {}, {
     CATALOG_FORMAT, CATALOG_VERSION, sanitizeCatalog, sanitizeCatalogEntry,
     checkAgainstEntry, formatBytes, samePackAs, packKey, sha256Hex, versionDiffers,
     /* 📦 trk235：セット（.stlib / .zip） */
-    SET_FORMAT, SET_LIMITS, SET_EXTS, looksLikeZip, sanitizeSetInfo, openSet, setEntryCheck, planSet,
+    SET_FORMAT, SET_LIMITS, SET_EXTS, looksLikeZip, sanitizeSetInfo, openSet, setEntryCheck, planSet, setPending,
     /* 🔤 trk236〜238：書体の「ひとこと」「タグ」「索引」 */
     FONT_NOTE_MAX, FONT_TAG_MAX, FONT_TAG_LEN,
     fontKey, catalogFonts, catalogTagCounts, filterPacksByTag, fontIndexRows, filterFontRows, sortFontRows,
@@ -665,8 +678,10 @@
     for (const entry of plan.missing) setRowNote(entry, tr("catalogSetMissingNote", { file:entry.file }), true);
     if (!plan.packs.length) { if (c.setStatus) c.setStatus("catalogStatus", "catalogSetEmpty"); return true; }
     /* 入れる前に、何パック・何 MB 入るかを確かめてもらう（trk234 の容量表示と同じ考え） */
-    const fresh = plan.packs.filter(p => { const hit = installed.find(rec => samePack(p.entry, rec)); return !hit || versionDiffers(p.entry, hit); });
-    if (fresh.length && !confirm(tr("catalogSetConfirm", { n:fresh.length, size:formatBytes(plan.bytes) }))) {
+    /* 📦 trk239：聞くのは「これから入る分」の数と大きさだけ（すでに入っていて版も同じものは飛ばす） */
+    const pend = setPending(plan, installed);
+    if (pend.pending.length && !confirm(tr(pend.skip.length ? "catalogSetConfirmSkip" : "catalogSetConfirm",
+      { n:pend.pending.length, size:formatBytes(pend.bytes), skip:pend.skip.length }))) {
       if (c.setStatus) c.setStatus("catalogStatus", "catalogBundleNoPack");
       return true;
     }
