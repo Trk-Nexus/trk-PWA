@@ -45,14 +45,22 @@
    index.html・css/style.css・js/main.js が変わったので、また上げます。
 
    🔍 trk243（2026-11-01）：**設定のさがす**（js/settings-find.js）を足しました。設定のパネルが
-   19 枚になり、目で探すしかなかったためです。index.html・css/style.css が変わったので、また上げます。 */
-const CACHE = "trk-v2026.11.02-trk252";
+   19 枚になり、目で探すしかなかったためです。index.html・css/style.css が変わったので、また上げます。
+
+   🔤 trk253（2026-11-02・レビュー対応）：🔤 の**組み合わせの説明と実物の食い違い**（「雑誌の飾り」）と、
+   保存値の `preset` が段階名以外も通していた点を直しました。js/typography.js が変わっているので上げます。
+   設定の**消し合い**（同じオリジンの安定版 `/trk/` が保存すると開発版の設定が消える）は、
+   うち側は trk247 ですでに「足すだけ」に直っています。上流側へは `tools/backport-trk-scope-tag.mjs` の
+   ④ で当てる形にしました（この作業セッションからは ref が作れず PR を代行できていません）。 */
+const CACHE = "trk-v2026.11.02-trk253";
 const CACHE_PREFIX = "trk-";
 /* 🧭 trk252（2026-11-02）：CacheStorage に**実在させる名前**には `trkPWA-` を先頭に付けるようにしました。
    同じオリジンに別の trk!（上流 `/trk/` など）が在ると、相手が「`trk-` 始まりは全部消す」旧式の掃除を
    している場合、うちの殻・3Dの vendor・共有受け口まで一緒に消えます（trk223 は**こちら側**の取り違えを止めました）。
    2026-11-02 に上流 `trk` も同じ組織へ移って同じオリジンに並ぶことになったので、
-   名前を `trk-` 始まりから逃がして二重に防ぐことにします（上流側の掃除にも trk252 の PR で印を見る修正を入れた）。
+   名前を `trk-` 始まりから逃がして二重に防ぐことにしました（上流側の掃除にも同じ印を見る修正を
+   `tools/backport-trk-scope-tag.mjs` で当てられるようにしています＝2026-11-02 時点で上流への PR は未作成。
+   この作業セッションの GitHub App が `Trk-Nexus/trk` に ref を作れません）。
    版名そのもの（下の CACHE）は従来の `trk-v…-trk…` のままにしています（tools と tests がそこを見る）。 */
 const CACHE_KEY_PREFIX = "trkPWA-";
 const SCOPE = new URL(self.registration.scope);
