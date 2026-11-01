@@ -159,8 +159,12 @@ describe("trk240 役割の書面", () => {
 });
 
 describe("trk240 アプリの殻は変えていない", () => {
-  test("sw.js の cache は trk239 のまま（tools/ と docs/ だけの版なので上げない）", () => {
-    assert.ok(sw.includes('const CACHE = "trk-v2026.11.01-trk239";'));
+  test("sw.js の cache は trk239 より後（trk240 では上げず、あとで殻を変えた版が上げる）", () => {
+    /* trk240 自身は tools/ と docs/ だけなので trk239 のままでした。
+       🧺 trk241 で index.html・js・css が変わったため、いまは trk241 です（trk239 のままなら赤）。 */
+    const cur = sw.match(/const CACHE = "([^"]+)";/)[1];
+    assert.ok(!cur.includes("trk239"), `trk239 のまま（${cur}）`);
+    assert.ok(sw.includes("trk241") || /trk-v2026\.\d\d\.\d\d-trk2\d\d/.test(cur), cur);
   });
   test("道具は外へ取りに行かない（読むのは渡されたファイルだけ）", () => {
     const body = toolSrc.slice(toolSrc.indexOf("import fs"), toolSrc.indexOf("const args"));

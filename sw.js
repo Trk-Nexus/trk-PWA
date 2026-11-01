@@ -34,8 +34,12 @@
    入っている書体の索引（🔤 入れている書体）を出すようにしました。同じ 3 つが変わったので、また上げます。
 
    📦 trk239（2026-11-01）：セットの 2 分割（r6）に備えて、入れる前に聞く数を
-   「これから入る分」だけにしました（すでに入っていて版も同じものは飛ばす）。js/pack-catalog.js が変わったので、また上げます。 */
-const CACHE = "trk-v2026.11.01-trk239";
+   「これから入る分」だけにしました（すでに入っていて版も同じものは飛ばす）。js/pack-catalog.js が変わったので、また上げます。
+
+   🧺 trk241（2026-11-01）：スキンの棚を、要るものだけ見える形に作り直しました（カードから ⭐／🚫、
+   隠した数を棚の下に出して 1 タップで戻す、整理の一覧に さがす・絞る・まとめて）。
+   js/core.js・js/i18n.js・index.html・css/style.css が変わったので、名前を上げます。 */
+const CACHE = "trk-v2026.11.01-trk241";
 const CACHE_PREFIX = "trk-";
 const SCOPE = new URL(self.registration.scope);
 const VENDOR_PREFIX = "assets/vendor/";
