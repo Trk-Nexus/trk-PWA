@@ -1277,6 +1277,16 @@
             </details>
           </details>
 
+          <!-- 🔄 新しい版の知らせ（trk242・js/sw-update.js）。どの端末でも「新しい版を確かめる」を押せる -->
+          <details class="panel" id="updatePanel">
+            <summary data-i18n="secUpdate"></summary>
+            <div class="hint" data-i18n="swUpdateHint"></div>
+            <div class="miniActions">
+              <button id="swUpdateCheckBtn" type="button" data-i18n="swUpdateCheck"></button>
+            </div>
+            <div id="swUpdateStatus" class="hint status" role="status" aria-live="polite"></div>
+          </details>
+
           <!-- 💾 端末の保存（trk136）。書斎・パック・記録の保存を、ブラウザに消されにくい状態へ固定する -->
           <details class="panel" id="storagePanel">
             <summary data-i18n="secStorage"></summary>
@@ -2212,6 +2222,14 @@
 <!-- 🖥 画面と再生バーの追加の設定（拡大率・アイコンの大きさ・画面の形の固定・エフェクト欄の置き場所） -->
 <script src="js/ui-prefs.js"></script>
 <!-- 🍎 iPhone / iPad の調整（インストール案内・音のセッション）。ほかの端末では何もしません -->
+<!-- 🔄 trk242：新しい版の知らせ（登録と見張りと帯をこのファイルが受け持つ） -->
+<script src="js/sw-update.js"></script>
 <script src="js/ios-pwa.js"></script>
+  <!-- 🔄 trk242：新しい版が入ったときだけ出る小さな帯（窓で覆わない・遊びを止めない） -->
+  <div id="swUpdateBar" class="swUpdateBar" role="status" aria-live="polite" hidden>
+    <span id="swUpdateBarText" data-i18n="swUpdateBarText"></span>
+    <button id="swUpdateNow" type="button" data-i18n="swUpdateNow"></button>
+    <button id="swUpdateLater" type="button" data-i18n="swUpdateLater"></button>
+  </div>
 </body>
 </html>

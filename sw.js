@@ -38,8 +38,12 @@
 
    🧺 trk241（2026-11-01）：スキンの棚を、要るものだけ見える形に作り直しました（カードから ⭐／🚫、
    隠した数を棚の下に出して 1 タップで戻す、整理の一覧に さがす・絞る・まとめて）。
-   js/core.js・js/i18n.js・index.html・css/style.css が変わったので、名前を上げます。 */
-const CACHE = "trk-v2026.11.01-trk241";
+   js/core.js・js/i18n.js・index.html・css/style.css が変わったので、名前を上げます。
+
+   🔄 trk242（2026-11-01）：**新しい版の知らせ**（js/sw-update.js）を足しました。登録は main.js から
+   この知らせの側へ移し、帯・設定の「🔄 アプリの更新」・30分に1回の確認を足しています。
+   index.html・css/style.css・js/main.js が変わったので、また上げます。 */
+const CACHE = "trk-v2026.11.01-trk242";
 const CACHE_PREFIX = "trk-";
 const SCOPE = new URL(self.registration.scope);
 const VENDOR_PREFIX = "assets/vendor/";

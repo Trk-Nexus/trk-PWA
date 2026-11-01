@@ -655,10 +655,8 @@ packsReady.then(() => window.Trk.library.initLibrary()).catch(e => console.error
 
 /* PWA：オフラインでも開けるようにする（HTTPS か localhost のときだけ）。
    キャッシュの整理は sw.js が trk- で始まる名前だけを消すので、ほかのサイトに影響しません。 */
-if ("serviceWorker" in navigator && location.protocol !== "file:") {
-  navigator.serviceWorker.register("./sw.js", { scope: "./", updateViaCache:"none" })
-    .catch(() => { /* オフライン用のキャッシュが無くても、ゲームはそのまま遊べます */ });
-}
+/* 🔄 trk242：Service Worker の登録は js/sw-update.js へ移しました（登録と「新しい版の知らせ」を
+   同じ場所に置くため）。ここで登録すると、新しい版を見張る相手（registration）と離れてしまうためです。 */
 /* ✅ main.js 完了 */
 
 /* 公開名は据え置き（名前空間の移行の途中。window.Trk.* への移動は後の段階で行う） */
