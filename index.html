@@ -34,6 +34,9 @@
 <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
 <meta name="theme-color" content="#07080d">
+<!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
+     sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
+<meta name="trk-build" content="trk255">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -82,7 +85,7 @@
 
   <div id="judge"><span id="judgeText"></span><small id="judgeSub"></small></div>
   <div id="progress"></div>
-  <input id="seekBar" type="range" min="0" max="1000" value="0" aria-label="Seek">
+  <input id="seekBar" type="range" min="0" max="1000" value="0" data-i18n-aria="ariaSeek">
 
   <div id="touchKeys">
     <button type="button" data-slot="0"><span></span></button>
@@ -117,7 +120,7 @@
             </select>
           </label>
           <button id="openSettingsBtn" type="button" data-i18n="openSettings"></button>
-          <button id="fullBtnTitle" type="button" aria-label="Fullscreen">⛶</button>
+          <button id="fullBtnTitle" type="button" data-i18n-aria="ariaFullscreen">⛶</button>
         </div>
       </header>
 
@@ -284,7 +287,7 @@
 
             <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
               <h3 data-i18n="difficulty" style="margin:0"></h3>
-              <button type="button" id="expertDiffToggle" class="miniBtn" title="🔥 MASTER・2000 RUSH" aria-label="MASTER・2000 RUSH" style="padding:2px 8px;font-size:12px;cursor:pointer;border-radius:4px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#ffb000;font-weight:700">🔥 MASTER</button>
+              <button type="button" id="expertDiffToggle" class="miniBtn" title="🔥 MASTER・2000 RUSH" data-i18n-aria="ariaMasterRush" style="padding:2px 8px;font-size:12px;cursor:pointer;border-radius:4px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#ffb000;font-weight:700">🔥 MASTER</button>
             </div>
             <div class="seg" id="difficultyPicker">
               <button type="button" data-mode="easy" data-i18n="easy">Easy</button>
@@ -478,6 +481,8 @@
             </label>
             <div class="hint" data-i18n="typoHint"></div>
             <div id="typoState" class="hint status" role="status" aria-live="polite"></div>
+            <!-- 🔤 trk255：選んだ組の説明（上行）の下に、その組が合う曲を1行だけ（目録の trkUse） -->
+            <div id="typoUse" class="hint" hidden></div>
             <h3 data-i18n="skin"></h3>
             <div id="skinNow"></div>
             <details id="skinShelf" class="subPanel" open>
@@ -1317,6 +1322,11 @@
           <details class="panel" id="updatePanel">
             <summary data-i18n="secUpdate"></summary>
             <div class="hint" data-i18n="swUpdateHint"></div>
+            <!-- 🔔 trk255：「あとで」を24時間覚え、知らせそのものも止められる -->
+            <label class="check"><input id="swUpdateNoticeChk" type="checkbox"><span data-i18n="swUpdateNoticeChk"></span></label>
+            <div class="hint" data-i18n="swUpdateNoticeHint"></div>
+            <!-- 🏷 trk255：いまの版（ここだけに出す） -->
+            <div id="swUpdateVersion" class="hint"></div>
             <div class="miniActions">
               <button id="swUpdateCheckBtn" type="button" data-i18n="swUpdateCheck"></button>
             </div>
@@ -1733,7 +1743,7 @@
     </header>
 
     <div class="study-workspace">
-      <aside id="studyShelf" class="study-shelf" aria-label="Study shelf">
+      <aside id="studyShelf" class="study-shelf" data-i18n-aria="studyA11yShelf">
         <div class="study-shelf-heading">
           <button id="studyShelfCreateFolder" type="button" class="study-shelf-title" data-i18n="studyShelf">本棚</button>
           <div class="study-shelf-btns">
@@ -1808,10 +1818,10 @@
               <input id="studyAmerican" type="checkbox">
               <span data-i18n="studyAmerican">🇺🇸 アメリカン（左右・順序反転）</span>
             </label>
-            <span id="studyZoomGroup" class="study-zoom-group" role="group" aria-label="Zoom">
-              <button id="studyZoomOut" type="button" class="study-small-btn" aria-label="Zoom out">−</button>
+            <span id="studyZoomGroup" class="study-zoom-group" role="group" data-i18n-aria="studyA11yZoom">
+              <button id="studyZoomOut" type="button" class="study-small-btn" data-i18n-aria="studyA11yZoomOut">−</button>
               <span id="studyZoomLabel" class="study-zoom-label">100%</span>
-              <button id="studyZoomIn" type="button" class="study-small-btn" aria-label="Zoom in">＋</button>
+              <button id="studyZoomIn" type="button" class="study-small-btn" data-i18n-aria="studyA11yZoomIn">＋</button>
               <button id="studyZoomFit" type="button" class="study-small-btn" data-i18n="studyZoomFit">フィット</button>
             </span>
             <button id="studyAutoScrollBtn" type="button" class="study-small-btn study-auto-scroll-btn" aria-pressed="false" data-i18n="studyAutoScrollStart" hidden>⏩ 自動スクロール</button>
@@ -1860,18 +1870,18 @@
             </label>
             <span id="studyTextTuneRow" class="study-option">
               <span data-i18n="studyTextTuneLabel">文字</span>
-              <select id="studyTextSize" aria-label="Text size">
+              <select id="studyTextSize" data-i18n-aria="studyA11yTextSize">
                 <option value="small" data-i18n="studyTextSizeSmall">小</option>
                 <option value="normal" data-i18n="studyTextSizeNormal">普通</option>
                 <option value="large" data-i18n="studyTextSizeLarge">大</option>
                 <option value="huge" data-i18n="studyTextSizeHuge">特大</option>
               </select>
-              <select id="studyTextSpacing" aria-label="Line spacing">
+              <select id="studyTextSpacing" data-i18n-aria="studyA11yLineSpacing">
                 <option value="tight" data-i18n="studyTextSpacingTight">詰める</option>
                 <option value="normal" data-i18n="studyTextSpacingNormal">行間ふつう</option>
                 <option value="loose" data-i18n="studyTextSpacingLoose">行間広め</option>
               </select>
-              <select id="studyTextWidth" aria-label="Margins">
+              <select id="studyTextWidth" data-i18n-aria="studyA11yMargins">
                 <option value="narrow" data-i18n="studyTextWidthNarrow">余白せまい</option>
                 <option value="normal" data-i18n="studyTextWidthNormal">余白ふつう</option>
                 <option value="wide" data-i18n="studyTextWidthWide">余白広い</option>
@@ -1932,7 +1942,7 @@
           </div>
 
           <div id="studyPanels" class="study-panels">
-            <section id="studyTvPane" class="study-tv-pane" hidden aria-label="TV">
+            <section id="studyTvPane" class="study-tv-pane" hidden data-i18n-aria="studyA11yTv">
               <div id="studyTvScreen" class="study-tv-screen">
                 <img id="studyTvArt" class="study-tv-art" alt="" hidden>
                 <div id="studyTvEmpty" class="study-tv-empty" data-i18n="studyTvEmpty">動画または曲のジャケットがここに表示されます。</div>
@@ -1944,7 +1954,7 @@
               </div>
             </section>
             <section id="studyContentPane" class="study-content-pane">
-              <div id="studyImageStage" class="study-image-stage" role="region" tabindex="0" aria-label="Image reader" hidden data-mode="single">
+              <div id="studyImageStage" class="study-image-stage" role="region" tabindex="0" data-i18n-aria="studyA11yImageReader" hidden data-mode="single">
                 <div id="studySingleWrap" class="study-single-wrap">
                   <img id="studyPageSingle" class="study-page-image study-page-single" alt="" draggable="false" hidden>
                 </div>
@@ -1978,7 +1988,7 @@
           <footer class="study-reader-footer">
             <button id="studyNextBtn" type="button" class="study-small-btn" data-i18n="studyNext">◀ 次へ</button>
             <div id="studyProgressWrap" class="study-progress-wrap" hidden>
-              <input id="studyProgress" type="range" min="0" max="0" step="1" aria-label="Page">
+              <input id="studyProgress" type="range" min="0" max="0" step="1" data-i18n-aria="studyA11yPage">
               <span id="studyPageCount" class="study-page-count"></span>
               <button id="studyProgressDoneBtn" type="button" class="study-progress-done" data-i18n="studyProgressDone">完了</button>
             </div>

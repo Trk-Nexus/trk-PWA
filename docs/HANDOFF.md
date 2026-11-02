@@ -14,6 +14,7 @@
 | 節 | 内容 | いつ読むか |
 | --- | --- | --- |
 | §0.1 | 版の要約 | 経緯をざっと知りたいとき |
+| **別紙** | **小粒の改善とやる事の一覧**（[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md)・2026-11-02） | 次に何をやるか決めるとき |
 | §1 | 作業の基本 | 作業を始める前に |
 | §1.5 | **このリポジトリ（trk-PWA）の今** | まずここ |
 | §2 | 今の仕様（機能ごと） | 触る前に |
@@ -37,6 +38,7 @@
 | （trk-PWA） | trk252r2 | **上流に当てる道具を入れた**：`tools/backport-trk-scope-tag.mjs`（①上流 `sw.js` の activate にスコープ印の条件を足す ②URL24か所を組織 `Trk-Nexus`・新ホストへ ③`tools/make-icons.html` の焼き込み住所を削除）。上流 main `06cef87` に素で当てて上流自身の `npm run check`（**tests 747 pass / 0 fail**）と二重適用時のスキップを実測、`--check` は書き換えずに当たり方だけ出す。**アプリ本体は無変更**なので cache 名は `trk-v2026.11.02-trk252` のまま。新規 `docs/UPSTREAM-TRK-SCOPE-TAG-2026-11-02.md`（手順・権限の実測・1行検査）＋`docs/ORIGIN.md` §7.1／`docs/ORIGIN-TRK-NEXUS-2026-11-02.md` §6 の状態を更新。`tools/` は standalone ZIP に入らず handover ZIP に入る |
 | （trk-PWA） | trk253 | **2026-11-02 のレビュー（`trk-Nexus-review-2026-11-02.zip`）への対応**：①上流へ当てる道具に **④ 設定保存のマージ**を足した（上流 `js/core.js:406` は自分が知る項目だけで `localStorage` を丸ごと上書きし、`uiScale`・`uiMode`・`playerBar`・`typography`・`uiDensity` は上流の `core.js` に **1回も出ない**ので、`/trk/` で設定を1つ変えると `/trk-PWA/` の設定が消える＝**実測で再現**、④後は消えない。工場出荷リセット2か所には `{ fresh: true }`）＝上流 main `06cef87` に当てて上流自身の `npm run check`（**747 pass / 0 fail**）・二重適用スキップまで実測。②🔤「雑誌の飾り」の説明が実物（見出しは Kaisei Decol 400）と食い違っていたので「飾り明朝の題字と見出しに、しっぽり明朝の本文」へ（**目録側 `catalog/typography.json` も同じ食い違い**＝r9 で一緒に直してもらう）。③`sanitize()` の `preset` が役の名前まで通していたのを契約どおり4段階に限定（`PRESETS` を公開・検査3本追加で **19件**）。④docs の事実訂正（個人側は `SHADOW-TAIKO` の Pages が生きていて 200＝「1つも残っていない」は誤り）と、告知URLの書き分け、§3 に同居の約束を2行。回答は [`REVIEW-RESPONSE-2026-11-02.md`](REVIEW-RESPONSE-2026-11-02.md)。**②「安定版を切る」を道具にする**（レビュー推奨 A-1）：`tools/make-stable.mjs` を追加（追跡ファイル497点を上流クローンへ写し、`trk-PWA`→`trk` の住所反転、既定は差分を見るだけ）。鏡にした上流で上流側の `npm run check` を回して **1280 pass / 0 fail**、二重適用は 追加0・更新0 を実測。検査2本（`trk165`・`trk223-review`）は「相手は `/trk/`」を前提にしていたので `mine`/`theirs` の中立な名前に変えました（ミラー後も落ちない）。
 | （trk-PWA） | trk254 | **🔤 の写しを「手写し」やめて、目録から生成**（返事15 §2 の「自動では届きません」への答え・レビュー推奨 C-3）：`tools/sync-typography-catalog.mjs` が相手の `catalog/typography.json` を ①`tests/fixtures/avatar-library-typography.json` に**そのまま固定**（sha256・ref・件数は隣の `.meta.json`）②`js/typography.js` の `PAIRINGS` をそこから機械的に作り直し、を保証します。**r9 の直しを反映**：雑誌の飾りの見出しを `TrkHinaMincho` 400（`hina-mincho.stpack` をパックに追加・注記は本文と同じ書体）、電子ゲームの注記を `TrkZenKaku`、4組の説明の言い換え、14組に **`trkUse`**（trk! ではどんな曲に合うか）。trk253 でこちらが直した「雑誌の飾り」の説明は、**先方がデータ側で合わせた**ので目録どおりに戻りました。新規 `tests/trk254-typography-copy.test.mjs`（5本・固定版の sha256 照合／写し＝目録から生成／r9 の直しが載っているか／`trkUse` の規定／cache 名）。`npm run check` **1285 pass / 0 fail**。先方だけが進んでいないかは `node tools/sync-typography-catalog.mjs --against=main --check`（通信が必要）。**UI に `trkUse` はまだ出しません**（出すかは実機看到達後） |
+| （trk-PWA） | trk255 | **小粒の仕上げ（判断項目 U1〜U7）**：`docs/BACKLOG-2026-11-02.md` §4 の判断に「はい」をもらって実施。①🔤 に目録の **`trkUse`** を1行（`#typoUse`・選んでいなければ隠す） ②更新帯の「あとで」を **24時間** 覚え、設定に **「🔔 新しい版の知らせを出す」**（optout）を追加（どちらも `core.settings` の中＝新しい保存キー 0） ③**いまの版**を設定の 🔄 だけに表示（`<meta name="trk-build">`・帯には出さない） ④表示の密度を**再生バーだけ**に（`--trk-pb-dens-*`・`font-size` は変えない） ⑤設定のさがすを **`/`** で開く（入力中・IME・修飾キーは無視・検索語は保存しない） ⑥英語だった `aria-label` **13個**を4言語へ（`data-i18n-aria`）。`npm run check` **1313 pass / 0 fail**、辞書 **1118 キー ×4 一致**。記録＝[`POLISH-TRK255-2026-11-02.md`](POLISH-TRK255-2026-11-02.md) | 2026-11-02 |
 | （trk-PWA） | trk249 | **オリジンの記述を相互で縛る検査**：`tests/trk249-origin-consistency.test.mjs`（8本）。`og:url`・README の ▶ Play と badge・`docs/ORIGIN.md` の記述が**同じオリジンを指す**ことだけを見る（値は固定しないので移籍前後どちらも緑）。`manifest.webmanifest` が `./` 相対、`js/`・`css/`・`sw.js` にオリジン／github.io／CDN の直書きがゼロ、も同時に守る | 2026-11-02 |
 | （trk-PWA） | trk249 | **①オリジンの判断が下りた**：まだ配っていないので**組織 `Trk-Nexus` へ移籍してよい**（2026-11-02・所有者）。ただし**このサンドボックスからは transfer できない**（403・実測値を `docs/ORIGIN.md` §3.1 に表で記録）。必要なのは「組織へのメンバー招待」と「組織への Arena App インストール（`Administration` Read & write）」の2点 |
 | （trk-PWA） | trk248 | **初回案内に1行**（PWA Phase 4 の ②）：`#welcomeBox` の列表に `welcomeBackup`（保存はこのブラウザの中だけ・自動では移らない・移すときは ⚙ → 💾 端末の保存 の 📤📥）。**新しい dialog は作らない・保存する値も増やさない**（`settings.welcomeSeen` のまま）。案の1行目（`welcomeOffline`）は**すでに実在**していたので足していない | 2026-11-01 |
@@ -829,6 +831,16 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **✨ trk255：小粒の仕上げ（判断項目 U1〜U7）（2026-11-02）**：`docs/BACKLOG-2026-11-02.md` §4 に並べた判断待ちに答えをもらい、S1（版の表示）と一緒に実装しました。記録＝[`POLISH-TRK255-2026-11-02.md`](POLISH-TRK255-2026-11-02.md)。
+  - **🔤 U1**：`#typoUse` を `#typoState`（選んだ組の説明）のすぐ下に置き、`js/ui-prefs.js` の `syncTypo()` が目録の `trkUse` を1行で出します（**選んでいなければ `hidden`**）。名前は日本語のまま・**翻訳は増やしていません**。選択肢は `buildTypoOptions()` が初回しか作らないので、説明行は別に組み立てます。
+  - **🔄 U2**：`core.settings.swUpdateNotice`（既定 `true`）と `swUpdateSnooze`（既定 `0`）。「あとで」は `SNOOZE_MS = 24時間` を入れ、`swNoticeFor()` が `enabled:false`／`snoozed:true` のとき `none` を返します。設定に **「🔔 新しい版の知らせを出す」** を置き、オフでも「🔄 新しい版を確かめる」は使えます（自分で押して新しい版があったときは眠りを解いて知らせる）。**新しい保存キーは 0**（`localStorage` 等は触らない＝`tests/trk242` が文字列ごと禁じているので、コメントも言い換えました）。
+  - **🏷 U3＋S1**：`<meta name="trk-build" content="trk255">` を置き、`#swUpdateVersion` に「いまの版：trk255」。**帯には出しません**。値の正は `sw.js` の `CACHE` で、`tests/trk255-polish.test.mjs` が一致を見ます（言語を変えたら `core.on("language")` で追いつく）。
+  - **🧱 U4**：`css/player-bar.css` に `--trk-pb-dens-pad/gap/h` と `body.trk-density-*` の上書きを足し、`.trk-playerbar` の `min-height`・`gap`・`padding` にだけ掛けました。**`font-size` は変えません**（trk244 の約束・テストで縛る）。
+  - **⌨ U5**：`js/settings-find.js` に純粋関数 `slashAllowed(event)`。`/` のみ・`ctrl/meta/alt` 付きは無視・`isComposing` は無視・入力欄の中では何もしない。設定のパネルを開いているあいだだけ `keydown` を見ます。**検索語は保存しません**。
+  - **♿ U7**：`index.html` の英語 `aria-label` 13個（`Seek`・`Fullscreen`・`MASTER・2000 RUSH`・書斎の10個）を `data-i18n-aria` に置き換え、辞書（書斎は `js/study-room.js` の自前の辞書）へ4言語ずつ追加。`grep 'aria-label="' index.html` は **0**。
+  - `tests/trk255-polish.test.mjs`（**28件**）。`npm run check` **1313 pass / 0 fail**（167 suites）、辞書 **1118 キー ×4**、`sw.js` の cache は **`trk-v2026.11.02-trk255`**。**実機は未確認**（見る所は設計メモ §4＝`/` と IME・密度の見え方・読み上げ・24時間の帯）。
+  - **残り**：U8（書体の size／tracking／leading・`ctx.font`）は実機の後。A の S2〜S6・B の M1・M2 はこれから。
 
 - **🔤 trk246：書体の組み合わせ14組（段階②）（2026-11-01）**：trk-Avatar-Library の 返事12・設計メモを受けた受け口。設計＝[`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md)。
   - **目録の写し**：`js/typography.js` に14組（`display`／`heading`／`body`／`caption`／`numeral`／`accent`＋`scale`・`tracking`・`leading`）を同梱。**woff2 は同梱しない**（26.5 MB ある。実物は `.stpack` を持ち込む人だけが持つ）ので、無い端末は `var(--font)` へ自然に落ちる。外部取得はしない（オフライン優先）。

@@ -53,14 +53,21 @@
     const saved = T.sanitize(core.settings.typography);
     if (select.value !== (saved ? saved.pairing : "")) select.value = saved ? saved.pairing : "";
     const state = document.getElementById("typoState");
-    if (!state) return;
+    const use = document.getElementById("typoUse");
     let text = "";
+    let p = null;
     if (saved) {
-      const p = T.byId(saved.pairing) || { name: saved.pairing };
+      p = T.byId(saved.pairing) || { name: saved.pairing };
       text = tr("typoState", { name: p.name, display: (saved.slots.display || {}).family || "-", body: (saved.slots.body || {}).family || "-" });
       if (T.available(saved) === false) text += tr("typoMissing");
     }
-    if (state.textContent !== text) state.textContent = text;
+    if (state && state.textContent !== text) state.textContent = text;
+    /* 🔤 trk255：この組が trk! でどんな曲に合うか（目録の trkUse）。選んでいなければ隠す。 */
+    const useText = p && p.trkUse ? tr("typoUse", { use: p.trkUse }) : "";
+    if (use) {
+      if (use.textContent !== useText) use.textContent = useText;
+      use.hidden = !useText;
+    }
   }
 
   /* 設定の欄へ、いまの値を写す（起動時・言語やスキンの切り替え・設定を開いたとき） */

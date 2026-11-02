@@ -576,6 +576,30 @@ Object.assign(TEXT.ko, {
   studyImageOrderReverse:"역순 (오른쪽 제본)", studyOrphanSweep:"사용하지 않는 이미지 데이터 {n}개를 정리했습니다."
 });
 
+/* ♿ trk255：書斎の読み上げ名（aria-label）を4言語そろえる。
+   画面に見えない言葉なので、見た目は変わりません（読み上げだけが変わる）。 */
+Object.assign(TEXT.ja, {
+  studyA11yShelf:"本棚", studyA11yZoom:"表示の拡大", studyA11yZoomOut:"縮小", studyA11yZoomIn:"拡大",
+  studyA11yTextSize:"文字の大きさ", studyA11yLineSpacing:"行間", studyA11yMargins:"余白",
+  studyA11yTv:"テレビ", studyA11yImageReader:"画像リーダー", studyA11yPage:"ページ"
+});
+Object.assign(TEXT.en, {
+  studyA11yShelf:"Study shelf", studyA11yZoom:"Zoom controls", studyA11yZoomOut:"Zoom out", studyA11yZoomIn:"Zoom in",
+  studyA11yTextSize:"Text size", studyA11yLineSpacing:"Line spacing", studyA11yMargins:"Margins",
+  studyA11yTv:"TV", studyA11yImageReader:"Image reader", studyA11yPage:"Page"
+});
+Object.assign(TEXT.zh, {
+  studyA11yShelf:"书架", studyA11yZoom:"缩放控制", studyA11yZoomOut:"缩小", studyA11yZoomIn:"放大",
+  studyA11yTextSize:"文字大小", studyA11yLineSpacing:"行距", studyA11yMargins:"边距",
+  studyA11yTv:"电视", studyA11yImageReader:"图片阅读器", studyA11yPage:"页面"
+});
+Object.assign(TEXT.ko, {
+  studyA11yShelf:"책장", studyA11yZoom:"확대 조절", studyA11yZoomOut:"축소", studyA11yZoomIn:"확대",
+  studyA11yTextSize:"글자 크기", studyA11yLineSpacing:"줄 간격", studyA11yMargins:"여백",
+  studyA11yTv:"TV", studyA11yImageReader:"이미지 리더", studyA11yPage:"페이지"
+});
+
+
 const STUDY_UTIL = window.TrkStudyUtils;
 const STUDY_DB_NAME = "trk_study_room_v1";
 const STUDY_STORES = ["books", "pages", "covers", "settings"];

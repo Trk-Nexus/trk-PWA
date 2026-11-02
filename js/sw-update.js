@@ -21,8 +21,9 @@
 
    ・**初回のインストールでは出さない**（まだ Service Worker が動いていない＝入れ替わる前の版が無い）。
    ・**遊んでいる途中では帯を出さない**。タイトルへ戻ったときに出す（判定は `swDeferNotice`）。
-   ・**保存は増やさない**。「あとで」はこの画面のあいだだけ覚える（開き直せば消える）。
-     新しい保存キーを作らないので、移行の手当ても要らない。
+   ・**保存は `core.settings` の中だけ**（trk255）。「あとで」は24時間覚え、設定の
+     「🔔 新しい版の知らせを出す」をオフにすれば帯そのものを止められる。
+     ブラウザの保存領域に新しいキーは増やさないので、移行の手当ては要らない。
    ・「いま更新する」は開き直すだけ。**遊んでいる途中に勝手に開き直さない。** */
 (() => {
   "use strict";
@@ -30,7 +31,15 @@
   if (!core) return;
 
   const CHECK_GAP_MS = 30 * 60 * 1000;      /* 自動で確かめる間隔（30分に1回まで） */
-  const tr = key => (typeof window.tr === "function" ? window.tr(key) : key);
+  const SNOOZE_MS = 24 * 60 * 60 * 1000;    /* 🔕 trk255：「あとで」を覚えておく長さ（24時間） */
+  const tr = (key, vars) => (typeof window.tr === "function" ? window.tr(key, vars) : key);
+
+  /* 🔄 trk255：知らせを出すかどうか（設定）と、「あとで」の残り時間。
+     どちらも core.settings の中（ブラウザの保存領域に新しいキーは増やさない）。 */
+  const noticeEnabled = () => !(core.settings && core.settings.swUpdateNotice === false);
+  const snoozeActive = () => Number((core.settings && core.settings.swUpdateSnooze) || 0) > Date.now();
+  function saveSettings() { try { if (typeof core.saveUserPrefs === "function") core.saveUserPrefs(); } catch (_) {} }
+  function setSnooze(until) { if (!core.settings) return; core.settings.swUpdateSnooze = Number(until) || 0; saveSettings(); }
 
   /* ---------- 判定（純粋関数・テストから同じものを動かす） ----------
      state = {
@@ -43,6 +52,8 @@
   function swNoticeFor(state) {
     const s = state || {};
     if (s.dismissed) return "none";
+    if (s.enabled === false) return "none";    /* trk255：設定で知らせを止めている */
+    if (s.snoozed) return "none";              /* trk255：「あとで」を覚えているあいだ */
     if (!s.hasController) return "none";       /* 初回のインストールでは知らせない */
     if (s.waiting) return "waiting";
     if (s.changed) return "swapped";
@@ -101,8 +112,13 @@
   function setStatus(text) { if (statusEl) statusEl.textContent = text || ""; }
 
   function currentNotice() {
-    if (pendingNotice) return "waiting";
-    return swNoticeFor({ dismissed, hasController: hadController, waiting: !!(registration && registration.waiting), changed });
+    /* ⚠ 後回し（pendingNotice）でも、設定オフ・「あとで」の24時間は通さない */
+    const kind = swNoticeFor({
+      dismissed, enabled: noticeEnabled(), snoozed: snoozeActive(),
+      hasController: hadController, waiting: !!(registration && registration.waiting), changed
+    });
+    if (kind === "none") return "none";
+    return pendingNotice ? "waiting" : kind;
   }
 
   function showBar() {
@@ -129,6 +145,7 @@
   });
   if (laterBtn) laterBtn.addEventListener("click", () => {
     dismissed = true; pendingNotice = false; hideBar();
+    setSnooze(Date.now() + SNOOZE_MS);          /* 🔕 trk255：24時間は出さない（設定に残る） */
     setStatus(tr("swUpdateLaterStatus"));
   });
 
@@ -145,6 +162,9 @@
       lastCheck = Date.now();
       const outcome = swCheckOutcome({ ok:true, waiting: !!(reg.installing || reg.waiting) });
       if (status) {
+        /* 「新しい版を確かめる」を押したときは、こちらが明示的に聞いているので
+           「あとで」の24時間と帯のオフを解いて、その場で知らせる（trk255） */
+        if (outcome === "ready") { setSnooze(0); dismissed = false; }
         setStatus(tr(outcome === "ready" ? "swUpdateReady" : "swUpdateLatest"));
         if (outcome === "ready") announce();
       }
@@ -156,6 +176,31 @@
       checking = false;
     }
   }
+
+  /* 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出し、帯には出さない。
+     版は index.html の <meta name="trk-build"> と sw.js の CACHE で同じ番号にそろえる。 */
+  const versionEl = document.getElementById("swUpdateVersion");
+  const buildMeta = document.querySelector('meta[name="trk-build"]');
+  const buildName = (buildMeta && buildMeta.getAttribute("content")) || "";
+  function renderVersion() {
+    if (!versionEl) return;
+    versionEl.textContent = buildName ? tr("swUpdateVersion", { v: buildName }) : "";
+  }
+  renderVersion();
+  try { core.on("language", renderVersion); } catch (_) {}
+
+  /* 🔔 trk255：「新しい版の知らせを出す」のチェック（オフなら帯そのものを出さない） */
+  const noticeChk = document.getElementById("swUpdateNoticeChk");
+  function syncNoticeChk() { if (noticeChk) noticeChk.checked = noticeEnabled(); }
+  syncNoticeChk();
+  if (noticeChk) noticeChk.addEventListener("change", () => {
+    if (core.settings) core.settings.swUpdateNotice = noticeChk.checked;
+    saveSettings();
+    if (!noticeChk.checked) { hideBar(); return; }
+    dismissed = false; setSnooze(0);
+    announce();
+  });
+  try { core.on("settings", syncNoticeChk); } catch (_) {}
 
   if (checkBtn) checkBtn.addEventListener("click", async () => {
     checkBtn.disabled = true;
@@ -228,6 +273,9 @@
     deferNotice: swDeferNotice,
     checkDue: swCheckDue,
     checkOutcome: swCheckOutcome,
+    noticeEnabled,
+    snoozeActive,
+    snoozeMs: SNOOZE_MS,
     get dismissed() { return dismissed; }
   });
 })();

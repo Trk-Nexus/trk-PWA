@@ -14,11 +14,19 @@
    --trk-playerbar-stage-h  … 高さをステージ座標（1920×1080 の縮小前）に直したもの
    ========================================================================== */
 
+/* 🧱 trk255：表示の密度（trk244・trk245）を、下の再生バーにも効かせる。
+   余白・間隔・高さの床だけを詰め、**文字の大きさ（font-size）は変えない**（trk244 の約束）。
+   密度のクラスは js/core.js の applyUiScale() が body に1つだけ付けます。 */
+:root { --trk-pb-dens-pad: 1; --trk-pb-dens-gap: 1; --trk-pb-dens-h: 1; }
+body.trk-density-roomy { --trk-pb-dens-pad: 1.15; --trk-pb-dens-gap: 1.12; --trk-pb-dens-h: 1.08; }
+body.trk-density-compact { --trk-pb-dens-pad: .7; --trk-pb-dens-gap: .8; --trk-pb-dens-h: .92; }
+body.trk-density-dense { --trk-pb-dens-pad: .5; --trk-pb-dens-gap: .65; --trk-pb-dens-h: .84; }
+
 .trk-playerbar {
   position: fixed; left: 0; right: 0; bottom: var(--trk-playerbar-offset, 0px);
-  z-index: 1100; display: flex; align-items: center; gap: 12px;
-  min-height: 60px;
-  padding: 9px max(14px, env(safe-area-inset-right)) 9px max(14px, env(safe-area-inset-left));
+  z-index: 1100; display: flex; align-items: center; gap: calc(12px * var(--trk-pb-dens-gap, 1));
+  min-height: calc(60px * var(--trk-pb-dens-h, 1));
+  padding: calc(9px * var(--trk-pb-dens-pad, 1)) max(14px, env(safe-area-inset-right)) calc(9px * var(--trk-pb-dens-pad, 1)) max(14px, env(safe-area-inset-left));
   background: var(--ui-panel); color: var(--ui-text);
   border-top: 1px solid var(--ui-border);
   box-shadow: 0 -8px 26px rgba(0, 0, 0, .35);

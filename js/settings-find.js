@@ -45,6 +45,20 @@
     return terms.every(term => hay.includes(term));
   }
 
+  /* ⌨ trk255：`/` で検索欄へ飛んでよいか。純粋関数。
+     入力中の欄・選択・IME の変換中・修飾キー付きは横取りしない（文字を打つ邪魔をしない）。 */
+  function slashAllowed(event) {
+    const e = event || {};
+    if (e.key !== "/") return false;
+    if (e.ctrlKey || e.metaKey || e.altKey) return false;
+    if (e.isComposing) return false;
+    const target = e.target || {};
+    const tag = String(target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return false;
+    if (target.isContentEditable) return false;
+    return true;
+  }
+
   /* パネルの一覧から、出すもの・隠すものを決める。純粋関数。
      panels = [{ id, text, hidden }]（hidden＝もともと隠れている＝🍎 iPhone・開発用・条件付き）
      戻り値 = { active, show:[id], hide:[id], count }
@@ -128,6 +142,15 @@
   });
   if (clearBtn) clearBtn.addEventListener("click", () => { clear(); try { input.focus(); } catch (_) {} });
 
+  /* ⌨ trk255：設定を開いているあいだ、`/` で「設定をさがす」へ飛ぶ。
+     入力欄の中では何もしない（`/` を打ちたいときの邪魔をしない）。 */
+  document.addEventListener("keydown", event => {
+    if (!pane || pane.hidden) return;
+    if (!slashAllowed(event)) return;
+    event.preventDefault();
+    try { input.focus(); input.select(); } catch (_) {}
+  });
+
   /* 設定を開くたび、まっさらから（前の検索語を残さない） */
   try { core.on("settings", () => { clear(); }); } catch (_) {}
   try { core.on("settingsClose", () => { clear(); }); } catch (_) {}
@@ -141,5 +164,6 @@
     terms: setFindTerms,
     hit: setFindHit,
     plan: setFindPlan,
+    slash: slashAllowed,
   });
 })();
