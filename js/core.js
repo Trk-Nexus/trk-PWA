@@ -338,6 +338,12 @@ const settings = {
   helpText: prefs.helpText !== false,
   tutorialDone: prefs.tutorialDone === true,
   welcomeSeen: prefs.welcomeSeen === true,   /* 👋 「trk!にようこそ！」を閉じた（一度だけ出す） */
+  /* 🔄 trk255：新しい版の知らせ（画面の下の帯）。
+     swUpdateNotice が false なら帯を出さない（設定の「新しい版を確かめる」はいつでも使える）。
+     swUpdateSnooze は「あとで」を押した時刻＋24時間（0＝眠らせていない）。
+     ⚠ どちらも core.settings の中なので **localStorage のキーは増やしません**。 */
+  swUpdateNotice: prefs.swUpdateNotice !== false,
+  swUpdateSnooze: num(prefs.swUpdateSnooze, 0, 8.64e15, 0),
   tutorialStamps: tutorialStampsFrom(prefs.tutorialStamps),   /* 🧭 スタンプ（順番自由・8つでごほうび。旧「曲を選ぶ」は「曲を流す」へ引き継ぐ） */
   skinGradUnlocked: prefs.skinGradUnlocked === true,
   menuKey: validCode(prefs.menuKey) ? prefs.menuKey : "KeyM",
@@ -766,6 +772,8 @@ function resetAllPrefs() {
   settings.uiDensity = "auto"; settings.uiScaleCompact = true;
   /* 🔤 trk246：書体の組み合わせも工場出荷状態（使わない）へ */
   settings.typography = null;
+  /* 🔄 trk255：更新の知らせ（出す・眠らせない）も工場出荷状態へ */
+  settings.swUpdateNotice = true; settings.swUpdateSnooze = 0;
   /* 🎵 trk225：バーの置き場所（いちばん下）と、隠さない設定（オフ）も工場出荷状態へ */
   settings.playerBarPos = "bottom"; settings.playerBarLock = false; settings.playerBarSeekLock = false;
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
