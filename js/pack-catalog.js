@@ -176,6 +176,21 @@
     return `${(v / 1048576).toFixed(1)} MB`;
   };
 
+  /* 🗓 trk259（レビュー 01 §1 #1）：目録の版は **端末の日付** で出す。
+     `updatedAt` は UTC（…Z）なので、`slice(0,10)` のままだと、日本では **朝 9 時前の更新が前日**になる
+     （例：11/03 08:00 JST に作った目録が「2026-11-02」と出る）。端末の日付に直して、セット名の日付と見比べられるようにする。
+     ・`2026-11-02` のような **日付だけ** の目録は、そのまま返す（時刻が無いので動かさない）
+     ・読めない値は、これまでどおり先頭 10 文字（何も出さないより、元の文字を見せる） */
+  function catalogDay(raw) {
+    const s = str(raw, 40);
+    if (!s) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    const d = new Date(s);
+    if (!Number.isFinite(d.getTime())) return s.slice(0, 10);
+    const p = n => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
   /* sha256（小文字16進）。crypto.subtle が無ければ null */
   async function sha256Hex(blob) {
     const subtle = typeof crypto !== "undefined" && crypto.subtle;
@@ -314,7 +329,7 @@
   window.Trk = window.Trk || {};
   window.Trk.packCatalog = Object.assign(window.Trk.packCatalog || {}, {
     CATALOG_FORMAT, CATALOG_VERSION, sanitizeCatalog, sanitizeCatalogEntry,
-    checkAgainstEntry, formatBytes, samePackAs, packKey, sha256Hex, versionDiffers,
+    checkAgainstEntry, formatBytes, catalogDay, samePackAs, packKey, sha256Hex, versionDiffers,
     /* 📦 trk235：セット（.stlib / .zip） */
     SET_FORMAT, SET_LIMITS, SET_EXTS, looksLikeZip, sanitizeSetInfo, openSet, setEntryCheck, planSet, setPending,
     /* 🔤 trk236〜238：書体の「ひとこと」「タグ」「索引」 */
@@ -362,8 +377,9 @@
       if (newer) sum.textContent += " " + tr("catalogUpdates", { n: newer });
       /* 💾 trk234：目録の合計（落とす前に、どのくらいの容量か分かるように） */
       if (total && bytes) sum.textContent += " · " + tr("catalogTotalBytes", { size: formatBytes(bytes) });
-      /* 🗓 trk258（R3）：どの日の目録かを出す（r9 と r10 は形が同じなので、取り違えに気づけるように） */
-      if (current.updatedAt) sum.textContent += " · " + tr("catalogUpdated", { date: String(current.updatedAt).slice(0, 10) });
+      /* 🗓 trk258（R3）：どの日の目録かを出す（r9 と r10 は形が同じなので、取り違えに気づけるように）
+         🗓 trk259：日付は端末の時刻で（UTC のまま出さない。理由は catalogDay のコメント） */
+      if (current.updatedAt) sum.textContent += " · " + tr("catalogUpdated", { date: catalogDay(current.updatedAt) });
       if (catalogTag) sum.textContent += " · " + tr("catalogTagShown", { tag: catalogTag, n: shown.length });
     }
     /* 💾 trk234：この目録のぶんが入っているときだけ「まとめて消す」を出す */
@@ -691,10 +707,12 @@
     }
     let ok = 0, bad = 0, skip = 0, done = 0, okBytes = 0;
     for (const item of plan.packs) {
-      done++;
       const hit = installed.find(rec => samePack(item.entry, rec));
       if (hit && !versionDiffers(item.entry, hit)) { skip++; setRowNote(item.entry, tr("catalogAlreadyIn"), false); continue; }
-      if (c.setStatus) c.setStatus("catalogStatus", "catalogSetProgress", { done, n:plan.packs.length, name:item.entry.name });
+      /* 📦 trk259（レビュー 01 §1 #2）：進捗の分母も「これから入る分」にそろえる。
+         要約・確認は 29 なのに途中だけ「1/30…」だと、飛ばす 1 本を数え直しているように見える。 */
+      done++;
+      if (c.setStatus) c.setStatus("catalogStatus", "catalogSetProgress", { done, n:pend.pending.length, name:item.entry.name });
       const doneOne = await installSetEntry(opened, item);
       if (doneOne) { ok++; okBytes += Number(item.entry.bytes) || Number(item.zipEntry && item.zipEntry.usize) || 0; }
       else bad++;

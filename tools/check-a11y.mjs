@@ -19,6 +19,7 @@
  */
 import fs from "node:fs";
 import { restoreCoreAlias, sourceOf } from "./lib/js-source.mjs";
+import { RUNTIME_NAMED, namedProblems } from "./lib/button-names.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -160,26 +161,19 @@ rule(tabProblems.length === 0, "role=tablist holds tabs only (the ＋ button sta
     doc ? "外部ツールでの点検手順つき" : "見つかりません");
 }
 
-/* ---------- 8. ボタンの読み上げ名（trk258・M3） ----------
+/* ---------- 8. ボタンの読み上げ名（trk258・M3／trk259 で根拠つき） ----------
    ここまでは入力欄・画像・見出しを見ていたが、**ボタンは見ていなかった**。
    静的に名前の出どころが無いものは、次の2種類だけにする：
      ・`aria-label` / `aria-labelledby` / `title` / `data-i18n` / `data-i18n-aria` / 中の文字 / 画像の alt がある
      ・**JS が開いたときに文字を入れる**もの（下の許可リストに id で書く）
-   許可リストの id が HTML から消えたら FAIL（名前を付けたのに許可が残る、の逆も見る）。 */
+   許可リストは「HTML に id がある」だけでは嘘をつける（レビュー 01 §1 #3）ので、**根拠の式（need）**も書いて、
+   それが `js/` のどれかに実在することを毎回見る。文言の設定を消したら、ここで FAIL する。
+   逆向きも見る：許可リストの id が HTML から消えたら FAIL。 */
 {
-  const runtimeNamed = new Map([
-    ["studyOpenBtn", "study-room.js が開いたときに文字を入れる"],
-    ["libSkinBtn", "lib-skins.js がスキン名を入れる"],
-    ["libReconnectBtn", "library.js の showReconnect() が入れる"],
-    ["mediaKeepCurrentBtn", "library.js が入れる"],
-    ["skinHiddenRestore", "core.js が件数つきで入れる"],
-    ["skinManageHideUnused", "core.js が入れる"],
-    ["skinManageRestoreAll", "core.js が入れる"],
-    ["packDeletePicked", "custom.js が件数つきで入れる"],
-    ["catalogRemoveAll", "pack-catalog.js が件数つきで入れる"],
-    ["trkRestoreBtn", "library.js が件数つきで入れる"],
-  ]);
+  const runtimeNamed = RUNTIME_NAMED;
   const html = read("index.html");
+  /* 上の走査で読んだ js/**（js-core の別名は sourceOf で戻したもの）を、まとめて1つの文字列にする */
+  const jsText = Object.values(js).join("\n");
   const problems = [];
   let allowed = 0;
   for (const f of htmlFiles) {
@@ -192,14 +186,14 @@ rule(tabProblems.length === 0, "role=tablist holds tabs only (the ＋ button sta
       const alt = /<img\b[^>]*\balt=["']([^"']+)["']/.exec(inner);
       if (alt && alt[1].trim()) continue;
       const id = (attrs.match(/\bid=["']([^"']+)["']/) || [])[1] || "";
-      if (id && runtimeNamed.has(id)) { allowed++; continue; }
+      if (id && runtimeNamed.some(([want]) => want === id)) { allowed++; continue; }
       problems.push(`${f}: ${id || m[0].slice(0, 60).replace(/\s+/g, " ")}`);
     }
   }
-  const stale = [...runtimeNamed.keys()].filter(id => !new RegExp(`\\bid=["']${id}["']`).test(html));
-  if (stale.length) problems.push(`許可リストの id が HTML にありません: ${stale.join(", ")}`);
+  /* 許可リストの「id が HTML にある」「根拠の式が js/ にある」をまとめて見る（消えたら許可も消す） */
+  problems.push(...namedProblems(html, jsText));
   rule(problems.length === 0, "every <button> has an accessible name",
-    problems.length ? problems.join(" / ") : `${allowed} 件は実行時に名前が入る（許可リスト）`);
+    problems.length ? problems.join(" / ") : `${allowed} 件は実行時に名前が入る（許可リスト・根拠つき）`);
 }
 
 console.log("");
