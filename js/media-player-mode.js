@@ -34,6 +34,11 @@ Object.assign(TEXT.ja, {
   mediaVideoKeysReset:"↺ 動画キーを初期値に戻す", mediaVideoCapture0:"「動画を拡大」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture1:"「動画を縮小」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture2:"「再生速度を上げる」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture3:"「再生速度を下げる」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture4:"「再生／一時停止」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture5:"「逆再生」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture6:"「区間ループ」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture7:"「壁紙／スクリーンセーバー」に割り当てるキーを押してください。ESCでキャンセル。",
   mediaVideoToastZoom:"動画ズーム {n}x", mediaVideoToastRate:"再生速度 {n}x",
   mediaPip:"📌 画中画", mediaPipClose:"📌 画中画を終了", mediaPipUnsupported:"このブラウザは画中画に対応していません",
+mediaPipTitle:"📌 画中画（小窓）",
+  mediaPipHint:"画中画は、動画を画面の隅の小窓に映したまま別のことをできる機能です。小窓はブラウザーが持っているので、位置・大きさ・閉じるボタンはページからは変えられません（PC の Chrome／Edge／Safari。スマホは非対応）。",
+  mediaPipKeep:"メディアプレーヤーを閉じても画中画を続ける", mediaPipHideStage:"画中画を出している間は、こちらの映像を隠す",
+  mediaPipKeepOn:"📌 画中画で続けます（小窓の ✕ で終了）",
+  mediaPipNotice:"📌 画中画で表示中", mediaPipShowHere:"ここにも表示", mediaPipHideHere:"こちらの絵を隠す",
   mediaResumeRewind:"⏪ 再開時の巻き戻し", mediaResumeOff:"オフ", mediaResumeSet:"再開時に{s}秒巻き戻します",
   mediaSleepTrack:"💤 この曲の終わり", mediaSleepTrackSet:"この曲の終わりで再生を止めます",
   mediaWakeLockTitle:"🔆 画面を消灯させない", mediaWakeLockHint:"動画の再生中に画面が暗くなるのを防ぎます（音声だけの再生では防ぎません）。対応していないブラウザでは何もしません。", mediaWakeLockToggle:"動画の再生中は画面をつけたままにする",
@@ -73,6 +78,11 @@ Object.assign(TEXT.en, {
   mediaVideoKeysReset:"↺ Reset video keys", mediaVideoCapture0:"Press a key for “Zoom in”. ESC cancels.", mediaVideoCapture1:"Press a key for “Zoom out”. ESC cancels.", mediaVideoCapture2:"Press a key for “Speed up”. ESC cancels.", mediaVideoCapture3:"Press a key for “Slow down”. ESC cancels.", mediaVideoCapture4:"Press a key for “Play / pause”. ESC cancels.", mediaVideoCapture5:"Press a key for “Reverse”. ESC cancels.", mediaVideoCapture6:"Press a key for “A-B loop”. ESC cancels.", mediaVideoCapture7:"Press a key for “Wallpaper / screen saver”. ESC cancels.",
   mediaVideoToastZoom:"Video zoom {n}x", mediaVideoToastRate:"Playback speed {n}x",
   mediaPip:"📌 Picture-in-picture", mediaPipClose:"📌 Exit picture-in-picture", mediaPipUnsupported:"This browser doesn't support picture-in-picture",
+mediaPipTitle:"📌 Picture-in-picture",
+  mediaPipHint:"Picture-in-picture keeps the video in a small floating window while you do something else. The window belongs to the browser, so its position, size, and close button can't be changed from the page (desktop Chrome / Edge / Safari; not on phones).",
+  mediaPipKeep:"Keep picture-in-picture after closing the media player", mediaPipHideStage:"Hide the video here while picture-in-picture is showing",
+  mediaPipKeepOn:"📌 Continuing in picture-in-picture (close the small window to stop)",
+  mediaPipNotice:"📌 Showing in picture-in-picture", mediaPipShowHere:"Show here too", mediaPipHideHere:"Hide the video here",
   mediaResumeRewind:"⏪ Resume rewind", mediaResumeOff:"Off", mediaResumeSet:"Resume rewind: {s}s",
   mediaSleepTrack:"💤 End of this track", mediaSleepTrackSet:"Playback will stop when this track ends",
   mediaWakeLockTitle:"🔆 Keep screen on", mediaWakeLockHint:"Prevents the screen from dimming while a video plays (audio-only playback won't). Does nothing on browsers without support.", mediaWakeLockToggle:"Keep the screen on while a video plays",
@@ -110,6 +120,11 @@ Object.assign(TEXT.zh, {
   mediaVideoKeysReset:"↺ 恢复视频按键", mediaVideoCapture0:"请按下“放大视频”的按键。ESC取消。", mediaVideoCapture1:"请按下“缩小视频”的按键。ESC取消。", mediaVideoCapture2:"请按下“提高速度”的按键。ESC取消。", mediaVideoCapture3:"请按下“降低速度”的按键。ESC取消。", mediaVideoCapture4:"请按下“播放／暂停”的按键。ESC取消。", mediaVideoCapture5:"请按下“倒放”的按键。ESC取消。", mediaVideoCapture6:"请按下“区间循环”的按键。ESC取消。", mediaVideoCapture7:"请按下“壁纸／屏幕保护”的按键。ESC取消。",
   mediaVideoToastZoom:"视频缩放 {n}x", mediaVideoToastRate:"播放速度 {n}x",
   mediaPip:"📌 画中画", mediaPipClose:"📌 退出画中画", mediaPipUnsupported:"此浏览器不支持画中画",
+mediaPipTitle:"📌 画中画（小窗）",
+  mediaPipHint:"画中画会把视频放在屏幕角落的小窗里，同时可以做别的事。小窗由浏览器管理，位置、大小和关闭按钮无法从页面更改（桌面版 Chrome / Edge / Safari；手机不支持）。",
+  mediaPipKeep:"关闭媒体播放器后仍保持画中画", mediaPipHideStage:"显示画中画时，隐藏这里的视频",
+  mediaPipKeepOn:"📌 继续以画中画播放（点小窗的 ✕ 结束）",
+  mediaPipNotice:"📌 正在画中画显示", mediaPipShowHere:"也在这里显示", mediaPipHideHere:"隐藏这里的视频",
   mediaResumeRewind:"⏪ 继续播放时倒回", mediaResumeOff:"关闭", mediaResumeSet:"继续播放时倒回{s}秒",
   mediaSleepTrack:"💤 本曲结束时", mediaSleepTrackSet:"将在本曲结束时停止播放",
   mediaWakeLockTitle:"🔆 保持屏幕常亮", mediaWakeLockHint:"播放视频时防止屏幕变暗（纯音频播放不会阻止熄屏）。浏览器不支持时无效果。", mediaWakeLockToggle:"播放视频时保持屏幕常亮",
@@ -147,6 +162,11 @@ Object.assign(TEXT.ko, {
   mediaVideoKeysReset:"↺ 동영상 키 초기화", mediaVideoCapture0:"'동영상 확대'로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture1:"'동영상 축소'로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture2:"'재생 속도 높이기'로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture3:"'재생 속도 낮추기'로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture4:"'재생／일시정지'로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture5:"'역재생'으로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture6:"'구간 반복'으로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture7:"'배경／스크린세이버'로 지정할 키를 누르세요. ESC로 취소.",
   mediaVideoToastZoom:"동영상 확대 {n}x", mediaVideoToastRate:"재생 속도 {n}x",
   mediaPip:"📌 그림 속 그림", mediaPipClose:"📌 그림 속 그림 종료", mediaPipUnsupported:"이 브라우저는 그림 속 그림을 지원하지 않습니다",
+mediaPipTitle:"📌 그림 속 그림 (작은 창)",
+  mediaPipHint:"그림 속 그림은 영상을 화면 구석의 작은 창으로 띄워 두고 다른 작업을 할 수 있는 기능입니다. 작은 창은 브라우저가 관리하므로 위치·크기·닫기 버튼은 페이지에서 바꿀 수 없습니다(데스크톱 Chrome / Edge / Safari, 휴대폰은 미지원).",
+  mediaPipKeep:"미디어 플레이어를 닫아도 그림 속 그림을 계속", mediaPipHideStage:"그림 속 그림이 떠 있는 동안 이쪽 영상 숨기기",
+  mediaPipKeepOn:"📌 그림 속 그림으로 계속합니다 (작은 창의 ✕로 종료)",
+  mediaPipNotice:"📌 그림 속 그림으로 표시 중", mediaPipShowHere:"여기에도 표시", mediaPipHideHere:"이쪽 영상 숨기기",
   mediaResumeRewind:"⏪ 다시 재생 시 되감기", mediaResumeOff:"끔", mediaResumeSet:"다시 재생 시 {s}초 되감기",
   mediaSleepTrack:"💤 이번 곡 끝날 때", mediaSleepTrackSet:"이번 곡이 끝날 때 재생을 멈춥니다",
   mediaWakeLockTitle:"🔆 화면 켜짐 유지", mediaWakeLockHint:"동영상 재생 중 화면이 어두워지는 것을 막습니다(오디오만 재생할 때는 막지 않습니다). 지원하지 않는 브라우저에서는 아무것도 하지 않습니다.", mediaWakeLockToggle:"동영상 재생 중 화면 켜짐 유지",
@@ -185,6 +205,8 @@ let loopA = null, loopB = null, loopActive = false, loopKeyDown = false;
 let wallOverlay, wallClockNode, wallDateNode, wallNode, wallStyleNode, wallClockCheck, wallPlaybackNode, wallTriggerNode, wallFileNode, wallResetNode;
 let maxNode = null;   /* 🖥 「全画面で表示」（js/video-max.js） */
 let pipNode = null, pipActive = false;                /* 📌 画中画（trk164） */
+/* 📌 trk263：画中画の案内（1行）と、「ここにも表示」を押したか（この画面だけ・保存しない） */
+let pipNotice = null, pipTextNode = null, pipHereNode = null, pipStopNode = null, pipStageShown = false;
 let resumeNode = null;                                /* ⏪ スマート巻き戻しの選択（trk164） */
 let startZeroNode = null;                             /* ⏮ 常に最初から再生のチェック（trk193） */
 let wakeLock = null, wakeRequested = false;           /* 🔆 Screen Wake Lock（trk164） */
@@ -959,16 +981,51 @@ function hasVideoFrames() { return !!(core.videoReady && core.video && core.vide
 function pipSupported() {
   return !!(typeof document !== "undefined" && document.pictureInPictureEnabled && core.video && typeof core.video.requestPictureInPicture === "function");
 }
+/* ==== 純粋な計算（trk263：画中画を残すか・こちらの映像を隠すか） ====
+   ブラウザーを起動しないテスト（tests/trk263-pip.test.mjs）が、この範囲だけを切り出して読みます。 */
+/* メディアプレーヤーを閉じるとき、画中画を残すか（"keep"）閉じるか（"exit"）。
+   st = { keep:設定がオン, pip:いま画中画が出ている, close:手で閉じた, phase:いまの画面 } */
+function pipExitPlan(st) {
+  const v = st || {};
+  if (v.keep !== true || v.pip !== true) return "exit";
+  if (v.close !== true || v.phase !== "title") return "exit";   /* ゲーム開始では閉じる（ゲームの曲が小窓に出ないように） */
+  return "keep";
+}
+/* プレーヤー側の映像を出すか。open＝プレーヤーを開いている、pip＝画中画が出ている、
+   hideOnPip＝設定、shownHere＝「ここにも表示」を押した（この画面だけの一時的な上書き） */
+function stageVisible(st) {
+  const v = st || {};
+  if (v.open !== true) return false;
+  if (v.pip === true && v.hideOnPip === true && v.shownHere !== true) return false;
+  return true;
+}
+/* 画中画の案内（1行）を出すか */
+function pipNoticeVisible(st) {
+  const v = st || {};
+  return v.open === true && v.pip === true && v.hideOnPip === true;
+}
+/* ==== 純粋な計算 ここまで ==== */
+function pipIsOn() {
+  return !!(pipActive || (typeof document !== "undefined" && document.pictureInPictureElement));
+}
+/* 📌 trk263：画中画を終える（ブラウザーの ✕ でも同じ後始末を通る） */
+async function exitPip() {
+  try { if (pipIsOn()) await document.exitPictureInPicture(); } catch (_) {}
+  pipActive = false; pipStageShown = false;
+  syncMediaStage(); renderMedia();
+}
 async function togglePip() {
   if (!pipSupported() || !core.videoReady) return;
   try {
-    if (document.pictureInPictureElement) { await document.exitPictureInPicture(); pipActive = false; }
-    else { await core.video.requestPictureInPicture(); pipActive = true; }
+    if (pipIsOn()) { await exitPip(); return; }
+    await core.video.requestPictureInPicture();
+    pipActive = true; pipStageShown = false;
   } catch (err) {
     pipActive = false;
     if (typeof showToast === "function") window.Trk.play.showToast(tr("mediaPipUnsupported"));
     console.error("[media] PiP:", err);
   }
+  syncMediaStage();
   renderMedia();
 }
 /* 🔆 Screen Wake Lock（trk164）：動画の再生中だけ画面の消灯を防ぐ。
@@ -1380,8 +1437,17 @@ function syncMediaStage() {
   if (!stageWrap || !stageCanvas) return;
   const FI = window.TrkFrameInterp;
   const frames = hasVideoFrames();
-  const show = mediaOpen;                       // 枠はプレーヤーを開いているときだけ
+  /* 📌 trk263：画中画を出している間は、こちらの映像を隠す（既定オン）。
+     「ここにも表示」を押したときだけ、この画面では出す（保存しない）。 */
+  const pip = pipIsOn();
+  const hideOnPip = core.settings.mediaPipHideStage !== false;
+  const show = stageVisible({ open: mediaOpen, pip, hideOnPip, shownHere: pipStageShown });
   stageWrap.hidden = !show;
+  if (pipNotice) {
+    pipNotice.hidden = !pipNoticeVisible({ open: mediaOpen, pip, hideOnPip });
+    if (pipHereNode) { const k = pipStageShown ? "mediaPipHideHere" : "mediaPipShowHere"; pipHereNode.textContent = tr(k); pipHereNode.dataset.i18n = k; }
+    if (pipTextNode) { pipTextNode.textContent = tr("mediaPipNotice"); pipTextNode.dataset.i18n = "mediaPipNotice"; }
+  }
   stageCanvas.hidden = !frames;                 // 映像が無い曲では注記だけ出す
   if (show && frames) {
     if (FI && core.settings.frameInterp !== "off") FI.attach("media", stageCanvas);
@@ -1508,9 +1574,19 @@ function mediaExitPlan(st) {
 function closeMedia(restore = true) {
   if (!mediaOpen) return;
   if (window.TrkVideoMax && window.TrkVideoMax.isOpen()) window.TrkVideoMax.close();   /* 🖥 全画面表示も一緒に閉じる */
-  /* 📌 画中画も一緒に終える（trk164）：閉じたあとに浮き窓だけ残さない */
-  if (typeof document !== "undefined" && document.pictureInPictureElement) { try { document.exitPictureInPicture(); } catch (_) {} }
-  pipActive = false;
+  /* 📌 画中画（trk164 → trk263）：設定がオンなら、手で閉じたときは小窓を残す。
+     ゲーム開始（close:false）や、タイトル以外の画面では閉じる（ゲームの曲が小窓に出ないように）。 */
+  const keepPip = pipExitPlan({
+    keep: core.settings.mediaPipKeep !== false,
+    pip: pipIsOn(),
+    close: restore === true,
+    phase: core.phase,
+  }) === "keep";
+  if (!keepPip) {
+    if (typeof document !== "undefined" && document.pictureInPictureElement) { try { document.exitPictureInPicture(); } catch (_) {} }
+    pipActive = false;
+  }
+  pipStageShown = false;
   deactivateWall(false);
   mediaOpen = false; window.Trk.overlay.set("media", false); window._trkMediaPlayerMode = false;
   clearInterval(tickTimer); tickTimer = 0; stopSleepTimer(true); seeking = false;
@@ -1519,11 +1595,13 @@ function closeMedia(restore = true) {
   clearInterval(loopTimer); loopTimer = 0; stopReverse(false, true); clearMediaLoop(true);
   saveMediaPosition(); core.video.playbackRate = 1;
   /* 🚪 抜け方（trk206）。既定は「そのまま流す」＝プレイヤーで聴いていた曲が曲リストでも途切れない */
-  const exitPlan = mediaExitPlan({
+  let exitPlan = mediaExitPlan({
     close: restore === true, phase: core.phase,
     reloadOnExit: core.settings.mediaReloadOnExit === true,
     previewEnabled: core.settings.previewEnabled === true,
   });
+  /* 📌 trk263：画中画を残すときは止めない（止めると小窓が止まった絵になる） */
+  if (keepPip) exitPlan = "keep";
   if (exitPlan !== "keep") core.video.pause();
   updateWakeLock();   /* 🔆 閉じたら即解放（mediaOpen=false → 不要） */
   if (stageRaf) { cancelAnimationFrame(stageRaf); stageRaf = 0; }
@@ -1531,8 +1609,10 @@ function closeMedia(restore = true) {
   if (stageWrap) stageWrap.hidden = true;
   overlay.hidden = true; document.body.classList.remove("mediaOpen");
   if (exitPlan === "reload" && typeof startPreview === "function") setTimeout(window.Trk.library.startPreview, 50);
-  /* 流し続けるときは位置を動かさず、音量だけ選曲中のプレビュー相当へ静かに戻す（library.js） */
-  else if (exitPlan === "keep" && window.Trk.library && typeof window.Trk.library.previewContinue === "function") window.Trk.library.previewContinue();
+  /* 流し続けるときは位置を動かさず、音量だけ選曲中のプレビュー相当へ静かに戻す（library.js）
+     📌 trk263：画中画で見ている間は、プレイヤーの音量のまま（小さくしない） */
+  else if (exitPlan === "keep" && !keepPip && window.Trk.library && typeof window.Trk.library.previewContinue === "function") window.Trk.library.previewContinue();
+  if (keepPip && typeof showToast === "function") window.Trk.play.showToast(tr("mediaPipKeepOn"));
   if (mediaReturnFocus && mediaReturnFocus.isConnected) mediaReturnFocus.focus();   /* 🎥 開いた入口へ焦点を戻す（trk186） */
   else if (powerButton) powerButton.focus();
 }
@@ -1595,6 +1675,14 @@ function buildMedia() {
   stageNote = core.el("div", "mediaStageNote hint", tr("mediaStageNoVideo")); stageNote.dataset.i18n = "mediaStageNoVideo";
   subsOverlay = core.el("div", "mediaSubs"); subsOverlay.hidden = true;   /* 💬 字幕オーバーレイ（trk169・クリックは通す） */
   stageWrap.append(stageCanvas, subsOverlay, stageNote);
+  /* 📌 trk263：画中画を出している間の案内（1行）。映像を隠した代わりに、戻す道をここに残す */
+  pipNotice = core.el("div", "mediaPipNotice"); pipNotice.id = "mediaPipNotice"; pipNotice.hidden = true;
+  pipTextNode = tx("span", "mediaPipNotice", "mediaPipNoticeText");
+  pipHereNode = makeButton("mediaPipShowHere");
+  pipStopNode = makeButton("mediaPipClose");
+  pipHereNode.addEventListener("click", () => { pipStageShown = !pipStageShown; syncMediaStage(); });
+  pipStopNode.addEventListener("click", () => { exitPip(); });
+  pipNotice.append(pipTextNode, pipHereNode, pipStopNode);
 
   const controls = core.el("div", "mediaControls");
   const prev = makeButton("mediaPrev", "mediaControlBtn");
@@ -1606,8 +1694,8 @@ function buildMedia() {
   /* 📌 画中画（trk164）：全画面の右に置く。非対応ブラウザでは無効のまま理由をタイトルで示す */
   pipNode = makeButton("mediaPip", "mediaSmallBtn");
   pipNode.addEventListener("click", togglePip);
-  core.video.addEventListener("enterpictureinpicture", () => { pipActive = true; renderMedia(); });
-  core.video.addEventListener("leavepictureinpicture", () => { pipActive = false; renderMedia(); });
+  core.video.addEventListener("enterpictureinpicture", () => { pipActive = true; pipStageShown = false; syncMediaStage(); renderMedia(); });
+  core.video.addEventListener("leavepictureinpicture", () => { pipActive = false; pipStageShown = false; syncMediaStage(); renderMedia(); });
   wallNode = makeButton("mediaWallShow", "mediaSmallBtn");
   const restart = makeButton("mediaRestart", "mediaSmallBtn");
   prev.addEventListener("click", () => stepMedia(-1)); playNode.addEventListener("click", playPause); next.addEventListener("click", () => stepMedia(1)); reverseNode.addEventListener("click", toggleReverse); wallNode.addEventListener("click", toggleWall);
@@ -1871,6 +1959,7 @@ function buildMedia() {
   const body = core.el("div", "instBody mediaBody");
   body.append(display, stageWrap, controls, progressRow, lyricsBox, subsBox, chapBox, interpBox, loopBox, options, queuePanel, footer);
   dialog.append(header, body);
+  stageWrap.after(pipNotice);   /* 📌 trk263：映像を隠したときに代わりに出る1行（映像のすぐ下） */
   wallOverlay = core.el("section", "mediaWall"); wallOverlay.hidden = true; wallOverlay.setAttribute("role", "dialog"); wallOverlay.setAttribute("aria-modal", "true"); wallOverlay.setAttribute("aria-label", tr("mediaWall"));
   const wallTop = core.el("div", "mediaWallTop"); wallTop.append(tx("strong", "mediaWall"));
   const wallClose = makeButton("mediaWallHide", "mediaWallClose"); wallClose.addEventListener("click", () => deactivateWall(true)); wallTop.append(wallClose);
@@ -2029,7 +2118,28 @@ function buildMedia() {
     waveCheck.addEventListener("change", () => { core.settings.mediaWave = waveCheck.checked; core.saveUserPrefs(); drawWave(); });
     waveCheckLabel.append(waveCheck, tx("span", "mediaWaveToggle"));
     wavePanel.append(waveHeading, waveHint, waveCheckLabel);
+    /* 📌 画中画（trk263）：閉じても小窓を残す・画中画の間はこちらの映像を隠す（どちらも既定オン） */
+    const pipPanel = core.el("details", "subPanel mediaPipPanel"); pipPanel.id = "mediaPipPanel";
+    const pipHeading = tx("summary", "mediaPipTitle");
+    const pipHint = tx("div", "mediaPipHint", "hint");
+    const pipKeepLabel = core.el("label", "checkLine");
+    const pipKeepCheck = document.createElement("input"); pipKeepCheck.type = "checkbox"; pipKeepCheck.checked = core.settings.mediaPipKeep !== false;
+    pipKeepCheck.addEventListener("change", () => {
+      core.settings.mediaPipKeep = pipKeepCheck.checked; core.saveUserPrefs();
+      /* オフにしたら、いま出ている小窓は閉じる（設定に従う） */
+      if (!pipKeepCheck.checked && pipIsOn()) exitPip();
+    });
+    pipKeepLabel.append(pipKeepCheck, tx("span", "mediaPipKeep"));
+    const pipHideLabel = core.el("label", "checkLine");
+    const pipHideCheck = document.createElement("input"); pipHideCheck.type = "checkbox"; pipHideCheck.checked = core.settings.mediaPipHideStage !== false;
+    pipHideCheck.addEventListener("change", () => {
+      core.settings.mediaPipHideStage = pipHideCheck.checked; core.saveUserPrefs();
+      pipStageShown = false; syncMediaStage();
+    });
+    pipHideLabel.append(pipHideCheck, tx("span", "mediaPipHideStage"));
+    pipPanel.append(pipHeading, pipHint, pipKeepLabel, pipHideLabel);
     anchor.after(panel, wallPanel, wakePanel, wavePanel);
+    wavePanel.after(pipPanel);   /* 📌 trk263：画中画の設定は 🌊 の隣 */
     core.on("language", () => { syncVideoKeysUI(); syncWallSettingsUI(); });
     syncVideoKeysUI(); syncWallSettingsUI();
   }

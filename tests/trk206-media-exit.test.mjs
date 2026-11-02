@@ -42,11 +42,13 @@ test("trk206: leaving the player keeps the song playing by default", () => {
 
 test("trk206: closeMedia pauses only when the plan says so, and reloads only for the mystery setting", () => {
   const body = src.match(/function closeMedia\(restore = true\) \{[\s\S]*?\n\}/)[0];
-  assert.match(body, /const exitPlan = mediaExitPlan\(\{[\s\S]{0,240}?close: restore === true, phase: core\.phase,[\s\S]{0,160}?reloadOnExit: core\.settings\.mediaReloadOnExit === true,[\s\S]{0,160}?previewEnabled: core\.settings\.previewEnabled === true,/);
+  /* 📌 trk263：画中画を残すときは「keep」へ寄せるので、宣言は let（判断そのものは mediaExitPlan のまま） */
+  assert.match(body, /let exitPlan = mediaExitPlan\(\{[\s\S]{0,240}?close: restore === true, phase: core\.phase,[\s\S]{0,160}?reloadOnExit: core\.settings\.mediaReloadOnExit === true,[\s\S]{0,160}?previewEnabled: core\.settings\.previewEnabled === true,/);
+  assert.match(body, /if \(keepPip\) exitPlan = "keep";/, "画中画を残すときは止めない（trk263）");
   assert.match(body, /if \(exitPlan !== "keep"\) core\.video\.pause\(\);/, "流すときは止めない");
   assert.ok(!/saveMediaPosition\(\); core\.video\.pause\(\);/.test(body), "閉じるたびに必ず止める古い行は消す");
   assert.match(body, /if \(exitPlan === "reload" && typeof startPreview === "function"\) setTimeout\(window\.Trk\.library\.startPreview, 50\);/, "鳴らし直すのは再読込のときだけ");
-  assert.match(body, /else if \(exitPlan === "keep" && window\.Trk\.library && typeof window\.Trk\.library\.previewContinue === "function"\) window\.Trk\.library\.previewContinue\(\);/, "流すときは音量だけ戻す");
+  assert.match(body, /else if \(exitPlan === "keep" && !keepPip && window\.Trk\.library && typeof window\.Trk\.library\.previewContinue === "function"\) window\.Trk\.library\.previewContinue\(\);/, "流すときは音量だけ戻す（画中画の間は下げない）");
   assert.ok(!/if \(restore && core\.phase === "title" && core\.settings\.previewEnabled/.test(src), "古い「閉じたら必ずプレビューを鳴らし直す」分岐は残さない");
   assert.match(src, /mediaExitPlan \};/, "テスト用に公開する（window.TrkMediaPlayer.mediaExitPlan）");
 });
