@@ -35,6 +35,16 @@
 | 推奨 A-1（「安定版を切る」を道具にする） | **trk253 に入れました**：`tools/make-stable.mjs`。追跡ファイル497点（`tools/`・`tests/` も含む鏡）を上流クローンへ写し、`trk-PWA`→`trk`（スコープ印 `trk-pwa`→`trk` も）を反転して差分を出す。**既定は見るだけで、`--apply` で書き込み＋`git add -A`（上流の検査は `git ls-files` を見ます）**、`--prune` で上流専用ファイルも削除、`--cache=` で版名。**push・PR はしません**（main に直接 push しないが約束）。実測：上流 main をミラーにして**上流側の `npm run check` = 1280 pass / 0 fail**、二重適用は 追加0・更新0。道としては **①④を上流へ別当てもなく運べる**ので、安定版の初回更新はこちらが本筋になります（`backport-trk-scope-tag.mjs` は「上流を触らず直す」用のまま残す） |
 | 実機の通し（記録シート §1・§2・§3・§4） | **空さんの手**。特に §3（同居）は④が要るかの実地確認になります |
 
+**2026-11-02 午後の追記（返事15 で先方が r9 を出した）**：必須3は**先方がデータ側で直した**（雑誌の飾りの見出しを `TrkHinaMincho` 400 にし、`hina-mincho.stpack` をその組のパックに追加）。こちら trk254 で写しを目録から生成する形に作り直し、r9 を反映しました（trk253 の説明変更は目録どおりに戻した）。推奨 C-3（写しが倉庫の固定版と同じかを見る検査）も `tests/trk254-typography-copy.test.mjs` ＋ `tools/sync-typography-catalog.mjs --against=main --check` として入れました。B-9 の `TRK_PWA_REF` は `d93d98b`（trk252 まで）に上がっていることを実測（`trk-Avatar-Library/.github/workflows/check.yml:18`）。
+
+## 3.5 判断メモ（2026-11-02・空さん）
+
+**上流 `trk` への適用（①〜④・安定版の初回更新）は「trk-PWA が完成してからの材料」**と判断しました。なので：
+
+- PR は打ちません（App に `trk` を足す依頼も取り下げ）。`tools/backport-trk-scope-tag.mjs`（①〜④）と `tools/make-stable.mjs`（鏡）とこの文書は**置いておく**だけ
+- trk-PWA 側の自衛（trk252 の `trkPWA-` 接頭辞／trk247 の「足すだけ」保存）で**うちは壊れない**ので、実害待ちで構いません
+- 実機確認と PWA の仕上げが終わったら、①〜④または鏡のどちらかで上流へ流す（順序は `ORIGIN-TRK-NEXUS-2026-11-02.md` §6 と `UPSTREAM-TRK-SCOPE-TAG-2026-11-02.md`）
+
 ## 4. 判断項目への答え（レビュー §4 の表に対するこちらの見解）
 
 1〜9 の答え案は**すべて同意**です。追加で1つだけ補足：

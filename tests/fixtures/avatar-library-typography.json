@@ -1,0 +1,1228 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-01",
+  "about": "書体の組み合わせと、役ごとの設定（エディターの細分化案）の材料。パックの中身は変えていません。組（pairings）は段階を持ちません——段階（presets）は利用者の設定です。sampleLimits は、見本ページと縮刷版に出す文の長さの上限（見本用 woff2 と同じ範囲）。",
+  "base": 16,
+  "slots": [
+    {
+      "id": "display",
+      "label": "題字（だいじ）",
+      "where": "ステージ名・リザルトの大きな文字",
+      "purpose": "1 画面に 1 つだけ。比率で決める"
+    },
+    {
+      "id": "heading",
+      "label": "見出し",
+      "where": "曲名・セクション名・ボタンの大見出し",
+      "purpose": "題字の 1 段下。太さで差をつける"
+    },
+    {
+      "id": "body",
+      "label": "本文",
+      "where": "説明文・設定の文章",
+      "purpose": "いちばん長く読む。読みやすさ優先"
+    },
+    {
+      "id": "caption",
+      "label": "注記",
+      "where": "キーの表示・時刻・小さな補足",
+      "purpose": "本文より 1 段小さく。字間は広めに"
+    },
+    {
+      "id": "numeral",
+      "label": "数字",
+      "where": "スコア・コンボ・％",
+      "purpose": "桁が揃うと読みやすい。数字だけ別書体にできる"
+    },
+    {
+      "id": "accent",
+      "label": "差し色",
+      "where": "PERFECT / CLEAR など 1 語",
+      "purpose": "めったに出さない。出たときだけ効く"
+    }
+  ],
+  "scales": [
+    {
+      "id": "1.125",
+      "ratio": 1.125,
+      "label": "控えめ（1.125）",
+      "feel": "差が小さく、画面が落ち着く",
+      "useFor": "情報の多い設定画面・一覧",
+      "sizes": {
+        "caption": 0.889,
+        "body": 1,
+        "heading": 1.125,
+        "display": 1.424
+      }
+    },
+    {
+      "id": "1.2",
+      "ratio": 1.2,
+      "label": "ふつう（1.2）",
+      "feel": "見出しが少しだけ大きい",
+      "useFor": "ふだん使い・説明の多い画面",
+      "sizes": {
+        "caption": 0.833,
+        "body": 1,
+        "heading": 1.2,
+        "display": 1.728
+      }
+    },
+    {
+      "id": "1.25",
+      "ratio": 1.25,
+      "label": "しっかり（1.25）",
+      "feel": "見出しと本文の差が分かる（既定）",
+      "useFor": "幅のひろい画面・読み物",
+      "sizes": {
+        "caption": 0.8,
+        "body": 1,
+        "heading": 1.25,
+        "display": 1.953
+      }
+    },
+    {
+      "id": "1.333",
+      "ratio": 1.333,
+      "label": "はっきり（1.333）",
+      "feel": "題字が主役になる",
+      "useFor": "あいさつ・リザルト・告知",
+      "sizes": {
+        "caption": 0.75,
+        "body": 1,
+        "heading": 1.333,
+        "display": 2.369
+      }
+    },
+    {
+      "id": "1.5",
+      "ratio": 1.5,
+      "label": "とても強い（1.5）",
+      "feel": "題字だけが目に入る",
+      "useFor": "1 語だけ見せたいとき",
+      "sizes": {
+        "caption": 0.667,
+        "body": 1,
+        "heading": 1.5,
+        "display": 3.375
+      }
+    }
+  ],
+  "tracking": [
+    {
+      "target": "display",
+      "min": -0.02,
+      "max": 0.04,
+      "default": 0.0,
+      "unit": "em",
+      "why": "大きい文字は詰めると締まる（詰めすぎは崩れる）"
+    },
+    {
+      "target": "heading",
+      "min": 0.0,
+      "max": 0.08,
+      "default": 0.02,
+      "unit": "em",
+      "why": "見出しは少し開けると上品"
+    },
+    {
+      "target": "body",
+      "min": 0.0,
+      "max": 0.06,
+      "default": 0.02,
+      "unit": "em",
+      "why": "ゴシックは開けめ、明朝は素のまま"
+    },
+    {
+      "target": "caption",
+      "min": 0.02,
+      "max": 0.12,
+      "default": 0.06,
+      "unit": "em",
+      "why": "小さい字は開けて読ませる"
+    }
+  ],
+  "leading": [
+    {
+      "target": "display",
+      "min": 0.95,
+      "max": 1.2,
+      "default": 1.1,
+      "why": "題字は行間を詰める"
+    },
+    {
+      "target": "heading",
+      "min": 1.2,
+      "max": 1.5,
+      "default": 1.35,
+      "why": "見出しは少し余白を"
+    },
+    {
+      "target": "body",
+      "min": 1.6,
+      "max": 2.1,
+      "default": 1.8,
+      "why": "日本語の本文は 1.7〜1.9 が読みやすい"
+    },
+    {
+      "target": "caption",
+      "min": 1.3,
+      "max": 1.6,
+      "default": 1.5,
+      "why": "注記は詰めすぎない"
+    }
+  ],
+  "presets": [
+    {
+      "id": "one",
+      "label": "ひとつだけ（いまのアプリ）",
+      "fields": [
+        "font"
+      ],
+      "slots": [
+        "display"
+      ],
+      "note": "スキンの font 1 つを全部に使う。trk241 までの動き。何も壊れない"
+    },
+    {
+      "id": "pair",
+      "label": "見出しと本文の 2 役",
+      "fields": [
+        "display",
+        "body"
+      ],
+      "slots": [
+        "display",
+        "heading",
+        "body",
+        "caption"
+      ],
+      "note": "見出し用・本文用の 2 つ。組み合わせの基本（見出し＝明朝／本文＝ゴシック など）"
+    },
+    {
+      "id": "roles",
+      "label": "5 役に分ける",
+      "fields": [
+        "display",
+        "heading",
+        "body",
+        "caption",
+        "accent"
+      ],
+      "slots": [
+        "display",
+        "heading",
+        "body",
+        "caption",
+        "accent"
+      ],
+      "note": "役ごとに family・太さ・倍率・字間・行間を持つ。この目録の提案"
+    },
+    {
+      "id": "digits",
+      "label": "数字だけ別",
+      "fields": [
+        "numeral"
+      ],
+      "slots": [
+        "numeral"
+      ],
+      "note": "スコアの数字だけ等幅寄りの書体に。5 役に足す形でも使える"
+    }
+  ],
+  "pairings": [
+    {
+      "id": "shinbun",
+      "name": "新聞の顔",
+      "why": "Noto Serif の太字を題字に、本文は Noto Sans。いちばん間違いの少ない組み合わせ",
+      "useFor": "ニュース・お知らせ・説明の多い画面",
+      "trkUse": "オーソドックスな和風曲・演歌・バラード",
+      "tags": [
+        "定番",
+        "明朝",
+        "読みやすい"
+      ],
+      "scale": "1.25",
+      "slots": {
+        "display": {
+          "pack": "font-packs/noto-serif-jp.stpack",
+          "family": "TrkNotoSerifJP",
+          "weight": 700
+        },
+        "heading": {
+          "pack": "font-packs/noto-serif-jp.stpack",
+          "family": "TrkNotoSerifJP",
+          "weight": 700
+        },
+        "body": {
+          "pack": "font-packs/noto-sans-jp.stpack",
+          "family": "TrkNotoSansJP",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/noto-sans-jp.stpack",
+          "family": "TrkNotoSansJP",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/noto-sans-jp.stpack",
+          "family": "TrkNotoSansJP",
+          "weight": 500
+        },
+        "accent": {
+          "pack": "font-packs/noto-serif-jp.stpack",
+          "family": "TrkNotoSerifJP",
+          "weight": 700
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "けふの一曲",
+        "heading": "きょうの記録",
+        "body": "むずかしいところは、ゆっくりでいい。指が覚えるまで。",
+        "caption": "SHIFT キーで選曲",
+        "numeral": "98.76%",
+        "accent": "PERFECT"
+      },
+      "packs": [
+        "font-packs/noto-sans-jp.stpack",
+        "font-packs/noto-serif-jp.stpack"
+      ]
+    },
+    {
+      "id": "shigoto",
+      "name": "まじめな仕事",
+      "why": "Zen Kaku を軸に、太さだけで差をつける。迷ったらここへ戻る",
+      "useFor": "設定画面・一覧・ふだん使い",
+      "trkUse": "どんな曲でも。迷ったときの既定",
+      "tags": [
+        "角ゴ",
+        "定番",
+        "軽い"
+      ],
+      "scale": "1.2",
+      "slots": {
+        "display": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 700
+        },
+        "heading": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 700
+        },
+        "body": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/noto-sans-jp.stpack",
+          "family": "TrkNotoSansJP",
+          "weight": 500
+        },
+        "accent": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 700
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "設定",
+        "heading": "音と表示",
+        "body": "音量・判定・表示の大きさを、ここでまとめて変えられます。",
+        "caption": "変更はすぐに反映されます",
+        "numeral": "1,024",
+        "accent": "保存しました"
+      },
+      "packs": [
+        "font-packs/noto-sans-jp.stpack",
+        "font-packs/zen-kaku.stpack"
+      ]
+    },
+    {
+      "id": "ryokan",
+      "name": "旅館のしおり",
+      "why": "Shippori の太字題字に、Zen Old Mincho の本文。和風でも読める",
+      "useFor": "和風の紹介・しおり・季節の挨拶",
+      "trkUse": "和風の曲・季節もの・旅情",
+      "tags": [
+        "和風",
+        "明朝",
+        "余白"
+      ],
+      "scale": "1.333",
+      "slots": {
+        "display": {
+          "pack": "font-packs/shippori-mincho.stpack",
+          "family": "TrkShipporiMincho",
+          "weight": 700
+        },
+        "heading": {
+          "pack": "font-packs/shippori-mincho.stpack",
+          "family": "TrkShipporiMincho",
+          "weight": 400
+        },
+        "body": {
+          "pack": "font-packs/zen-old-mincho.stpack",
+          "family": "TrkZenOldMincho",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/sawarabi-mincho.stpack",
+          "family": "TrkSawarabiMincho",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/noto-sans-jp.stpack",
+          "family": "TrkNotoSansJP",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/yuji-syuku.stpack",
+          "family": "TrkYujiSyuku",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "秋の宿",
+        "heading": "お品書き",
+        "body": "山の向こうから、涼しい風が下りてきます。今夜は静かに。",
+        "caption": "受付 15:00〜20:00",
+        "numeral": "2,480",
+        "accent": "一期一会"
+      },
+      "packs": [
+        "font-packs/noto-sans-jp.stpack",
+        "font-packs/sawarabi-mincho.stpack",
+        "font-packs/shippori-mincho.stpack",
+        "font-packs/yuji-syuku.stpack",
+        "font-packs/zen-old-mincho.stpack"
+      ]
+    },
+    {
+      "id": "kissa",
+      "name": "喫茶とサロン",
+      "why": "飾り明朝の題字に、丸ゴの本文。かわいくても読みやすい",
+      "useFor": "カフェ・サロン・手づくり品の紹介",
+      "trkUse": "ジャズ・ボサノバ・カフェ系のスキン",
+      "tags": [
+        "かわいい",
+        "丸ゴ",
+        "明朝"
+      ],
+      "scale": "1.25",
+      "slots": {
+        "display": {
+          "pack": "font-packs/kaisei-decol.stpack",
+          "family": "TrkKaiseiDecol",
+          "weight": 700
+        },
+        "heading": {
+          "pack": "font-packs/kaisei-decol.stpack",
+          "family": "TrkKaiseiDecol",
+          "weight": 400
+        },
+        "body": {
+          "pack": "font-packs/maru-go.stpack",
+          "family": "TrkZenMaru",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/m-plus-rounded.stpack",
+          "family": "TrkMPlusRounded",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/maru-go.stpack",
+          "family": "TrkZenMaru",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/yomogi.stpack",
+          "family": "TrkYomogi",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "喫茶 こもれび",
+        "heading": "本日のケーキ",
+        "body": "焼きたてのスコーンと、少し苦めのコーヒーをどうぞ。",
+        "caption": "11:00〜18:00",
+        "numeral": "680",
+        "accent": "ごゆっくり"
+      },
+      "packs": [
+        "font-packs/kaisei-decol.stpack",
+        "font-packs/m-plus-rounded.stpack",
+        "font-packs/maru-go.stpack",
+        "font-packs/yomogi.stpack"
+      ]
+    },
+    {
+      "id": "kodomo",
+      "name": "こどもとイベント",
+      "why": "もちもちの題字に、丸ゴの本文。にぎやかでも崩れない",
+      "useFor": "子ども向け・イベント・お祭り",
+      "trkUse": "童謡・アニメ曲・明るいポップ",
+      "tags": [
+        "ポップ",
+        "丸ゴ",
+        "元気"
+      ],
+      "scale": "1.333",
+      "slots": {
+        "display": {
+          "pack": "font-packs/mochiy-pop.stpack",
+          "family": "TrkMochiyPop",
+          "weight": 400
+        },
+        "heading": {
+          "pack": "font-packs/potta-one.stpack",
+          "family": "TrkPottaOne",
+          "weight": 400
+        },
+        "body": {
+          "pack": "font-packs/m-plus-rounded.stpack",
+          "family": "TrkMPlusRounded",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/m-plus-rounded.stpack",
+          "family": "TrkMPlusRounded",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/potta-one.stpack",
+          "family": "TrkPottaOne",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/hachi-maru-pop.stpack",
+          "family": "TrkHachiMaru",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "あきまつり",
+        "heading": "やたい 5 つ あつまれ！",
+        "body": "ヨーヨーつりに、わたあめ。くじ引きもあります。",
+        "caption": "10 月 18 日（土）",
+        "numeral": "120 円",
+        "accent": "たのしみ！"
+      },
+      "packs": [
+        "font-packs/hachi-maru-pop.stpack",
+        "font-packs/m-plus-rounded.stpack",
+        "font-packs/mochiy-pop.stpack",
+        "font-packs/potta-one.stpack"
+      ]
+    },
+    {
+      "id": "poster",
+      "name": "セールのポスター",
+      "why": "Dela の極太を題字に。離れていても読める",
+      "useFor": "セール・告知・LP の大見出し",
+      "trkUse": "盛り上がる曲・セール的なスキン",
+      "tags": [
+        "極太",
+        "ポップ",
+        "見出し"
+      ],
+      "scale": "1.5",
+      "slots": {
+        "display": {
+          "pack": "font-packs/dela-gothic.stpack",
+          "family": "TrkDelaGothic",
+          "weight": 400
+        },
+        "heading": {
+          "pack": "font-packs/potta-one.stpack",
+          "family": "TrkPottaOne",
+          "weight": 400
+        },
+        "body": {
+          "pack": "font-packs/noto-sans-jp.stpack",
+          "family": "TrkNotoSansJP",
+          "weight": 700
+        },
+        "caption": {
+          "pack": "font-packs/noto-sans-jp.stpack",
+          "family": "TrkNotoSansJP",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/train-one.stpack",
+          "family": "TrkTrainOne",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/rocknroll-one.stpack",
+          "family": "TrkRocknRoll",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "全品半額",
+        "heading": "本日 18 時まで",
+        "body": "店じまいの前に、どうぞ。レジでこの画面を見せてください。",
+        "caption": "＊ 一部の商品をのぞきます",
+        "numeral": "50%",
+        "accent": "SOLD OUT"
+      },
+      "packs": [
+        "font-packs/dela-gothic.stpack",
+        "font-packs/noto-sans-jp.stpack",
+        "font-packs/potta-one.stpack",
+        "font-packs/rocknroll-one.stpack",
+        "font-packs/train-one.stpack"
+      ]
+    },
+    {
+      "id": "neon",
+      "name": "夜のネオン",
+      "why": "線の書体を題字に、本文はすっきり角ゴ。暗い画面で効く",
+      "useFor": "夜のイベント・クラブ・ゲームの題字",
+      "trkUse": "EDM・夜の曲・サイバー系",
+      "tags": [
+        "ネオン",
+        "見出し",
+        "夜"
+      ],
+      "scale": "1.333",
+      "slots": {
+        "display": {
+          "pack": "font-packs/rampart-one.stpack",
+          "family": "TrkRampart",
+          "weight": 400
+        },
+        "heading": {
+          "pack": "font-packs/rocknroll-one.stpack",
+          "family": "TrkRocknRoll",
+          "weight": 400
+        },
+        "body": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/rampart-one.stpack",
+          "family": "TrkRampart",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/rampart-one.stpack",
+          "family": "TrkRampart",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "MIDNIGHT",
+        "heading": "今夜 23 時から",
+        "body": "入り口は裏通り。静かに、音をたてずに来てください。",
+        "caption": "23:00 - 05:00",
+        "numeral": "vol.7",
+        "accent": "CLOSED"
+      },
+      "packs": [
+        "font-packs/rampart-one.stpack",
+        "font-packs/rocknroll-one.stpack",
+        "font-packs/zen-kaku.stpack"
+      ]
+    },
+    {
+      "id": "denshi",
+      "name": "電子ゲーム",
+      "why": "ドットの書体を題字と数字に。本文と注記は角ゴにして読ませる",
+      "useFor": "レトロゲーム風・ドットの画面",
+      "trkUse": "チップチューン・8bit・レトロゲーム曲",
+      "tags": [
+        "ドット",
+        "レトロ",
+        "数字"
+      ],
+      "scale": "1.25",
+      "slots": {
+        "display": {
+          "pack": "font-packs/dotgothic.stpack",
+          "family": "TrkDotGothic",
+          "weight": 400
+        },
+        "heading": {
+          "pack": "font-packs/dotgothic.stpack",
+          "family": "TrkDotGothic",
+          "weight": 400
+        },
+        "body": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/dotgothic.stpack",
+          "family": "TrkDotGothic",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/dotgothic.stpack",
+          "family": "TrkDotGothic",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "STAGE 3",
+        "heading": "つぎの かんもん",
+        "body": "こうげきは はやめに。ひかりの つぶを よけて。",
+        "caption": "SCORE 120,400",
+        "numeral": "1,024",
+        "accent": "GAME OVER"
+      },
+      "packs": [
+        "font-packs/dotgothic.stpack",
+        "font-packs/zen-kaku.stpack"
+      ]
+    },
+    {
+      "id": "tegami",
+      "name": "手紙とエッセイ",
+      "why": "Klee の本文に、Yomogi の注記。紙の上の文章の感じ",
+      "useFor": "エッセイ・手紙・日記のような画面",
+      "trkUse": "アコースティック・しっとりした曲",
+      "tags": [
+        "手書き",
+        "本文",
+        "静か"
+      ],
+      "scale": "1.25",
+      "slots": {
+        "display": {
+          "pack": "font-packs/klee-one.stpack",
+          "family": "TrkKleeOne",
+          "weight": 600
+        },
+        "heading": {
+          "pack": "font-packs/klee-one.stpack",
+          "family": "TrkKleeOne",
+          "weight": 600
+        },
+        "body": {
+          "pack": "font-packs/klee-one.stpack",
+          "family": "TrkKleeOne",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/yomogi.stpack",
+          "family": "TrkYomogi",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/klee-one.stpack",
+          "family": "TrkKleeOne",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/new-tegomin.stpack",
+          "family": "TrkNewTegomin",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "はじめての一曲",
+        "heading": "三月のはなし",
+        "body": "うまく言えないけれど、きのうの夕方の空がきれいだった。",
+        "caption": "2026.11.01",
+        "numeral": "2026",
+        "accent": "またね"
+      },
+      "packs": [
+        "font-packs/klee-one.stpack",
+        "font-packs/new-tegomin.stpack",
+        "font-packs/yomogi.stpack"
+      ]
+    },
+    {
+      "id": "monogatari",
+      "name": "昔話と怪談",
+      "why": "毛筆の題字に、重みのある明朝。読み聞かせのように",
+      "useFor": "読み聞かせ・怪談・和風の読み物",
+      "trkUse": "和風ホラー・民謡・語りもの",
+      "tags": [
+        "和風",
+        "毛筆",
+        "読み物"
+      ],
+      "scale": "1.333",
+      "slots": {
+        "display": {
+          "pack": "font-packs/yuji-syuku.stpack",
+          "family": "TrkYujiSyuku",
+          "weight": 400
+        },
+        "heading": {
+          "pack": "font-packs/zen-old-mincho.stpack",
+          "family": "TrkZenOldMincho",
+          "weight": 700
+        },
+        "body": {
+          "pack": "font-packs/kaisei-tokumin.stpack",
+          "family": "TrkKaiseiTokumin",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/kaisei-tokumin.stpack",
+          "family": "TrkKaiseiTokumin",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/kaisei-tokumin.stpack",
+          "family": "TrkKaiseiTokumin",
+          "weight": 500
+        },
+        "accent": {
+          "pack": "font-packs/zen-kurenaido.stpack",
+          "family": "TrkZenKurenaido",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "むかしむかし",
+        "heading": "山の奥の一軒家",
+        "body": "ある晩、囲炉裏の火がふいに消えて、あたりが静まりました。",
+        "caption": "— 語り部より —",
+        "numeral": "第七夜",
+        "accent": "おやすみ"
+      },
+      "packs": [
+        "font-packs/kaisei-tokumin.stpack",
+        "font-packs/yuji-syuku.stpack",
+        "font-packs/zen-kurenaido.stpack",
+        "font-packs/zen-old-mincho.stpack"
+      ]
+    },
+    {
+      "id": "tetsudo",
+      "name": "駅と鉄道",
+      "why": "駅名標の極太を題字に。数字も同じ書体で揃える",
+      "useFor": "旅・路線・時刻表のような画面",
+      "trkUse": "鉄道もの・旅の曲・行進曲",
+      "tags": [
+        "見出し",
+        "元気",
+        "旅"
+      ],
+      "scale": "1.25",
+      "slots": {
+        "display": {
+          "pack": "font-packs/train-one.stpack",
+          "family": "TrkTrainOne",
+          "weight": 400
+        },
+        "heading": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 700
+        },
+        "body": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/stick.stpack",
+          "family": "TrkStick",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/train-one.stpack",
+          "family": "TrkTrainOne",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/stick.stpack",
+          "family": "TrkStick",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "みなと駅",
+        "heading": "各駅停車 ゆき",
+        "body": "つぎの駅で、海が見えます。荷物をお忘れなく。",
+        "caption": "2 番線から発車します",
+        "numeral": "7:42",
+        "accent": "まもなく"
+      },
+      "packs": [
+        "font-packs/stick.stpack",
+        "font-packs/train-one.stpack",
+        "font-packs/zen-kaku.stpack"
+      ]
+    },
+    {
+      "id": "kottou",
+      "name": "古道具と活字",
+      "why": "古い活字の題字に、アンティーク体の本文。活版の紙面のように静かに",
+      "useFor": "アンティーク・古本・記録のような画面",
+      "trkUse": "アンティーク・昭和の曲・落ち着いた曲",
+      "tags": [
+        "レトロ",
+        "和風",
+        "余白"
+      ],
+      "scale": "1.333",
+      "slots": {
+        "display": {
+          "pack": "font-packs/zen-antique.stpack",
+          "family": "TrkZenAntique",
+          "weight": 400
+        },
+        "heading": {
+          "pack": "font-packs/zen-old-mincho.stpack",
+          "family": "TrkZenOldMincho",
+          "weight": 700
+        },
+        "body": {
+          "pack": "font-packs/shippori-antique.stpack",
+          "family": "TrkShipporiAntique",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/zen-antique.stpack",
+          "family": "TrkZenAntique",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/zen-antique.stpack",
+          "family": "TrkZenAntique",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/yusei-magic.stpack",
+          "family": "TrkYuseiMagic",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "古道具 たなごころ",
+        "heading": "今月の入荷",
+        "body": "百年前の、目盛りの消えた秤です。重さはもう量れません。",
+        "caption": "在庫 1 点・値段は応談",
+        "numeral": "百年",
+        "accent": "売約済"
+      },
+      "packs": [
+        "font-packs/shippori-antique.stpack",
+        "font-packs/yusei-magic.stpack",
+        "font-packs/zen-antique.stpack",
+        "font-packs/zen-old-mincho.stpack"
+      ]
+    },
+    {
+      "id": "zasshi",
+      "name": "雑誌の飾り",
+      "why": "飾り明朝の題字に、ひな明朝の見出し。紙の雑誌の感じ",
+      "useFor": "読み物・コラム・特集の見出し",
+      "trkUse": "ポップス・特集もののスキン",
+      "tags": [
+        "かわいい",
+        "明朝",
+        "読み物"
+      ],
+      "scale": "1.333",
+      "slots": {
+        "display": {
+          "pack": "font-packs/kaisei-decol.stpack",
+          "family": "TrkKaiseiDecol",
+          "weight": 700
+        },
+        "heading": {
+          "pack": "font-packs/hina-mincho.stpack",
+          "family": "TrkHinaMincho",
+          "weight": 400
+        },
+        "body": {
+          "pack": "font-packs/shippori-mincho.stpack",
+          "family": "TrkShipporiMincho",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/shippori-mincho.stpack",
+          "family": "TrkShipporiMincho",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/kaisei-decol.stpack",
+          "family": "TrkKaiseiDecol",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/hachi-maru-pop.stpack",
+          "family": "TrkHachiMaru",
+          "weight": 400
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "特集：余白のつくりかた",
+        "heading": "あいだを、あける",
+        "body": "文字と文字のあいだを少し広げるだけで、静かに見えます。",
+        "caption": "撮影 さとう／文 すずき",
+        "numeral": "第 12 号",
+        "accent": "続きを読む"
+      },
+      "packs": [
+        "font-packs/hachi-maru-pop.stpack",
+        "font-packs/hina-mincho.stpack",
+        "font-packs/kaisei-decol.stpack",
+        "font-packs/shippori-mincho.stpack"
+      ]
+    },
+    {
+      "id": "shizuka",
+      "name": "しずかな読み物",
+      "why": "古い活字風のアンティーク体を題字に、Noto Serif の本文。長く読むための組み合わせ",
+      "useFor": "長文・記録・落ち着いた読み物",
+      "trkUse": "長い曲・静かな曲・読ませる画面",
+      "tags": [
+        "読みやすい",
+        "明朝",
+        "本文"
+      ],
+      "scale": "1.25",
+      "slots": {
+        "display": {
+          "pack": "font-packs/shippori-antique.stpack",
+          "family": "TrkShipporiAntique",
+          "weight": 400
+        },
+        "heading": {
+          "pack": "font-packs/kaisei-tokumin.stpack",
+          "family": "TrkKaiseiTokumin",
+          "weight": 500
+        },
+        "body": {
+          "pack": "font-packs/noto-serif-jp.stpack",
+          "family": "TrkNotoSerifJP",
+          "weight": 400
+        },
+        "caption": {
+          "pack": "font-packs/noto-serif-jp.stpack",
+          "family": "TrkNotoSerifJP",
+          "weight": 400
+        },
+        "numeral": {
+          "pack": "font-packs/noto-serif-jp.stpack",
+          "family": "TrkNotoSerifJP",
+          "weight": 400
+        },
+        "accent": {
+          "pack": "font-packs/zen-kaku.stpack",
+          "family": "TrkZenKaku",
+          "weight": 700
+        }
+      },
+      "tracking": {
+        "display": 0.0,
+        "heading": 0.02,
+        "body": 0.02,
+        "caption": 0.06
+      },
+      "leading": {
+        "display": 1.1,
+        "heading": 1.35,
+        "body": 1.8,
+        "caption": 1.5
+      },
+      "sample": {
+        "display": "しずかな午後",
+        "heading": "長い文章を読むとき",
+        "body": "行間を広げ、一行を短くすると、目は次の行へ進みます。",
+        "caption": "読了までおよそ 3 分",
+        "numeral": "1,200 字",
+        "accent": "よみました"
+      },
+      "packs": [
+        "font-packs/kaisei-tokumin.stpack",
+        "font-packs/noto-serif-jp.stpack",
+        "font-packs/shippori-antique.stpack",
+        "font-packs/zen-kaku.stpack"
+      ]
+    }
+  ],
+  "sampleLimits": {
+    "display": 14,
+    "heading": 20,
+    "body": 30,
+    "caption": 14
+  }
+}
