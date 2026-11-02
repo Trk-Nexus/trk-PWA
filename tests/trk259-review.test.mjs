@@ -152,9 +152,14 @@ describe("trk259 R5 許可リストが嘘をつかない", () => {
 
 /* ---------- 版・文書 ---------- */
 describe("trk259 版と文書", () => {
-  test("cache と meta が trk259 でそろっている", () => {
-    assert.match(swSrc, /const CACHE = "trk-v2026\.11\.02-trk259";/);
-    assert.match(html, /<meta name="trk-build" content="trk259">/);
+  /* 版名を直書きすると版を上げるたびに落ちる（trk258 で同じ失敗をした）。
+     trk259 以降は「sw の CACHE と meta が**そろっている**」ことを見る。 */
+  test("cache と meta の版がそろっている", () => {
+    const cache = (swSrc.match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
+    const meta = (html.match(/<meta name="trk-build" content="(trk\d+)">/) || [])[1];
+    assert.ok(cache, "sw.js の CACHE に版名がある");
+    assert.ok(meta, "index.html に trk-build がある");
+    assert.equal(cache, meta, `sw=${cache} / meta=${meta} が食い違っている`);
   });
 
   test("手順書の期待値が今の実測（レビュー 01 §5）になっている", () => {
