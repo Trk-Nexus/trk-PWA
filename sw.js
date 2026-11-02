@@ -80,8 +80,11 @@
    自動字幕は trk では作らず、案内文書（docs/AUTO-CAPTIONS-TRK262-2026-11-02.md）と字幕パネルの ℹ にまとめました。
    📌 trk263（2026-11-02・画中画）：メディアプレーヤーを閉じても画中画（小窓）を残せるようにしました（既定オン）。
    残すときは再生を続け、音量も下げません。画中画を出している間は、プレーヤー側の映像を隠します（既定オン）。
-   詳しくは docs/VIEWER-TRK263-2026-11-02.md。 */
-const CACHE = "trk-v2026.11.02-trk263";
+   詳しくは docs/VIEWER-TRK263-2026-11-02.md。
+   📌 trk264（2026-11-02・Safari の画中画）：Safari の webkitSetPresentationMode でも入れるようにしました。
+   標準 API を先に試し、断られたら webkit へ。iPhone／iPad のホーム画面アプリでは押せない理由を出します。
+   詳しくは docs/VIEWER-TRK264-2026-11-02.md。 */
+const CACHE = "trk-v2026.11.02-trk264";
 const CACHE_PREFIX = "trk-";
 /* 🧭 trk252（2026-11-02）：CacheStorage に**実在させる名前**には `trkPWA-` を先頭に付けるようにしました。
    同じオリジンに別の trk!（上流 `/trk/` など）が在ると、相手が「`trk-` 始まりは全部消す」旧式の掃除を

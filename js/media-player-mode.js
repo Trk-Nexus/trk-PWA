@@ -33,9 +33,9 @@ Object.assign(TEXT.ja, {
   mediaVideoKeysHint:"メディアプレーヤー中の動画操作、逆再生、区間ループと、ゲーム中の背景動画の拡大・縮小をキーに割り当てます。ゲームの判定や記録は変わりません。",
   mediaVideoKeysReset:"↺ 動画キーを初期値に戻す", mediaVideoCapture0:"「動画を拡大」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture1:"「動画を縮小」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture2:"「再生速度を上げる」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture3:"「再生速度を下げる」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture4:"「再生／一時停止」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture5:"「逆再生」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture6:"「区間ループ」に割り当てるキーを押してください。ESCでキャンセル。", mediaVideoCapture7:"「壁紙／スクリーンセーバー」に割り当てるキーを押してください。ESCでキャンセル。",
   mediaVideoToastZoom:"動画ズーム {n}x", mediaVideoToastRate:"再生速度 {n}x",
-  mediaPip:"📌 画中画", mediaPipClose:"📌 画中画を終了", mediaPipUnsupported:"このブラウザは画中画に対応していません",
+  mediaPip:"📌 画中画", mediaPipClose:"📌 画中画を終了", mediaPipUnsupported:"このブラウザは画中画に対応していません", mediaPipHomeApp:"ホーム画面のアプリでは画中画を使えません（Safari で開くと使えます）", mediaPipFailed:"画中画を開けませんでした（動画を再生してから、もう一度お試しください）",
 mediaPipTitle:"📌 画中画（小窓）",
-  mediaPipHint:"画中画は、動画を画面の隅の小窓に映したまま別のことをできる機能です。小窓はブラウザーが持っているので、位置・大きさ・閉じるボタンはページからは変えられません（PC の Chrome／Edge／Safari。スマホは非対応）。",
+  mediaPipHint:"画中画は、動画を画面の隅の小窓に映したまま別のことをできる機能です。小窓はブラウザーが持っているので、位置・大きさ・閉じるボタンはページからは変えられません（PC の Chrome／Edge／Safari、iPhone／iPad の Safari。iPhone・iPad のホーム画面のアプリでは使えないことがあります）。",
   mediaPipKeep:"メディアプレーヤーを閉じても画中画を続ける", mediaPipHideStage:"画中画を出している間は、こちらの映像を隠す",
   mediaPipKeepOn:"📌 画中画で続けます（小窓の ✕ で終了）",
   mediaPipNotice:"📌 画中画で表示中", mediaPipShowHere:"ここにも表示", mediaPipHideHere:"こちらの絵を隠す",
@@ -77,9 +77,9 @@ Object.assign(TEXT.en, {
   mediaVideoKeysHint:"Assign keys for video zoom, reverse playback, A-B looping, and media-player controls. Game judgment and records are not changed.",
   mediaVideoKeysReset:"↺ Reset video keys", mediaVideoCapture0:"Press a key for “Zoom in”. ESC cancels.", mediaVideoCapture1:"Press a key for “Zoom out”. ESC cancels.", mediaVideoCapture2:"Press a key for “Speed up”. ESC cancels.", mediaVideoCapture3:"Press a key for “Slow down”. ESC cancels.", mediaVideoCapture4:"Press a key for “Play / pause”. ESC cancels.", mediaVideoCapture5:"Press a key for “Reverse”. ESC cancels.", mediaVideoCapture6:"Press a key for “A-B loop”. ESC cancels.", mediaVideoCapture7:"Press a key for “Wallpaper / screen saver”. ESC cancels.",
   mediaVideoToastZoom:"Video zoom {n}x", mediaVideoToastRate:"Playback speed {n}x",
-  mediaPip:"📌 Picture-in-picture", mediaPipClose:"📌 Exit picture-in-picture", mediaPipUnsupported:"This browser doesn't support picture-in-picture",
+  mediaPip:"📌 Picture-in-picture", mediaPipClose:"📌 Exit picture-in-picture", mediaPipUnsupported:"This browser doesn't support picture-in-picture", mediaPipHomeApp:"Picture-in-picture is not available in the Home Screen app (open it in Safari instead)", mediaPipFailed:"Could not open picture-in-picture (start the video and try again)",
 mediaPipTitle:"📌 Picture-in-picture",
-  mediaPipHint:"Picture-in-picture keeps the video in a small floating window while you do something else. The window belongs to the browser, so its position, size, and close button can't be changed from the page (desktop Chrome / Edge / Safari; not on phones).",
+  mediaPipHint:"Picture-in-picture keeps the video in a small floating window while you do something else. The window belongs to the browser, so its position, size, and close button cannot be changed from the page (Chrome / Edge / Safari on desktop, Safari on iPhone and iPad; it may not work in the Home Screen app on iPhone and iPad).",
   mediaPipKeep:"Keep picture-in-picture after closing the media player", mediaPipHideStage:"Hide the video here while picture-in-picture is showing",
   mediaPipKeepOn:"📌 Continuing in picture-in-picture (close the small window to stop)",
   mediaPipNotice:"📌 Showing in picture-in-picture", mediaPipShowHere:"Show here too", mediaPipHideHere:"Hide the video here",
@@ -119,9 +119,9 @@ Object.assign(TEXT.zh, {
   mediaVideoKeysHint:"为视频缩放、倒放、区间循环和媒体播放器操作分配按键。不会改变游戏判定或记录。",
   mediaVideoKeysReset:"↺ 恢复视频按键", mediaVideoCapture0:"请按下“放大视频”的按键。ESC取消。", mediaVideoCapture1:"请按下“缩小视频”的按键。ESC取消。", mediaVideoCapture2:"请按下“提高速度”的按键。ESC取消。", mediaVideoCapture3:"请按下“降低速度”的按键。ESC取消。", mediaVideoCapture4:"请按下“播放／暂停”的按键。ESC取消。", mediaVideoCapture5:"请按下“倒放”的按键。ESC取消。", mediaVideoCapture6:"请按下“区间循环”的按键。ESC取消。", mediaVideoCapture7:"请按下“壁纸／屏幕保护”的按键。ESC取消。",
   mediaVideoToastZoom:"视频缩放 {n}x", mediaVideoToastRate:"播放速度 {n}x",
-  mediaPip:"📌 画中画", mediaPipClose:"📌 退出画中画", mediaPipUnsupported:"此浏览器不支持画中画",
+  mediaPip:"📌 画中画", mediaPipClose:"📌 退出画中画", mediaPipUnsupported:"此浏览器不支持画中画", mediaPipHomeApp:"主屏幕应用中无法使用画中画（用 Safari 打开即可使用）", mediaPipFailed:"无法打开画中画（请先播放视频，然后再试一次）",
 mediaPipTitle:"📌 画中画（小窗）",
-  mediaPipHint:"画中画会把视频放在屏幕角落的小窗里，同时可以做别的事。小窗由浏览器管理，位置、大小和关闭按钮无法从页面更改（桌面版 Chrome / Edge / Safari；手机不支持）。",
+  mediaPipHint:"画中画会把视频放在屏幕角落的小窗里，同时可以做别的事。小窗由浏览器管理，位置、大小和关闭按钮无法从页面更改（桌面版 Chrome / Edge / Safari，iPhone / iPad 的 Safari；在 iPhone / iPad 的主屏幕应用中可能无法使用）。",
   mediaPipKeep:"关闭媒体播放器后仍保持画中画", mediaPipHideStage:"显示画中画时，隐藏这里的视频",
   mediaPipKeepOn:"📌 继续以画中画播放（点小窗的 ✕ 结束）",
   mediaPipNotice:"📌 正在画中画显示", mediaPipShowHere:"也在这里显示", mediaPipHideHere:"隐藏这里的视频",
@@ -161,9 +161,9 @@ Object.assign(TEXT.ko, {
   mediaVideoKeysHint:"동영상 확대·축소, 역재생, 구간 반복과 미디어 플레이어 조작 키를 지정합니다. 게임 판정과 기록은 바뀌지 않습니다.",
   mediaVideoKeysReset:"↺ 동영상 키 초기화", mediaVideoCapture0:"'동영상 확대'로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture1:"'동영상 축소'로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture2:"'재생 속도 높이기'로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture3:"'재생 속도 낮추기'로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture4:"'재생／일시정지'로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture5:"'역재생'으로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture6:"'구간 반복'으로 지정할 키를 누르세요. ESC로 취소.", mediaVideoCapture7:"'배경／스크린세이버'로 지정할 키를 누르세요. ESC로 취소.",
   mediaVideoToastZoom:"동영상 확대 {n}x", mediaVideoToastRate:"재생 속도 {n}x",
-  mediaPip:"📌 그림 속 그림", mediaPipClose:"📌 그림 속 그림 종료", mediaPipUnsupported:"이 브라우저는 그림 속 그림을 지원하지 않습니다",
+  mediaPip:"📌 그림 속 그림", mediaPipClose:"📌 그림 속 그림 종료", mediaPipUnsupported:"이 브라우저는 그림 속 그림을 지원하지 않습니다", mediaPipHomeApp:"홈 화면 앱에서는 그림 속 그림을 쓸 수 없습니다 (Safari에서 열면 쓸 수 있습니다)", mediaPipFailed:"그림 속 그림을 열지 못했습니다 (영상을 재생한 뒤 다시 시도해 주세요)",
 mediaPipTitle:"📌 그림 속 그림 (작은 창)",
-  mediaPipHint:"그림 속 그림은 영상을 화면 구석의 작은 창으로 띄워 두고 다른 작업을 할 수 있는 기능입니다. 작은 창은 브라우저가 관리하므로 위치·크기·닫기 버튼은 페이지에서 바꿀 수 없습니다(데스크톱 Chrome / Edge / Safari, 휴대폰은 미지원).",
+  mediaPipHint:"그림 속 그림은 영상을 화면 구석의 작은 창으로 띄워 두고 다른 작업을 할 수 있는 기능입니다. 작은 창은 브라우저가 관리하므로 위치·크기·닫기 버튼은 페이지에서 바꿀 수 없습니다(데스크톱 Chrome / Edge / Safari, iPhone / iPad의 Safari. iPhone·iPad 홈 화면 앱에서는 안 될 수 있습니다).",
   mediaPipKeep:"미디어 플레이어를 닫아도 그림 속 그림을 계속", mediaPipHideStage:"그림 속 그림이 떠 있는 동안 이쪽 영상 숨기기",
   mediaPipKeepOn:"📌 그림 속 그림으로 계속합니다 (작은 창의 ✕로 종료)",
   mediaPipNotice:"📌 그림 속 그림으로 표시 중", mediaPipShowHere:"여기에도 표시", mediaPipHideHere:"이쪽 영상 숨기기",
@@ -207,6 +207,7 @@ let maxNode = null;   /* 🖥 「全画面で表示」（js/video-max.js） */
 let pipNode = null, pipActive = false;                /* 📌 画中画（trk164） */
 /* 📌 trk263：画中画の案内（1行）と、「ここにも表示」を押したか（この画面だけ・保存しない） */
 let pipNotice = null, pipTextNode = null, pipHereNode = null, pipStopNode = null, pipStageShown = false;
+let pipPrefer = "";                                  /* 📌 trk264：前回通った画中画の API（"standard" / "webkit"）。保存はしない */
 let resumeNode = null;                                /* ⏪ スマート巻き戻しの選択（trk164） */
 let startZeroNode = null;                             /* ⏮ 常に最初から再生のチェック（trk193） */
 let wakeLock = null, wakeRequested = false;           /* 🔆 Screen Wake Lock（trk164） */
@@ -977,9 +978,44 @@ function renderQueue() {
    ・重い処理なので、表示しているときだけ取り込みを動かします。 */
 const interpStrengthValue = () => Math.max(0, Math.min(1, Number(core.settings.frameInterpStrength)));
 function hasVideoFrames() { return !!(core.videoReady && core.video && core.video.videoWidth > 0); }
-/* 📌 画中画（trk164）：動画を画面の隅に小さく最前面表示する。対応ブラウザだけで動く */
-function pipSupported() {
-  return !!(typeof document !== "undefined" && document.pictureInPictureEnabled && core.video && typeof core.video.requestPictureInPicture === "function");
+/* 📌 画中画（trk164 → trk264）：ブラウザーには2つの API がある。
+   標準（video.requestPictureInPicture／document.exitPictureInPicture）と、Safari の webkit
+   （video.webkitSetPresentationMode）。trk264 からは両方を見て、使えるほうで入る。 */
+function pipHomeApp() {
+  /* iPhone／iPad のホーム画面アプリ（standalone）では、標準 API があっても画中画に入れない
+     （WebKit bug 303885）。この環境では要素に聞く webkitSupportsPresentationMode が唯一の正しい答え。 */
+  try {
+    if (typeof navigator !== "undefined" && navigator.standalone === true) return true;
+    return typeof matchMedia === "function" && !!matchMedia("(display-mode: standalone)").matches;
+  } catch (_) { return false; }
+}
+function pipWebkitProbe() {
+  const v = core.video;
+  if (!v || typeof v.webkitSupportsPresentationMode !== "function") return undefined;
+  try {
+    /* Safari は「最初のフレームが出るまで対応を名乗らない」ので、読み込み前の false は「分からない」にする */
+    if (!(v.readyState >= 1)) return undefined;
+    const ok = v.webkitSupportsPresentationMode("picture-in-picture");
+    return ok === true ? true : ok === false ? false : undefined;
+  } catch (_) { return undefined; }
+}
+function pipState() {
+  const v = core.video || {};
+  const probe = pipWebkitProbe();
+  return {
+    standard: typeof v.requestPictureInPicture === "function",
+    /* ホーム画面アプリでは「あるのに必ず失敗する」標準 API を、要素の答え（false）に合わせて切る */
+    standardEnabled: !!(typeof document !== "undefined" && document.pictureInPictureEnabled !== false &&
+      !(pipHomeApp() && probe === false)),
+    webkit: typeof v.webkitSetPresentationMode === "function",
+    webkitProbe: probe,
+    prefer: pipPrefer,
+  };
+}
+function pipSupported() { return pipBackend(pipState()) !== ""; }
+/* 押せない理由（ホーム画面アプリだけは言い方を変える） */
+function pipUnsupportedKey() {
+  return pipHomeApp() && pipWebkitProbe() === false ? "mediaPipHomeApp" : "mediaPipUnsupported";
 }
 /* ==== 純粋な計算（trk263：画中画を残すか・こちらの映像を隠すか） ====
    ブラウザーを起動しないテスト（tests/trk263-pip.test.mjs）が、この範囲だけを切り出して読みます。 */
@@ -1005,25 +1041,91 @@ function pipNoticeVisible(st) {
   return v.open === true && v.pip === true && v.hideOnPip === true;
 }
 /* ==== 純粋な計算 ここまで ==== */
-function pipIsOn() {
-  return !!(pipActive || (typeof document !== "undefined" && document.pictureInPictureElement));
+/* ==== 純粋な計算（trk264：Safari の画中画をどの API で動かすか） ====
+   ブラウザーを起動しないテスト（tests/trk264-pip-safari.test.mjs）が、この範囲だけを切り出して読みます。 */
+/* 2つの API のどちらを使うか（"standard" / "webkit" / ""）。
+   st = { standard:標準 API がある, standardEnabled:pictureInPictureEnabled が false でない,
+          webkit:webkitSetPresentationMode がある,
+          webkitProbe:要素に聞いた答え（true/false/undefined＝まだ分からない）,
+          prefer:前回通ったほう } */
+function pipBackend(st) {
+  const v = st || {};
+  const standard = v.standard === true && v.standardEnabled !== false;
+  /* probe が false のときだけ webkit を諦める（undefined は「まだ分からない」＝使える扱い） */
+  const webkit = v.webkit === true && v.webkitProbe !== false;
+  if (v.prefer === "webkit" && webkit) return "webkit";
+  if (v.prefer === "standard" && standard) return "standard";
+  if (standard) return "standard";   /* 標準を先に（trk264 U1）。断られたら togglePip が webkit を試す */
+  return webkit ? "webkit" : "";
 }
-/* 📌 trk263：画中画を終える（ブラウザーの ✕ でも同じ後始末を通る） */
+/* いま小窓が出ているか（2つの API の見え方を1つにまとめる） */
+function pipRunning(st) {
+  const v = st || {};
+  return v.stdElement === true || v.webkitMode === "picture-in-picture";
+}
+/* ==== 純粋な計算（trk264）ここまで ==== */
+function pipIsOn() {
+  return !!(pipActive || pipRunning({
+    stdElement: typeof document !== "undefined" && !!document.pictureInPictureElement,
+    webkitMode: core.video ? core.video.webkitPresentationMode : "",
+  }));
+}
+/* 📌 trk263：画中画を終える（ブラウザーの ✕ でも同じ後始末を通る）。
+   trk264：Safari は webkit 側で出るので、標準と webkit の両方を見る */
 async function exitPip() {
-  try { if (pipIsOn()) await document.exitPictureInPicture(); } catch (_) {}
+  try {
+    if (typeof document !== "undefined" && document.pictureInPictureElement) await document.exitPictureInPicture();
+    else if (core.video && typeof core.video.webkitSetPresentationMode === "function" && pipIsOn()) core.video.webkitSetPresentationMode("inline");
+  } catch (_) {}
   pipActive = false; pipStageShown = false;
   syncMediaStage(); renderMedia();
 }
+/* 標準 API で入る */
+async function pipEnterStandard() {
+  try {
+    await core.video.requestPictureInPicture();
+    pipPrefer = "standard";
+    return true;
+  } catch (err) {
+    console.warn("[media] PiP（標準）:", err);   /* Safari は「あるのに断る」ことがあるので、失敗は控えめに */
+    return false;
+  }
+}
+/* Safari（webkit）で入る。webkitSetPresentationMode は Promise ではないので、少し待って確かめる */
+async function pipEnterWebkit() {
+  const v = core.video;
+  if (!v || typeof v.webkitSetPresentationMode !== "function") return false;
+  try {
+    v.webkitSetPresentationMode("picture-in-picture");
+  } catch (err) {
+    console.warn("[media] PiP（webkit）:", err);
+    return false;
+  }
+  for (let i = 0; i < 12 && !pipIsOn(); i++) await new Promise(r => setTimeout(r, 100));
+  if (pipIsOn()) { pipPrefer = "webkit"; return true; }
+  return false;
+}
+/* 入る：まず pipBackend() の答え、だめならもう一方（Safari の標準 API は「あるのに断られる」ことがある） */
+async function enterPip() {
+  const st = pipState();
+  const first = pipBackend(st);
+  if (first === "standard") {
+    if (await pipEnterStandard()) return true;
+    if (st.webkit === true && st.webkitProbe !== false) return pipEnterWebkit();
+    return false;
+  }
+  if (first === "webkit") return pipEnterWebkit();
+  return false;
+}
 async function togglePip() {
   if (!pipSupported() || !core.videoReady) return;
-  try {
-    if (pipIsOn()) { await exitPip(); return; }
-    await core.video.requestPictureInPicture();
-    pipActive = true; pipStageShown = false;
-  } catch (err) {
-    pipActive = false;
-    if (typeof showToast === "function") window.Trk.play.showToast(tr("mediaPipUnsupported"));
-    console.error("[media] PiP:", err);
+  if (pipIsOn()) { await exitPip(); return; }
+  const ok = await enterPip();
+  pipActive = ok;
+  if (!ok) {
+    pipStageShown = false;
+    /* 「非対応」と「開けなかった」は別の言葉にする（trk264 U3） */
+    if (typeof showToast === "function") window.Trk.play.showToast(tr(pipSupported() ? "mediaPipFailed" : pipUnsupportedKey()));
   }
   syncMediaStage();
   renderMedia();
@@ -1521,11 +1623,12 @@ function renderMedia() {
     maxNode.setAttribute("aria-pressed", String(maxOn));
   }
   if (pipNode) {   /* 📌 画中画（trk164） */
-    const pipOn = pipActive || !!(typeof document !== "undefined" && document.pictureInPictureElement);
+    const pipOn = pipIsOn();
     const pipKey = pipOn ? "mediaPipClose" : "mediaPip";
     pipNode.textContent = tr(pipKey); pipNode.dataset.i18n = pipKey;
-    pipNode.disabled = !ready || !pipSupported();
-    pipNode.title = pipSupported() ? "" : tr("mediaPipUnsupported");
+    const pipOk = pipSupported();
+    pipNode.disabled = !ready || !pipOk;
+    pipNode.title = pipOk ? "" : tr(pipUnsupportedKey());
     pipNode.classList.toggle("selected", pipOn);
     pipNode.setAttribute("aria-pressed", String(pipOn));
   }
@@ -1584,6 +1687,7 @@ function closeMedia(restore = true) {
   }) === "keep";
   if (!keepPip) {
     if (typeof document !== "undefined" && document.pictureInPictureElement) { try { document.exitPictureInPicture(); } catch (_) {} }
+    else if (core.video && typeof core.video.webkitSetPresentationMode === "function" && pipIsOn()) { try { core.video.webkitSetPresentationMode("inline"); } catch (_) {} }
     pipActive = false;
   }
   pipStageShown = false;
@@ -1696,6 +1800,11 @@ function buildMedia() {
   pipNode.addEventListener("click", togglePip);
   core.video.addEventListener("enterpictureinpicture", () => { pipActive = true; pipStageShown = false; syncMediaStage(); renderMedia(); });
   core.video.addEventListener("leavepictureinpicture", () => { pipActive = false; pipStageShown = false; syncMediaStage(); renderMedia(); });
+  /* 📌 trk264：Safari（webkit）の出入りはこちらに来る（✕ は leavepictureinpicture を出さない） */
+  core.video.addEventListener("webkitpresentationmodechanged", () => {
+    pipActive = core.video.webkitPresentationMode === "picture-in-picture";
+    pipStageShown = false; syncMediaStage(); renderMedia();
+  });
   wallNode = makeButton("mediaWallShow", "mediaSmallBtn");
   const restart = makeButton("mediaRestart", "mediaSmallBtn");
   prev.addEventListener("click", () => stepMedia(-1)); playNode.addEventListener("click", playPause); next.addEventListener("click", () => stepMedia(1)); reverseNode.addEventListener("click", toggleReverse); wallNode.addEventListener("click", toggleWall);
