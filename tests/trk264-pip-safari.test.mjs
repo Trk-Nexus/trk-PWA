@@ -81,7 +81,7 @@ describe("trk264：小窓が出ているかの見え方（2つの API）", () =>
 
 describe("trk264：配線（本文の目印）", () => {
   test("ホーム画面アプリ（standalone）を見分ける", () => {
-    assert.ok(src.includes("function pipHomeApp()"));
+    assert.ok(src.includes("function pipStandaloneApp()"), "trk265（レビュー Q4）で名前を実態に合わせた");
     assert.ok(src.includes("navigator.standalone === true"));
     assert.ok(src.includes('matchMedia("(display-mode: standalone)")'));
   });
@@ -91,7 +91,7 @@ describe("trk264：配線（本文の目印）", () => {
     assert.ok(src.includes('v.webkitSupportsPresentationMode("picture-in-picture")'));
     assert.ok(src.includes("if (!(v.readyState >= 1)) return undefined;"), "読み込み前の false は「分からない」");
     assert.ok(src.includes("function pipState()"));
-    assert.ok(src.includes("!(pipHomeApp() && probe === false)"), "ホーム画面アプリでは標準 API を切る");
+    assert.ok(src.includes("!(pipStandaloneApp() && probe === false)"), "standalone のアプリでは標準 API を切る");
   });
 
   test("入る・出るの両方を実装している", () => {
@@ -99,7 +99,7 @@ describe("trk264：配線（本文の目印）", () => {
     assert.ok(src.includes("await core.video.requestPictureInPicture()"));
     assert.ok(src.includes("async function pipEnterWebkit()"));
     assert.ok(src.includes('v.webkitSetPresentationMode("picture-in-picture")'));
-    assert.ok(src.includes('core.video.webkitSetPresentationMode("inline")'));
+    assert.ok(src.includes('v.webkitSetPresentationMode("inline")'), "webkit で出る（trk265 で leavePipBoth に寄せた）");
     assert.ok(src.includes("document.exitPictureInPicture()"));
   });
 
@@ -119,15 +119,17 @@ describe("trk264：配線（本文の目印）", () => {
   });
 
   test("閉じるときも、標準と webkit の両方で出る", () => {
+    const helper = src.slice(src.indexOf("async function leavePipBoth()"), src.indexOf("function waitWebkitPip("));
+    assert.ok(helper.includes("document.exitPictureInPicture()"), "標準で閉じる");
+    assert.ok(helper.includes('v.webkitSetPresentationMode("inline")'), "webkit でも閉じる");
     const close = src.slice(src.indexOf("function closeMedia("), src.indexOf("function openMedia("));
-    assert.ok(close.includes("document.exitPictureInPicture()"));
-    assert.ok(close.includes('core.video.webkitSetPresentationMode("inline")'));
+    assert.ok(close.includes("leavePipBoth();"), "closeMedia は 1 か所に寄せた（trk265・レビュー M1）");
   });
 
   test("押せない理由は、ホーム画面アプリだけ言い方を変える", () => {
     assert.ok(src.includes("function pipUnsupportedKey()"));
     assert.ok(src.includes('pipNode.title = pipOk ? "" : tr(pipUnsupportedKey());'));
-    assert.ok(src.includes("return pipHomeApp() && pipWebkitProbe() === false ? \"mediaPipHomeApp\" : \"mediaPipUnsupported\";"));
+    assert.ok(src.includes("return pipStandaloneApp() && pipWebkitProbe() === false ? \"mediaPipHomeApp\" : \"mediaPipUnsupported\";"));
   });
 
   test("開けなかったときは「非対応」ではなく「開けなかった」と言う（U3）", () => {

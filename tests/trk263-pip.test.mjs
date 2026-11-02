@@ -99,7 +99,9 @@ describe("trk263：配線（本文の目印）", () => {
   test("画中画の出入りと、小窓を閉じたときの後始末", () => {
     assert.ok(src.includes('core.video.addEventListener("enterpictureinpicture"'));
     assert.ok(src.includes('core.video.addEventListener("leavepictureinpicture"'));
-    assert.ok(src.includes("pipActive = false; pipStageShown = false;\n  syncMediaStage(); renderMedia();"), "✕ でも同じ後始末");
+    /* trk265（レビュー M1）：閉じたあとは「実際に出ているか」に合わせる（まだ出ていれば true のまま） */
+    assert.ok(src.includes("pipActive = pipActuallyOn();"), "✕ でも同じ後始末（実際の状態に合わせる）");
+    assert.ok(/async function exitPip\(\) \{\n  await leavePipBoth\(\);/.test(src), "閉じる順番は 1 か所（trk265）");
     assert.ok(src.includes("async function exitPip()"));
   });
 
