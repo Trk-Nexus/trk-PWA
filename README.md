@@ -48,11 +48,13 @@ trk!（トラック）は、ブラウザだけで動く**非営利のリズム�
 ビルドは不要です。ただし、フォルダの記憶・VRM・公認パックの確認には **http(s) で開く**必要があるので、簡単なサーバーを使ってください。
 
 ```bash
-git clone https://github.com/Trk-Nexus/trk.git
-cd trk
+git clone https://github.com/Trk-Nexus/trk-PWA.git
+cd trk-PWA
 python -m http.server 8000
 # → http://localhost:8000 を開く
 ```
+
+ここは**開発版**です。ふだん使う安定版は [`Trk-Nexus/trk`](https://github.com/Trk-Nexus/trk)。
 
 配布ZIPは `index.html`・`README.txt`・`trk-files/` の3つだけの形で作ります（OS共通の1本）。`npm run release`（手順は [docs/HANDOFF.md](docs/HANDOFF.md) の §9）。
 
@@ -131,7 +133,9 @@ Catalog matching automatically handles supported title variations, using officia
 
 ▶ **Play:** https://trk-nexus.github.io/trk-PWA/
 
-**Run locally:** `python -m http.server 8000`, then open `http://localhost:8000`.
+**Run locally:** `git clone https://github.com/Trk-Nexus/trk-PWA.git`, `cd trk-PWA`, then `python -m http.server 8000`.
+
+`trk-PWA` is the development build; the stable build is [`Trk-Nexus/trk`](https://github.com/Trk-Nexus/trk).
 
 **Release ZIP:** one archive for all desktop OSes; unzipping shows only `index.html`, `README.txt` and `trk-files/`. `npm run release` (§9 of [docs/HANDOFF.md](docs/HANDOFF.md)).
 

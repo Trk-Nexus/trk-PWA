@@ -2938,6 +2938,42 @@ if (!cacheMatch) fail("sw.js cache name could not be read");
 else if (!/^trk-v\d{4}\.\d{1,2}\.\d{1,2}[-\w]*$/.test(cacheMatch[1])) fail(`unexpected service-worker cache name: ${cacheMatch[1]}`);
 else ok(`service-worker cache: ${cacheMatch[1]}`);
 
+/* 🔒 trk256（M1）：GitHub Actions の `uses:` は 40 桁の commit SHA に固定する（docs/SECURITY-CHECKLIST.md §C-4）。
+   タグ（`@v4`）は動くので、上流が乗っ取られたときに中身が差し替わる余地を残さない。 */
+for (const rel of [".github/workflows/check.yml", ".github/workflows/pages.yml"]) {
+  if (!exists(rel)) continue;
+  const text = read(rel);
+  const lines = text.split("\n").filter(line => /^\s*uses:\s*\S+/.test(line));
+  const bad = lines.filter(line => !/^\s*uses:\s*[\w.-]+\/[\w.-]+@[0-9a-f]{40}(\s*#\s*v[\d.]+)?\s*$/.test(line));
+  if (!lines.length) fail(`${rel} has no uses: lines`);
+  else if (bad.length) fail(`${rel} has an unpinned action: ${bad[0].trim()}`);
+  else ok(`${rel}: ${lines.length} actions pinned to a commit SHA`);
+}
+
+/* 📱 trk256（M2）：mobile-web は docs を丸ごと写さない（利用者向けの guide と ADDONS だけ）。 */
+if (exists("tools/prepare-mobile-web.mjs")) {
+  const mobile = read("tools/prepare-mobile-web.mjs");
+  const copiesWholeDocs = /const\s+directories\s*=\s*\[[^\]]*"docs"/s.test(mobile);
+  const hasGuide = /docsDirectories\s*=\s*\[[^\]]*"docs\/guide"/s.test(mobile);
+  const hasAddons = /docsFiles\s*=\s*\[[^\]]*"docs\/ADDONS\.md"/s.test(mobile);
+  if (copiesWholeDocs) fail("tools/prepare-mobile-web.mjs copies the whole docs/ directory");
+  else if (!hasGuide || !hasAddons) fail("tools/prepare-mobile-web.mjs does not list docs/guide and docs/ADDONS.md");
+  else ok("mobile-web ships only the user-facing docs (guide + ADDONS)");
+}
+
+/* 🧾 trk256（S5・S6）：docs/HANDOFF.md §1.5 の「Service Worker」の行が、sw.js の CACHE とずれていないか。
+   §1.5 は「いまの状態」を1枚で見る場所なので、版を上げたときに書き忘れると嘘になる（trk246→trk255 で実際にずれた）。 */
+if (cacheMatch && exists("docs/HANDOFF.md")) {
+  const handoff = read("docs/HANDOFF.md");
+  const from = handoff.indexOf("## 1.5 ");
+  const to = handoff.indexOf("\n## 2. ", from);
+  const section = from >= 0 ? handoff.slice(from, to > from ? to : undefined) : "";
+  const listed = (section.match(/trk-v\d{4}\.\d{1,2}\.\d{1,2}-trk\d+/) || [])[0] || "";
+  if (!listed) fail("docs/HANDOFF.md §1.5 does not name the current service-worker cache");
+  else if (listed !== cacheMatch[1]) fail(`docs/HANDOFF.md §1.5 cache is ${listed} but sw.js says ${cacheMatch[1]}`);
+  else ok(`docs/HANDOFF.md §1.5 cache matches sw.js (${listed})`);
+}
+
 for (const rel of [
   "docs/HANDOFF.md",
   "docs/pack-format.md",

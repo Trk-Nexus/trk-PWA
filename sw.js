@@ -58,8 +58,12 @@
    🔤 trk255（2026-11-02・判断項目 U1〜U7）：🔤 に「この組が合う曲」を1行出し（U1）、
    更新の帯の「あとで」を24時間覚え＋設定に「知らせを出す」を置き（U2）、いまの版を設定だけに表示し（U3）、
    表示の密度を下の再生バーにも効かせ（U4）、設定のさがすを `/` で開けるようにし（U5）、
-   英語だけだった読み上げ名13個を4言語にそろえました（U7）。js と css が変わっているので上げます。 */
-const CACHE = "trk-v2026.11.02-trk255";
+   英語だけだった読み上げ名13個を4言語にそろえました（U7）。js と css が変わっているので上げます。
+   🧹 trk256（2026-11-02・小粒 A/B）：オフラインでも注意書き・クレジット・追加機能の説明を開けるよう
+   先読みに3本足し（S2）、JS が止まっているときの案内を1枚置き（S3）、README の起動手順と
+   HANDOFF §1.5 の数字を直し、「13行」の食い違いを正しました（S4〜S6）。
+   配布物まわりは Actions の SHA 固定と mobile-web の docs 削減（M1・M2）。 */
+const CACHE = "trk-v2026.11.02-trk256";
 const CACHE_PREFIX = "trk-";
 /* 🧭 trk252（2026-11-02）：CacheStorage に**実在させる名前**には `trkPWA-` を先頭に付けるようにしました。
    同じオリジンに別の trk!（上流 `/trk/` など）が在ると、相手が「`trk-` 始まりは全部消す」旧式の掃除を
@@ -87,8 +91,14 @@ const CACHE_NAME = `${CACHE_KEY_PREFIX}${CACHE}@${SCOPE_TAG}`;
    中身は VENDOR_PINS と照合してから使うので、古いコピーが残っても安全側です。 */
 const VENDOR_CACHE_BASE = "trk-vendor-v1";
 const VENDOR_CACHE = `${CACHE_KEY_PREFIX}${VENDOR_CACHE_BASE}@${SCOPE_TAG}`;
-/* 殻の先読みで、index.html から拾えないもの（アプリが後から fetch する小さなJSON） */
-const PRECACHE_EXTRA = ["verified.json", "assets/mmd/lat-miku/preset.json"];
+/* 殻の先読みで、index.html から拾えないもの（アプリが後から fetch する小さなJSON）。
+   🗂 trk256（S2）：アプリからリンクしている書類（注意書き・追加機能の説明）も入れる。
+   これを入れないと、**初回オフラインでリンクを押したときアプリが再表示**され、書類が読めません。
+   3 つで 36 KB ほどです（残りの docs は容量が大きいので入れません）。 */
+const PRECACHE_EXTRA = ["verified.json", "assets/mmd/lat-miku/preset.json",
+  "credits.html", "privacy.html", "docs/ADDONS.md"];
+/* docs/ は丸ごと先読みしない（容量）。ここに書いたものだけ例外で入れる */
+const PRECACHE_ALLOW = ["docs/ADDONS.md"];
 /* 電波が弱いときに待ち続けない（ナビゲーションだけ・3秒でキャッシュへ切り替える） */
 const NAV_TIMEOUT_MS = 3000;
 /* 📥 share_target（trk165）：OSの共有シートで受け取ったファイルの一時置き場。
@@ -213,7 +223,9 @@ const VENDOR_PINS = {
 const PRECACHE_SKIP = ["assets/vendor/", "assets/optional-demo-audio/", "docs/", "tools/"];
 function precacheWanted(url) {
   const rest = url.pathname.slice(SCOPE.pathname.length);
-  return !!(rest && !PRECACHE_SKIP.some(prefix => rest.startsWith(prefix)));
+  if (!rest) return false;
+  if (PRECACHE_ALLOW.includes(rest)) return true;   /* 例外（docs/ADDONS.md など） */
+  return !PRECACHE_SKIP.some(prefix => rest.startsWith(prefix));
 }
 async function precacheShell() {
   const cache = await caches.open(CACHE_NAME);

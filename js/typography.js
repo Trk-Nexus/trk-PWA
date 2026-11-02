@@ -5,7 +5,7 @@
    （外部取得なし・オフラインで動きます）。**trk254 から手写しをやめました**：
    `node tools/sync-typography-catalog.mjs --from=<catalog> --ref=<sha>` が相手の目録から `PAIRINGS` を作り直し、
    取り込んだ目録そのものを `tests/fixtures/avatar-library-typography.json`（sha256・ref は隣の `.meta.json`）に固定します。
-   上の13行の配列は**手で直さないでください**（`tests/trk254-typography-copy.test.mjs` が目録とズレを検出します）。
+   上の `PAIRINGS`（14組）は**手で直さないでください**（`tests/trk254-typography-copy.test.mjs` が目録とズレを検出します）。
    書体ファイル（woff2）は**同梱していません**：14組が参照するパックは28パックで合計 61,652,655 B（61.65 MB）あるため、
    相手の `TRK-FONTS` の保存を借りる形にしています。`packs` にパック名だけ書いてあり、
    未導入の端末では `font-family` が次の名前へ自然にフォールバックします（＝崩れない・見本だけ縮む）。

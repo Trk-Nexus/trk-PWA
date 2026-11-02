@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk255">
+<meta name="trk-build" content="trk256">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -63,6 +63,17 @@
 </head>
 
 <body>
+<!-- 🚫 trk256（S3）：JavaScript が止まっていると真っ暗な画面になるので、理由を1枚だけ出す。
+     CSS が読めない場合にも見えるよう、見た目はこの中に直書きする（JS は使わない）。 -->
+<noscript>
+  <div style="position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:#0b0d16;color:#f1f5f9;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.9;text-align:center">
+    <p style="max-width:34em;margin:0">
+      <strong style="font-size:18px">trk! は JavaScript が必要です。</strong><br>
+      ブラウザの設定で JavaScript を有効にしてから、開き直してください。<br>
+      <span lang="en" style="opacity:.85">trk! needs JavaScript. Please enable it in your browser settings, then reload.</span>
+    </p>
+  </div>
+</noscript>
 <!-- 💬 trk191: アドオン引き出しの置き場所（slot "drawer"・API v2）。中身が無いときは非表示で、クリックも妨げない -->
 <div id="addonDrawerHost" class="addonDrawerHost"></div>
 <div id="stage" data-layout="classic" data-phase="title">
