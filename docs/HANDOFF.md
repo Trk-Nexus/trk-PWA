@@ -840,6 +840,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
   - **安全**：`play` は**生のパスを受け付けない**（`/` `\` `..` `~` `C:` を断り、`list` の番号か曲名だけ）。保存は `core.settings` の中だけ（`cliPlay`・`cliSkin`・`cliSpells`）＝**localStorage のキーは増やさない**。端末は `Trk.overlay` の名前に `cli` を足したので、開いている間はゲームのキー入力が止まる。ゲーム中・書斎・メディアプレーヤーを開いている間は開かない。
   - **触ったファイル**：`js/cli.js`（新規・純関数と実行を「純粋な計算（trk267）」で切り出し）・`js/core.js`（重ね表示の名前1語・`cliPlay`／`cliSkin`／`cliSpells` の既定と、工場出荷の3行）・`js/media-player-mode.js`（`window.TrkMediaPlayer` に `play` を1つ）・`index.html`（⚙ の `#cliPanel` と `<script src="js/cli.js">`）・`css/style.css`（`.cli*`）。
   - 見張り：`tests/trk267-cli.test.mjs` **37 件**。jsdom で **30 項目 0 NG**（開く→`list`→`play`→`volume`→`spell`→`cast`→履歴→閉じる／唱えたスキンは残る・唱えていなければ戻る／Ctrl+`・Esc／ゲーム中は開かない／メディアプレイヤーへ渡して閉じる／言語の追従）。`npm run check` **1490 pass / 0 fail**。cache は **`trk-v2026.11.03-trk267`**。
+  - **配布（2026-11-03）**：Drive の `trk-PWA-trk267-ターミナル（trk CLI）-2026-11-03`（`1Qc3kzRjwgDze2LZVt3DUofeerRRX0hE7`）に5本＝`trk-standalone-2026-11-03-trk267.zip`（337 ファイル・7,576,448 B・sha256 `34b54a27…ba18e3a`）・`SHA256SUMS-trk267-2026-11-03.txt`・`VIEWER-TRK267-2026-11-03.md`・`PLAN-TRK267-2026-11-03.md`・`00-まず読む.txt`。**ZIP を展開して中身の版も確認**（`trk-build=trk267`・`CACHE="trk-v2026.11.03-trk267"`・`trk-files/js/cli.js` 1007 行・展開先の `js/cli.js` で jsdom 30 項目 0 NG）。
   - **`/trk/` に当てる版は保留**のまま（Skin 側との応答後）。
 
 - **📌 trk266：trk265 レビューの小さな推奨（2026-11-03）**：記録＝[`VIEWER-TRK266-2026-11-03.md`](VIEWER-TRK266-2026-11-03.md)、レビューへの返事＝[`REVIEW-RESPONSE-TRK265-2026-11-03.md`](REVIEW-RESPONSE-TRK265-2026-11-03.md)、洗い出し＝[`PLAN-TRK266-2026-11-03.md`](PLAN-TRK266-2026-11-03.md)。
