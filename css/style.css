@@ -2044,6 +2044,12 @@ body.helpTextOff .videoMaxHint{display:none!important}
 .mediaStageNote{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;max-width:80%;
   text-align:center;color:var(--ui-muted)}
 .mediaStageNote[hidden]{display:none!important}
+/* 📌 trk263：画中画を出している間の案内（映像を隠した代わりに、戻す道を残す） */
+.mediaPipNotice{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 14px 2px;padding:9px 12px;
+  border:1px solid rgba(255,209,102,.3);border-radius:12px;background:rgba(255,209,102,.08);
+  color:#ffe3a3;font-size:12px;font-weight:750}
+.mediaPipNotice[hidden]{display:none!important}
+.mediaPipNoticeText{margin-right:auto}
 .mediaStageCanvas[hidden]{display:none!important}
 .mediaInterpBox{margin:0 14px 2px;padding:10px 12px;border:1px solid rgba(120,220,255,.24);border-radius:12px;
   background:rgba(120,220,255,.05)}

@@ -516,6 +516,10 @@ const settings = {
   /* 💬 trk262：字幕の置き場所（下・中央・上）と大きさ（小・中・大）。trk が描く字幕だけに効く
      （📌 画中画と OS のライブキャプションは向こうの設定）。 */
   mediaSubsPos: pick(prefs.mediaSubsPos, ["bottom", "middle", "top"], "bottom"),
+  /* 📌 trk263：画中画を、メディアプレーヤーを閉じても続ける（既定オン）と、
+     画中画を出している間はプレーヤー側の映像を隠す（既定オン）。 */
+  mediaPipKeep: prefs.mediaPipKeep !== false,
+  mediaPipHideStage: prefs.mediaPipHideStage !== false,
   mediaSubsSize: pick(prefs.mediaSubsSize, ["small", "normal", "large"], "normal"),
   /* ✨ フレーム補完（js/frame-interp.js）。既定はオフ（重いので） */
   frameInterp: pick(prefs.frameInterp, ["off", "blend", "flow"], "off"),
@@ -631,7 +635,7 @@ function askFactoryReset(onYes, onNo) {
 }
 function resetVideoPrefs() {
   settings.videoStyle = "color";
-  settings.videoZoom = 1; settings.videoMaxWheelStep = 5; settings.videoMaxChrome = "full"; settings.mediaSubsPos = "bottom"; settings.mediaSubsSize = "normal"; settings.videoKeys = VIDEO_KEY_DEFAULTS.slice(); settings.castPolicy = "off"; settings.backgroundPolicy = "off"; settings.fxAntenna = false; settings.fxAntennaShape = "rod"; settings.fxAntennaCustomOn = ""; settings.fxAntennaCustomOff = ""; settings.mediaLoopTrigger = "toggle"; settings.mediaWallTrigger = "toggle"; settings.mediaWallStyle = "midnight"; settings.mediaWallClock = true; settings.mediaWallStopsVideo = true; settings.mediaExitKey = "Escape"; settings.mediaExitConfirm = true; settings.mediaResumeRewind = 0; settings.mediaWakeLock = true; settings.mediaWave = true; settings.libProgress = "all"; settings.mediaLyricsOpen = false;
+  settings.videoZoom = 1; settings.videoMaxWheelStep = 5; settings.videoMaxChrome = "full"; settings.mediaSubsPos = "bottom"; settings.mediaSubsSize = "normal"; settings.mediaPipKeep = true; settings.mediaPipHideStage = true; settings.videoKeys = VIDEO_KEY_DEFAULTS.slice(); settings.castPolicy = "off"; settings.backgroundPolicy = "off"; settings.fxAntenna = false; settings.fxAntennaShape = "rod"; settings.fxAntennaCustomOn = ""; settings.fxAntennaCustomOff = ""; settings.mediaLoopTrigger = "toggle"; settings.mediaWallTrigger = "toggle"; settings.mediaWallStyle = "midnight"; settings.mediaWallClock = true; settings.mediaWallStopsVideo = true; settings.mediaExitKey = "Escape"; settings.mediaExitConfirm = true; settings.mediaResumeRewind = 0; settings.mediaWakeLock = true; settings.mediaWave = true; settings.libProgress = "all"; settings.mediaLyricsOpen = false;
   settings.bgDim = 0; settings.bgBlur = 0;
   /* ✨ TRKエフェクト（リッチ映像。js/tv-rich.js）の記憶も一緒に戻す */
   settings.tvRichId = "portrait_natural"; settings.tvRichPrev = ""; settings.tvRichCat = "portrait"; settings.tvRichOpen = true;   /* 初期状態に戻す＝欄は開いておく */
