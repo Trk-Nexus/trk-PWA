@@ -840,6 +840,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
   - **⌨ U5**：`js/settings-find.js` に純粋関数 `slashAllowed(event)`。`/` のみ・`ctrl/meta/alt` 付きは無視・`isComposing` は無視・入力欄の中では何もしない。設定のパネルを開いているあいだだけ `keydown` を見ます。**検索語は保存しません**。
   - **♿ U7**：`index.html` の英語 `aria-label` 13個（`Seek`・`Fullscreen`・`MASTER・2000 RUSH`・書斎の10個）を `data-i18n-aria` に置き換え、辞書（書斎は `js/study-room.js` の自前の辞書）へ4言語ずつ追加。`grep 'aria-label="' index.html` は **0**。
   - `tests/trk255-polish.test.mjs`（**28件**）。`npm run check` **1313 pass / 0 fail**（167 suites）、辞書 **1118 キー ×4**、`sw.js` の cache は **`trk-v2026.11.02-trk255`**。**実機は未確認**（見る所は設計メモ §4＝`/` と IME・密度の見え方・読み上げ・24時間の帯）。
+  - **対外**：返事15（r9）への返答を [`2026-11-02-レビューへの返事-trk255.md`](2026-11-02-レビューへの返事-trk255.md) に書き、Drive の手紙フォルダと `trk-PWA-trk255-2026-11-02`（`1rnq-DdwspVt9JQz0rodHRkFUudPCoO8a`）へ。配布物は `trk-standalone-2026-11-02-trk255.zip`（7,415,056 B・307）・`trk-handover-2026-11-02-trk255.zip`（949,152 B・82）・`SHA256SUMS`・`README-まず読む`。**実機の通しは未測**（前回からの持ち越し）
   - **残り**：U8（書体の size／tracking／leading・`ctx.font`）は実機の後。A の S2〜S6・B の M1・M2 はこれから。
 
 - **🔤 trk246：書体の組み合わせ14組（段階②）（2026-11-01）**：trk-Avatar-Library の 返事12・設計メモを受けた受け口。設計＝[`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md)。
