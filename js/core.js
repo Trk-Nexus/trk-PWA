@@ -54,7 +54,12 @@ function fitStage() {
   applyDensityClasses();
 }
 addEventListener("resize", fitStage);
-fitStage();
+/* ⏳ 最初の寸法合わせは、このファイルの最後（定義を読み終えた後）で 1 回だけ呼びます。
+   2026-11-02 trk260：以前はここで呼んでいましたが、fitStage が使う LIB_LIST_MIN などは
+   ファイルの後ろ（約 1800 行）で const 宣言しているため、先に走ると TDZ の
+   「Cannot access 'LIB_LIST_MIN' before initialization」になり、core.js の残り
+   （settings・文章の差し込み・画面の配線）が丸ごと止まっていました。
+   ＝開いた直後が「枠だけ・文字なし・ボタンが効かない」になっていた原因です。 */
 
 /* ---------- 合図（イベント） ---------- */
 const HOOKS = {};
@@ -2323,4 +2328,8 @@ Object.defineProperty(window.Trk.core, "seekDragging", { configurable:true, get:
 Object.defineProperty(window.Trk.core, "stats", { configurable:true, get:() => stats, set:v => { stats = v; } });
 Object.defineProperty(window.Trk.core, "videoFilter", { configurable:true, get:() => videoFilter, set:v => { videoFilter = v; } });
 Object.defineProperty(window.Trk.core, "videoReady", { configurable:true, get:() => videoReady, set:v => { videoReady = v; } });
+
+/* 🖥 ここまでで const・関数がすべて定義済み。最初の寸法合わせを 1 回だけ実行する
+   （先頭で呼ぶと TDZ で core.js が途中で止まる。上の addEventListener の直後の注記を参照）。 */
+fitStage();
 })();

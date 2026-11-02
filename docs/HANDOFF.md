@@ -108,8 +108,8 @@
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1350 pass / 0 fail**（trk259 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.02-trk259@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk259@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| テスト | `npm run check` **1355 pass / 0 fail**（trk260 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.02-trk260@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk260@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | **組織 `Trk-Nexus` へ移籍済み**（trk250〜trk252）。Pages は稼働中（開発版 <https://trk-nexus.github.io/trk-PWA/>）。個人側の同名リポジトリは**空のまま**（墓標 README は所有者待ち・[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md) §6 X4） |
 
@@ -831,6 +831,13 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **🚑 trk260：開いた直後が「枠だけ・文字なし・ボタンが効かない」を修正（2026-11-02）**：記録＝[`FIX-TRK260-BOOT-2026-11-02.md`](FIX-TRK260-BOOT-2026-11-02.md)。
+  - **原因**：`js/core.js` の先頭で `fitStage()` を呼んでいた。その中で使う `const LIB_LIST_MIN` は同じファイルの 1800 行台にあり、**TDZ の `ReferenceError`** で core.js の残り（`settings`・`applyLanguage`・画面の配線・`window.Trk.core`）が丸ごと止まっていた。後続も `Trk.core` 不在で次々に落ち、**CSS だけ効いた殻**が残った。trk245〜trk259 の配布物が該当。
+  - **直し方**：最初の `fitStage()` を**ファイルの最後**へ移した（中身・`--trk-lib-h` の値は不変）。
+  - **見張り**：`tests/trk260-boot.test.mjs`（5 件）。読み込み時の呼び出しが後ろの `const` を触っていないかを `js/**` 全体で走査し、`core.js` の `fitStage();` の位置も固定。壊し試験で 3 件 FAIL を確認。
+  - **確かめ方**：jsdom に index.html を文書順で読ませ、直す前は例外 34 件・文字が空・曲リスト 0・ようこそ非表示、直した後は例外 0 件・`言語 / Language`・曲リスト 1 件・ようこそ表示。
+  - `npm run check` **1355 pass / 0 fail**。cache は **`trk-v2026.11.02-trk260`**。
 
 - **🗓 trk259：レビュー（`trk-Nexus-review-trk258-2026-11-02`）の推奨 3 点を手当て（2026-11-02）**：必須は無し。設計メモ＝[`POLISH-TRK259-2026-11-02.md`](POLISH-TRK259-2026-11-02.md)。
   - **R3 目録の版を端末の日付に**：`updatedAt`（UTC）を `slice(0,10)` していたので、日本では**朝 9 時前の更新が前日**に出た。`catalogDay()` を通して端末の `getFullYear/getMonth/getDate` で出す（日付だけの目録・読めない値は今までどおり）。
