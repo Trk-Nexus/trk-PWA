@@ -131,8 +131,10 @@ describe("trk255 U2 更新の知らせを止められる・「あとで」を覚
 });
 
 describe("trk255 U3 いまの版は設定だけに出す", () => {
-  test("版は meta に1か所だけ（この版で trk255）", () => {
-    assert.match(html, /<meta name="trk-build" content="trk255">/);
+  test("版は meta に1か所だけ（trk の番号を持つ）", () => {
+    /* ⚠ 版は上げるたびに変わるので、番号そのものは書かない（trk256 で実際に赤くなった）。
+       番号は下の「CACHE とそろっている」が見ます。 */
+    assert.match(html, /<meta name="trk-build" content="trk\d+">/);
     assert.equal(count(html, /name="trk-build"/g), 1);
   });
 

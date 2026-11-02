@@ -96,7 +96,7 @@
 - 公開JSを変更したら関連テスト・文書・`sw.js` のcache名更新要否を確認します。vendor pinの正は `tools/vendor-lock.json` です。
 - `js/fx.js`／`js/fx-presets.js` の凍結は **trk114で解除**しました（2026-10-11、空さんの判断。trk109でfx.jsに足したMIDI MIXの経路も追認）。ほかのファイルと同じく、変更時はテスト・文書・実音声で確認します。fx.jsが読むための互換名（`chartMeta`・`phase`・`prefs`・`stats`・`videoReady`、読み取り専用の `_trkStudyRoomOpen`）はまだ残っていて、fx.jsを書き換えれば外せます（`docs/ADDONS.md` §0、`docs/NAMESPACE-PLAN.md`）。
 
-## 1.5 このリポジトリ（trk-PWA）の今（2026-10-31）
+## 1.5 このリポジトリ（trk-PWA）の今（2026-11-02）
 
 このチェックアウトは **`trk-PWA`**＝上流 `trk` 1.1.8 を履歴ごと取り込み、**通信を行わない standalone PWA** として仕上げる系統です。配り方が上流と違う（ZIP ではなく Pages）ため、§9 は上流の話として読んでください。
 
@@ -106,12 +106,12 @@
 | ミッションと決定事項 | [`HANDOFF-TRK-STANDALONE.md`](HANDOFF-TRK-STANDALONE.md)、配布URLの決定は [`ORIGIN.md`](ORIGIN.md) |
 | 配り方 | GitHub Pages（`.github/workflows/pages.yml`）＋ `manifest.webmanifest` ＋ `sw.js`。配布ZIPは作りません |
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
-| trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**。trk244 の2つも trk246 のそれも `core.settings` の中なので **localStorage のキーは増えていません** |
+| trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1243 pass / 0 fail**（trk246 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.01-trk246@<スコープ>`**（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| テスト | `npm run check` **1329 pass / 0 fail**（trk256 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.02-trk256@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk256@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
-| 移行 | 新リポジトリ `trk-Standalone` はまだ空。Pages の有効化と初回デプロイは未実施 |
+| 移行 | **組織 `Trk-Nexus` へ移籍済み**（trk250〜trk252）。Pages は稼働中（開発版 <https://trk-nexus.github.io/trk-PWA/>）。個人側の同名リポジトリは**空のまま**（墓標 README は所有者待ち・[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md) §6 X4） |
 
 **この系統で変えてはいけないこと**：§3 の条件に加えて、**実行時に外部へ通信しない**（CDN・外部API・解析タグを足さない）、**端末内データだけ**、**GPL-3.0-or-later のクレジットを消さない**、**保存キーを変えるときは移行を書く**（[`MIGRATIONS.md`](MIGRATIONS.md)）。
 
@@ -831,6 +831,16 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **🧹 trk256：小粒のセット A／配布物 B（2026-11-02）**：`docs/BACKLOG-2026-11-02.md` の S2〜S6 と M1・M2 をまとめて入れました。設計メモ＝[`POLISH-TRK255-2026-11-02.md`](POLISH-TRK255-2026-11-02.md)（trk255 と同じ束）。
+  - **S2（オフラインの書類）**：`sw.js` の `PRECACHE_EXTRA` に `credits.html`・`privacy.html`・`docs/ADDONS.md` を追加。`docs/` は丸ごと先読みしない方針のまま、**`PRECACHE_ALLOW` に書いた1本だけ例外**にしました（3本で 36 KB ほど）。これまで初回オフラインでリンクを押すとアプリが再表示されていました。
+  - **S3（JS が止まっているとき）**：`<body>` の直後に `<noscript>` を1枚（日本語＋英語・見た目は直書き・スクリプト無し）。真っ暗な画面の代わりに理由が出ます。
+  - **S4（README）**：ローカル起動手順が `trk.git` / `cd trk` を指していたので `trk-PWA.git` / `cd trk-PWA` に。開発版と安定版（`Trk-Nexus/trk`）の違いを1行ずつ（日英）。README は 12 KB の上限内に収めています。
+  - **S5（HANDOFF §1.5）**：`1243 pass` → いまの件数、cache 名 `trk246` → `trk256`、`trk-Standalone はまだ空` → 組織移籍済みの記述へ。
+  - **S6（「13行」）**：`js/typography.js` の「上の13行」を「`PAIRINGS`（14組）」に。あわせて **`check-repo` に「§1.5 の cache 名 = `sw.js` の CACHE」の検査**を足したので、次に版を上げて書き忘れたら落ちます。
+  - **M1（Actions の SHA 固定）**：`check.yml`・`pages.yml` の `uses:` 6 本を 40 桁の commit SHA に（`checkout@11d5960… # v4.4.0`・`setup-node@49933ea… # v4.4.0`・`configure-pages@983d773… # v5.0.0`・`upload-pages-artifact@56afc60… # v3.0.1`・`deploy-pages@d6db901… # v4.0.5`）。`check-repo` に「タグに戻したら落ちる」検査を追加。
+  - **M2（mobile-web の docs 削減）**：`tools/prepare-mobile-web.mjs` が `docs` を丸ごと写していたのを、**`docs/guide/` と `docs/ADDONS.md` だけ**に。実測 **2.2 MB → 304 KB**（`mobile-web/` 全体は 30 MB のまま。減ったのは文書の分）。
+  - `tests/trk256-polish.test.mjs`（**16件**）。`npm run check` **1329 pass / 0 fail**（173 suites）、`sw.js` の cache は **`trk-v2026.11.02-trk256`**。**実機は未確認**（見る所は S2 のオフライン書類・S3 の表示）。
 
 - **✨ trk255：小粒の仕上げ（判断項目 U1〜U7）（2026-11-02）**：`docs/BACKLOG-2026-11-02.md` §4 に並べた判断待ちに答えをもらい、S1（版の表示）と一緒に実装しました。記録＝[`POLISH-TRK255-2026-11-02.md`](POLISH-TRK255-2026-11-02.md)。
   - **🔤 U1**：`#typoUse` を `#typoState`（選んだ組の説明）のすぐ下に置き、`js/ui-prefs.js` の `syncTypo()` が目録の `trkUse` を1行で出します（**選んでいなければ `hidden`**）。名前は日本語のまま・**翻訳は増やしていません**。選択肢は `buildTypoOptions()` が初回しか作らないので、説明行は別に組み立てます。
