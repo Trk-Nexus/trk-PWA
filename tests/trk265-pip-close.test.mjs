@@ -164,7 +164,8 @@ describe("trk265 配線（本文の目印）", () => {
     assert.ok(src.includes('pipWhy.id = "mediaPipWhy"'));
     assert.ok(src.includes("controls.after(pipWhy);"));
     assert.ok(src.includes('pipNode.setAttribute("aria-describedby", "mediaPipWhy")'));
-    assert.ok(src.includes("pipWhy.hidden = pipOk;"));
+    /* trk266（F1）：行を出すかは pipWhyVisible が決める（Firefox で出しっぱなしにしない） */
+    assert.ok(src.includes("const whyOn = pipWhyVisible({ ok: pipOk, ready, key: whyKey });"));
     assert.ok(css.includes(".mediaPipWhy{"), "見える文字の体裁");
     assert.ok(css.includes(".mediaPipWhy[hidden]{display:none!important}"));
   });

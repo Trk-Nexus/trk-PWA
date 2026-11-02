@@ -35,7 +35,7 @@ Object.assign(TEXT.ja, {
   mediaVideoToastZoom:"動画ズーム {n}x", mediaVideoToastRate:"再生速度 {n}x",
   mediaPip:"📌 画中画", mediaPipClose:"📌 画中画を終了", mediaPipUnsupported:"このブラウザは画中画に対応していません", mediaPipHomeApp:"ホーム画面や Dock から起動したアプリでは画中画を使えません（Safari で開くと使えます）", mediaPipFailed:"画中画を開けませんでした（動画を再生してから、もう一度お試しください）",
 mediaPipTitle:"📌 画中画（小窓）",
-  mediaPipHint:"画中画は、動画を画面の隅の小窓に映したまま別のことをできる機能です。小窓はブラウザーが持っているので、位置・大きさ・閉じるボタンはページからは変えられません（PC の Chrome／Edge／Safari、iPhone／iPad の Safari。iPhone・iPad のホーム画面のアプリでは使えないことがあります）。",
+  mediaPipHint:"画中画は、動画を画面の隅の小窓に映したまま別のことをできる機能です。小窓はブラウザーが持っているので、位置・大きさ・閉じるボタンはページからは変えられません（PC の Chrome／Edge／Safari、iPhone／iPad の Safari。iPhone／iPad のホーム画面や macOS の Dock から起動したアプリでは使えないことがあります）。",
   mediaPipKeep:"メディアプレーヤーを閉じても画中画を続ける", mediaPipHideStage:"画中画を出している間は、こちらの映像を隠す",
   mediaPipKeepOn:"📌 画中画で続けます（小窓の ✕ で終了）",
   mediaPipNotice:"📌 画中画で表示中", mediaPipShowHere:"ここにも表示", mediaPipHideHere:"こちらの絵を隠す",
@@ -79,7 +79,7 @@ Object.assign(TEXT.en, {
   mediaVideoToastZoom:"Video zoom {n}x", mediaVideoToastRate:"Playback speed {n}x",
   mediaPip:"📌 Picture-in-picture", mediaPipClose:"📌 Exit picture-in-picture", mediaPipUnsupported:"This browser doesn't support picture-in-picture", mediaPipHomeApp:"Picture-in-picture isn't available in the app opened from the Home Screen or Dock (open it in Safari instead)", mediaPipFailed:"Could not open picture-in-picture (start the video and try again)",
 mediaPipTitle:"📌 Picture-in-picture",
-  mediaPipHint:"Picture-in-picture keeps the video in a small floating window while you do something else. The window belongs to the browser, so its position, size, and close button cannot be changed from the page (Chrome / Edge / Safari on desktop, Safari on iPhone and iPad; it may not work in the Home Screen app on iPhone and iPad).",
+  mediaPipHint:"Picture-in-picture keeps the video in a small floating window while you do something else. The window belongs to the browser, so its position, size, and close button cannot be changed from the page (Chrome / Edge / Safari on desktop, Safari on iPhone and iPad; it may not work in an app opened from the Home Screen on iPhone / iPad or from the Dock on macOS).",
   mediaPipKeep:"Keep picture-in-picture after closing the media player", mediaPipHideStage:"Hide the video here while picture-in-picture is showing",
   mediaPipKeepOn:"📌 Continuing in picture-in-picture (close the small window to stop)",
   mediaPipNotice:"📌 Showing in picture-in-picture", mediaPipShowHere:"Show here too", mediaPipHideHere:"Hide the video here",
@@ -121,7 +121,7 @@ Object.assign(TEXT.zh, {
   mediaVideoToastZoom:"视频缩放 {n}x", mediaVideoToastRate:"播放速度 {n}x",
   mediaPip:"📌 画中画", mediaPipClose:"📌 退出画中画", mediaPipUnsupported:"此浏览器不支持画中画", mediaPipHomeApp:"从主屏幕或 Dock 启动的应用中无法使用画中画（用 Safari 打开即可使用）", mediaPipFailed:"无法打开画中画（请先播放视频，然后再试一次）",
 mediaPipTitle:"📌 画中画（小窗）",
-  mediaPipHint:"画中画会把视频放在屏幕角落的小窗里，同时可以做别的事。小窗由浏览器管理，位置、大小和关闭按钮无法从页面更改（桌面版 Chrome / Edge / Safari，iPhone / iPad 的 Safari；在 iPhone / iPad 的主屏幕应用中可能无法使用）。",
+  mediaPipHint:"画中画会把视频放在屏幕角落的小窗里，同时可以做别的事。小窗由浏览器管理，位置、大小和关闭按钮无法从页面更改（桌面版 Chrome / Edge / Safari，iPhone / iPad 的 Safari；在 iPhone / iPad 从主屏幕启动的应用、或 macOS 从 Dock 启动的应用中可能无法使用）。",
   mediaPipKeep:"关闭媒体播放器后仍保持画中画", mediaPipHideStage:"显示画中画时，隐藏这里的视频",
   mediaPipKeepOn:"📌 继续以画中画播放（点小窗的 ✕ 结束）",
   mediaPipNotice:"📌 正在画中画显示", mediaPipShowHere:"也在这里显示", mediaPipHideHere:"隐藏这里的视频",
@@ -163,7 +163,7 @@ Object.assign(TEXT.ko, {
   mediaVideoToastZoom:"동영상 확대 {n}x", mediaVideoToastRate:"재생 속도 {n}x",
   mediaPip:"📌 그림 속 그림", mediaPipClose:"📌 그림 속 그림 종료", mediaPipUnsupported:"이 브라우저는 그림 속 그림을 지원하지 않습니다", mediaPipHomeApp:"홈 화면이나 Dock에서 연 앱에서는 그림 속 그림을 쓸 수 없습니다 (Safari에서 열면 쓸 수 있습니다)", mediaPipFailed:"그림 속 그림을 열지 못했습니다 (영상을 재생한 뒤 다시 시도해 주세요)",
 mediaPipTitle:"📌 그림 속 그림 (작은 창)",
-  mediaPipHint:"그림 속 그림은 영상을 화면 구석의 작은 창으로 띄워 두고 다른 작업을 할 수 있는 기능입니다. 작은 창은 브라우저가 관리하므로 위치·크기·닫기 버튼은 페이지에서 바꿀 수 없습니다(데스크톱 Chrome / Edge / Safari, iPhone / iPad의 Safari. iPhone·iPad 홈 화면 앱에서는 안 될 수 있습니다).",
+  mediaPipHint:"그림 속 그림은 영상을 화면 구석의 작은 창으로 띄워 두고 다른 작업을 할 수 있는 기능입니다. 작은 창은 브라우저가 관리하므로 위치·크기·닫기 버튼은 페이지에서 바꿀 수 없습니다(데스크톱 Chrome / Edge / Safari, iPhone / iPad의 Safari. iPhone·iPad 홈 화면이나 macOS Dock에서 연 앱에서는 안 될 수 있습니다).",
   mediaPipKeep:"미디어 플레이어를 닫아도 그림 속 그림을 계속", mediaPipHideStage:"그림 속 그림이 떠 있는 동안 이쪽 영상 숨기기",
   mediaPipKeepOn:"📌 그림 속 그림으로 계속합니다 (작은 창의 ✕로 종료)",
   mediaPipNotice:"📌 그림 속 그림으로 표시 중", mediaPipShowHere:"여기에도 표시", mediaPipHideHere:"이쪽 영상 숨기기",
@@ -208,6 +208,7 @@ let pipNode = null, pipActive = false;                /* 📌 画中画（trk164
 /* 📌 trk263：画中画の案内（1行）と、「ここにも表示」を押したか（この画面だけ・保存しない） */
 let pipNotice = null, pipTextNode = null, pipHereNode = null, pipStopNode = null, pipStageShown = false;
 let pipWhy = null;                                   /* 📌 trk265：押せないときの理由（見える1行・レビュー R3） */
+let pipBusy = false;                                 /* 📌 trk266：小窓が出るのを待っている間（二度押しを防ぐ・レビュー F2） */
 let pipPrefer = "";                                  /* 📌 trk264：前回通った画中画の API（"standard" / "webkit"）。保存はしない */
 let resumeNode = null;                                /* ⏪ スマート巻き戻しの選択（trk164） */
 let startZeroNode = null;                             /* ⏮ 常に最初から再生のチェック（trk193） */
@@ -1121,6 +1122,16 @@ async function pipEnterWebkit() {
   return ok;
 }
 /* ==== 出入り（閉じる順番と待ち方） ここまで ==== */
+/* ==== 純粋な計算（trk266：押せない理由を、見える行として出すか） ====
+   ブラウザーを起動しないテスト（tests/trk266-pip-why.test.mjs）が、この範囲だけを切り出して読みます。
+   st = { ok:押せる, ready:動画を読み込んだ, key:押せない理由の言葉 } */
+function pipWhyVisible(st) {
+  const v = st || {};
+  if (v.ok === true) return false;                 /* 押せるなら出さない */
+  if (v.key !== "mediaPipHomeApp") return false;   /* 普通の非対応（Firefox など）は title だけ＝出しっぱなしにしない */
+  return v.ready === true;                         /* 読み込む前は「まだ分からない」ので、使えないと書かない */
+}
+/* ==== 純粋な計算（trk266）ここまで ==== */
 function pipIsOn() { return !!(pipActive || pipActuallyOn()); }
 /* 📌 trk263：画中画を終える（ブラウザーの ✕ でも同じ後始末を通る）。
    trk265：閉じる順番は leavePipBoth() に寄せた（標準と webkit の両方）。 */
@@ -1154,17 +1165,25 @@ async function enterPip() {
   return false;
 }
 async function togglePip() {
+  /* 📌 trk266（F2）：小窓が出るのを待っている間（最大 2.5 秒）は、もう一度押しても何もしない。
+     待っている間に pipIsOn() はまだ false なので、そのままだと enterPip() が二重に走ってしまう。 */
+  if (pipBusy) return;
   if (!pipSupported() || !core.videoReady) return;
   if (pipIsOn()) { await exitPip(); return; }
-  const ok = await enterPip();
-  pipActive = ok || pipIsOn();   /* 📌 trk265（R1）：待ったあとに遅れて出た場合も「出ている」に合わせる */
-  if (!pipActive) {
-    pipStageShown = false;
-    /* 「非対応」と「開けなかった」は別の言葉にする（trk264 U3） */
-    if (typeof showToast === "function") window.Trk.play.showToast(tr(pipSupported() ? "mediaPipFailed" : pipUnsupportedKey()));
+  pipBusy = true;
+  try {
+    const ok = await enterPip();
+    pipActive = ok || pipIsOn();   /* 📌 trk265（R1）：待ったあとに遅れて出た場合も「出ている」に合わせる */
+    if (!pipActive) {
+      pipStageShown = false;
+      /* 「非対応」と「開けなかった」は別の言葉にする（trk264 U3） */
+      if (typeof showToast === "function") window.Trk.play.showToast(tr(pipSupported() ? "mediaPipFailed" : pipUnsupportedKey()));
+    }
+  } finally {
+    pipBusy = false;   /* 例外でも必ず戻す（2 回目からは普通に押せる） */
+    syncMediaStage();
+    renderMedia();
   }
-  syncMediaStage();
-  renderMedia();
 }
 /* 🔆 Screen Wake Lock（trk164）：動画の再生中だけ画面の消灯を防ぐ。
    音声だけの再生では防がない（端末の省電力を尊重）。非対応ブラウザでは何もしない */
@@ -1665,14 +1684,18 @@ function renderMedia() {
     const pipOk = pipSupported();
     pipNode.disabled = !ready || !pipOk;
     pipNode.title = pipOk ? "" : tr(pipUnsupportedKey());
-    /* 📌 trk265（R3）：押せない理由は、ボタンの下に見える文字で出す（読み上げにも繋ぐ） */
+    /* 📌 trk265（R3）→ trk266（F1）：理由を見える行で出すのは、
+       「ホーム画面や Dock のアプリだから使えない」と分かったときだけ。
+       普通の非対応（Firefox など）は今までどおり title だけ＝行が出しっぱなしにならない。 */
     if (pipWhy) {
-      pipWhy.hidden = pipOk;
-      if (pipOk) pipNode.removeAttribute("aria-describedby");
-      else {
-        const whyKey = pipUnsupportedKey();
+      const whyKey = pipOk ? "" : pipUnsupportedKey();
+      const whyOn = pipWhyVisible({ ok: pipOk, ready, key: whyKey });
+      pipWhy.hidden = !whyOn;
+      if (whyOn) {
         pipWhy.textContent = tr(whyKey); pipWhy.dataset.i18n = whyKey;
         pipNode.setAttribute("aria-describedby", "mediaPipWhy");
+      } else {
+        pipNode.removeAttribute("aria-describedby");
       }
     }
     pipNode.classList.toggle("selected", pipOn);
