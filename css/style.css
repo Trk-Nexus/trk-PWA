@@ -2227,11 +2227,17 @@ body.trk-mobile.trk-density-dense{--trk-skin-cols:4;--trk-lib-thumb:36px}
 body.trk-typo-on .brand h1,body.trk-typo-on details.panel>summary,body.trk-typo-on .panel h3{font-family:var(--trk-typo-display,var(--font))}
 body.trk-typo-on .hint,body.trk-typo-on .brand p{font-family:var(--trk-typo-body,var(--font))}
 
-/* ============ ⌨ ターミナル（trk267） ============
+/* ============ ⌨ ターミナル（trk267・受け口は trk268） ============
    色は CSS 変数（--ui-*）から取るので、スキンを当て替えると端末の色も一緒に変わります。
-   CLI 用のスキン（cat に wizard）が来たら、この規則を足さずにそのまま着られます。 */
+   CLI 用のスキン（cat に wizard／cli／console）が来たら、この規則を足さずにそのまま着られます。
+   trk268：スキンが端末だけの見た目を持てるように、次の 4 つを任意で受けます（既定は今までどおり）。
+     --cli-font   端末の書体（書体名だけ。入っていなければ等幅）
+     --cli-prompt 入力の合図（1〜4 文字。既定 ">"）
+     --cli-caret  カーソルの色（#rgb／#rrggbb／currentColor。既定は文字色）
+     --cli-scan   走査線の濃さ（0〜0.6。既定 0＝なし） */
 .cliOverlay{background:rgba(2,4,10,.72)}
-.cliDialog{width:min(860px,100%);border-color:var(--ui-border);background:linear-gradient(155deg,var(--ui-panel),var(--ui-bg) 62%);color:var(--ui-text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace}
+.cliDialog{width:min(860px,100%);border-color:var(--ui-border);background:linear-gradient(155deg,var(--ui-panel),var(--ui-bg) 62%);color:var(--ui-text);font-family:var(--cli-font,ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace);position:relative;overflow:hidden}
+.cliDialog::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:var(--cli-scan,0);background:repeating-linear-gradient(to bottom,rgba(255,255,255,.55) 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
 .cliDialog .instHeader{border-bottom-color:var(--ui-border)}
 .cliLog{flex:1 1 auto;min-height:clamp(180px,42vh,420px);max-height:56vh;overflow-y:auto;padding:10px 14px;background:var(--ui-field);border-bottom:1px solid var(--ui-border);overscroll-behavior:contain}
 .cliLog:focus-visible{outline:2px solid var(--ui-accent-ink,var(--ui-accent));outline-offset:-2px}
@@ -2241,7 +2247,8 @@ body.trk-typo-on .hint,body.trk-typo-on .brand p{font-family:var(--trk-typo-body
 .cliLine.cliOut{color:var(--ui-text)}
 .cliForm{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--ui-border);background:rgba(0,0,0,.18)}
 .cliPromptChar{flex:none;color:var(--ui-accent-ink,var(--ui-accent));font-weight:900}
-.cliInput{flex:1 1 auto;min-width:0;padding:8px 10px;border:1px solid var(--ui-border);border-radius:10px;background:var(--ui-bg);color:var(--ui-text);font:inherit;font-size:14px}
+.cliPromptChar::before{content:var(--cli-prompt,">")}
+.cliInput{flex:1 1 auto;min-width:0;padding:8px 10px;border:1px solid var(--ui-border);border-radius:10px;background:var(--ui-bg);color:var(--ui-text);font:inherit;font-size:14px;caret-color:var(--cli-caret,currentColor)}
 .cliInput:focus-visible{outline:2px solid var(--ui-accent-ink,var(--ui-accent));outline-offset:1px}
 .cliRunBtn{flex:none}
 .cliHintText{margin:0;padding:8px 14px 12px;color:var(--ui-muted);font-size:11px;line-height:1.5}

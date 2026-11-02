@@ -792,13 +792,59 @@ function sanitizeSkinDef(raw) {
     gradDir: GRAD_DIRS.includes(raw.gradDir) ? raw.gradDir : "none",
     font: has(FONT_PRESETS, raw.font) ? raw.font : "default",
     video: has(VIDEO_PRESETS, raw.video) ? raw.video : "mono",
-    mascot: MASCOT_IDS.includes(raw.mascot) ? raw.mascot : "none"
+    mascot: MASCOT_IDS.includes(raw.mascot) ? raw.mascot : "none",
+    cat: sanitizeSkinCats(raw.cat),   /* ⌨ trk268：パックでもカテゴリを持てる（CLI の見分けに使う） */
+    cli: sanitizeCliLook(raw.cli)     /* ⌨ trk268：端末の見た目（任意） */
   };
+}
+
+/* ---------- ⌨ CLI 向けスキンの受け口（trk268） ----------
+   スキン側（倉庫・パック・カスタム）から来た値を、そのまま CSS 変数にせず、ここで整えます。
+   ・cat … カテゴリ（"wizard" など）。小文字の英数と「-」だけ・6 語まで
+   ・cli … 端末の見た目（font／prompt／caret／scan）→ --cli-font／--cli-prompt／--cli-caret／--cli-scan
+   通すのは「CSS の変数に入れて安全な形」だけです（かっこ・セミコロン・波かっこは通りません）。 */
+const CLI_CAT_RE = /^[a-z0-9][a-z0-9-]{0,15}$/;
+function sanitizeSkinCats(raw) {
+  const list = Array.isArray(raw) ? raw : (typeof raw === "string" ? raw.split(/[\s,]+/) : []);
+  const out = [];
+  for (const v of list) {
+    const id = String(v == null ? "" : v).trim().toLowerCase();
+    if (!CLI_CAT_RE.test(id) || out.includes(id)) continue;
+    out.push(id);
+    if (out.length >= 6) break;
+  }
+  return out;
+}
+const CLI_FONT_RE = /^[A-Za-z0-9 _,"'-]{1,120}$/;            /* 書体名だけ（かっこ・セミコロン・波かっこは通さない） */
+const CLI_PROMPT_BAD = /["\\(){};]/;                         /* かっこ・引用符・区切りは通さない（url( を作らせない） */
+const CLI_COLOR_RE = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;       /* カーソルの色は #rgb／#rrggbb だけ */
+function sanitizeCliLook(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const out = {};
+  const font = typeof raw.font === "string" ? raw.font.trim().replace(/\s+/g, " ") : "";
+  if (font && CLI_FONT_RE.test(font)) out.font = font;
+  const prompt = typeof raw.prompt === "string" ? raw.prompt.trim() : "";
+  if (prompt && [...prompt].length <= 4 && !CLI_PROMPT_BAD.test(prompt) && !/\p{Cc}/u.test(prompt)) out.prompt = prompt;
+  const caret = typeof raw.caret === "string" ? raw.caret.trim() : "";
+  if (caret === "currentColor" || CLI_COLOR_RE.test(caret)) out.caret = caret;
+  const scan = Number(raw.scan);
+  if (Number.isFinite(scan) && scan > 0) out.scan = Math.min(0.6, Math.round(scan * 100) / 100);
+  return Object.keys(out).length ? out : null;
+}
+/* 整えた値 → CSS 変数（プロンプトは content にそのまま入るので括ります） */
+function cliLookVars(look) {
+  if (!look || typeof look !== "object") return null;
+  const out = {};
+  if (look.font) out["--cli-font"] = look.font;
+  if (look.prompt) out["--cli-prompt"] = '"' + look.prompt + '"';
+  if (look.caret) out["--cli-caret"] = look.caret;
+  if (look.scan) out["--cli-scan"] = String(look.scan);
+  return Object.keys(out).length ? out : null;
 }
 function buildCustomSkin(def) {
   const c = def.colors, dark = luminance(c.bg) < .35;
   const grad = c.bg2 && def.gradDir && def.gradDir !== "none" ? `linear-gradient(${GRAD_ANGLE[def.gradDir]}, ${c.bg}, ${c.bg2})` : null;   // --ui-bg と game.stage はそのまま CSS background へ
-  return {
+  const s = {
     custom:true,
     label:{ en:def.name },
     desc:{ ja:"カスタムスキン", en:"Custom skin", zh:"自定义皮肤", ko:"커스텀 스킨" },
@@ -818,6 +864,12 @@ function buildCustomSkin(def) {
     font:FONT_PRESETS[def.font] || undefined,
     mascot:def.mascot !== "none" ? def.mascot : undefined
   };
+  /* ⌨ trk268：端末の見た目とカテゴリ（パック・カスタムスキンでも CLI 用に名乗れる） */
+  const look = cliLookVars(sanitizeCliLook(def.cli));
+  if (look) Object.assign(s.ui, look);
+  const cats = sanitizeSkinCats(def.cat);
+  if (cats.length) s.cat = cats;
+  return s;
 }
 
 /* ---------- レイアウト（1920×1080基準の座標） ---------- */
@@ -902,5 +954,5 @@ window.sanitizeSkinDef = sanitizeSkinDef;
 window.toHex = toHex;
 /* 領域（window.Trk.data）：公開名の正規の場所。旧名（window.X）は別名として残す（利用者の決定） */
 window.Trk = window.Trk || {};
-window.Trk.data = Object.assign(window.Trk.data || {}, { DIFFS, DIFF_IDS, EGG_KEYS, EGG_WORDS, FONT_DEFAULT, H, HEX, LAYOUTS, MASCOT_CAPTIONS, MASCOT_DEFS, MASCOT_FAMILY, MASCOT_IDS, MASCOT_POS, NOTE_PRESETS, NOTE_SHAPES, SKINS, TAU, VRM_RECT, W, accentInk, accentInkBackground, buildCustomSkin, has, hexToRgba, luminance, mixHex, parseGrad, registerMascot, sanitizeNotes, sanitizeSkinDef, toHex });
+window.Trk.data = Object.assign(window.Trk.data || {}, { DIFFS, DIFF_IDS, EGG_KEYS, EGG_WORDS, FONT_DEFAULT, H, HEX, LAYOUTS, MASCOT_CAPTIONS, MASCOT_DEFS, MASCOT_FAMILY, MASCOT_IDS, MASCOT_POS, NOTE_PRESETS, NOTE_SHAPES, SKINS, TAU, VRM_RECT, W, accentInk, accentInkBackground, buildCustomSkin, has, hexToRgba, luminance, mixHex, parseGrad, registerMascot, sanitizeNotes, sanitizeSkinDef, sanitizeSkinCats, sanitizeCliLook, cliLookVars, toHex });
 })();
