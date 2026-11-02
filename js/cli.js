@@ -33,7 +33,7 @@
     cliPlayMedia: "メディアプレイヤーで鳴らす",
     cliPlayPreview: "曲リストの試聴で鳴らす",
     cliSkinLabel: "ターミナルの見た目",
-    cliSkinAuto: "自動（wizard-cli があればそれ、無ければ terminal）",
+    cliSkinAuto: "自動（wizard・cli・console のスキンがあればそれ、無ければ terminal）",
     cliSkinTerminal: "terminal を当てる",
     cliSkinKeep: "いまのスキンのまま",
     cliSkinHint: "ここで当てたスキンは、ターミナルを開いている間だけです。閉じると元のスキンに戻ります（ターミナルで skin を唱えたときは、そのスキンが残ります）。",
@@ -75,7 +75,7 @@
     cliGrimoireItem: "{id} — {label}（{cat}）",
     cliGrimoireFilter: "絞り込み：{cat} — {n} 種",
     cliGrimoireNone: "そのカテゴリのスキンはありません。",
-    cliGrimoireCli: "⌨ の印は、CLI 向けのスキン（cat に wizard を含む）です。",
+    cliGrimoireCli: "⌨ の印は、CLI 向けのスキン（cat に wizard・cli・console のどれかを含む）です。",
     cliSpellTitle: "呪文（マクロ）{n} 本",
     cliSpellItem: "{id} → {cmds}",
     cliSpellUnknown: "その呪文はありません（spell で一覧）。",
@@ -113,7 +113,7 @@
     cliPlayMedia: "Play in the media player",
     cliPlayPreview: "Play as the song-list preview",
     cliSkinLabel: "Terminal look",
-    cliSkinAuto: "Auto (wizard-cli if present, otherwise terminal)",
+    cliSkinAuto: "Auto (a wizard / cli / console skin if present, otherwise terminal)",
     cliSkinTerminal: "Apply terminal",
     cliSkinKeep: "Keep the current skin",
     cliSkinHint: "The skin here lasts only while the terminal is open; it goes back when you close it (a skin you cast inside stays).",
@@ -155,7 +155,7 @@
     cliGrimoireItem: "{id} — {label} ({cat})",
     cliGrimoireFilter: "Filter: {cat} — {n} skins",
     cliGrimoireNone: "No skins in that category.",
-    cliGrimoireCli: "The ⌨ mark means a CLI-ready skin (its cat includes wizard).",
+    cliGrimoireCli: "The ⌨ mark means a CLI-ready skin (its cat includes wizard, cli or console).",
     cliSpellTitle: "Spells (macros): {n}",
     cliSpellItem: "{id} → {cmds}",
     cliSpellUnknown: "No such spell (see spell).",
@@ -193,7 +193,7 @@
     cliPlayMedia: "在媒体播放器中播放",
     cliPlayPreview: "作为曲目列表的试听播放",
     cliSkinLabel: "终端的外观",
-    cliSkinAuto: "自动（有 wizard-cli 就用它，否则用 terminal）",
+    cliSkinAuto: "自动（有 wizard・cli・console 皮肤就用它，否则用 terminal）",
     cliSkinTerminal: "使用 terminal",
     cliSkinKeep: "保持当前皮肤",
     cliSkinHint: "这里应用的皮肤只在终端打开期间有效，关闭后恢复原皮肤（在终端里用 skin 指定的皮肤会保留）。",
@@ -235,7 +235,7 @@
     cliGrimoireItem: "{id} — {label}（{cat}）",
     cliGrimoireFilter: "筛选：{cat} — {n} 种",
     cliGrimoireNone: "该分类没有皮肤。",
-    cliGrimoireCli: "⌨ 标记表示面向 CLI 的皮肤（cat 含 wizard）。",
+    cliGrimoireCli: "⌨ 标记表示面向 CLI 的皮肤（cat 含 wizard・cli・console 之一）。",
     cliSpellTitle: "咒文（宏）：{n} 个",
     cliSpellItem: "{id} → {cmds}",
     cliSpellUnknown: "没有这个咒文（用 spell 查看）。",
@@ -273,7 +273,7 @@
     cliPlayMedia: "미디어 플레이어에서 재생",
     cliPlayPreview: "곡 목록의 미리듣기로 재생",
     cliSkinLabel: "터미널 겉모습",
-    cliSkinAuto: "자동(wizard-cli 가 있으면 그것, 없으면 terminal)",
+    cliSkinAuto: "자동(wizard・cli・console 스킨이 있으면 그것, 없으면 terminal)",
     cliSkinTerminal: "terminal 적용",
     cliSkinKeep: "지금 스킨 그대로",
     cliSkinHint: "여기서 적용한 스킨은 터미널을 여는 동안만입니다. 닫으면 원래 스킨으로 돌아갑니다(터미널에서 skin 을 외친 경우는 그 스킨이 남습니다).",
@@ -315,7 +315,7 @@
     cliGrimoireItem: "{id} — {label} ({cat})",
     cliGrimoireFilter: "필터: {cat} — {n} 종",
     cliGrimoireNone: "그 분류의 스킨이 없습니다.",
-    cliGrimoireCli: "⌨ 표시는 CLI 용 스킨(cat 에 wizard 포함)입니다.",
+    cliGrimoireCli: "⌨ 표시는 CLI 용 스킨(cat 에 wizard・cli・console 중 하나 포함)입니다.",
     cliSpellTitle: "주문(매크로) {n} 개",
     cliSpellItem: "{id} → {cmds}",
     cliSpellUnknown: "그 주문이 없습니다(spell 로 목록).",
@@ -357,6 +357,10 @@
     "repeat-all": "repeat all",
     "midnight": "skin terminal; volume 30"
   };
+  /* ⌨ trk268：CLI 向けスキンの名乗り方。設計書は "wizard"、倉庫側の呼び名が変わっても受けられるよう別名も見ます */
+  const CLI_CATS = ["wizard", "cli", "console"];
+  const isCliCat = cats => Array.isArray(cats) && cats.some(c => CLI_CATS.includes(String(c).toLowerCase()));
+
   const SPELL_MAX = 24;
   const SPELL_BODY_MAX = 200;
   const CLI_LIST_LIMIT = 40;
@@ -428,7 +432,7 @@
     const has = id => list.some(s => s.id === id);
     if (mode === "keep") return "";
     if (mode === "terminal") return has("terminal") ? "terminal" : "";
-    const wiz = list.find(s => Array.isArray(s.cats) && s.cats.includes("wizard"));
+    const wiz = list.find(s => isCliCat(s.cats));
     if (wiz) return wiz.id;
     return has("terminal") ? "terminal" : "";
   }
@@ -496,7 +500,8 @@
     } else if (q.cmd === "grimoire") {
       const filter = (q.args[0] || "").toLowerCase();
       const all = typeof deps.skins === "function" ? deps.skins() : [];
-      const list = filter && filter !== "all" ? all.filter(s => Array.isArray(s.cats) && s.cats.includes(filter)) : all;
+      const list = !filter || filter === "all" ? all
+        : (CLI_CATS.includes(filter) ? all.filter(s => isCliCat(s.cats)) : all.filter(s => Array.isArray(s.cats) && s.cats.includes(filter)));
       if (!list.length) push("err", t("cliGrimoireNone"));
       else {
         push("out", filter && filter !== "all" ? t("cliGrimoireFilter", { cat: filter, n: list.length }) : t("cliGrimoireTitle", { n: list.length }));
@@ -638,7 +643,7 @@
       const def = all[id] || {};
       const label = def.label && (def.label[lang] || def.label.ja || def.label.en) || id;
       const cats = Array.isArray(def.cat) ? def.cat.slice() : (def.custom || def.pack ? ["custom"] : ["basic"]);
-      return { id, label, cats, cli: cats.includes("wizard"), locked: !!def.locked };
+      return { id, label, cats, cli: isCliCat(cats), locked: !!def.locked };
     });
   }
   function readSpells() {
@@ -815,7 +820,7 @@
 
     const form = core.el("form", "cliForm");
     form.id = "cliForm";
-    const prompt = core.el("span", "cliPromptChar", ">");
+    const prompt = core.el("span", "cliPromptChar");   /* 記号は CSS（--cli-prompt）。スキンが変えられます */
     prompt.setAttribute("aria-hidden", "true");
     inputNode = core.el("input", "cliInput");
     inputNode.id = "cliInput";

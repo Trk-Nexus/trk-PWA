@@ -108,8 +108,8 @@
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1490 pass / 0 fail**（trk267 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.03-trk267@<スコープ>`**（実体は `trkPWA-trk-v2026.11.03-trk267@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| テスト | `npm run check` **1501 pass / 0 fail**（trk268 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.03-trk268@<スコープ>`**（実体は `trkPWA-trk-v2026.11.03-trk268@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | **組織 `Trk-Nexus` へ移籍済み**（trk250〜trk252）。Pages は稼働中（開発版 <https://trk-nexus.github.io/trk-PWA/>）。個人側の同名リポジトリは**空のまま**（墓標 README は所有者待ち・[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md) §6 X4） |
 
@@ -831,6 +831,15 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **⌨ trk268：CLI 用スキンの受け口（2026-11-03）**：記録＝[`VIEWER-TRK268-2026-11-03.md`](VIEWER-TRK268-2026-11-03.md)、洗い出し＝[`PLAN-TRK268-2026-11-03.md`](PLAN-TRK268-2026-11-03.md)、先方へ返した文書＝[`SKIN-RETURN-TRK267-2026-11-03.md`](SKIN-RETURN-TRK267-2026-11-03.md) §9。**返事を待たずに、値でも `.stpack` でも入る形を先に用意**した回です（trk267 の続き）。
+  - **2 つの渡し方**：(a) 値を `js/data.js` に 1 枚入れる (b) `.stpack` の `skin` に同じ値を入れる。`sanitizeSkinDef` が `cat`・`cli` を残し、`buildCustomSkin` が `ui` に `--cli-*` を混ぜるので、**パックは入れた時点で `auto` が拾う**（棚の見え方は `custom` のまま＝`skinCatList` は触らない）。
+  - **名乗り**：`cat` に **`wizard`（第一候補）・`cli`・`console`** のどれか。`pickCliSkin`・`skinCatalog`・`grimoire` の絞り込みが同じ別名を見ます（`CLI_CATS`・`isCliCat`）。
+  - **端末だけの見た目**：`--cli-font`／`--cli-prompt`／`--cli-caret`／`--cli-scan`（既定は trk267 と同じ＝何も名乗らなければ見た目は変わらない）。値は `sanitizeCliLook` が整え、**かっこ・引用符・セミコロン・波かっこは落とす**（外部参照を作らせない）。合図の記号は CSS の `content`（`::before`）から。
+  - **受け入れの道具**：`tools/check-cli-skin.mjs`（アプリと同じ `js/data.js` を読んで、`cat` の名乗り・`colors` の不足・コントラスト 4.5:1／エラー 3:1・`cli` の値を見る。終了コード 0／1／2・`--json` あり）。**助言であって関門ではない**（通らなくても受け取れる）。
+  - 見張り：`tests/trk268-skin-hooks.test.mjs` **11 件**。`npm run check` **1501 pass / 0 fail**。jsdom 20 項目 0 NG（別名で選ぶ／`grimoire` の絞り込み／パックの値が届く／Esc・言語）。cache は **`trk-v2026.11.03-trk268`**。
+  - **新しい保存キー 0**（`settings.cli*` のまま）・`js/core.js` は差分 0・`sw.js` の先読み一覧も差分 0。
+  - **`/trk/` に当てる版は保留**のまま（Skin 側の応答後）。
 
 - **⌨ trk267：trk CLI（Wizard のターミナル）— Skin 側の設計書 v0.1 のフェーズ C（2026-11-03）**：記録＝[`VIEWER-TRK267-2026-11-03.md`](VIEWER-TRK267-2026-11-03.md)、洗い出しと判断＝[`PLAN-TRK267-2026-11-03.md`](PLAN-TRK267-2026-11-03.md)。元は Skin 側（`Trk-Nexus/trk-Avatar-Library`）の `docs/trk-cli-設計.md`（枝 `arena/890c19ec-trk-avatar-library`・未マージ・Drive `1gSPdwjz9p-6u7e2aodMvlzh-Zq5-QLN1`）。
   - **入口は2つ（U1 `both`）**：⚙ の「⌨ ターミナル（trk CLI）」と、PC では **Ctrl+`**（Mac は ⌘+`）。選曲画面の上に重ねて出し、**Esc・`quit`・✕** で閉じる。
