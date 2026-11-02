@@ -81,8 +81,8 @@ on("phase", fitStage);
 
 /* ---------- 全画面の重ね表示が開いているか（名前空間の移行で、旧 window の旗 3 つ＝書斎・メディアプレーヤー・シンス を置き換え） ----------
    書く側：window.Trk.overlay.set("study", true)   読む側：window.Trk.overlay.is("study")
-   どれか一つでも開いているか：window.Trk.overlay.any()   名前は "study"（書斎）・"media"（メディアプレーヤー）・"synth"（シンス） */
-const TRK_OVERLAY_OPEN = { study:false, media:false, synth:false };
+   どれか一つでも開いているか：window.Trk.overlay.any()   名前は "study"（書斎）・"media"（メディアプレーヤー）・"synth"（シンス）・"cli"（⌨ ターミナル・trk267） */
+const TRK_OVERLAY_OPEN = { study:false, media:false, synth:false, cli:false };
 const trkOverlayHas = name => Object.prototype.hasOwnProperty.call(TRK_OVERLAY_OPEN, name);
 window.Trk = window.Trk || {};
 window.Trk.overlay = {
@@ -137,6 +137,22 @@ function cleanSkinMap(v, max = 400) {
     if (!SKIN_ID_RE.test(k) || typeof n !== "number" || !isFinite(n) || n < 0) continue;
     out[k] = Math.round(Math.min(n, 1e9));
     if (Object.keys(out).length >= max) break;
+  }
+  return out;
+}
+/* ⌨ trk267：ターミナルで覚えた呪文（マクロ）の掃除。
+   名前は英小文字・数字・- の 24 文字まで、中身は 200 文字まで・24 本まで。
+   壊れた値は落とす（読むときに js/cli.js も同じ形に寄せます）。 */
+function cleanCliSpells(v) {
+  const out = {};
+  if (!v || typeof v !== "object" || Array.isArray(v)) return out;
+  for (const [id, body] of Object.entries(v)) {
+    if (!/^[a-z0-9][a-z0-9-]{0,23}$/.test(id)) continue;
+    if (typeof body !== "string") continue;
+    const text = body.trim().slice(0, 200);
+    if (!text) continue;
+    out[id] = text;
+    if (Object.keys(out).length >= 24) break;
   }
   return out;
 }
@@ -500,6 +516,12 @@ const settings = {
   cover: num(prefs.cover, .2, .7, .4),
   catchNitroBonus: prefs.catchNitroBonus !== false,
   catchBlastNext: prefs.catchBlastNext === true,
+  /* ⌨ trk267：ターミナル（trk CLI）。play の行き先（メディアプレーヤー／曲リストの試聴）、
+     開いている間の見た目（auto＝wizard を含むスキン→無ければ terminal／terminal／keep）、
+     覚えた呪文。どれもこの settings の中だけ（新しい localStorage のキーは増やしません）。 */
+  cliPlay: pick(prefs.cliPlay, ["media", "preview"], "media"),
+  cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "auto"),
+  cliSpells: cleanCliSpells(prefs.cliSpells),
   /* ▶ メディアプレーヤー（TV電源長押し） */
   mediaRepeat: pick(prefs.mediaRepeat, ["off", "one", "all"], "off"),
   mediaShuffle: prefs.mediaShuffle === true,
@@ -800,6 +822,8 @@ function resetAllPrefs() {
   settings.playerBarPos = "bottom"; settings.playerBarLock = false; settings.playerBarSeekLock = false;
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
+  /* ⌨ trk267：ターミナルの行き先（プレイヤー）・見た目（自動）・覚えた呪文（無し）も工場出荷状態へ */
+  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {};
 }
 /* trk247：設定JSONの「中身」を決める1か所（書き出しと、書き出しsizes表示が同じ物を見る）。
    ⚠ kind ごとに載せる物が違う（notes／tv／audio／all）。all は settings 全体。 */

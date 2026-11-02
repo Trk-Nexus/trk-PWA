@@ -2226,3 +2226,29 @@ body.trk-mobile.trk-density-dense{--trk-skin-cols:4;--trk-lib-thumb:36px}
    ゲーム画面の中（canvas の ctx.font）は今回触りません。 */
 body.trk-typo-on .brand h1,body.trk-typo-on details.panel>summary,body.trk-typo-on .panel h3{font-family:var(--trk-typo-display,var(--font))}
 body.trk-typo-on .hint,body.trk-typo-on .brand p{font-family:var(--trk-typo-body,var(--font))}
+
+/* ============ ⌨ ターミナル（trk267） ============
+   色は CSS 変数（--ui-*）から取るので、スキンを当て替えると端末の色も一緒に変わります。
+   CLI 用のスキン（cat に wizard）が来たら、この規則を足さずにそのまま着られます。 */
+.cliOverlay{background:rgba(2,4,10,.72)}
+.cliDialog{width:min(860px,100%);border-color:var(--ui-border);background:linear-gradient(155deg,var(--ui-panel),var(--ui-bg) 62%);color:var(--ui-text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace}
+.cliDialog .instHeader{border-bottom-color:var(--ui-border)}
+.cliLog{flex:1 1 auto;min-height:clamp(180px,42vh,420px);max-height:56vh;overflow-y:auto;padding:10px 14px;background:var(--ui-field);border-bottom:1px solid var(--ui-border);overscroll-behavior:contain}
+.cliLog:focus-visible{outline:2px solid var(--ui-accent-ink,var(--ui-accent));outline-offset:-2px}
+.cliLine{white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.55}
+.cliLine.cliIn{color:var(--ui-accent-ink,var(--ui-accent))}
+.cliLine.cliErr{color:var(--j-miss,#ff8f8f)}
+.cliLine.cliOut{color:var(--ui-text)}
+.cliForm{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--ui-border);background:rgba(0,0,0,.18)}
+.cliPromptChar{flex:none;color:var(--ui-accent-ink,var(--ui-accent));font-weight:900}
+.cliInput{flex:1 1 auto;min-width:0;padding:8px 10px;border:1px solid var(--ui-border);border-radius:10px;background:var(--ui-bg);color:var(--ui-text);font:inherit;font-size:14px}
+.cliInput:focus-visible{outline:2px solid var(--ui-accent-ink,var(--ui-accent));outline-offset:1px}
+.cliRunBtn{flex:none}
+.cliHintText{margin:0;padding:8px 14px 12px;color:var(--ui-muted);font-size:11px;line-height:1.5}
+@media (max-width:560px){
+  .cliLog{min-height:clamp(150px,36vh,320px)}
+  .cliForm{flex-wrap:wrap}
+  .cliInput{flex:1 1 100%;order:2}
+  .cliRunBtn{flex:1 1 auto;order:3}
+  .cliPromptChar{order:1}
+}

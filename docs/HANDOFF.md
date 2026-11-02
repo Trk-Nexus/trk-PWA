@@ -108,8 +108,8 @@
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1453 pass / 0 fail**（trk266 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.03-trk266@<スコープ>`**（実体は `trkPWA-trk-v2026.11.03-trk266@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| テスト | `npm run check` **1490 pass / 0 fail**（trk267 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.03-trk267@<スコープ>`**（実体は `trkPWA-trk-v2026.11.03-trk267@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | **組織 `Trk-Nexus` へ移籍済み**（trk250〜trk252）。Pages は稼働中（開発版 <https://trk-nexus.github.io/trk-PWA/>）。個人側の同名リポジトリは**空のまま**（墓標 README は所有者待ち・[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md) §6 X4） |
 
@@ -831,6 +831,16 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **⌨ trk267：trk CLI（Wizard のターミナル）— Skin 側の設計書 v0.1 のフェーズ C（2026-11-03）**：記録＝[`VIEWER-TRK267-2026-11-03.md`](VIEWER-TRK267-2026-11-03.md)、洗い出しと判断＝[`PLAN-TRK267-2026-11-03.md`](PLAN-TRK267-2026-11-03.md)。元は Skin 側（`Trk-Nexus/trk-Avatar-Library`）の `docs/trk-cli-設計.md`（枝 `arena/890c19ec-trk-avatar-library`・未マージ・Drive `1gSPdwjz9p-6u7e2aodMvlzh-Zq5-QLN1`）。
+  - **入口は2つ（U1 `both`）**：⚙ の「⌨ ターミナル（trk CLI）」と、PC では **Ctrl+`**（Mac は ⌘+`）。選曲画面の上に重ねて出し、**Esc・`quit`・✕** で閉じる。
+  - **コマンドは設計書の10（U2 `full`）**：`play`（番号・曲名・next・prev・random・fav）・`list`・`skin`・`grimoire`（カテゴリで絞れる）・`volume`・`seek`・`spell`（`add`／`del` で登録）・`cast`（`;` で続けて唱える）・`help`・`quit`/`exit`。＋`repeat`・`shuffle`。最初から入っている呪文は 3 本（`shuffle-fav`・`repeat-all`・`midnight`）。
+  - **`play` の行き先は設定で選べる（U3 `both`）**：既定は **メディアプレイヤー**（開いて鳴らし、端末は 0.4 秒後に閉じる）。もう一つは曲リストの試聴。
+  - **見た目（U4）**：開いている間だけスキンを当てる。既定 `auto` は **`cat` に `wizard` を含むスキン → 無ければ `terminal`**、閉じたら元へ戻す。端末の中で `skin` を唱えたときは、そのスキンを残す（`state.userSkin`）。色・書体は CSS 変数（`--ui-*`・`--ui-accent-ink`）から取るので、**Skin 側が wizard-cli を足せば、こちらの規則を足さずに着られる**。
+  - **安全**：`play` は**生のパスを受け付けない**（`/` `\` `..` `~` `C:` を断り、`list` の番号か曲名だけ）。保存は `core.settings` の中だけ（`cliPlay`・`cliSkin`・`cliSpells`）＝**localStorage のキーは増やさない**。端末は `Trk.overlay` の名前に `cli` を足したので、開いている間はゲームのキー入力が止まる。ゲーム中・書斎・メディアプレーヤーを開いている間は開かない。
+  - **触ったファイル**：`js/cli.js`（新規・純関数と実行を「純粋な計算（trk267）」で切り出し）・`js/core.js`（重ね表示の名前1語・`cliPlay`／`cliSkin`／`cliSpells` の既定と、工場出荷の3行）・`js/media-player-mode.js`（`window.TrkMediaPlayer` に `play` を1つ）・`index.html`（⚙ の `#cliPanel` と `<script src="js/cli.js">`）・`css/style.css`（`.cli*`）。
+  - 見張り：`tests/trk267-cli.test.mjs` **37 件**。jsdom で **30 項目 0 NG**（開く→`list`→`play`→`volume`→`spell`→`cast`→履歴→閉じる／唱えたスキンは残る・唱えていなければ戻る／Ctrl+`・Esc／ゲーム中は開かない／メディアプレイヤーへ渡して閉じる／言語の追従）。`npm run check` **1490 pass / 0 fail**。cache は **`trk-v2026.11.03-trk267`**。
+  - **`/trk/` に当てる版は保留**のまま（Skin 側との応答後）。
 
 - **📌 trk266：trk265 レビューの小さな推奨（2026-11-03）**：記録＝[`VIEWER-TRK266-2026-11-03.md`](VIEWER-TRK266-2026-11-03.md)、レビューへの返事＝[`REVIEW-RESPONSE-TRK265-2026-11-03.md`](REVIEW-RESPONSE-TRK265-2026-11-03.md)、洗い出し＝[`PLAN-TRK266-2026-11-03.md`](PLAN-TRK266-2026-11-03.md)。
   - **F1**：押せない理由の見える行は `pipWhyVisible()` の判断に（**`mediaPipHomeApp` かつ読み込み後**のときだけ）。普通の非対応（Firefox など）は今までどおり `title` だけ＝行が出しっぱなしにならない。

@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk266">
+<meta name="trk-build" content="trk267">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1225,6 +1225,31 @@
             </details>
           </details>
 
+          <!-- ⌨ trk267：ターミナル（trk CLI）。呪文で曲・スキン・音量・再生位置を直に操ります -->
+          <details class="panel" id="cliPanel">
+            <summary data-i18n="cliPanelTitle"></summary>
+            <div class="hint" data-i18n="cliPanelHint"></div>
+            <div class="miniActions">
+              <button id="cliOpenBtn" type="button" data-i18n="cliOpenBtn" aria-haspopup="dialog" aria-controls="cliMode"></button>
+            </div>
+            <div class="inline">
+              <span id="cliPlayLabel" data-i18n="cliPlayLabel"></span>
+              <select id="cliPlaySel" aria-labelledby="cliPlayLabel">
+                <option value="media" data-i18n="cliPlayMedia"></option>
+                <option value="preview" data-i18n="cliPlayPreview"></option>
+              </select>
+            </div>
+            <div class="inline">
+              <span id="cliSkinLabel" data-i18n="cliSkinLabel"></span>
+              <select id="cliSkinSel" aria-labelledby="cliSkinLabel">
+                <option value="auto" data-i18n="cliSkinAuto"></option>
+                <option value="terminal" data-i18n="cliSkinTerminal"></option>
+                <option value="keep" data-i18n="cliSkinKeep"></option>
+              </select>
+            </div>
+            <div class="hint" data-i18n="cliSkinHint"></div>
+          </details>
+
           <details class="panel" id="packPanel">
             <summary data-i18n="secPacks"></summary>
             <div class="hint" data-i18n="packHint"></div>
@@ -2290,6 +2315,7 @@
 <!-- ✨ フレーム補完（動き補償・光学フロー／WebGL2） -->
 <script src="js/frame-interp.js"></script>
 <script src="js/media-player-mode.js"></script>
+<script src="js/cli.js"></script>
 <!-- 📚 端末内の画像・テキスト閲覧モード（外部ライブラリ／アップロードなし） -->
 <script src="js/study-room-utils.js"></script>
 <script src="js/study-room.js"></script>
