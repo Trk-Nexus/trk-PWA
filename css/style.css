@@ -2050,6 +2050,9 @@ body.helpTextOff .videoMaxHint{display:none!important}
   color:#ffe3a3;font-size:12px;font-weight:750}
 .mediaPipNotice[hidden]{display:none!important}
 .mediaPipNoticeText{margin-right:auto}
+/* 📌 trk265：押せないときの理由（title はタッチ端末で出ないので、ボタンのすぐ下に1行） */
+.mediaPipWhy{margin:2px 14px 0;padding:0;color:#ffcf86;font-size:11px;font-weight:750;line-height:1.5}
+.mediaPipWhy[hidden]{display:none!important}
 .mediaStageCanvas[hidden]{display:none!important}
 .mediaInterpBox{margin:0 14px 2px;padding:10px 12px;border:1px solid rgba(120,220,255,.24);border-radius:12px;
   background:rgba(120,220,255,.05)}

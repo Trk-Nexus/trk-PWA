@@ -108,6 +108,7 @@ describe("trk258 版と記録", () => {
 
   test("HANDOFF §1.5 の cache 名も同じ版", () => {
     const cache = (swSrc.match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
-    assert.ok(handoff.includes(`trk-v2026.11.02-${cache}@<スコープ>`), cache);
+    /* 日付は版ごとに進む（trk265 で 11-03 になった）ので、日付は固定せず「同じ版名で揃っている」ことを見る */
+    assert.ok(new RegExp(`trk-v\\d{4}\\.\\d{2}\\.\\d{2}-${cache}@<スコープ>`).test(handoff), cache);
   });
 });

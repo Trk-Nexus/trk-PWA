@@ -83,8 +83,11 @@
    詳しくは docs/VIEWER-TRK263-2026-11-02.md。
    📌 trk264（2026-11-02・Safari の画中画）：Safari の webkitSetPresentationMode でも入れるようにしました。
    標準 API を先に試し、断られたら webkit へ。iPhone／iPad のホーム画面アプリでは押せない理由を出します。
-   詳しくは docs/VIEWER-TRK264-2026-11-02.md。 */
-const CACHE = "trk-v2026.11.02-trk264";
+   詳しくは docs/VIEWER-TRK264-2026-11-02.md。
+   📌 trk265（2026-11-03・trk264 レビューの手当て）：画中画を閉じるとき、標準と webkit の**両方**を順に試します
+   （Safari で標準が失敗すると小窓が残る不具合）。入るときは時間で決め打ちせず「変わった」の知らせを待ちます。
+   押せないときは、ボタンのすぐ下に見える理由を出します。詳しくは docs/VIEWER-TRK265-2026-11-03.md。 */
+const CACHE = "trk-v2026.11.03-trk265";
 const CACHE_PREFIX = "trk-";
 /* 🧭 trk252（2026-11-02）：CacheStorage に**実在させる名前**には `trkPWA-` を先頭に付けるようにしました。
    同じオリジンに別の trk!（上流 `/trk/` など）が在ると、相手が「`trk-` 始まりは全部消す」旧式の掃除を
