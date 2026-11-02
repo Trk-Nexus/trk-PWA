@@ -401,6 +401,10 @@ const settings = {
   synthModeFastStart: !!prefs.synthModeFastStart,
   synthModeKeyboardLock: prefs.synthModeKeyboardLock !== false,
   synthModeWideKeyboard: !!prefs.synthModeWideKeyboard,
+  /* 🎹 trk261：鍵盤の広さ（25／49／61／88）と幅の合わせ方（fit／scroll／shrink）、MIDI の自動接続 */
+  synthModeKeyRange: ["25", "49", "61", "88"].includes(String(prefs.synthModeKeyRange)) ? String(prefs.synthModeKeyRange) : "25",
+  synthModeKeyFit: ["fit", "scroll", "shrink"].includes(prefs.synthModeKeyFit) ? prefs.synthModeKeyFit : "fit",
+  synthMidiAuto: prefs.synthMidiAuto !== false,
   notes: window.Trk.data.sanitizeNotes(prefs.notes ?? (prefs.skin === "clarity" ? window.Trk.data.NOTE_PRESETS.clarity : null)),
   mascot: pick(prefs.mascot, ["skin", "none", ...window.Trk.data.MASCOT_IDS], "skin"),
   fxPower: num(prefs.fxPower, 0, 3, 1.5),
@@ -645,6 +649,7 @@ function resetAudioPrefs() {
   settings.bannerRandomBtn = true; settings.bannerRandomTap = false;
   settings.midiSoundProfile = "studio_gm"; settings.midiMixEnabled = false; settings.midiMixProfile = "studio_gm"; settings.midiMixOpen = true;
   settings.synthModeDisabled = false; settings.synthModeFastStart = false; settings.synthModeKeyboardLock = true; settings.synthModeWideKeyboard = false;
+  settings.synthModeKeyRange = "25"; settings.synthModeKeyFit = "fit"; settings.synthMidiAuto = true;
   try {
     if (window.TrkFX && typeof window.TrkFX.midiMixProfile === "function") window.TrkFX.midiMixProfile("studio_gm");
     if (window.TrkFX && typeof window.TrkFX.midiMixOn === "function") window.TrkFX.midiMixOn(false);
@@ -724,6 +729,7 @@ function enterSafeMode() {
   settings.artWallpaperBg = false; settings.useStudyArtwork = false; settings.hideArtworkDuringChart = false;
   settings.synthModeKeyboardLock = true; // 🎹 セーフモードではシンセを開けないが、既定値は壊さない
   settings.synthModeWideKeyboard = false;
+  settings.synthModeKeyRange = "25"; settings.synthModeKeyFit = "fit";   // セーフモードは鍵盤を最小・等倍に戻す（MIDI の設定は消さない）
   settings.libKeepShared = false;        // 📤 セーフモードでは、端末に残した共有の曲も読み戻さない
   settings.fxPower = 0; settings.gameFxMode = "off"; settings.hideGameplayUI = false;
   settings.midiMixEnabled = false; settings.midiMixOpen = false;
@@ -805,6 +811,9 @@ function prefsExportPayload(kind) {
     out.synthModeDisabled = settings.synthModeDisabled; out.synthModeFastStart = settings.synthModeFastStart;
     out.synthModeKeyboardLock = settings.synthModeKeyboardLock;
     out.synthModeWideKeyboard = settings.synthModeWideKeyboard;
+    out.synthModeKeyRange = settings.synthModeKeyRange;
+    out.synthModeKeyFit = settings.synthModeKeyFit;
+    out.synthMidiAuto = settings.synthMidiAuto;
     if ("gameVolume" in settings) out.gameVolume = settings.gameVolume;
   } else if (kind === "core") {
     /* trk247：ノート（譜面の作り込み）をのぞいた設定。ノートが大きいせいで

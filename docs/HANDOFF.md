@@ -108,8 +108,8 @@
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1355 pass / 0 fail**（trk260 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.02-trk260@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk260@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| テスト | `npm run check` **1374 pass / 0 fail**（trk261 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.02-trk261@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk261@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | **組織 `Trk-Nexus` へ移籍済み**（trk250〜trk252）。Pages は稼働中（開発版 <https://trk-nexus.github.io/trk-PWA/>）。個人側の同名リポジトリは**空のまま**（墓標 README は所有者待ち・[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md) §6 X4） |
 
@@ -831,6 +831,14 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **🎹 trk261：シンセの鍵盤を 25／49／61／88 鍵に、MIDI キーボードに対応（2026-11-02）**：記録＝[`SYNTH-TRK261-2026-11-02.md`](SYNTH-TRK261-2026-11-02.md)、洗い出し＝[`PLAN-TRK261-2026-11-02.md`](PLAN-TRK261-2026-11-02.md)。
+  - **鍵盤の広さ**：25（C3–C5・従来）／49（C2–C6）／61（C2–C7）／88（A0–C8）。設定 `synthModeKeyRange`（既定 `25`）。
+  - **幅の合わせ方**：`fit`（収まるなら広げ・はみ出せば縮める・下限 0.45 倍）／`scroll`（等倍で横スクロール）／`shrink`（いつも1画面・下限 0.28 倍）。設定 `synthModeKeyFit`（既定 `fit`）。`.instPiano` の `min-width:630px` は廃止し、JS が決める。
+  - **キー割り当ての移行**：配列（C3 基準・25 個）→ `{ 音番号: キー }`。旧データは読み込み時に自動で読み替え（利用者の割り当ては消えない）。
+  - **MIDI（Web MIDI）**：ノートオン/オフ（ベロシティを音量へ）・CC64 サステイン・CC120/123 オールノートオフ・ピッチベンド（±2半音）。抜き差しに追随し、閉じている間は鳴らさない。設定 `synthMidiAuto`（既定オン・許可済みのときだけ黙ってつなぐ）。
+  - **対応端末**：Chrome／Edge などは可、**Safari（iPhone・iPad を含む）は不可**（画面に理由を出す）。実物の鍵盤での確認は残る。
+  - 見張り：`tests/trk261-synth.test.mjs` **19 件**（純粋関数を切り出して読む）。`npm run check` **1374 pass / 0 fail**。cache は **`trk-v2026.11.02-trk261`**。
 
 - **🚑 trk260：開いた直後が「枠だけ・文字なし・ボタンが効かない」を修正（2026-11-02）**：記録＝[`FIX-TRK260-BOOT-2026-11-02.md`](FIX-TRK260-BOOT-2026-11-02.md)。
   - **原因**：`js/core.js` の先頭で `fitStage()` を呼んでいた。その中で使う `const LIB_LIST_MIN` は同じファイルの 1800 行台にあり、**TDZ の `ReferenceError`** で core.js の残り（`settings`・`applyLanguage`・画面の配線・`window.Trk.core`）が丸ごと止まっていた。後続も `Trk.core` 不在で次々に落ち、**CSS だけ効いた殻**が残った。trk245〜trk259 の配布物が該当。
