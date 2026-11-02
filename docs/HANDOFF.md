@@ -108,8 +108,8 @@
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1374 pass / 0 fail**（trk261 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.02-trk261@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk261@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| テスト | `npm run check` **1392 pass / 0 fail**（trk262 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.02-trk262@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk262@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | **組織 `Trk-Nexus` へ移籍済み**（trk250〜trk252）。Pages は稼働中（開発版 <https://trk-nexus.github.io/trk-PWA/>）。個人側の同名リポジトリは**空のまま**（墓標 README は所有者待ち・[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md) §6 X4） |
 
@@ -831,6 +831,14 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **🎬 trk262：映像の操作パネルの出かたと、字幕の置き場所・大きさ（2026-11-02）**：記録＝[`VIEWER-TRK262-2026-11-02.md`](VIEWER-TRK262-2026-11-02.md)、洗い出し＝[`PLAN-TRK262-2026-11-02.md`](PLAN-TRK262-2026-11-02.md)、自動字幕の案内＝[`AUTO-CAPTIONS-TRK262-2026-11-02.md`](AUTO-CAPTIONS-TRK262-2026-11-02.md)。
+  - **操作パネルの出かた**：`full`（触れると上下・今までどおり）／`bottom`（触れると下だけ）／`always`（下だけ常に）／`none`（何も出さない）。設定 `videoMaxChrome`（既定 `full`）。**暗くする膜は作らない**。🖥 全画面と ▶ メディアプレーヤーの映像の両方に効く。
+  - **逃げ道**：`none` でも ESC・映像の外のクリック・画面の上下 24px に触れる（3 秒）・一時停止中は操作を出せる。▶ 側は「再生中だけ隠し、止めれば必ず出る」。
+  - **下のバー**（🖥 全画面）：⏪10秒／⏩10秒／シーク線／時間／🔍／⛶／✕。操作は 1 か所だけ（上と下で二重に持たない）。
+  - **字幕**：置き場所 `bottom`／`middle`／`top`（`mediaSubsPos`・既定 `bottom`）、大きさ `small`／`normal`／`large`（`mediaSubsSize`・既定 `normal`）。trk が描く字幕だけに効く（📌 画中画・OS のライブキャプションは向こうの設定）。
+  - **自動字幕**：trk は音を聞かない（マイクも取らない）。Windows 11 `Windows+Ctrl+L`・macOS のライブキャプション・Chrome のライブキャプション・Android の手順を文書にまとめ、💬 字幕 パネルに「ℹ 自動字幕について」を置いた。
+  - 見張り：`tests/trk262-viewer.test.mjs` **18 件**（`js/viewer-chrome.js` を vm で読む純粋な計算＋配線の目印）。`npm run check` **1392 pass / 0 fail**。cache は **`trk-v2026.11.02-trk262`**。
 
 - **🎹 trk261：シンセの鍵盤を 25／49／61／88 鍵に、MIDI キーボードに対応（2026-11-02）**：記録＝[`SYNTH-TRK261-2026-11-02.md`](SYNTH-TRK261-2026-11-02.md)、洗い出し＝[`PLAN-TRK261-2026-11-02.md`](PLAN-TRK261-2026-11-02.md)。
   - **鍵盤の広さ**：25（C3–C5・従来）／49（C2–C6）／61（C2–C7）／88（A0–C8）。設定 `synthModeKeyRange`（既定 `25`）。
