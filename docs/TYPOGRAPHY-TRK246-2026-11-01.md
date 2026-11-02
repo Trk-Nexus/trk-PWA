@@ -99,7 +99,7 @@ CSS 変数2本（見出しは `display`→`heading`、本文は `body`→`captio
 
 返事15 §2 に **trk-PWA の写しは自動では届きません（手取り直しをお願いします）** とあったので、手写しをやめました。
 
-- **固定版**：`tests/fixtures/avatar-library-typography.json`＝相手の `catalog/typography.json` そのもの（34,194 B）。隣の `.meta.json` に `ref`（`7d7e5aec59…`）と `sha256`（`4301ac045b…`）
+- **固定版**：`tests/fixtures/avatar-library-typography.json`＝相手の `catalog/typography.json` そのもの（34,194 B）。**どこの ref の・どの sha256 の文件かは隣の `.meta.json` が正**（この文書にもコードにも写さない）
 - **生成**：`node tools/sync-typography-catalog.mjs --from=../trk-Avatar-Library/catalog/typography.json --ref=<sha>`（または `--against=main`）。写しの形（`packs` から `font-packs/` を落とす・役ごとに `tracking`/`leading` を畳む）は trk246 のまま、**値はすべて目録から**
 - **検査**：`tests/trk254-typography-copy.test.mjs`（固定版の sha256 がメタと合う／`PAIRINGS` ＝ 目録から作ったもの／r9 の直しが載っている／`trkUse` が14組にあり1〜34字／cache 名）。`npm run check` **1285 pass / 0 fail**
 - **進んだかどうかの照合**（通信が必要なので CI か手元）：`node tools/sync-typography-catalog.mjs --against=main --check` → ズレがあえば exit 1 と changed の組一覧
