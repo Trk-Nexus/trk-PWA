@@ -108,8 +108,8 @@
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1329 pass / 0 fail**（trk256 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.02-trk256@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk256@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| テスト | `npm run check` **1339 pass / 0 fail**（trk258 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.02-trk258@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk258@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | **組織 `Trk-Nexus` へ移籍済み**（trk250〜trk252）。Pages は稼働中（開発版 <https://trk-nexus.github.io/trk-PWA/>）。個人側の同名リポジトリは**空のまま**（墓標 README は所有者待ち・[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md) §6 X4） |
 
@@ -831,6 +831,12 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **🗓 trk258：r10 の受け皿（R3・R4・R5・2026-11-02）**：返事17（r10）で**目録の形が r9 と同じ**まま版だけ進んだので、取り違えと数字のずれを画面で分かるようにしました。設計メモ＝[`POLISH-TRK258-2026-11-02.md`](POLISH-TRK258-2026-11-02.md)。
+  - **R3 目録の版**：📚 目録から入れる の要約に **`目録の版 2026-11-02`**（`catalog/index.json` の `updatedAt`・UTC の日付）。読む側は今のままなので `check-set --json` の形は不変。
+  - **R4 セットの要約**：r10 を r9 の上に入れると**見本 1 本だけ飛ぶ**ため、要約を `setPending`（これから入る分）で数えるように（30→**29**・64.2→**60.2 MB**）。終わりの 1 行も**実際に入った分**の合計へ。
+  - **R5 ボタンの読み上げ名**：`check:a11y` に 9 件目の検査。名無しの 12 個のうち**画面のタップ鍵 2 つ**に `data-i18n-aria` を付け、残る 10 個は **id の許可リスト**（HTML から消えたら FAIL）。
+  - 辞書は **1122 キー ×4**（+4 キー）。`npm run check` **1339 pass / 0 fail**（177 suites）・a11y **9/0**。cache は **`trk-v2026.11.02-trk258`**。
 
 - **📋 trk257：r10 を受けての洗い出しと、実機・上流の手順書（2026-11-02）**：返事17（r10）を読んで、**こちらで整えられるもの**と**こちらでは進められないもの**を分けた台帳＝[`PLAN-TRK257-2026-11-02.md`](PLAN-TRK257-2026-11-02.md)。
   - **r10 の実測**：`first-set-2026-11-02-r10` **8,118,128 B**・`font-set-2026-11-02-r10` **64,197,328 B**（`.stlib` と `.zip` が同サイズ）／`catalog/index.json` **30 パック・48,061 B**／`catalog/typography.json` は **34,194 B・`4301ac04…` で r9 から不変**（`sync-typography-catalog --against=main --check` → **差：ありません**）／縮刷版 486,510 B・`74ca7054…`／定義の `files` は 13・37 で、ZIP は `set.json` と `README-はじめに.txt` が足されて **15・39**（先方の `build-set.mjs` の `files.length + 2`）。

@@ -160,6 +160,48 @@ rule(tabProblems.length === 0, "role=tablist holds tabs only (the ＋ button sta
     doc ? "外部ツールでの点検手順つき" : "見つかりません");
 }
 
+/* ---------- 8. ボタンの読み上げ名（trk258・M3） ----------
+   ここまでは入力欄・画像・見出しを見ていたが、**ボタンは見ていなかった**。
+   静的に名前の出どころが無いものは、次の2種類だけにする：
+     ・`aria-label` / `aria-labelledby` / `title` / `data-i18n` / `data-i18n-aria` / 中の文字 / 画像の alt がある
+     ・**JS が開いたときに文字を入れる**もの（下の許可リストに id で書く）
+   許可リストの id が HTML から消えたら FAIL（名前を付けたのに許可が残る、の逆も見る）。 */
+{
+  const runtimeNamed = new Map([
+    ["studyOpenBtn", "study-room.js が開いたときに文字を入れる"],
+    ["libSkinBtn", "lib-skins.js がスキン名を入れる"],
+    ["libReconnectBtn", "library.js の showReconnect() が入れる"],
+    ["mediaKeepCurrentBtn", "library.js が入れる"],
+    ["skinHiddenRestore", "core.js が件数つきで入れる"],
+    ["skinManageHideUnused", "core.js が入れる"],
+    ["skinManageRestoreAll", "core.js が入れる"],
+    ["packDeletePicked", "custom.js が件数つきで入れる"],
+    ["catalogRemoveAll", "pack-catalog.js が件数つきで入れる"],
+    ["trkRestoreBtn", "library.js が件数つきで入れる"],
+  ]);
+  const html = read("index.html");
+  const problems = [];
+  let allowed = 0;
+  for (const f of htmlFiles) {
+    const src = read(f);
+    for (const m of src.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)) {
+      const attrs = m[1], inner = m[2], all = attrs + " " + inner;
+      if (/\baria-label=|\baria-labelledby=|\btitle=|\bdata-i18n-aria=|\bdata-i18n=/.test(all)) continue;
+      const text = inner.replace(/<[^>]*>/g, "").replace(/&[^;\s]+;/g, "x").trim();
+      if (text) continue;
+      const alt = /<img\b[^>]*\balt=["']([^"']+)["']/.exec(inner);
+      if (alt && alt[1].trim()) continue;
+      const id = (attrs.match(/\bid=["']([^"']+)["']/) || [])[1] || "";
+      if (id && runtimeNamed.has(id)) { allowed++; continue; }
+      problems.push(`${f}: ${id || m[0].slice(0, 60).replace(/\s+/g, " ")}`);
+    }
+  }
+  const stale = [...runtimeNamed.keys()].filter(id => !new RegExp(`\\bid=["']${id}["']`).test(html));
+  if (stale.length) problems.push(`許可リストの id が HTML にありません: ${stale.join(", ")}`);
+  rule(problems.length === 0, "every <button> has an accessible name",
+    problems.length ? problems.join(" / ") : `${allowed} 件は実行時に名前が入る（許可リスト）`);
+}
+
 console.log("");
 if (failed) {
   console.log(`a11y check: ${failed} failure(s) · ${pass} check(s) passed`);

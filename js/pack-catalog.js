@@ -362,6 +362,8 @@
       if (newer) sum.textContent += " " + tr("catalogUpdates", { n: newer });
       /* 💾 trk234：目録の合計（落とす前に、どのくらいの容量か分かるように） */
       if (total && bytes) sum.textContent += " · " + tr("catalogTotalBytes", { size: formatBytes(bytes) });
+      /* 🗓 trk258（R3）：どの日の目録かを出す（r9 と r10 は形が同じなので、取り違えに気づけるように） */
+      if (current.updatedAt) sum.textContent += " · " + tr("catalogUpdated", { date: String(current.updatedAt).slice(0, 10) });
       if (catalogTag) sum.textContent += " · " + tr("catalogTagShown", { tag: catalogTag, n: shown.length });
     }
     /* 💾 trk234：この目録のぶんが入っているときだけ「まとめて消す」を出す */
@@ -673,29 +675,32 @@
     const plan = planSet(opened);
     const miss = plan.missing.length;
     const sumKey = opened.release ? "catalogSetSummary" : "catalogSetSummaryNoRelease";
-    const vars = { name:opened.name, release:opened.release, n:plan.packs.length, size:formatBytes(plan.bytes), miss };
-    setSummary(tr(sumKey, vars), miss > 0);
-    for (const entry of plan.missing) setRowNote(entry, tr("catalogSetMissingNote", { file:entry.file }), true);
-    if (!plan.packs.length) { if (c.setStatus) c.setStatus("catalogStatus", "catalogSetEmpty"); return true; }
     /* 入れる前に、何パック・何 MB 入るかを確かめてもらう（trk234 の容量表示と同じ考え） */
     /* 📦 trk239：聞くのは「これから入る分」の数と大きさだけ（すでに入っていて版も同じものは飛ばす） */
     const pend = setPending(plan, installed);
+    /* 📦 trk258（R4）：**要約も同じ数え方**にする。r10 を r9 の上に入れると 1 本だけ飛ぶので、
+       要約が「30 パック・64.2 MB」で確認が「29 パック・60.2 MB」だと「壊れた？」と思わせる。 */
+    const vars = { name:opened.name, release:opened.release, n:pend.pending.length, size:formatBytes(pend.bytes), miss };
+    setSummary(tr(sumKey, vars) + (pend.skip.length ? tr("catalogSetSummarySkip", { skip: pend.skip.length }) : ""), miss > 0);
+    for (const entry of plan.missing) setRowNote(entry, tr("catalogSetMissingNote", { file:entry.file }), true);
+    if (!plan.packs.length) { if (c.setStatus) c.setStatus("catalogStatus", "catalogSetEmpty"); return true; }
     if (pend.pending.length && !confirm(tr(pend.skip.length ? "catalogSetConfirmSkip" : "catalogSetConfirm",
       { n:pend.pending.length, size:formatBytes(pend.bytes), skip:pend.skip.length }))) {
       if (c.setStatus) c.setStatus("catalogStatus", "catalogBundleNoPack");
       return true;
     }
-    let ok = 0, bad = 0, skip = 0, done = 0;
+    let ok = 0, bad = 0, skip = 0, done = 0, okBytes = 0;
     for (const item of plan.packs) {
       done++;
       const hit = installed.find(rec => samePack(item.entry, rec));
       if (hit && !versionDiffers(item.entry, hit)) { skip++; setRowNote(item.entry, tr("catalogAlreadyIn"), false); continue; }
       if (c.setStatus) c.setStatus("catalogStatus", "catalogSetProgress", { done, n:plan.packs.length, name:item.entry.name });
       const doneOne = await installSetEntry(opened, item);
-      if (doneOne) ok++; else bad++;
+      if (doneOne) { ok++; okBytes += Number(item.entry.bytes) || Number(item.zipEntry && item.zipEntry.usize) || 0; }
+      else bad++;
     }
     await refreshInstalled(); render(); renderFontIndex().catch(() => {});
-    setSummary(tr("catalogSetDone", { ok, skip, bad, miss, size:formatBytes(plan.bytes) }), bad > 0 || miss > 0);
+    setSummary(tr("catalogSetDone", { ok, skip, bad, miss, size:formatBytes(okBytes) }), bad > 0 || miss > 0);
     if (c.setStatus) c.setStatus("catalogStatus", bad || miss ? "catalogSetSome" : "catalogSetAll", { ok, skip, bad, miss });
     return true;
   }

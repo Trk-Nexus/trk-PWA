@@ -14,7 +14,7 @@
 | JavaScript の書き間違い | `eslint` 10.12（possible-problems 系ルールのみ。整形の好みは見ない） | **31件**（重複キー29・不可視空白1・Promise の戻り値1） |
 | CSS の文法 | `css-tree` 3.x | **0件**（`css/style.css` 1652行・`study-room.css` 300行・`privacy.css` 69行、インライン `<style>` も無し） |
 | Web App Manifest | 手元の検査（必須項目・アイコンの実在とサイズ） | **0件**（`display:fullscreen` / 192px・512px あり） |
-| 毎回の見張り番 | **`node tools/check-a11y.mjs`**（依存パッケージ不要・`npm run check` に含まれる） | 8 checks。見出しの飛びは0件（許可リストは空）。飛びが出たら FAIL |
+| 毎回の見張り番 | **`node tools/check-a11y.mjs`**（依存パッケージ不要・`npm run check` に含まれる） | 9 checks。見出しの飛びは0件（許可リストは空）。飛びが出たら FAIL |
 
 > ⚠ この環境からは **validator.w3.org / jigsaw.w3.org / pagespeed.web.dev に到達できません**（ネットワーク遮断）。
 > そのため W3C のオンライン診断と同じ規則を実装したオフライン版で代用しています。**手元のブラウザでは**
@@ -62,7 +62,8 @@
 4. **押せるものの role を消していない**（`role="presentation"` / `"none"`）
 5. **`role="tablist"` の中身がタブだけ**（＋ボタンを混ぜない。`js/library.js` の `libTabsList` を見る）
 6. **見出しの飛びが無い** — 許可リストは空。`h1→h3` は 2026-10-08 に解消（飛びが出たら FAIL）
-7. **色コントラストは別のNodeテスト** — `tests/skin-contrast.test.mjs` が53スキンの固定HEXペアを確認する。計算スタイル／DOM opacity／実hover状態／背景合成は測らないため、axeの代わりではない。
+7. **ボタンに読み上げ名がある**（`aria-label` / `data-i18n` / 中の文字 / 画像の alt。**JS が開いたときに入れるものは id の許可リスト**＝10件・2026-11-02 の trk258。許可リストの id が HTML から消えたら FAIL）
+8. **色コントラストは別のNodeテスト** — `tests/skin-contrast.test.mjs` が53スキンの固定HEXペアを確認する。計算スタイル／DOM opacity／実hover状態／背景合成は測らないため、axeの代わりではない。
 
 ## 5. もう一度やりたいとき（手順）
 
