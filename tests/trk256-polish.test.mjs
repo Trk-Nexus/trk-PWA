@@ -12,6 +12,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import { execFileSync } from "node:child_process";
 import { ROOT } from "./helpers/browser-data.mjs";
 
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
@@ -80,11 +81,27 @@ describe("trk256 S3 JavaScript が止まっているときの案内", () => {
   });
 });
 
+/* 🔁 trk257：鏡（`make-stable`）を当てた上流では、README の `trk-PWA` が `trk` に反転します。
+   名前を直に書くと**鏡の側だけ赤くなる**（実際に /tmp の鏡で 1 件落ちました）ので、
+   **この作業ツリーの origin** から名前を決めます。git が無い所では「clone 先と cd が同じ」だけを見ます。 */
+function ownRepoName() {
+  try {
+    const url = execFileSync("git", ["remote", "get-url", "origin"], {
+      cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    const name = url.replace(/\.git$/, "").split(/[\/:]/).pop();
+    return /^(trk|trk-PWA)$/.test(name) ? name : "";
+  } catch (_) { return ""; }
+}
+
 describe("trk256 S4 README のローカル起動手順", () => {
-  test("このリポジトリ（trk-PWA）を clone する", () => {
-    assert.match(readme, /git clone https:\/\/github\.com\/Trk-Nexus\/trk-PWA\.git/);
-    assert.match(readme, /cd trk-PWA/);
-    assert.ok(!/git clone https:\/\/github\.com\/Trk-Nexus\/trk\.git/.test(readme), "上流の clone を残さない");
+  test("このリポジトリ（origin の名前）を clone する", () => {
+    const hit = readme.match(/git clone https:\/\/github\.com\/Trk-Nexus\/([\w.-]+)\.git/);
+    assert.ok(hit, "clone の行がある");
+    assert.match(readme, new RegExp(`cd ${hit[1].replace(/\./g, "\\.")}`), "cd が clone 先と同じ名前");
+    const own = ownRepoName();
+    if (own) assert.equal(hit[1], own, `clone 先は origin（${own}）と同じ`);
+    else assert.ok(/^(trk|trk-PWA)$/.test(hit[1]), `clone 先が ${hit[1]}`);
   });
 
   test("開発版と安定版の違いを1行で書いている", () => {

@@ -832,6 +832,13 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 
 ## 7. 最近の変更
 
+- **📋 trk257：r10 を受けての洗い出しと、実機・上流の手順書（2026-11-02）**：返事17（r10）を読んで、**こちらで整えられるもの**と**こちらでは進められないもの**を分けた台帳＝[`PLAN-TRK257-2026-11-02.md`](PLAN-TRK257-2026-11-02.md)。
+  - **r10 の実測**：`first-set-2026-11-02-r10` **8,118,128 B**・`font-set-2026-11-02-r10` **64,197,328 B**（`.stlib` と `.zip` が同サイズ）／`catalog/index.json` **30 パック・48,061 B**／`catalog/typography.json` は **34,194 B・`4301ac04…` で r9 から不変**（`sync-typography-catalog --against=main --check` → **差：ありません**）／縮刷版 486,510 B・`74ca7054…`／定義の `files` は 13・37 で、ZIP は `set.json` と `README-はじめに.txt` が足されて **15・39**（先方の `build-set.mjs` の `files.length + 2`）。
+  - **実機の 1 枚**＝[`DEVICE-CHECK-R10-2026-11-02.md`](DEVICE-CHECK-R10-2026-11-02.md)：はじめてセット → 書体セット（r9 の上に入れて 29／1 を確かめる）→ 縮刷版 → trk254〜256 の 7 点 → 同居。**記入欄つき**で、そのまま HANDOFF §4 に写せる形。
+  - **上流の手順書**＝[`TRK-STABLE-RUNBOOK-2026-11-02.md`](TRK-STABLE-RUNBOOK-2026-11-02.md)：本筋は **`make-stable`（鏡）**、`backport` は最小の手当て、**併用しない**。`/tmp` に上流 `06cef87` を clone して実測（**追加 109・更新 44・同一 356・反転 57 ファイル**、鏡のあと `npm run check` **1329 pass / 0 fail**、`backport --check` は ①〜④ が当たる）。
+  - **鏡でだけ赤くなる 1 件を修正**：`tests/trk256-polish.test.mjs` の S4 が README の `trk-PWA` を直に書いていたため、鏡（`trk-PWA` → `trk` 反転）で落ちました。**origin から名前を決める**形に直し、鏡でも 1329/0 を実測。
+  - **コードは 0 行**（`tests/` 1 本だけ）。`sw.js` の cache は **`trk-v2026.11.02-trk256` のまま**。
+
 - **🧹 trk256：小粒のセット A／配布物 B（2026-11-02）**：`docs/BACKLOG-2026-11-02.md` の S2〜S6 と M1・M2 をまとめて入れました。設計メモ＝[`POLISH-TRK255-2026-11-02.md`](POLISH-TRK255-2026-11-02.md)（trk255 と同じ束）。
   - **S2（オフラインの書類）**：`sw.js` の `PRECACHE_EXTRA` に `credits.html`・`privacy.html`・`docs/ADDONS.md` を追加。`docs/` は丸ごと先読みしない方針のまま、**`PRECACHE_ALLOW` に書いた1本だけ例外**にしました（3本で 36 KB ほど）。これまで初回オフラインでリンクを押すとアプリが再表示されていました。
   - **S3（JS が止まっているとき）**：`<body>` の直後に `<noscript>` を1枚（日本語＋英語・見た目は直書き・スクリプト無し）。真っ暗な画面の代わりに理由が出ます。
