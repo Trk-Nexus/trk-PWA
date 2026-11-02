@@ -1995,8 +1995,18 @@ body.helpTextOff .mediaWallHintText{display:none!important}
 #videoMaxView[hidden]{display:none!important}
 #videoMaxView{position:fixed;inset:0;z-index:60000;display:flex;flex-direction:column;background:#000;color:#fff;
   transition:opacity .2s}
-.videoMaxTop{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;
+/* 🎬 trk262：上の帯（曲名）は重ねて出す（映像の高さを削らない）。下のバーは操作の 1 か所 */
+.videoMaxTop{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;
   background:linear-gradient(180deg,rgba(0,0,0,.72),rgba(0,0,0,0));transition:opacity .25s}
+.videoMaxTop[hidden]{display:none!important}
+.videoMaxBottom{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;align-items:center;gap:8px;
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(0deg,rgba(0,0,0,.82),rgba(0,0,0,.28) 62%,rgba(0,0,0,0));transition:opacity .25s}
+.videoMaxBottom[hidden]{display:none!important}
+.videoMaxSkip{padding:7px 10px}
+.videoMaxSeekRange{flex:1 1 auto;min-width:70px;height:22px;accent-color:#ffd166;cursor:pointer}
+.videoMaxSeekRange:disabled{opacity:.45;cursor:default}
+.videoMaxTime{font-size:12px;color:rgba(255,255,255,.86);white-space:nowrap;font-variant-numeric:tabular-nums}
 .videoMaxTitle{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(13px,2vw,19px);
   text-shadow:0 2px 8px #000}
 .videoMaxTools{display:flex;gap:8px;flex:none}
@@ -2017,9 +2027,9 @@ body.helpTextOff .mediaWallHintText{display:none!important}
 .videoMaxZoom{font-variant-numeric:tabular-nums;min-width:78px}
 .videoMaxNote{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;max-width:80%;
   text-align:center;color:rgba(255,255,255,.78)}
-.videoMaxHint{margin:0;padding:8px 14px 12px;text-align:center;color:rgba(255,255,255,.62);font-size:11px;
-  transition:opacity .25s}
-#videoMaxView.idle .videoMaxTop,#videoMaxView.idle .videoMaxHint{opacity:0;pointer-events:none}
+.videoMaxHint{position:absolute;left:0;right:0;bottom:62px;z-index:2;margin:0;padding:6px 14px;text-align:center;
+  color:rgba(255,255,255,.62);font-size:11px;transition:opacity .25s}
+.videoMaxHint[hidden]{display:none!important}
 #videoMaxView.idle{cursor:none}
 body.videoMaxOpen{overflow:hidden;overscroll-behavior:none}
 @media(prefers-reduced-motion:reduce){#videoMaxView,.videoMaxTop,.videoMaxHint{transition:none}}
@@ -2068,10 +2078,32 @@ button.lyricLine:hover{color:#ffe6f3;background:rgba(255,170,220,.08)}
   text-align:center;font-size:clamp(12px,2.2vh,18px);line-height:1.4;color:#fff;white-space:pre-line;
   text-shadow:0 1px 3px #000,0 0 2px #000;background:rgba(0,0,0,.38);border-radius:8px;padding:2px 8px}
 .mediaSubs[hidden]{display:none!important}
+/* 🎬 trk262：字幕の置き場所（下・中央・上）と大きさ（小・中・大） */
+.mediaSubs[data-pos="middle"]{bottom:auto;top:50%;transform:translateY(-50%)}
+.mediaSubs[data-pos="top"]{bottom:auto;top:8%}
+.mediaSubs[data-size="small"]{font-size:calc(clamp(12px,2.2vh,18px) * .8)}
+.mediaSubs[data-size="large"]{font-size:calc(clamp(12px,2.2vh,18px) * 1.35)}
+/* 🎬 trk262：動画の再生中だけ、操作列を触らないと隠す（設定が bottom／none のとき） */
+.mediaControls,.mediaProgressRow{transition:opacity .25s}
+.mediaDialog.mediaChromeIdle .mediaControls,.mediaDialog.mediaChromeIdle .mediaProgressRow{opacity:0;pointer-events:none}
+.mediaSubsPosRow,.mediaSubsSizeRow{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;
+  color:var(--ui-muted);font-weight:750}
+.mediaSubsPosRow select,.mediaSubsSizeRow select{font-size:12px}
+.mediaSubsAuto{margin-top:8px;padding:8px 10px;border:1px solid rgba(150,220,255,.18);border-radius:10px;
+  background:rgba(0,0,0,.16);font-size:11px;line-height:1.5;color:var(--ui-muted)}
+.mediaSubsAuto summary{cursor:pointer;font-weight:800;color:#cdeeff;font-size:12px}
+.mediaSubsAuto p{margin:6px 0 0}
 .videoMaxSubs{position:absolute;left:5%;right:5%;bottom:6%;max-height:40%;overflow:hidden;pointer-events:none;
   text-align:center;font-size:clamp(16px,3.4vh,36px);line-height:1.35;color:#fff;white-space:pre-line;
-  text-shadow:0 2px 5px #000,0 0 3px #000}
+  text-shadow:0 2px 5px #000,0 0 3px #000;transition:bottom .2s}
 .videoMaxSubs[hidden]{display:none!important}
+/* 🎬 trk262：字幕の置き場所（下・中央・上）と大きさ（小・中・大）。設定は trk が描く字幕だけに効く */
+.videoMaxSubs[data-pos="middle"]{bottom:auto;top:50%;transform:translateY(-50%)}
+.videoMaxSubs[data-pos="top"]{bottom:auto;top:8%}
+.videoMaxSubs[data-size="small"]{font-size:calc(clamp(16px,3.4vh,36px) * .8)}
+.videoMaxSubs[data-size="large"]{font-size:calc(clamp(16px,3.4vh,36px) * 1.35)}
+#videoMaxView.chromeShown .videoMaxSubs[data-pos="bottom"]{bottom:calc(6% + 62px)}
+#videoMaxView.chromeShown .videoMaxSubs[data-pos="middle"]{transform:translateY(-50%) translateY(-31px)}
 .mediaSubsBox{margin:0 14px 2px;padding:10px 12px;border:1px solid rgba(150,220,255,.22);border-radius:12px;
   background:rgba(150,220,255,.045)}
 .mediaSubsBox[hidden]{display:none!important}

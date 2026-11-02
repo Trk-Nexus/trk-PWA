@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk261">
+<meta name="trk-build" content="trk262">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -793,6 +793,16 @@
                   <option value="10">10%</option>
                 </select>
               </label>
+              <!-- 🎬 trk262：映像を見るときの操作パネルの出かた（🖥 全画面ビューアと ▶ メディアプレーヤー） -->
+              <label class="field">
+                <span data-i18n="videoMaxChrome"></span>
+                <select id="videoMaxChrome">
+                  <option value="full" data-i18n="videoChromeFull"></option>
+                  <option value="bottom" data-i18n="videoChromeBottom"></option>
+                  <option value="always" data-i18n="videoChromeAlways"></option>
+                  <option value="none" data-i18n="videoChromeNone"></option>
+                </select>
+              </label>
               <label class="field">
                 <span data-i18n="scrollSpeed"></span>
                 <span class="inline tight">
@@ -801,6 +811,7 @@
                 </span>
               </label>
             </div>
+            <div class="hint" data-i18n="videoChromeHint"></div>
             <!-- extras.js がここに「背景の暗さ・ぼかし」を追加します -->
 
             <div class="inline">
@@ -2253,6 +2264,7 @@
 <script src="js/tv-dock.js"></script>
 <script src="js/tv-rich.js"></script>
 <!-- 🖥 動画の全画面表示（TVドックの⛶とメディアプレーヤーの「全画面で表示」で使います） -->
+<script src="js/viewer-chrome.js"></script>
 <script src="js/video-max.js"></script>
 <script src="js/fx.js"></script>
 <script src="js/fx-synth.js"></script>

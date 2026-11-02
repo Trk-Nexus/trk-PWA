@@ -267,6 +267,9 @@ const settings = {
   /* 🔍 trk212：全画面表示の動画を、マウスホイール1回で何%拡大・縮小するか（2／5／10。既定5）。
      js/video-max.js が 2/5/10 のどれかへ寄せて使う（壊れた値・未設定は5）。 */
   videoMaxWheelStep: num(prefs.videoMaxWheelStep, 1, 20, 5),
+  /* 🎬 trk262：映像を見るときの操作パネルの出かた（full／bottom／always／none。既定は今までどおり full）。
+     値の寄せ方は js/viewer-chrome.js が持ち、🖥 全画面ビューアと ▶ メディアプレーヤーが同じ設定を見る。 */
+  videoMaxChrome: pick(prefs.videoMaxChrome, ["full", "bottom", "always", "none"], "full"),
   videoKeys: savedVideoKeys,
   castPolicy: pick(prefs.castPolicy, ["off", "antenna"], "off"),
   backgroundPolicy: pick(prefs.backgroundPolicy, ["off", "antenna", "corner"], prefs.castPolicy === "antenna" ? "antenna" : "off"),
@@ -510,6 +513,10 @@ const settings = {
   mediaWakeLock: prefs.mediaWakeLock !== false,                                // 🔆 Wake Lock：動画再生中に画面を消灯させない（初期オン。trk164）
   mediaWave: prefs.mediaWave !== false,                                        // 🌊 波形シークバー：解析の rms 包絡をシークバーに描く（初期オン。trk173）
   mediaLyricsOpen: prefs.mediaLyricsOpen === true,                             // 🎤 歌詞パネルを開いたままにするか（初期は閉じる。trk166）
+  /* 💬 trk262：字幕の置き場所（下・中央・上）と大きさ（小・中・大）。trk が描く字幕だけに効く
+     （📌 画中画と OS のライブキャプションは向こうの設定）。 */
+  mediaSubsPos: pick(prefs.mediaSubsPos, ["bottom", "middle", "top"], "bottom"),
+  mediaSubsSize: pick(prefs.mediaSubsSize, ["small", "normal", "large"], "normal"),
   /* ✨ フレーム補完（js/frame-interp.js）。既定はオフ（重いので） */
   frameInterp: pick(prefs.frameInterp, ["off", "blend", "flow"], "off"),
   frameInterpStrength: num(prefs.frameInterpStrength, 0, 1, .85)
@@ -624,7 +631,7 @@ function askFactoryReset(onYes, onNo) {
 }
 function resetVideoPrefs() {
   settings.videoStyle = "color";
-  settings.videoZoom = 1; settings.videoMaxWheelStep = 5; settings.videoKeys = VIDEO_KEY_DEFAULTS.slice(); settings.castPolicy = "off"; settings.backgroundPolicy = "off"; settings.fxAntenna = false; settings.fxAntennaShape = "rod"; settings.fxAntennaCustomOn = ""; settings.fxAntennaCustomOff = ""; settings.mediaLoopTrigger = "toggle"; settings.mediaWallTrigger = "toggle"; settings.mediaWallStyle = "midnight"; settings.mediaWallClock = true; settings.mediaWallStopsVideo = true; settings.mediaExitKey = "Escape"; settings.mediaExitConfirm = true; settings.mediaResumeRewind = 0; settings.mediaWakeLock = true; settings.mediaWave = true; settings.libProgress = "all"; settings.mediaLyricsOpen = false;
+  settings.videoZoom = 1; settings.videoMaxWheelStep = 5; settings.videoMaxChrome = "full"; settings.mediaSubsPos = "bottom"; settings.mediaSubsSize = "normal"; settings.videoKeys = VIDEO_KEY_DEFAULTS.slice(); settings.castPolicy = "off"; settings.backgroundPolicy = "off"; settings.fxAntenna = false; settings.fxAntennaShape = "rod"; settings.fxAntennaCustomOn = ""; settings.fxAntennaCustomOff = ""; settings.mediaLoopTrigger = "toggle"; settings.mediaWallTrigger = "toggle"; settings.mediaWallStyle = "midnight"; settings.mediaWallClock = true; settings.mediaWallStopsVideo = true; settings.mediaExitKey = "Escape"; settings.mediaExitConfirm = true; settings.mediaResumeRewind = 0; settings.mediaWakeLock = true; settings.mediaWave = true; settings.libProgress = "all"; settings.mediaLyricsOpen = false;
   settings.bgDim = 0; settings.bgBlur = 0;
   /* ✨ TRKエフェクト（リッチ映像。js/tv-rich.js）の記憶も一緒に戻す */
   settings.tvRichId = "portrait_natural"; settings.tvRichPrev = ""; settings.tvRichCat = "portrait"; settings.tvRichOpen = true;   /* 初期状態に戻す＝欄は開いておく */

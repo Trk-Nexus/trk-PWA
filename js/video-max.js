@@ -22,6 +22,8 @@ Object.assign(TEXT.ja, {
   videoMaxNoVideo: "まだ動画がありません。曲を選ぶと、ここに全画面で映します。",
   videoMaxHint: "左右を長押し：巻き戻し／早送り（徐々に加速）　動画をクリック：再生／一時停止　←→：10秒　ホイール：ポインターの位置で拡大・縮小（100〜500%）　ドラッグ：表示位置を動かす　🔍：100%に戻す　⛶：ブラウザーの全画面　ESC か ✕ で閉じます",
   videoMaxZoomReset: "🔍 拡大率 {n}%（クリックで100%に戻す）",
+  videoMaxSeek: "再生位置", videoMaxBack10: "10秒戻す", videoMaxForward10: "10秒進む",
+  videoMaxChromeShown: "操作を表示（3秒）",
   videoMaxZoomHint: "ホイールで拡大・縮小（1回あたりの量は ⚙ 設定 → 🎨 見た目）"
 });
 Object.assign(TEXT.en, {
@@ -33,6 +35,8 @@ Object.assign(TEXT.en, {
   videoMaxNoVideo: "No video yet. Pick a song and it plays here full screen.",
   videoMaxHint: "Hold left / right: rewind / forward (accelerates) · Click the video: play / pause · ←→: 10 s · Wheel: zoom at the pointer (100–500%) · Drag: move the view · 🔍: back to 100% · ⛶: browser full screen · ESC or ✕ closes",
   videoMaxZoomReset: "🔍 Zoom {n}% (click to go back to 100%)",
+  videoMaxSeek: "Position", videoMaxBack10: "Back 10 seconds", videoMaxForward10: "Forward 10 seconds",
+  videoMaxChromeShown: "Showing controls (3 s)",
   videoMaxZoomHint: "Wheel to zoom in and out (the step size is in Settings → 🎨 Appearance)"
 });
 Object.assign(TEXT.zh, {
@@ -44,6 +48,8 @@ Object.assign(TEXT.zh, {
   videoMaxNoVideo: "还没有视频。选择歌曲后会在这里全屏播放。",
   videoMaxHint: "长按左侧／右侧：快退／快进（逐渐加速）　点击视频：播放／暂停　←→：10秒　滚轮：以指针位置为中心放大／缩小（100〜500%）　拖动：移动画面　🔍：回到100%　⛶：浏览器全屏　按 ESC 或 ✕ 关闭",
   videoMaxZoomReset: "🔍 缩放 {n}%（点击回到100%）",
+  videoMaxSeek: "播放位置", videoMaxBack10: "后退 10 秒", videoMaxForward10: "前进 10 秒",
+  videoMaxChromeShown: "显示操作（3 秒）",
   videoMaxZoomHint: "用滚轮放大／缩小（每次的量在 ⚙ 设置 → 🎨 外观）"
 });
 Object.assign(TEXT.ko, {
@@ -55,6 +61,8 @@ Object.assign(TEXT.ko, {
   videoMaxNoVideo: "아직 영상이 없습니다. 곡을 고르면 여기 전체 화면으로 보여 줍니다.",
   videoMaxHint: "왼쪽／오른쪽 길게 누르기: 되감기／빨리 감기 (점점 가속)　영상을 클릭: 재생／일시정지　←→: 10초　휠: 포인터 위치를 중심으로 확대·축소 (100〜500%)　드래그: 화면 이동　🔍: 100%로 되돌리기　⛶: 브라우저 전체 화면　ESC 또는 ✕ 로 닫습니다",
   videoMaxZoomReset: "🔍 확대율 {n}% (클릭하면 100%로)",
+  videoMaxSeek: "재생 위치", videoMaxBack10: "10초 되감기", videoMaxForward10: "10초 빨리 감기",
+  videoMaxChromeShown: "조작 표시 (3초)",
   videoMaxZoomHint: "휠로 확대·축소 (1회당 양은 ⚙ 설정 → 🎨 모양)"
 });
 
@@ -63,6 +71,9 @@ if (!videoEl) return;
 
 let root = null, canvas = null, ctx = null, stage = null;
 let topBar = null, titleNode = null, playNode = null, fsNode = null, closeNode = null;
+/* 🎬 trk262：下のバー（操作）と、その中身 */
+let bottomBar = null, backNode = null, fwdNode = null, seekRange = null, timeNode = null;
+let chromeShownKey = "", revealUntil = 0, seekDragging = false;
 let noteNode = null, hintNode = null, seekNode = null;   /* ⏩ 長押しシークの中央表示（trk188） */
 let subsNode = null;   /* 💬 字幕オーバーレイ（trk169・映像は canvas 描画なので字幕は DOM で重ねる） */
 let raf = 0, isOn = false, playedByUs = false, idleTimer = 0;
@@ -161,11 +172,76 @@ function moveHoldSeek(e) {
 function endHoldSeek(e) {
   if (e.pointerId === holdPointer) stopHoldSeek();
 }
+/* ---- 🎬 trk262：操作パネルの出かた（full／bottom／always／none） ----
+   判断そのものは js/viewer-chrome.js（純粋な計算）が持つ。ここは「触れた・止まっている・
+   端に触れて出している」を渡して、上の帯（曲名）と下のバー（操作）を出し入れするだけ。
+   暗くする膜は作らない（CSS も半透明の帯だけ）。none でも ESC・映像の外のクリック・
+   画面の上下 24px に触れたとき（3秒）・一時停止中は操作を出せる。 */
+const vcApi = () => (window.Trk && window.Trk.viewerChrome) || null;
+function chromeMode() {
+  const vc = vcApi();
+  return vc ? vc.mode(core.settings && core.settings.videoMaxChrome) : "full";
+}
+function momentarilyRevealing() { return Date.now() < revealUntil; }
+function syncChrome() {
+  if (!root) return;
+  const vc = vcApi();
+  const m = chromeMode();
+  const idle = root.classList.contains("idle");
+  const show = vc
+    ? vc.bars(m, { touched: !idle, revealing: momentarilyRevealing(), paused: !!videoEl.paused })
+    : { top: !idle, bottom: false };
+  const key = m + "|" + (show.top ? 1 : 0) + "|" + (show.bottom ? 1 : 0) + "|" + (idle ? 1 : 0);
+  if (key === chromeShownKey) return;
+  chromeShownKey = key;
+  root.dataset.chrome = m;
+  if (topBar) topBar.hidden = !show.top;
+  if (bottomBar) bottomBar.hidden = !show.bottom;
+  if (hintNode) hintNode.hidden = m !== "full" || !show.bottom;
+  root.classList.toggle("chromeShown", !!show.bottom);
+}
 function pokeChrome() {
   if (!root) return;
   root.classList.remove("idle");
   clearTimeout(idleTimer);
-  idleTimer = setTimeout(() => { if (isOn && root) root.classList.add("idle"); }, 2600);
+  idleTimer = setTimeout(() => {
+    if (isOn && root) { root.classList.add("idle"); syncChrome(); }
+  }, (vcApi() ? vcApi().IDLE_MS : 2600));
+  syncChrome();
+}
+/* 端（上下 24px）に触れたら、3秒だけ操作を出す（none の逃げ道） */
+function revealChrome() {
+  if (!root) return;
+  const vc = vcApi();
+  revealUntil = Date.now() + (vc ? vc.REVEAL_MS : 3000);
+  root.classList.remove("idle");
+  chromeShownKey = "";   /* 同じ見た目でも、出し直しを1回通す */
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    revealUntil = 0;
+    if (isOn && root) { root.classList.add("idle"); syncChrome(); }
+  }, vc ? vc.REVEAL_MS : 3000);
+  syncChrome();
+}
+function insideEdgeZone(clientY) {
+  if (!root) return false;
+  const rect = root.getBoundingClientRect();
+  if (!rect || !rect.height) return false;
+  const edge = vcApi() ? vcApi().EDGE_PX : 24;
+  const y = clientY - rect.top;
+  return y >= 0 && (y <= edge || y >= rect.height - edge);
+}
+function onViewerMove(e) {
+  if (!isOn) return;
+  const m = chromeMode();
+  if (m === "none") { if (insideEdgeZone(e.clientY)) revealChrome(); return; }
+  pokeChrome();
+}
+/* 時間の表示（0:00） */
+function vcTime(sec) {
+  const n = Math.max(0, Math.floor(Number(sec) || 0));
+  const m = Math.floor(n / 60), r = n % 60;
+  return m + ":" + String(r).padStart(2, "0");
 }
 
 /* ---- 🔍 拡大・縮小（trk212） ----
@@ -464,6 +540,37 @@ function paint() {
     if (subsNode.textContent !== texts) subsNode.textContent = texts;
     subsNode.hidden = !texts;
   }
+  /* 🎬 trk262：下のバー（シーク線・時間）と、字幕の置き場所・大きさ、バーの出かたを合わせる。
+     描画の切り出し（テスト）でも paint をそのまま動かせるように、本体は別の関数へ置く。 */
+  if (typeof updateViewerHud === "function") updateViewerHud();
+}
+/* 🎬 trk262：paint のたびに、設定から見た目を合わせる（下のバー・字幕・バーの出し入れ） */
+function updateViewerHud() {
+  /* 描画だけを切り出して動かすテスト（tests/trk212-…）では、下のバーや字幕の部品が無い。
+     そのときは何もしない（typeof で見るので、未定義でも落ちない）。 */
+  if (typeof vcApi !== "function") return;
+  const vc = vcApi();
+  if (typeof subsNode !== "undefined" && subsNode) {
+    const pos = vc ? vc.subsPos(core.settings && core.settings.mediaSubsPos) : "bottom";
+    const size = vc ? vc.subsSize(core.settings && core.settings.mediaSubsSize) : "normal";
+    if (subsNode.dataset.pos !== pos) subsNode.dataset.pos = pos;
+    if (subsNode.dataset.size !== size) subsNode.dataset.size = size;
+  }
+  const dur = Number(videoEl.duration);
+  if (typeof seekRange !== "undefined" && seekRange && typeof timeNode !== "undefined" && timeNode) {
+    if (Number.isFinite(dur) && dur > 0) {
+      if (!seekDragging) {
+        const v = String(Math.round(Math.min(1, Math.max(0, (videoEl.currentTime || 0) / dur)) * 1000));
+        if (seekRange.value !== v) seekRange.value = v;
+        const t = `${vcTime(videoEl.currentTime)} / ${vcTime(dur)}`;
+        if (timeNode.textContent !== t) timeNode.textContent = t;
+      }
+      if (seekRange.disabled) seekRange.disabled = false;
+    } else if (!seekRange.disabled) {
+      seekRange.disabled = true;
+    }
+  }
+  if (typeof syncChrome === "function") syncChrome();
 }
 function startLoop() { if (!raf) raf = requestAnimationFrame(paint); }
 function stopLoop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
@@ -481,7 +588,7 @@ function openMax() {
   try {
     if (videoEl.paused && videoEl.src) { const p = videoEl.play(); if (p && p.catch) p.catch(() => {}); playedByUs = true; }
   } catch (_) {}
-  startLoop(); pokeChrome(); syncFsLabel();
+  chromeShownKey = ""; revealUntil = 0; startLoop(); pokeChrome(); syncFsLabel();
   if (closeNode) closeNode.focus();
   notify();
   if (typeof showToast === "function") window.Trk.play.showToast(tr("videoMaxToast"));
@@ -495,7 +602,8 @@ function closeMax() {
   if (window.TrkFrameInterp) { try { window.TrkFrameInterp.detach("max"); } catch (_) {} }
   stopLoop();
   clearTimeout(idleTimer);
-  if (root) { root.hidden = true; root.classList.remove("idle"); }
+  if (root) { root.hidden = true; root.classList.remove("idle"); root.classList.remove("chromeShown"); }
+  chromeShownKey = ""; revealUntil = 0;
   document.body.classList.remove("videoMaxOpen");
   if (fsCurrent()) { try { const exit = document.exitFullscreen || document.webkitExitFullscreen; if (exit) { const p = exit.call(document); if (p && p.catch) p.catch(() => {}); } } catch (_) {} }
   if (playedByUs) { try { videoEl.pause(); } catch (_) {} }
@@ -513,6 +621,9 @@ function applyTexts() {
   setI18n(hintNode, "videoMaxHint");
   if (playNode) setI18n(playNode, videoEl.paused ? "videoMaxPlay" : "videoMaxPause");
   if (closeNode) { closeNode.title = tr("videoMaxClose"); closeNode.setAttribute("aria-label", closeNode.title); }
+  if (backNode) { backNode.title = tr("videoMaxBack10"); backNode.setAttribute("aria-label", backNode.title); }
+  if (fwdNode) { fwdNode.title = tr("videoMaxForward10"); fwdNode.setAttribute("aria-label", fwdNode.title); }
+  if (seekRange) seekRange.setAttribute("aria-label", tr("videoMaxSeek"));
   root.setAttribute("aria-label", tr("videoMaxTitle"));
   syncFsLabel();
 }
@@ -529,7 +640,18 @@ function build() {
   zoomChip.addEventListener("click", () => { resetZoomView(); pokeChrome(); });   /* 🔍 trk212：押すと100%へ */
   closeNode = core.el("button", "videoMaxBtn videoMaxClose", "✕"); closeNode.type = "button";
   const tools = core.el("div", "videoMaxTools"); tools.append(playNode, zoomChip, fsNode, closeNode);
-  topBar.append(titleNode, tools);
+  topBar.append(titleNode);
+
+  /* 🎬 trk262：下のバー（操作）。触れたときだけ／常に／出さない を設定で選べる。
+     操作の中身は 1 か所だけ（上のバーと二重に持たない）＝どの設定でも同じボタンが使える。 */
+  bottomBar = core.el("div", "videoMaxBottom");
+  backNode = core.el("button", "videoMaxBtn videoMaxSkip", "⏪"); backNode.type = "button";
+  fwdNode = core.el("button", "videoMaxBtn videoMaxSkip", "⏩"); fwdNode.type = "button";
+  seekRange = document.createElement("input");
+  seekRange.type = "range"; seekRange.min = "0"; seekRange.max = "1000"; seekRange.step = "1"; seekRange.value = "0";
+  seekRange.className = "videoMaxSeekRange"; seekRange.disabled = true;
+  timeNode = core.el("span", "mono videoMaxTime", "0:00 / 0:00");
+  bottomBar.append(backNode, fwdNode, seekRange, timeNode, tools);
 
   stage = core.el("div", "videoMaxStage");
   canvas = document.createElement("canvas"); canvas.className = "videoMaxCanvas";
@@ -541,7 +663,7 @@ function build() {
 
   hintNode = core.el("p", "videoMaxHint hint", tr("videoMaxHint")); hintNode.dataset.i18n = "videoMaxHint";
 
-  root.append(topBar, stage, hintNode);
+  root.append(topBar, stage, bottomBar, hintNode);
   document.body.append(root);
 
   ctx = canvas.getContext("2d");
@@ -583,10 +705,22 @@ function build() {
   });
   topBar.addEventListener("click", e => { if (e.target === topBar) closeMax(); });
   playNode.addEventListener("click", togglePlay);
+  backNode.addEventListener("click", () => { seekBy(-10); pokeChrome(); });
+  fwdNode.addEventListener("click", () => { seekBy(10); pokeChrome(); });
+  seekRange.addEventListener("pointerdown", () => { seekDragging = true; });
+  seekRange.addEventListener("pointerup", () => { seekDragging = false; });
+  seekRange.addEventListener("pointercancel", () => { seekDragging = false; });
+  seekRange.addEventListener("input", () => {
+    const dur = Number(videoEl.duration);
+    if (!Number.isFinite(dur) || dur <= 0) return;
+    try { videoEl.currentTime = dur * Number(seekRange.value) / 1000; } catch (_) {}
+    playedByUs = false;
+    pokeChrome();
+  });
   closeNode.addEventListener("click", () => closeMax());
   fsNode.addEventListener("click", toggleBrowserFullscreen);
-  root.addEventListener("pointermove", pokeChrome);
-  root.addEventListener("pointerdown", pokeChrome);
+  root.addEventListener("pointermove", onViewerMove);
+  root.addEventListener("pointerdown", e => { if (chromeMode() === "none" && insideEdgeZone(e.clientY)) revealChrome(); else pokeChrome(); });
   document.addEventListener("fullscreenchange", syncFsLabel);
   document.addEventListener("webkitfullscreenchange", syncFsLabel);
   applyTexts();
@@ -608,6 +742,7 @@ on("songSelected", stopHoldSeek);   /* ⏩ 曲が替わったら長押しシー�
 on("songSelected", resetZoomView);  /* 🔍 trk212：曲が替わったら 100% に戻す（長押しシークは止める） */
 on("phase", p => { if (p === "playing" && isOn) closeMax(); });
 on("language", () => { if (isOn || root) applyTexts(); });
+on("options", () => { chromeShownKey = ""; if (isOn) { pokeChrome(); } });
 
 window.TrkVideoMax = Object.freeze({
   version: 1,
@@ -615,6 +750,11 @@ window.TrkVideoMax = Object.freeze({
   close: closeMax,
   toggle: toggleMax,
   isOpen: () => isOn,
+  chromeMode,
+  chromeBars: () => {
+    const vc = vcApi();
+    return vc ? vc.bars(chromeMode(), { touched: !root.classList.contains("idle"), revealing: momentarilyRevealing(), paused: !!videoEl.paused }) : null;
+  },
   onChange(fn) { if (typeof fn === "function") watchers.add(fn); return () => watchers.delete(fn); }
 });
 

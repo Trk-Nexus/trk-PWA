@@ -40,6 +40,10 @@ Object.assign(TEXT.ja, {
   mediaWaveTitle:"🌊 波形シークバー", mediaWaveHint:"シークバーに音量の包絡（波形）を描きます。ポインターを乗せると、その位置の時刻が出ます。材料は端末内の解析結果（trk_analysis_cache_v1）だけ＝解析が無い曲（長い曲・軽量化設定など）ではふつうのバーのままです。", mediaWaveToggle:"シークバーに波形を表示する",
   mediaLyricsTitle:"🎤 歌詞", mediaLyricsHint:"埋め込み歌詞（ID3 USLT/SYLT・MP4 ©lyr・FLAC/Ogg LYRICS）・フォルダの同名 .lrc・選んだ歌詞ファイルを、再生位置に合わせて表示します。同期歌詞は行をクリックするとその位置へ移動します。選んだ歌詞は曲ごとに端末内へ保存され、外へは送信しません。", mediaLyricsNone:"この曲の歌詞は見つかりませんでした。", mediaLyricsLoading:"歌詞を読み込み中…", mediaLyricsSourceEmbedded:"出典：埋め込みタグ", mediaLyricsSourceFile:"出典：フォルダの .lrc（{name}）", mediaLyricsSourceManual:"出典：選んだファイル（{name}）", mediaLyricsPlain:"※ 時刻のない歌詞なので、そのまま表示します", mediaLyricsChoose:"📄 歌詞ファイルを選ぶ", mediaLyricsClear:"✖ 選んだ歌詞を消す", mediaLyricsSaved:"歌詞をこの曲に保存しました（{n}行）", mediaLyricsTooBig:"この歌詞ファイルは大きすぎます（256KBまで）。", mediaLyricsReadFailed:"この歌詞ファイルは読めませんでした。", mediaLyricsNeedSong:"先に曲を再生してください。",
   mediaSubsTitle:"💬 字幕", mediaSubsHint:"選んだ SRT/VTT ファイルか、フォルダの同名 .srt/.vtt を動画の上に表示します。表示の遅れ・早すぎは「遅延」で調整できます。選んだ字幕と遅延は曲ごとに端末内へ保存され、外へは送信しません。📌 画中画でも字幕が付きます。", mediaSubsNone:"この動画の字幕は見つかりませんでした。", mediaSubsLoading:"字幕を読み込み中…", mediaSubsSourceFile:"出典：フォルダの字幕（{name}）", mediaSubsSourceManual:"出典：選んだファイル（{name}）", mediaSubsChoose:"📄 字幕ファイルを選ぶ", mediaSubsClear:"✖ 選んだ字幕を消す", mediaSubsSaved:"字幕をこの曲に保存しました（{n}件）", mediaSubsTooBig:"この字幕ファイルは大きすぎます（512KBまで）。", mediaSubsReadFailed:"この字幕ファイルは読めませんでした。", mediaSubsNeedSong:"先に動画を再生してください。", mediaSubsOn:"字幕を表示する", mediaSubsOffset:"遅延", mediaSubsEarlier:"− 早く", mediaSubsLater:"＋ 遅く", mediaSubsReset:"↺ 0", mediaSubsOffsetNow:"いま：{s}秒",
+mediaSubsPos:"字幕の置き場所", mediaSubsPosBottom:"下", mediaSubsPosMiddle:"中央", mediaSubsPosTop:"上",
+  mediaSubsSize:"字幕の大きさ", mediaSubsSizeSmall:"小", mediaSubsSizeNormal:"中", mediaSubsSizeLarge:"大",
+  mediaSubsAutoTitle:"ℹ 自動字幕について",
+  mediaSubsAutoHint:"trk は、音を聞き取って字幕を作ることはしません（マイクも使いません）。音声から自動で字幕を出すときは、お使いの OS やブラウザーの「ライブ キャプション」を使います。Windows 11 は Windows＋Ctrl＋L（22H2 以降・日本語対応）、macOS は システム設定 → アクセシビリティ → ライブキャプション、Chrome は 設定 → ユーザー補助 → ライブキャプションです。字幕は画面の下（OS の設定で上）に出るので、ここの「置き場所」「大きさ」は trk の字幕だけに効きます。いちばん正確なのは .srt/.vtt を用意する方法です。くわしくは docs/AUTO-CAPTIONS-TRK262-2026-11-02.md に書いてあります。",
   mediaChapTitle:"🔖 チャプター", mediaChapHint:"M4B/MP4 等に埋め込まれたチャプター（chpl）の一覧です。クリックでその位置へ移動します。チャプターは読むだけで、ファイルへの書き戻しや外部への送信はしません。iTunes方式のチャプタートラックは対応していません。", mediaChapNone:"チャプターは見つかりませんでした。", mediaChapLoading:"チャプターを読み込み中…", mediaChapCount:"チャプター {n} 件", mediaChapNow:"▶ {name}", mediaChapPrev:"⏮ 前のチャプター", mediaChapNext:"次のチャプター ⏭", mediaSleepChapter:"チャプターの終わりで止める", mediaSleepChapterSet:"チャプターの終わりで止めます（{m}）", mediaSleepChapterNone:"この曲にチャプターがありません。",
   mediaModeStatus:"メディアプレーヤー中（ゲームの記録には影響しません）"
 });
@@ -75,6 +79,10 @@ Object.assign(TEXT.en, {
   mediaWaveTitle:"🌊 Waveform seek bar", mediaWaveHint:"Draws the loudness envelope (waveform) on the seek bar and shows the time at the pointer. The material is the on-device analysis cache only — songs without analysis (long tracks, lite settings) keep the plain bar.", mediaWaveToggle:"Show the waveform on the seek bar",
   mediaLyricsTitle:"🎤 Lyrics", mediaLyricsHint:"Shows embedded lyrics (ID3 USLT/SYLT, MP4 ©lyr, FLAC/Ogg LYRICS), a same-named .lrc from the folder, or a file you choose, in sync with playback. With synced lyrics, click a line to jump there. Chosen lyrics are saved on this device per song and never uploaded.", mediaLyricsNone:"No lyrics found for this song.", mediaLyricsLoading:"Loading lyrics…", mediaLyricsSourceEmbedded:"Source: embedded tags", mediaLyricsSourceFile:"Source: folder .lrc ({name})", mediaLyricsSourceManual:"Source: chosen file ({name})", mediaLyricsPlain:"· not time-synced (shown as-is)", mediaLyricsChoose:"📄 Choose lyrics file", mediaLyricsClear:"✖ Remove chosen lyrics", mediaLyricsSaved:"Lyrics saved for this song ({n} lines)", mediaLyricsTooBig:"That lyrics file is too big (up to 256 KB).", mediaLyricsReadFailed:"Could not read that lyrics file.", mediaLyricsNeedSong:"Load a song first.",
   mediaSubsTitle:"💬 Subtitles", mediaSubsHint:"Shows an SRT/VTT file you choose, or a same-named .srt/.vtt from the folder, over the video. Adjust timing with “Delay”. Chosen subtitles and the delay are saved on this device per song and never uploaded. Subtitles also appear in picture-in-picture.", mediaSubsNone:"No subtitles found for this video.", mediaSubsLoading:"Loading subtitles…", mediaSubsSourceFile:"Source: folder subtitle ({name})", mediaSubsSourceManual:"Source: chosen file ({name})", mediaSubsChoose:"📄 Choose subtitle file", mediaSubsClear:"✖ Remove chosen subtitles", mediaSubsSaved:"Subtitles saved for this song ({n} cues)", mediaSubsTooBig:"That subtitle file is too big (up to 512 KB).", mediaSubsReadFailed:"Could not read that subtitle file.", mediaSubsNeedSong:"Load a video first.", mediaSubsOn:"Show subtitles", mediaSubsOffset:"Delay", mediaSubsEarlier:"− Earlier", mediaSubsLater:"＋ Later", mediaSubsReset:"↺ 0", mediaSubsOffsetNow:"Now: {s}s",
+mediaSubsPos:"Subtitle position", mediaSubsPosBottom:"Bottom", mediaSubsPosMiddle:"Middle", mediaSubsPosTop:"Top",
+  mediaSubsSize:"Subtitle size", mediaSubsSizeSmall:"Small", mediaSubsSizeNormal:"Normal", mediaSubsSizeLarge:"Large",
+  mediaSubsAutoTitle:"ℹ About live captions",
+  mediaSubsAutoHint:"trk never listens to audio to create subtitles (it does not use the microphone). For captions generated from speech, use your OS or browser “Live Captions”: Windows 11 — Windows+Ctrl+L (22H2 or later, Japanese supported); macOS — System Settings → Accessibility → Live Captions; Chrome — Settings → Accessibility → Live Caption. Those captions appear at the bottom of the screen (top if the OS is set that way), so “Position” and “Size” here apply only to trk’s own subtitles. The most accurate option is to supply an .srt/.vtt file. Details: docs/AUTO-CAPTIONS-TRK262-2026-11-02.md.",
   mediaChapTitle:"🔖 Chapters", mediaChapHint:"Lists the chapters (chpl) embedded in M4B/MP4 files; click one to jump there. Chapters are read-only — no write-back, no upload. iTunes-style chapter tracks are not supported.", mediaChapNone:"No chapters found.", mediaChapLoading:"Loading chapters…", mediaChapCount:"{n} chapters", mediaChapNow:"▶ {name}", mediaChapPrev:"⏮ Previous chapter", mediaChapNext:"Next chapter ⏭", mediaSleepChapter:"Stop at the end of the chapter", mediaSleepChapterSet:"Will stop at the end of the chapter ({m})", mediaSleepChapterNone:"This song has no chapters.",
   mediaModeStatus:"Media player (does not affect game records)"
 });
@@ -108,6 +116,10 @@ Object.assign(TEXT.zh, {
   mediaWaveTitle:"🌊 波形进度条", mediaWaveHint:"在进度条上绘制音量包络（波形），指针悬停时显示该位置的时间。材料仅来自设备内的解析缓存——没有解析结果的歌曲（长曲、轻量化设置等）保持普通进度条。", mediaWaveToggle:"在进度条上显示波形",
   mediaLyricsTitle:"🎤 歌词", mediaLyricsHint:"跟随播放位置显示内嵌歌词（ID3 USLT/SYLT、MP4 ©lyr、FLAC/Ogg LYRICS）、文件夹中同名的 .lrc 或你选择的歌词文件。同步歌词可点击某行跳转到该位置。选择的歌词按歌曲保存在本机，不会上传。", mediaLyricsNone:"没有找到这首歌的歌词。", mediaLyricsLoading:"正在读取歌词…", mediaLyricsSourceEmbedded:"来源：内嵌标签", mediaLyricsSourceFile:"来源：文件夹中的 .lrc（{name}）", mediaLyricsSourceManual:"来源：选择的文件（{name}）", mediaLyricsPlain:"※ 非同步歌词，原样显示", mediaLyricsChoose:"📄 选择歌词文件", mediaLyricsClear:"✖ 清除选择的歌词", mediaLyricsSaved:"已为这首歌保存歌词（{n} 行）", mediaLyricsTooBig:"这个歌词文件太大（上限 256KB）。", mediaLyricsReadFailed:"无法读取这个歌词文件。", mediaLyricsNeedSong:"请先播放歌曲。",
   mediaSubsTitle:"💬 字幕", mediaSubsHint:"在视频上显示你选择的 SRT/VTT 字幕文件，或文件夹中同名的 .srt/.vtt。可用“延迟”调整字幕的快慢。选择的字幕和延迟按歌曲保存在本机，不会上传。画中画时也会显示字幕。", mediaSubsNone:"没有找到这个视频的字幕。", mediaSubsLoading:"正在读取字幕…", mediaSubsSourceFile:"来源：文件夹中的字幕（{name}）", mediaSubsSourceManual:"来源：选择的文件（{name}）", mediaSubsChoose:"📄 选择字幕文件", mediaSubsClear:"✖ 清除选择的字幕", mediaSubsSaved:"已为这首歌保存字幕（{n} 条）", mediaSubsTooBig:"这个字幕文件太大（上限 512KB）。", mediaSubsReadFailed:"无法读取这个字幕文件。", mediaSubsNeedSong:"请先播放视频。", mediaSubsOn:"显示字幕", mediaSubsOffset:"延迟", mediaSubsEarlier:"− 提前", mediaSubsLater:"＋ 延后", mediaSubsReset:"↺ 0", mediaSubsOffsetNow:"当前：{s} 秒",
+mediaSubsPos:"字幕位置", mediaSubsPosBottom:"下方", mediaSubsPosMiddle:"中间", mediaSubsPosTop:"上方",
+  mediaSubsSize:"字幕大小", mediaSubsSizeSmall:"小", mediaSubsSizeNormal:"中", mediaSubsSizeLarge:"大",
+  mediaSubsAutoTitle:"ℹ 关于自动字幕",
+  mediaSubsAutoHint:"trk 不会听取声音来生成字幕（也不使用麦克风）。需要根据语音自动生成字幕时，请使用系统或浏览器的“实时字幕”：Windows 11 — Windows+Ctrl+L（22H2 以后，支持日语）；macOS — 系统设置 → 辅助功能 → 实时字幕；Chrome — 设置 → 无障碍 → 实时字幕。这些字幕显示在屏幕下方（可在系统中改为上方），所以这里的“位置”“大小”只对 trk 自己的字幕有效。最准确的方法还是准备 .srt/.vtt 文件。详情见 docs/AUTO-CAPTIONS-TRK262-2026-11-02.md。",
   mediaChapTitle:"🔖 章节", mediaChapHint:"列出 M4B/MP4 等文件内嵌的章节（chpl），点击即可跳到该位置。章节仅读取，不会写回文件或上传。不支持 iTunes 式章节轨道。", mediaChapNone:"没有找到章节。", mediaChapLoading:"正在读取章节…", mediaChapCount:"{n} 个章节", mediaChapNow:"▶ {name}", mediaChapPrev:"⏮ 上一章", mediaChapNext:"下一章 ⏭", mediaSleepChapter:"在本章结束时停止", mediaSleepChapterSet:"将在本章结束时停止（{m}）", mediaSleepChapterNone:"这首歌没有章节。",
   mediaModeStatus:"媒体播放器中（不影响游戏记录）"
 });
@@ -141,6 +153,10 @@ Object.assign(TEXT.ko, {
   mediaWaveTitle:"🌊 파형 탐색 표시줄", mediaWaveHint:"탐색 표시줄에 음량 포락선(파형)을 그립니다. 포인터를 올리면 해당 위치의 시간이 표시됩니다. 재료는 기기 내 분석 캐시뿐이며, 분석이 없는 곡(긴 곡, 경량화 설정 등)은 일반 표시줄로 남습니다.", mediaWaveToggle:"탐색 표시줄에 파형 표시",
   mediaLyricsTitle:"🎤 가사", mediaLyricsHint:"재생 위치에 맞춰 내장 가사(ID3 USLT/SYLT, MP4 ©lyr, FLAC/Ogg LYRICS), 폴더의 같은 이름 .lrc, 또는 선택한 가사 파일을 표시합니다. 동기 가사는 줄을 클릭해 그 위치로 이동할 수 있습니다. 선택한 가사는 곡별로 기기에만 저장되며 업로드되지 않습니다.", mediaLyricsNone:"이 곡의 가사를 찾지 못했습니다.", mediaLyricsLoading:"가사를 불러오는 중…", mediaLyricsSourceEmbedded:"출처: 내장 태그", mediaLyricsSourceFile:"출처: 폴더의 .lrc ({name})", mediaLyricsSourceManual:"출처: 선택한 파일 ({name})", mediaLyricsPlain:"※ 동기화되지 않은 가사 (그대로 표시)", mediaLyricsChoose:"📄 가사 파일 선택", mediaLyricsClear:"✖ 선택한 가사 지우기", mediaLyricsSaved:"이 곡의 가사를 저장했습니다 ({n}줄)", mediaLyricsTooBig:"이 가사 파일은 너무 큽니다 (최대 256KB).", mediaLyricsReadFailed:"이 가사 파일을 읽을 수 없습니다.", mediaLyricsNeedSong:"먼저 곡을 재생해 주세요.",
   mediaSubsTitle:"💬 자막", mediaSubsHint:"선택한 SRT/VTT 자막 파일 또는 폴더의 같은 이름 .srt/.vtt를 영상 위에 표시합니다. '지연'으로 자막의 빠르기·느리기를 조정할 수 있습니다. 선택한 자막과 지연은 곡별로 기기에만 저장되며 업로드되지 않습니다. PIP 중에도 자막이 표시됩니다.", mediaSubsNone:"이 영상의 자막을 찾지 못했습니다.", mediaSubsLoading:"자막을 불러오는 중…", mediaSubsSourceFile:"출처: 폴더의 자막 ({name})", mediaSubsSourceManual:"출처: 선택한 파일 ({name})", mediaSubsChoose:"📄 자막 파일 선택", mediaSubsClear:"✖ 선택한 자막 지우기", mediaSubsSaved:"이 곡의 자막을 저장했습니다 ({n}개 큐)", mediaSubsTooBig:"이 자막 파일은 너무 큽니다 (최대 512KB).", mediaSubsReadFailed:"이 자막 파일을 읽을 수 없습니다.", mediaSubsNeedSong:"먼저 영상을 재생해 주세요.", mediaSubsOn:"자막 표시", mediaSubsOffset:"지연", mediaSubsEarlier:"− 앞당기기", mediaSubsLater:"＋ 늦추기", mediaSubsReset:"↺ 0", mediaSubsOffsetNow:"현재: {s}초",
+mediaSubsPos:"자막 위치", mediaSubsPosBottom:"아래", mediaSubsPosMiddle:"가운데", mediaSubsPosTop:"위",
+  mediaSubsSize:"자막 크기", mediaSubsSizeSmall:"작게", mediaSubsSizeNormal:"보통", mediaSubsSizeLarge:"크게",
+  mediaSubsAutoTitle:"ℹ 자동 자막 안내",
+  mediaSubsAutoHint:"trk는 소리를 듣고 자막을 만들지 않습니다(마이크도 쓰지 않습니다). 음성에서 자동 자막이 필요하면 OS나 브라우저의 라이브 캡션을 사용하세요. Windows 11 — Windows+Ctrl+L(22H2 이후, 일본어 지원), macOS — 시스템 설정 → 손쉬운 사용 → 라이브 캡션, Chrome — 설정 → 접근성 → 라이브 캡션. 이 자막은 화면 아래(OS 설정에 따라 위)에 나오므로, 여기의 ‘위치’와 ‘크기’는 trk 자막에만 적용됩니다. 가장 정확한 방법은 .srt/.vtt 파일을 준비하는 것입니다. 자세한 내용: docs/AUTO-CAPTIONS-TRK262-2026-11-02.md.",
   mediaChapTitle:"🔖 챕터", mediaChapHint:"M4B/MP4 등에 내장된 챕터(chpl) 목록입니다. 클릭하면 그 위치로 이동합니다. 챕터는 읽기 전용이며 파일에 기록하거나 업로드하지 않습니다. iTunes 방식 챕터 트랙은 지원하지 않습니다.", mediaChapNone:"챕터를 찾지 못했습니다.", mediaChapLoading:"챕터를 불러오는 중…", mediaChapCount:"챕터 {n}개", mediaChapNow:"▶ {name}", mediaChapPrev:"⏮ 이전 챕터", mediaChapNext:"다음 챕터 ⏭", mediaSleepChapter:"이번 챕터 끝에서 정지", mediaSleepChapterSet:"챕터 끝에서 정지합니다 ({m})", mediaSleepChapterNone:"이 곡에는 챕터가 없습니다.",
   mediaModeStatus:"미디어 플레이어 중 (게임 기록에 영향 없음)"
 });
@@ -176,6 +192,8 @@ let lyricsBox = null, lyricsListNode = null, lyricsSourceNode = null, lyricsFile
 let lyricsState = { key:"", request:0, data:null, active:-2, loading:false };  /* 🎤 歌詞の状態（active=-2 は「次の描画で必ず付け直す」印） */
 /* 💬 字幕（trk169）：パネル・オーバーレイ・PiP用トラックの部品と状態 */
 let subsBox = null, subsOverlay = null, subsSourceNode = null, subsFileNode = null, subsClearNode = null;
+/* 🎬 trk262：字幕の置き場所・大きさと、映像の操作を隠すタイマー */
+let subsPosNode = null, subsSizeNode = null, mediaChromeTimer = 0;
 let subsOnNode = null, subsOffsetNode = null, subsEarlierNode = null, subsLaterNode = null, subsResetNode = null;
 let subsState = { key:"", request:0, data:null, loading:false, texts:"" };
 /* 🔖 チャプター（trk170）：パネル・一覧・状態と、「チャプターの終わり」スリープの停止位置 */
@@ -1375,9 +1393,47 @@ function syncMediaStage() {
   if (stageNote) stageNote.hidden = frames;
 }
 
+/* 🎬 trk262：映像の操作パネルの出かた（設定 videoMaxChrome）と、字幕の置き場所・大きさ。
+   判断は js/viewer-chrome.js（純粋な計算）に任せ、ここは DOM を合わせるだけ。
+   bottom／none のときは、**動画の再生中だけ**触らないと操作列を隠す（止めれば必ず出る）。 */
+function chromeApi() { return (window.Trk && window.Trk.viewerChrome) || null; }
+function mediaChromeMode() { const vc = chromeApi(); return vc ? vc.mode(core.settings && core.settings.videoMaxChrome) : "full"; }
+function playingNow() { try { return !!(core.videoReady && !core.video.paused && !core.video.ended); } catch (_) { return false; } }
+function syncMediaChrome() {
+  if (!dialog) return;
+  const vc = chromeApi();
+  if (!vc || !vc.mediaAutoHide(mediaChromeMode(), playingNow())) {
+    clearTimeout(mediaChromeTimer); mediaChromeTimer = 0;
+    dialog.classList.remove("mediaChromeIdle");
+    return;
+  }
+  if (mediaChromeTimer || dialog.classList.contains("mediaChromeIdle")) return;
+  mediaChromeTimer = setTimeout(() => {
+    mediaChromeTimer = 0;
+    if (dialog && mediaOpen) dialog.classList.add("mediaChromeIdle");
+  }, vc.IDLE_MS);
+}
+function pokeMediaChrome() {
+  if (!dialog) return;
+  clearTimeout(mediaChromeTimer); mediaChromeTimer = 0;
+  dialog.classList.remove("mediaChromeIdle");
+  syncMediaChrome();
+}
+function syncSubsLook() {
+  if (!subsOverlay) return;
+  const vc = chromeApi();
+  const pos = vc ? vc.subsPos(core.settings && core.settings.mediaSubsPos) : "bottom";
+  const size = vc ? vc.subsSize(core.settings && core.settings.mediaSubsSize) : "normal";
+  if (subsOverlay.dataset.pos !== pos) subsOverlay.dataset.pos = pos;
+  if (subsOverlay.dataset.size !== size) subsOverlay.dataset.size = size;
+  if (subsPosNode && subsPosNode.value !== pos) subsPosNode.value = pos;
+  if (subsSizeNode && subsSizeNode.value !== size) subsSizeNode.value = size;
+}
 function renderMedia() {
   if (!mediaOpen || !overlay) return;
   updateTrackText();
+  syncMediaChrome();   /* 🎬 trk262 */
+  syncSubsLook();      /* 🎬 trk262 */
   const ready = !!(core.videoReady && core.currentSong);
   const cur = ready ? (core.video.currentTime || 0) : 0, dur = ready && Number.isFinite(core.video.duration) ? core.video.duration : 0;
   if (progressNode) {
@@ -1458,6 +1514,8 @@ function closeMedia(restore = true) {
   deactivateWall(false);
   mediaOpen = false; window.Trk.overlay.set("media", false); window._trkMediaPlayerMode = false;
   clearInterval(tickTimer); tickTimer = 0; stopSleepTimer(true); seeking = false;
+  clearTimeout(mediaChromeTimer); mediaChromeTimer = 0;   /* 🎬 trk262：隠すタイマーも止める */
+  if (dialog) dialog.classList.remove("mediaChromeIdle");
   clearInterval(loopTimer); loopTimer = 0; stopReverse(false, true); clearMediaLoop(true);
   saveMediaPosition(); core.video.playbackRate = 1;
   /* 🚪 抜け方（trk206）。既定は「そのまま流す」＝プレイヤーで聴いていた曲が曲リストでも途切れない */
@@ -1488,6 +1546,7 @@ function openMedia() {
   /* ⏪ 止まっている／終わっているときだけ続き位置へ（再生中の飛び防止。再開時は巻き戻しを適用＝trk164） */
   if (core.currentSong && core.videoReady && (core.video.paused || core.video.ended)) { try { core.video.currentTime = savedMediaPosition({ resume: true }); } catch (_) {} }
   tickTimer = setInterval(renderMedia, 250); loopTimer = setInterval(checkMediaLoop, 40);
+  pokeMediaChrome();   /* 🎬 trk262：開いた直後は操作を出しておく */
   renderMedia(); updateMediaSession(); syncMediaStage();
   if (lyricsBoxOpen()) loadLyrics();   /* 🎤 開いたままだった歌詞パネルの読み直し（trk166） */
   loadSubs(true);   /* 💬 字幕はパネルが閉じていても読む（オーバーレイ表示のため・trk169） */
@@ -1513,6 +1572,10 @@ function buildMedia() {
   overlay = core.el("div", "instOverlay mediaOverlay"); overlay.id = "mediaPlayerMode"; overlay.hidden = true;
   const backdrop = core.el("div", "instBackdrop");
   dialog = core.el("section", "instDialog mediaDialog"); dialog.setAttribute("role", "dialog"); dialog.setAttribute("aria-modal", "true"); dialog.setAttribute("aria-labelledby", "mediaTitle");
+  /* 🎬 trk262：触れたら操作を出し直す（設定が bottom／none のときだけ隠れる） */
+  dialog.addEventListener("pointermove", pokeMediaChrome);
+  dialog.addEventListener("pointerdown", pokeMediaChrome);
+  dialog.addEventListener("focusin", pokeMediaChrome);
   const header = core.el("header", "instHeader mediaHeader");
   const hwrap = core.el("div"); const h = tx("h2", "mediaTitle"); h.id = "mediaTitle";
   hwrap.append(h, tx("p", "mediaSubtitle", "instSubtitle"));
@@ -1694,7 +1757,35 @@ function buildMedia() {
   subsResetNode.addEventListener("click", () => shiftSubsOffset(-(subsState.data ? subsState.data.offsetMs : 0)));
   subsOffsetNode = core.el("span", "mono", "");
   subsOffsetRow.append(subsEarlierNode, subsResetNode, subsLaterNode, subsOffsetNode);
-  subsBox.append(subsSourceNode, subsActions, subsOnLab, subsOffsetRow);
+  /* 🎬 trk262：字幕の置き場所（下・中央・上）と大きさ（小・中・大）。trk が描く字幕だけに効く */
+  const subsPosRow = core.el("div", "mediaSubsPosRow");
+  subsPosRow.append(tx("span", "mediaSubsPos"));
+  subsPosNode = document.createElement("select");
+  for (const [value, key] of [["bottom", "mediaSubsPosBottom"], ["middle", "mediaSubsPosMiddle"], ["top", "mediaSubsPosTop"]]) {
+    const o = document.createElement("option"); o.value = value; o.dataset.i18n = key; o.textContent = tr(key); subsPosNode.append(o);
+  }
+  subsPosNode.value = (window.Trk.viewerChrome ? window.Trk.viewerChrome.subsPos(core.settings.mediaSubsPos) : "bottom");
+  subsPosNode.addEventListener("change", () => {
+    core.settings.mediaSubsPos = window.Trk.viewerChrome ? window.Trk.viewerChrome.subsPos(subsPosNode.value) : "bottom";
+    core.saveUserPrefs(); syncSubsLook();
+  });
+  subsPosRow.append(subsPosNode);
+  const subsSizeRow = core.el("div", "mediaSubsSizeRow");
+  subsSizeRow.append(tx("span", "mediaSubsSize"));
+  subsSizeNode = document.createElement("select");
+  for (const [value, key] of [["small", "mediaSubsSizeSmall"], ["normal", "mediaSubsSizeNormal"], ["large", "mediaSubsSizeLarge"]]) {
+    const o = document.createElement("option"); o.value = value; o.dataset.i18n = key; o.textContent = tr(key); subsSizeNode.append(o);
+  }
+  subsSizeNode.value = (window.Trk.viewerChrome ? window.Trk.viewerChrome.subsSize(core.settings.mediaSubsSize) : "normal");
+  subsSizeNode.addEventListener("change", () => {
+    core.settings.mediaSubsSize = window.Trk.viewerChrome ? window.Trk.viewerChrome.subsSize(subsSizeNode.value) : "normal";
+    core.saveUserPrefs(); syncSubsLook();
+  });
+  subsSizeRow.append(subsSizeNode);
+  /* ℹ 自動字幕の案内（trk262）。trk は音を聞き取らない＝OS／ブラウザーのライブキャプションを使う */
+  const subsAuto = core.el("details", "mediaSubsAuto");
+  subsAuto.append(tx("summary", "mediaSubsAutoTitle"), tx("p", "mediaSubsAutoHint", ""));
+  subsBox.append(subsSourceNode, subsActions, subsOnLab, subsOffsetRow, subsPosRow, subsSizeRow, subsAuto);
   subsBox.addEventListener("toggle", () => {
     core.settings.mediaSubsOpen = subsBox.open; core.saveUserPrefs();
     if (subsBox.open) loadSubs();
@@ -1845,6 +1936,7 @@ function buildMedia() {
   core.on("songSelected", () => { loadChapters(true); });   /* 🔖 曲が変わったらチャプターも（trk170・上の歌詞/字幕の行とは別に購読） */
   core.on("songSelected", () => { mediaPlayNotedKey = ""; });   /* 🎧 新しい曲の「ちゃんと聴いた」計数は最初から（trk172・これも別購読） */
   core.on("records", renderQueue); core.on("packsChanged", renderQueue);
+  core.on("options", () => { if (mediaOpen) { pokeMediaChrome(); syncSubsLook(); } });   /* 🎬 trk262：設定の変更をその場で反映 */
   core.on("songTags", () => { renderQueue(); if (mediaOpen) renderMedia(); });   /* 🏷 タグが届いたら表示名を追従（trk167） */ core.on("language", () => {
     syncMediaOpenBtn();   /* 🎥 基地ボタンの文言も追従（trk186） */
     if (stageNote) { stageNote.textContent = tr("mediaStageNoVideo"); stageNote.dataset.i18n = "mediaStageNoVideo"; }

@@ -446,6 +446,18 @@ core.$("videoMaxWheelStep").addEventListener("change", e => {
   core.settings.videoMaxWheelStep = [2, 5, 10].includes(v) ? v : 5;
   core.saveUserPrefs();
 });
+/* 🎬 trk262：映像を見るときの操作パネルの出かた（full／bottom／always／none。既定は full＝今までどおり） */
+function showVideoMaxChrome() {
+  const sel = core.$("videoMaxChrome");
+  const now = window.Trk.viewerChrome ? window.Trk.viewerChrome.mode(core.settings.videoMaxChrome) : "full";
+  if (sel) sel.value = now;
+  core.settings.videoMaxChrome = now;
+}
+core.$("videoMaxChrome").addEventListener("change", e => {
+  core.settings.videoMaxChrome = window.Trk.viewerChrome ? window.Trk.viewerChrome.mode(e.target.value) : "full";
+  core.saveUserPrefs();
+  core.emit("options");   /* 開いている 🖥 全画面・▶ メディアプレーヤーへ知らせる */
+});
 core.$("scroll").addEventListener("input", () => {
   core.settings.scroll = Number(core.$("scroll").value) || 1;
   core.$("scrollVal").textContent = core.settings.scroll.toFixed(1) + "x"; core.saveUserPrefs();
@@ -628,6 +640,7 @@ core.$("videoStyle").value = core.settings.videoStyle;
 core.$("videoZoom").value = core.settings.videoZoom;
 showVideoZoom();
 showVideoMaxWheelStep();
+showVideoMaxChrome();
 core.$("fxPower").value = core.settings.fxPower;
 core.$("gameFxMode").value = core.settings.gameFxMode;
 core.video.volume = core.settings.musicVolume;
