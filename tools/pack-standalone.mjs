@@ -38,7 +38,8 @@ export const EXCLUDE_ANY_DIR = ["node_modules"];
 export const EXCLUDE_FILES = ["package.json", "package-lock.json", "capacitor.config.ts", "CONTRIBUTING.md"];
 export const EXCLUDE_DOCS = [
   "docs/HANDOFF.md", "docs/HANDOFF-ARCHIVE.md", "docs/HANDOFF-TRK.md", "docs/HANDOFF-TRK-STANDALONE.md",
-  "docs/MIGRATIONS.md", "docs/REVIEW-REQUEST-2026-10-31.md", "docs/IPHONE-PWA-BRAINSTORM-2026-10-30.md"
+  "docs/MIGRATIONS.md", "docs/REVIEW-REQUEST-2026-10-31.md", "docs/REVIEW-REQUEST-TRK258-2026-11-02.md",
+  "docs/IPHONE-PWA-BRAINSTORM-2026-10-30.md"
 ];
 
 /** そのファイルを配布物に入れるか（純粋な判断。テストで確かめる） */
