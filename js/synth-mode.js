@@ -186,22 +186,164 @@ const SAMPLE_LIMIT = 12 * 1024 * 1024, MAX_SAMPLE_SECONDS = 30, MAX_SOURCES = 6,
 const WAVE_TYPES = ["sine", "triangle", "sawtooth", "square"];
 const FILTER_TYPES = ["lowpass", "highpass", "bandpass", "notch"];
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+Object.assign(TEXT.ja, {
+  instKeyboard:"🎹 鍵盤",
+  instKeysUnit:"鍵",
+  instKeyboardRange:"鍵盤の広さ", instKeyboardRangeHint:"25（コンパクト）／49／61／88 鍵から選べます。広げても、キーの割り当ては音ごとに残ります。",
+  instKeyboardFit:"鍵盤の幅", instKeyboardFitFit:"収まるなら広げ、はみ出せば縮める（おすすめ）", instKeyboardFitScroll:"等倍のまま横スクロール", instKeyboardFitShrink:"いつも1画面に縮める",
+  instKeyboardFitHint:"88鍵は横に長いので、画面に合わせるか、指（マウス）で横に送るかを選べます。",
+  instOffRange:"画面の外の音に {n} 個の割り当てがあります（キーを押すと鳴ります）",
+  instMidiTitle:"🎹 MIDI入力", instMidiConnect:"つなぐ", instMidiAuto:"シンセを開いたときに自動でつなぐ（許可済みのとき）",
+  instMidiNone:"接続していません。鍵盤をつないで「つなぐ」を押してください。",
+  instMidiUnsupported:"このブラウザは MIDI 入力に対応していません（Chrome／Edge のパソコンで使えます）。",
+  instMidiDenied:"MIDI の使用が許可されませんでした。ブラウザの許可（サイトの設定）を確かめてください。",
+  instMidiConnected:"接続中：{name}", instMidiMany:"接続中：{n}台", instMidiLost:"MIDI キーボードが外れました。",
+  instMidiMonitor:"最後の入力：{text}", instMidiPermHint:"初めてのときは、ブラウザが MIDI の使用を尋ねます。許可すると次からは自動でつながります。"
+});
+Object.assign(TEXT.en, {
+  instKeyboard:"🎹 Keyboard",
+  instKeysUnit:" keys",
+  instKeyboardRange:"Keyboard size", instKeyboardRangeHint:"Choose 25 (compact), 49, 61 or 88 keys. Widening the keyboard keeps every key mapping with its note.",
+  instKeyboardFit:"Keyboard width", instKeyboardFitFit:"Grow to fit, shrink when needed (recommended)", instKeyboardFitScroll:"Keep full size, scroll sideways", instKeyboardFitShrink:"Always shrink to one screen",
+  instKeyboardFitHint:"An 88-key piano is wide. Pick whether it should fit the screen or be scrolled with a finger (or mouse).",
+  instOffRange:"{n} mapped note(s) sit outside the visible range — those keys still play.",
+  instMidiTitle:"🎹 MIDI input", instMidiConnect:"Connect", instMidiAuto:"Connect automatically when the synth opens (once allowed)",
+  instMidiNone:"Not connected. Plug in a keyboard and press Connect.",
+  instMidiUnsupported:"This browser does not support MIDI input (it works in Chrome or Edge on a computer).",
+  instMidiDenied:"MIDI permission was not granted. Check this site's permissions in the browser.",
+  instMidiConnected:"Connected: {name}", instMidiMany:"Connected: {n} devices", instMidiLost:"The MIDI keyboard was disconnected.",
+  instMidiMonitor:"Last input: {text}", instMidiPermHint:"The first time, the browser asks for MIDI device access. Once allowed, it connects automatically."
+});
+Object.assign(TEXT.zh, {
+  instKeyboard:"🎹 键盘",
+  instKeysUnit:" 键",
+  instKeyboardRange:"键盘范围", instKeyboardRangeHint:"可选 25（紧凑）、49、61、88 键。加宽后，每个按键的指定仍按音高保留。",
+  instKeyboardFit:"键盘宽度", instKeyboardFitFit:"能放下就放大，放不下就缩小（推荐）", instKeyboardFitScroll:"保持原大小，左右滚动", instKeyboardFitShrink:"始终缩到一屏",
+  instKeyboardFitHint:"88 键很宽。可以选择让它适合屏幕，或用手指（鼠标）左右拖动。",
+  instOffRange:"画面外还有 {n} 个已指定的音（按下按键仍会发声）。",
+  instMidiTitle:"🎹 MIDI 输入", instMidiConnect:"连接", instMidiAuto:"打开合成器时自动连接（已允许时）",
+  instMidiNone:"尚未连接。接上键盘后按「连接」。",
+  instMidiUnsupported:"此浏览器不支持 MIDI 输入（可在电脑上的 Chrome／Edge 使用）。",
+  instMidiDenied:"未获得 MIDI 使用许可。请在浏览器的站点设置中确认。",
+  instMidiConnected:"已连接：{name}", instMidiMany:"已连接：{n} 台", instMidiLost:"MIDI 键盘已断开。",
+  instMidiMonitor:"最近的输入：{text}", instMidiPermHint:"第一次使用时，浏览器会询问是否允许 MIDI 设备。允许后会自动连接。"
+});
+Object.assign(TEXT.ko, {
+  instKeyboard:"🎹 건반",
+  instKeysUnit:"건반",
+  instKeyboardRange:"건반 범위", instKeyboardRangeHint:"25(컴팩트)／49／61／88건반 중에서 고를 수 있습니다. 넓혀도 키 지정은 음마다 그대로 남습니다.",
+  instKeyboardFit:"건반 너비", instKeyboardFitFit:"들어가면 넓히고, 넘치면 줄임 (권장)", instKeyboardFitScroll:"원래 크기로 좌우 스크롤", instKeyboardFitShrink:"항상 한 화면에 맞춤",
+  instKeyboardFitHint:"88건반은 넓습니다. 화면에 맞출지, 손가락(마우스)으로 옆으로 보낼지 고르세요.",
+  instOffRange:"화면 밖의 음에 지정이 {n}개 있습니다 (키를 누르면 소리가 납니다).",
+  instMidiTitle:"🎹 MIDI 입력", instMidiConnect:"연결", instMidiAuto:"신시사이저를 열 때 자동 연결 (이미 허용한 경우)",
+  instMidiNone:"연결되어 있지 않습니다. 건반을 연결하고 '연결'을 누르세요.",
+  instMidiUnsupported:"이 브라우저는 MIDI 입력을 지원하지 않습니다 (컴퓨터의 Chrome／Edge에서 사용할 수 있습니다).",
+  instMidiDenied:"MIDI 사용이 허용되지 않았습니다. 브라우저의 사이트 설정을 확인하세요.",
+  instMidiConnected:"연결됨: {name}", instMidiMany:"연결됨: {n}대", instMidiLost:"MIDI 건반이 분리되었습니다.",
+  instMidiMonitor:"마지막 입력: {text}", instMidiPermHint:"처음에는 브라우저가 MIDI 장치 사용을 묻습니다. 허용하면 다음부터 자동으로 연결됩니다."
+});
+
 const WHITE_SEMIS = new Set([0, 2, 4, 5, 7, 9, 11]);
-const WHITE_W = 42, BLACK_W = 26, WIDE_KEY_SCALE = 1.28, FIRST_MIDI = 48, LAST_MIDI = 72; // C3..C5
+const WHITE_W = 42, BLACK_W = 26, WIDE_KEY_SCALE = 1.28;
 const DEFAULT_KEY_CODES = [
   "KeyZ", "KeyS", "KeyX", "KeyD", "KeyC", "KeyV", "KeyG", "KeyB", "KeyH", "KeyN", "KeyJ", "KeyM",
   "KeyQ", "Digit2", "KeyW", "Digit3", "KeyE", "KeyR", "Digit5", "KeyT", "Digit6", "KeyY", "Digit7", "KeyU", "KeyI"
 ];
-const RESERVED_KEY_CODES = new Set(["Escape", "Tab", "F5", "F11", "F12", "MetaLeft", "MetaRight", "ControlLeft", "ControlRight", "AltLeft", "AltRight", "Backspace", "Delete"]);
-const safeKeyCode = code => typeof code === "string" && code.length > 0 && code.length <= 24 && !RESERVED_KEY_CODES.has(code) && !(code[0] === "F" && Number(code.slice(1)) > 0) && !code.startsWith("Numpad");
-function normalizeKeyMap(raw) {
-  if (!Array.isArray(raw) || raw.length !== 25) return DEFAULT_KEY_CODES.slice();
-  const used = new Set();
-  return raw.map(code => {
-    if (!safeKeyCode(code) || used.has(code)) return "";
-    used.add(code); return code;
-  });
+
+/* ==== 純粋な計算（trk261。テストはこの範囲を切り出して vm で読む。外の変数は使わない） ====
+   ・鍵盤の広さ（25／49／61／88 鍵）と、幅の合わせ方（fit／scroll／shrink）
+   ・MIDI のメッセージの読み取り（ノート・CC・ピッチベンド）
+   ・キー割り当てを「音番号（MIDI）→ キー」で持つ形と、旧い配列（C3 基準・25 個）からの移行 */
+const KEY_RANGE_IDS = ["25", "49", "61", "88"];
+const KEY_RANGES = Object.freeze({
+  "25": { first: 48, last: 72 },   /* C3–C5（従来の2オクターブ） */
+  "49": { first: 36, last: 84 },   /* C2–C6 */
+  "61": { first: 36, last: 96 },   /* C2–C7 */
+  "88": { first: 21, last: 108 }   /* A0–C8 */
+});
+const KEY_FIT_IDS = ["fit", "scroll", "shrink"];
+const KEYMAP_BASE = 48;            /* 旧配列の 0 番目 = C3 */
+const KEY_MIN_SCALE = 0.45;        /* これ以上小さくすると押しにくいので、横スクロールへ切り替える */
+const WHITE_PC = [0, 2, 4, 5, 7, 9, 11];
+const RESERVED_KEY_CODES = ["Escape", "Tab", "F5", "F11", "F12", "MetaLeft", "MetaRight", "ControlLeft", "ControlRight", "AltLeft", "AltRight", "Backspace", "Delete"];
+
+function keyRangeFor(id) {
+  const r = KEY_RANGES[String(id)];
+  return r ? { first: r.first, last: r.last } : { first: KEY_RANGES["25"].first, last: KEY_RANGES["25"].last };
 }
+function whiteKeyCount(range) {
+  let n = 0;
+  for (let m = range.first; m <= range.last; m++) if (WHITE_PC.includes(((m % 12) + 12) % 12)) n++;
+  return n;
+}
+/* 幅の合わせ方：返すのは「拡大率」と「横スクロールが要るか」。
+   fit＝収まるなら最大 1.28 倍まで広げ、はみ出すなら縮める（下限 0.45 倍）。それでも入らなければスクロール。
+   scroll＝いつも等倍（拡大もしない）。shrink＝いつも1画面に縮める（0.28 倍まで）。 */
+function pianoLayoutFor(whiteCount, available, mode) {
+  const whites = Math.max(1, Math.round(Number(whiteCount) || 1));
+  const natural = whites * 42;                     /* WHITE_W。純粋にするため数値を直書き */
+  const room = Number(available);
+  if (!(room > 0)) return { scale: 1, scroll: false };
+  if (mode === "scroll") return { scale: 1, scroll: natural > room + 1 };
+  if (mode === "shrink") return { scale: Math.min(1, Math.max(0.28, room / natural)), scroll: false };
+  if (natural <= room) return { scale: Math.min(1.28, room / natural), scroll: false };
+  const scale = Math.max(0.45, room / natural);
+  return { scale, scroll: natural * scale > room + 1 };
+}
+/* MIDI 1.0 のチャンネルメッセージ（3 バイト）。ベロシティ 0 のノートオンはノートオフ扱い（多くの鍵盤がそう送る）。 */
+function parseMidiMessage(data) {
+  if (!data || typeof data.length !== "number" || data.length < 2) return null;
+  const status = data[0] & 0xf0, channel = (data[0] & 0x0f) + 1;
+  if (status === 0x90) {
+    const note = data[1] & 0x7f, velocity = (data[2] ?? 0) & 0x7f;
+    if (!velocity) return { type:"noteoff", note, velocity:0, channel };
+    return { type:"noteon", note, velocity, channel };
+  }
+  if (status === 0x80) return { type:"noteoff", note:data[1] & 0x7f, velocity:(data[2] ?? 0) & 0x7f, channel };
+  if (status === 0xb0) return { type:"cc", controller:data[1] & 0x7f, value:(data[2] ?? 0) & 0x7f, channel };
+  if (status === 0xe0) return { type:"bend", value:(((data[2] ?? 0) & 0x7f) << 7) | ((data[1] ?? 0) & 0x7f), channel };
+  return null;
+}
+/* ピッチベンド（0〜16383・中央 8192）を半音に直す。既定は ±2 半音。 */
+function bendOffsetFromValue(value, range = 2) {
+  const v = Math.max(0, Math.min(16383, Number(value) || 0));
+  return ((v - 8192) / 8192) * range;
+}
+function isMappableKeyCode(code) {
+  return typeof code === "string" && code.length > 0 && code.length <= 24
+    && !RESERVED_KEY_CODES.includes(code)
+    && !(code[0] === "F" && Number(code.slice(1)) > 0)
+    && !code.startsWith("Numpad");
+}
+/* 旧い配列（C3 基準・25 個）→ { "60": "KeyQ", … } */
+function keyMapFromLegacy(raw) {
+  const out = {};
+  if (!Array.isArray(raw)) return out;
+  raw.forEach((code, i) => { if (isMappableKeyCode(code)) out[KEYMAP_BASE + i] = code; });
+  return out;
+}
+/* 保存されている値を安全な形にそろえる。配列（旧）は移行し、壊れた値は null（＝呼び側が既定へ） */
+function sanitizeKeyMap(raw) {
+  if (Array.isArray(raw)) return raw.length === 25 ? keyMapFromLegacy(raw) : null;
+  if (!raw || typeof raw !== "object") return null;
+  const out = {}, used = new Set();
+  for (const [key, code] of Object.entries(raw)) {
+    const midi = Number(key);
+    if (!Number.isInteger(midi) || midi < 0 || midi > 127) continue;
+    if (!isMappableKeyCode(code) || used.has(code)) continue;
+    used.add(code); out[midi] = code;
+  }
+  return out;
+}
+function keyMapMidiFor(map, code) {
+  if (!map || typeof map !== "object") return -1;
+  for (const [midi, c] of Object.entries(map)) if (c === code) return Number(midi);
+  return -1;
+}
+/* ==== 純粋な計算 ここまで ==== */
+
+const safeKeyCode = isMappableKeyCode;
+const normalizeKeyMap = raw => sanitizeKeyMap(raw) || keyMapFromLegacy(DEFAULT_KEY_CODES);
 const keyCodeLabel = code => {
   if (!code) return "—";
   if (code.startsWith("Key")) return code.slice(3);
@@ -337,10 +479,17 @@ addEventListener("DOMContentLoaded", () => {
   const stopBtn = btn("instStop", "instSmallBtn instStopBtn");
   pianoHeader.append(pianoTitle, mapBtn, stopBtn);
   const mapHint = tx("p", "instAssignHint", "instHint instMapHint");
+  /* 🎹 trk261：MIDI 入力の行（状態・つなぐ・最後の入力）。iPhone/iPad の Safari は未対応なので理由も出す */
+  const midiRow = node("div", "instMidiRow");
+  const midiLabel = tx("span", "instMidiTitle", "instMidiLabel");
+  const midiState = node("span", "instMidiState");
+  const midiBtn = btn("instMidiConnect", "instSmallBtn instMidiBtn");
+  midiRow.append(midiLabel, midiState, midiBtn);
+  const midiMonitor = node("div", "hint instMidiMonitor"); midiMonitor.setAttribute("role", "status"); midiMonitor.setAttribute("aria-live", "polite");
   const pianoScroll = node("div", "instPianoScroll"); pianoScroll.setAttribute("role", "group"); pianoScroll.setAttribute("aria-label", tr("instKeyboard"));
   const piano = node("div", "instPiano"); pianoScroll.append(piano);
   const status = node("div", "hint status instStatus"); status.setAttribute("role", "status"); status.setAttribute("aria-live", "polite");
-  pianoPanel.append(pianoHeader, mapHint, pianoScroll, status);
+  pianoPanel.append(pianoHeader, midiRow, midiMonitor, mapHint, pianoScroll, status);
 
   const footer = node("footer", "instFooter");
   const keyHint = node("span", "instKeyHint", "Z S X D C V G B H N J M  ·  Q 2 W 3 E R 5 T 6 Y 7 U I");
@@ -358,33 +507,69 @@ addEventListener("DOMContentLoaded", () => {
   const synthFastRow = window.Trk.modes.makeCheck("synthModeFastStart", "synthModeFastStart", "instFastOption");
   const synthKeyboardLockRow = window.Trk.modes.makeCheck("synthModeKeyboardLock", "synthModeKeyboardLock", "instKeyboardLockOption");
   const synthKeyboardLockHint = tx("div", "instKeyboardLockHint", "hint");
-  const synthWideKeyboardRow = window.Trk.modes.makeCheck("synthModeWideKeyboard", "synthModeWideKeyboard", "instWideKeyboardOption");
-  const synthWideKeyboardHint = tx("div", "instWideKeyboardHint", "hint");
-  synthSettingsPanel.append(tx("summary", "instSettingsTitle"), synthSettingsHint, synthDisableRow, synthFastRow, synthKeyboardLockRow, synthKeyboardLockHint, synthWideKeyboardRow, synthWideKeyboardHint);
+  /* 🎹 trk261：鍵盤の広さ（25／49／61／88）と、幅の合わせ方（fit／scroll／shrink） */
+  const synthRangeRow = node("label", "field");
+  const synthRangeSelect = document.createElement("select");
+  for (const id of KEY_RANGE_IDS) { const o = document.createElement("option"); o.value = id; synthRangeSelect.append(o); }
+  synthRangeRow.append(tx("span", "instKeyboardRange"), synthRangeSelect);
+  const synthRangeHint = tx("div", "instKeyboardRangeHint", "hint");
+  const synthFitRow = node("label", "field");
+  const synthFitSelect = document.createElement("select");
+  for (const id of KEY_FIT_IDS) { const o = document.createElement("option"); o.value = id; synthFitSelect.append(o); }
+  synthFitRow.append(tx("span", "instKeyboardFit"), synthFitSelect);
+  const synthFitHint = tx("div", "instKeyboardFitHint", "hint");
+  const synthMidiAutoRow = window.Trk.modes.makeCheck("synthMidiAuto", "synthMidiAuto", "instMidiAuto");
+  const synthMidiPermHint = tx("div", "instMidiPermHint", "hint");
+  synthSettingsPanel.append(tx("summary", "instSettingsTitle"), synthSettingsHint, synthDisableRow, synthFastRow, synthKeyboardLockRow, synthKeyboardLockHint,
+    synthRangeRow, synthRangeHint, synthFitRow, synthFitHint, synthMidiAutoRow, synthMidiPermHint);
   const synthSettingsAnchor = document.getElementById("specPanel") || document.getElementById("fxPanel") ||
     (document.getElementById("seEnabled") && document.getElementById("seEnabled").closest("details.panel"));
   if (synthSettingsAnchor) synthSettingsAnchor.after(synthSettingsPanel);
   const synthDisableInput = synthDisableRow.querySelector("input");
   const synthFastInput = synthFastRow.querySelector("input");
   const synthKeyboardLockInput = synthKeyboardLockRow.querySelector("input");
-  const synthWideKeyboardInput = synthWideKeyboardRow.querySelector("input");
+  const synthMidiAutoInput = synthMidiAutoRow.querySelector("input");
+  function rangeOptionLabel(id) { return `${id}${tr("instKeysUnit")} · ${id === "25" ? "C3–C5" : id === "49" ? "C2–C6" : id === "61" ? "C2–C7" : "A0–C8"}`; }
+  function syncRangeOptions() {
+    for (const o of synthRangeSelect.options) o.textContent = rangeOptionLabel(o.value);
+    synthFitSelect.options[0].textContent = tr("instKeyboardFitFit");
+    synthFitSelect.options[1].textContent = tr("instKeyboardFitScroll");
+    synthFitSelect.options[2].textContent = tr("instKeyboardFitShrink");
+  }
   window._trkSyncSynthModeSettings = () => {
     synthDisableInput.checked = !!core.settings.synthModeDisabled;
     synthFastInput.checked = !!core.settings.synthModeFastStart;
     synthKeyboardLockInput.checked = core.settings.synthModeKeyboardLock !== false;
-    synthWideKeyboardInput.checked = !!core.settings.synthModeWideKeyboard;
+    synthRangeSelect.value = KEY_RANGE_IDS.includes(String(core.settings.synthModeKeyRange)) ? String(core.settings.synthModeKeyRange) : "25";
+    synthFitSelect.value = KEY_FIT_IDS.includes(core.settings.synthModeKeyFit) ? core.settings.synthModeKeyFit : "fit";
+    synthMidiAutoInput.checked = core.settings.synthMidiAuto !== false;
+    syncRangeOptions();
     renderPiano();
     updatePowerHint();
   };
   synthDisableInput.addEventListener("change", updatePowerHint);
   synthFastInput.addEventListener("change", updatePowerHint);
-  synthWideKeyboardInput.addEventListener("change", renderPiano);
+  synthRangeSelect.addEventListener("change", () => {
+    core.settings.synthModeKeyRange = KEY_RANGE_IDS.includes(synthRangeSelect.value) ? synthRangeSelect.value : "25";
+    core.saveUserPrefs(); renderPiano();
+    const outside = mappedOutsideRange();
+    if (outside) setStatus("instOffRange", { n: outside }); else setStatus("");
+  });
+  synthFitSelect.addEventListener("change", () => {
+    core.settings.synthModeKeyFit = KEY_FIT_IDS.includes(synthFitSelect.value) ? synthFitSelect.value : "fit";
+    core.saveUserPrefs(); renderPiano();
+  });
+  synthMidiAutoInput.addEventListener("change", () => { core.settings.synthMidiAuto = synthMidiAutoInput.checked; core.saveUserPrefs(); });
   window.addEventListener("resize", () => { if (!overlay.hidden) renderPiano(); });
 
   /* ============ 状態 ============ */
   let customPatches = loadCustomPatches();
   let state = loadState();
-  let keyMap = normalizeKeyMap(state.keyMap);
+  let keyMap = normalizeKeyMap(state.keyMap);   /* { 音番号: キー }。旧い配列は読み込み時に移行する */
+  let bendValue = 8192;                        /* MIDI ピッチベンド（中央 8192） */
+  let sustainOn = false;                       /* MIDI サステイン（CC64） */
+  const sustainedTokens = new Set();           /* ペダルで延ばしている音 */
+  let midiAccess = null, midiInputs = new Map(), midiStateKey = "", midiStateVars = null, midiMonitorText = "";
   let master = clamp(state.master, 0, 1, .46);
   let pitchSemitones = Math.round(clamp(state.pitch, -8, 8, 0));
   let currentPatch = null, originPresetId = "sine", selectedPresetId = "sine", dirty = false;
@@ -456,40 +641,65 @@ addEventListener("DOMContentLoaded", () => {
     for (const id of sampleBank.keys()) if (!keep.has(id)) sampleBank.delete(id);
   }
 
-  /* ============ 鍵盤（QWERTYのZ列＋Q列。黒鍵を数字・中段キーに対応） ============ */
-  function pianoScale() {
-    if (!core.settings.synthModeWideKeyboard) return 1;
+  /* ============ 鍵盤（QWERTYのZ列＋Q列。黒鍵を数字・中段キーに対応） ============
+     trk261：25／49／61／88 鍵を選べる。幅の合わせ方は fit／scroll／shrink の3つ。 */
+  function currentRange() { return keyRangeFor(core.settings.synthModeKeyRange); }
+  function pianoAvailable() {
     const viewport = Number(window.innerWidth) || Number(document.documentElement && document.documentElement.clientWidth) || 0;
-    const available = pianoScroll.clientWidth || Math.max(0, viewport - 40);
-    /* 小画面では従来の630pxを守り、余裕のある画面だけ最大806pxまで広げる。 */
-    return available ? Math.max(1, Math.min(WIDE_KEY_SCALE, available / (15 * WHITE_W))) : WIDE_KEY_SCALE;
+    return pianoScroll.clientWidth || Math.max(0, viewport - 40);
   }
+  function currentLayout() {
+    const range = currentRange();
+    const whites = whiteKeyCount(range);
+    return { range, whites, ...pianoLayoutFor(whites, pianoAvailable(), core.settings.synthModeKeyFit) };
+  }
+  /* 画面の外にある音の割り当て（切替のときに知らせる） */
+  function mappedOutsideRange() {
+    const range = currentRange();
+    return Object.keys(keyMap || {}).map(Number).filter(midi => midi < range.first || midi > range.last).length;
+  }
+  function centerPianoOn(midi = 60) {
+    const { range, whites, scale } = currentLayout();
+    if (!whites) return;
+    const whiteW = WHITE_W * scale;
+    let idx = 0;
+    for (let m = range.first; m < Math.min(midi, range.last); m++) if (WHITE_SEMIS.has(((m % 12) + 12) % 12)) idx++;
+    pianoScroll.scrollLeft = Math.max(0, idx * whiteW - pianoScroll.clientWidth / 2 + whiteW / 2);
+  }
+  let lastPianoKey = "";
   function renderPiano() {
+    const { range, whites, scale, scroll } = currentLayout();
+    const whiteW = WHITE_W * scale, blackW = BLACK_W * scale;
     piano.textContent = "";
-    const scale = pianoScale(), whiteW = WHITE_W * scale, blackW = BLACK_W * scale;
     const whiteIndexFor = midi => {
       let n = 0;
-      for (let m = FIRST_MIDI; m < midi; m++) if (WHITE_SEMIS.has(m % 12)) n++;
+      for (let m = range.first; m < midi; m++) if (WHITE_SEMIS.has(((m % 12) + 12) % 12)) n++;
       return n;
     };
-    for (let midi = FIRST_MIDI; midi <= LAST_MIDI; midi++) {
-      const pc = midi % 12, white = WHITE_SEMIS.has(pc), whiteIndex = whiteIndexFor(midi);
+    for (let midi = range.first; midi <= range.last; midi++) {
+      const pc = ((midi % 12) + 12) % 12, white = WHITE_SEMIS.has(pc), whiteIndex = whiteIndexFor(midi);
       const b = document.createElement("button"); b.type = "button"; b.className = `instKey ${white ? "white" : "black"}`;
       b.dataset.midi = String(midi); b.style.left = `${white ? whiteIndex * whiteW : whiteIndex * whiteW - blackW / 2}px`;
       if (white) b.style.width = `${whiteW}px`; else b.style.width = `${blackW}px`;
       b.style.setProperty("--key-index", whiteIndex);
       b.classList.toggle("assignTarget", assignMode && pendingMidi === midi);
       const note = node("span", "instNote", noteName(midi));
-      const cap = node("kbd", "instKeyCap", keyCodeLabel(keyMap[midi - FIRST_MIDI]));
+      const code = keyMap[midi];
+      const cap = node("kbd", "instKeyCap", keyCodeLabel(code));
       b.append(note, cap);
-      b.setAttribute("aria-label", `${noteName(midi)} · ${keyCodeLabel(keyMap[midi - FIRST_MIDI])}`);
+      b.setAttribute("aria-label", `${noteName(midi)} · ${keyCodeLabel(code)}`);
       b.setAttribute("aria-pressed", String(pressedMidi.has(midi)));
       if (!white) b.style.zIndex = "3";
       piano.append(b);
     }
-    piano.style.width = `${15 * whiteW}px`;
+    piano.style.width = `${whites * whiteW}px`;
+    piano.style.minWidth = scroll ? `${whites * whiteW}px` : "0";
     piano.dataset.wide = scale > 1 ? "1" : "0";
+    piano.dataset.fit = core.settings.synthModeKeyFit;
     for (const midi of pressedMidi.keys()) updateSelectedNote(midi, true);
+    /* 広さ・幅の合わせ方を変えたときだけ、真ん中（C4）が見える位置へ寄せる */
+    const key = `${range.first}-${range.last}-${core.settings.synthModeKeyFit}`;
+    if (key !== lastPianoKey) { lastPianoKey = key; centerPianoOn(60); }
   }
 
   /* ============ 音声エンジン ============ */
@@ -529,11 +739,13 @@ addEventListener("DOMContentLoaded", () => {
     if (synthBus && audio) synthBus.gain.setTargetAtTime(master * .42, audio.currentTime, .025);
     persistState();
   }
+  /* trk261：ピッチベンド（MIDI）も、ピッチ設定と同じ道で全ボイスへ効かせる */
+  function voicePitch(midi) { return midi + pitchSemitones + bendOffsetFromValue(bendValue); }
   function applyPitchToVoices() {
     if (!audio) return;
     const t = audio.currentTime;
     for (const voice of voices.values()) {
-      voice.midi = voice.keyMidi + pitchSemitones;
+      voice.midi = voicePitch(voice.keyMidi);
       for (const item of voice.sourceNodes.values()) {
         const source = item.config;
         if (item.kind === "osc") {
@@ -552,10 +764,12 @@ addEventListener("DOMContentLoaded", () => {
       v.filter.Q.setTargetAtTime(currentPatch.filter.q, audio.currentTime, .03);
     }
   }
-  function noteOn(token, keyMidi) {
+  /* trk261：ベロシティ（0..1）。MIDI の強さを音量に写す。画面の鍵盤と QWERTY は 1（従来どおり）。 */
+  function noteOn(token, keyMidi, velocity = 1) {
     if (!ensureAudio() || !currentPatch || voices.has(token)) return;
     if (voices.size >= MAX_VOICES) releaseVoice(voices.keys().next().value);
-    const midi = keyMidi + pitchSemitones;
+    const vel = Math.max(.05, Math.min(1, Number(velocity) || 0));
+    const midi = voicePitch(keyMidi);
     const t = audio.currentTime + .006;
     const filter = audio.createBiquadFilter();
     filter.type = currentPatch.filter.type;
@@ -564,8 +778,8 @@ addEventListener("DOMContentLoaded", () => {
     const envelope = audio.createGain(); envelope.gain.setValueAtTime(.0001, t);
     const env = clone(currentPatch.env);
     const attackEnd = t + Math.max(.003, env.attack), decayEnd = attackEnd + Math.max(.005, env.decay);
-    envelope.gain.linearRampToValueAtTime(1, attackEnd);
-    envelope.gain.linearRampToValueAtTime(Math.max(.0001, env.sustain), decayEnd);
+    envelope.gain.linearRampToValueAtTime(vel, attackEnd);
+    envelope.gain.linearRampToValueAtTime(Math.max(.0001, env.sustain * vel), decayEnd);
     filter.connect(envelope); envelope.connect(synthBus);
     const sourceNodes = new Map();
     for (const s of currentPatch.sources) {
@@ -587,7 +801,7 @@ addEventListener("DOMContentLoaded", () => {
       } catch (_) {}
     }
     if (!sourceNodes.size) { try { filter.disconnect(); envelope.disconnect(); } catch (_) {} return; }
-    const voice = { token, keyMidi, midi, filter, envelope, sourceNodes, release:env.release, releasing:false };
+    const voice = { token, keyMidi, midi, velocity:vel, filter, envelope, sourceNodes, release:env.release, releasing:false };
     voices.set(token, voice);
     pressedMidi.set(keyMidi, (pressedMidi.get(keyMidi) || 0) + 1); updateSelectedNote(keyMidi, true);
     setStatus("");
@@ -627,6 +841,102 @@ addEventListener("DOMContentLoaded", () => {
         item.source.playbackRate.setTargetAtTime(Math.pow(2, (voice.midi - source.rootMidi) / 12), audio.currentTime, .025);
       }
     }
+  }
+
+  /* ============ MIDI 入力（trk261・Web MIDI） ============
+     Chrome／Edge（と Opera・Samsung Internet）は対応。Safari（iPhone・iPad を含む）は非対応。
+     ・ノートオン/オフ（ベロシティを音量へ）
+     ・サステイン（CC64）：ペダルを踏んでいる間は離しても音を延ばす
+     ・ピッチベンド（±2半音）／オールノートオフ（CC120・123）
+     ・抜き差し（statechange）に追随。シンセを閉じたら鳴っている音を止める
+     端末が無くても配線を試せるよう、受け口は window.Trk.synth からも呼べる（テスト用）。 */
+  function midiSupported() { return typeof navigator !== "undefined" && typeof navigator.requestMIDIAccess === "function"; }
+  function setMidiState(key, vars) {
+    midiStateKey = key || ""; midiStateVars = vars || null;
+    midiState.textContent = key ? tr(key, vars) : "";
+    midiState.dataset.state = key || "";
+    midiBtn.disabled = !midiSupported();
+  }
+  function setMidiMonitor(text) {
+    midiMonitorText = text || "";
+    midiMonitor.textContent = midiMonitorText ? tr("instMidiMonitor", { text: midiMonitorText }) : "";
+  }
+  function monitorFor(msg) {
+    if (msg.type === "noteon") return `${noteName(msg.note)} · ${msg.velocity}`;
+    if (msg.type === "noteoff") return `${noteName(msg.note)} · off`;
+    if (msg.type === "cc") return `CC${msg.controller} · ${msg.value}`;
+    if (msg.type === "bend") return `bend ${bendOffsetFromValue(msg.value).toFixed(2)}`;
+    return "";
+  }
+  function releaseSustained() {
+    for (const token of Array.from(sustainedTokens)) noteOff(token);
+    sustainedTokens.clear();
+  }
+  function handleMidiMessage(data) {
+    if (overlay.hidden) return;                 /* 閉じている間は鳴らさない（次に開いたときの取りこぼしも防ぐ） */
+    const msg = parseMidiMessage(data);
+    if (!msg) return;
+    const token = msg.note != null ? `midi-${msg.channel}-${msg.note}` : "";
+    if (msg.type === "noteon") {
+      setMidiMonitor(monitorFor(msg));
+      if (sustainedTokens.has(token)) { sustainedTokens.delete(token); noteOff(token); }
+      noteOn(token, msg.note, msg.velocity / 127);
+    } else if (msg.type === "noteoff") {
+      setMidiMonitor(monitorFor(msg));
+      if (sustainOn) { if (voices.has(token)) sustainedTokens.add(token); }
+      else noteOff(token);
+    } else if (msg.type === "cc") {
+      setMidiMonitor(monitorFor(msg));
+      if (msg.controller === 64) {
+        const on = msg.value >= 64;
+        if (sustainOn && !on) releaseSustained();
+        sustainOn = on;
+      } else if (msg.controller === 120 || msg.controller === 123) {
+        sustainedTokens.clear(); stopAllNotes();
+      }
+    } else if (msg.type === "bend") {
+      setMidiMonitor(monitorFor(msg));
+      bendValue = msg.value;
+      applyPitchToVoices();
+    }
+  }
+  function bindMidiInputs() {
+    if (!midiAccess) return;
+    for (const input of midiInputs.values()) { try { input.onmidimessage = null; } catch (_) {} }
+    midiInputs.clear();
+    for (const input of midiAccess.inputs.values()) {
+      try {
+        input.onmidimessage = e => handleMidiMessage(e.data);
+        midiInputs.set(input.id, input);
+      } catch (_) {}
+    }
+    const names = Array.from(midiInputs.values()).map(i => i.name || "").filter(Boolean);
+    if (!names.length) setMidiState("instMidiNone");
+    else if (names.length === 1) setMidiState("instMidiConnected", { name: names[0] });
+    else setMidiState("instMidiMany", { n: names.length });
+  }
+  async function connectMidi() {
+    if (!midiSupported()) { setMidiState("instMidiUnsupported"); return false; }
+    try {
+      midiAccess = await navigator.requestMIDIAccess({ sysex:false });
+    } catch (e) {
+      setMidiState("instMidiDenied");
+      return false;
+    }
+    if (!midiAccess) { setMidiState("instMidiDenied"); return false; }
+    try { midiAccess.onstatechange = () => bindMidiInputs(); } catch (_) {}
+    bindMidiInputs();
+    return true;
+  }
+  /* すでに許可済みのときだけ、シンセを開いたときに黙ってつなぐ（許可の確認は出さない） */
+  async function autoConnectMidi() {
+    if (midiAccess || core.settings.synthMidiAuto === false || !midiSupported()) return;
+    try {
+      if (!navigator.permissions || typeof navigator.permissions.query !== "function") return;
+      const status = await navigator.permissions.query({ name:"midi" });
+      if (status.state !== "granted") return;
+    } catch (_) { return; }
+    connectMidi();
   }
 
   /* ============ コントロール ============ */
@@ -766,6 +1076,10 @@ addEventListener("DOMContentLoaded", () => {
     stopBtn.textContent = tr("instStop"); savePatchBtn.textContent = tr("instSave"); resetBtn.textContent = tr("instReset");
     deletePatchBtn.textContent = tr("instDelete"); addOscBtn.textContent = tr("instAddOsc"); sampleText.textContent = tr("instAddSample"); addSampleLabel.setAttribute("aria-label", tr("instAddSample"));
     mapHint.textContent = tr("instAssignHint"); closeTip.textContent = tr("instEscapeClose"); songName.textContent = trackTitle();
+    midiLabel.textContent = tr("instMidiTitle"); midiBtn.textContent = tr("instMidiConnect");
+    if (midiStateKey) midiState.textContent = tr(midiStateKey, midiStateVars);
+    if (midiMonitorText) midiMonitor.textContent = tr("instMidiMonitor", { text: midiMonitorText });
+    syncRangeOptions();
     songVol.firstChild.textContent = tr("instVol");
     keyHint.textContent = "Z S X D C V G B H N J M  ·  Q 2 W 3 E R 5 T 6 Y 7 U I";
     if (statusKey) status.textContent = tr(statusKey, statusVars);
@@ -859,10 +1173,16 @@ addEventListener("DOMContentLoaded", () => {
     overlay.hidden = false; document.body.classList.add("instOpen");
     refreshText(); updateTrackControls(); startScope(); closeBtn.focus();
     ensureAudio();
+    if (!midiSupported()) setMidiState("instMidiUnsupported");
+    else if (!midiAccess) setMidiState("instMidiNone");
+    else bindMidiInputs();
+    autoConnectMidi();
   }
   function closeSynth(restoreFocus = true) {
     if (overlay.hidden) return;
     stopAllNotes();
+    sustainedTokens.clear(); sustainOn = false; bendValue = 8192;
+    setMidiMonitor("");
     if (assignMode) setAssign(false); else pendingMidi = null;
     window.Trk.overlay.set("synth", false);
     overlay.hidden = true; document.body.classList.remove("instOpen");
@@ -888,7 +1208,8 @@ addEventListener("DOMContentLoaded", () => {
   overlay.addEventListener("click", e => { if (e.target === overlay) closeSynth(); });
   document.addEventListener("click", e => { if (e.target && e.target.closest && e.target.closest("[data-inst-close]")) closeSynth(); });
   mapBtn.addEventListener("click", () => setAssign(!assignMode));
-  stopBtn.addEventListener("click", stopAllNotes);
+  stopBtn.addEventListener("click", () => { sustainedTokens.clear(); setMidiMonitor(""); stopAllNotes(); });
+  midiBtn.addEventListener("click", () => { connectMidi(); });
   presetSelect.addEventListener("change", () => { if (presetSelect.value !== "__edited") choosePreset(presetSelect.value); });
   patchNameInput.addEventListener("input", () => { currentPatch.name = patchNameInput.value.slice(0, 24); currentPatch.nameKey = null; markEdited(); });
   savePatchBtn.addEventListener("click", savePatch);
@@ -950,17 +1271,17 @@ addEventListener("DOMContentLoaded", () => {
   function assignPhysicalKey(code) {
     if (code === "Delete" || code === "Backspace") {
       if (pendingMidi == null) { setStatus("instAssignPick"); return; }
-      keyMap[pendingMidi - FIRST_MIDI] = ""; const n = pendingMidi; pendingMidi = null;
+      delete keyMap[pendingMidi]; const n = pendingMidi; pendingMidi = null;
       renderPiano(); persistState(); setStatus("instKeyCleared", { note:noteName(n) }); return;
     }
     if (!safeKeyCode(code)) { setStatus("instBadKey"); return; }
     if (pendingMidi == null) { setStatus("instAssignPick"); return; }
-    const previous = keyMap.indexOf(code);
+    const previous = keyMapMidiFor(keyMap, code);
     const midi = pendingMidi;
-    if (previous >= 0 && previous !== midi - FIRST_MIDI) keyMap[previous] = "";
-    keyMap[midi - FIRST_MIDI] = code; pendingMidi = null;
+    if (previous >= 0 && previous !== midi) delete keyMap[previous];
+    keyMap[midi] = code; pendingMidi = null;
     renderPiano(); persistState();
-    setStatus(previous >= 0 && previous !== midi - FIRST_MIDI ? "instKeyMoved" : "instAssigned", { note:noteName(midi), key:keyCodeLabel(code) });
+    setStatus(previous >= 0 && previous !== midi ? "instKeyMoved" : "instAssigned", { note:noteName(midi), key:keyCodeLabel(code) });
   }
   window.addEventListener("keydown", e => {
     if (overlay.hidden || window.Trk.overlay.is("study")) return;
@@ -971,7 +1292,7 @@ addEventListener("DOMContentLoaded", () => {
       if (assignMode) setAssign(false); else closeSynth();
       return;
     }
-    const mappedIndex = keyMap.indexOf(e.code);
+    const mappedMidi = keyMapMidiFor(keyMap, e.code);
     if (assignMode && isTyping(e.target) && !core.settings.synthModeKeyboardLock) return; // OFFなら文字入力を優先
     if (assignMode) {
       const activeAction = e.target && e.target.closest && e.target.closest("button,[role='button']");
@@ -983,14 +1304,14 @@ addEventListener("DOMContentLoaded", () => {
     /* ON（初期値）では、フォーカスがスライダーやステータス欄にあっても
        割り当て済みのキーを先に奪い、鍵盤へ固定する。repeatも毎回止めるので
        range inputがキーリピートで動くこともない。 */
-    if (core.settings.synthModeKeyboardLock && mappedIndex >= 0) {
+    if (core.settings.synthModeKeyboardLock && mappedMidi >= 0) {
       e.preventDefault(); e.stopImmediatePropagation();
-      if (!e.repeat) noteOn(`key-${e.code}`, FIRST_MIDI + mappedIndex);
+      if (!e.repeat) noteOn(`key-${e.code}`, mappedMidi);
       return;
     }
     if (isTyping(e.target)) return;
     if (e.repeat) return;
-    if (mappedIndex >= 0) { e.preventDefault(); e.stopImmediatePropagation(); noteOn(`key-${e.code}`, FIRST_MIDI + mappedIndex); return; }
+    if (mappedMidi >= 0) { e.preventDefault(); e.stopImmediatePropagation(); noteOn(`key-${e.code}`, mappedMidi); return; }
     const activeButton = e.target && e.target.closest && e.target.closest("button,[role='button']");
     if ((e.code === "Enter" || e.code === "Space") && activeButton) return;
     if (["ShiftLeft", "ShiftRight", "ControlLeft", "ControlRight", "AltLeft", "AltRight", "MetaLeft", "MetaRight"].includes(e.code)) return;
@@ -1001,7 +1322,7 @@ addEventListener("DOMContentLoaded", () => {
     const token = `key-${e.code}`;
     /* keydownと同じ優先順位でkeyupも止める。これでフォーカス中のrange/selectへ
        リリース時のキーイベントが流れず、押鍵の開始と終了が必ず対になる。 */
-    if (core.settings.synthModeKeyboardLock && keyMap.indexOf(e.code) >= 0) {
+    if (core.settings.synthModeKeyboardLock && keyMapMidiFor(keyMap, e.code) >= 0) {
       e.preventDefault(); e.stopImmediatePropagation();
       if (voices.has(token)) noteOff(token);
       return;
@@ -1032,6 +1353,17 @@ addEventListener("DOMContentLoaded", () => {
   }, true);
   power.addEventListener("contextmenu", e => e.preventDefault());
 
+  /* 🧪 trk261：テストと、端末の無い環境での配線確認のために、純粋な計算と MIDI の受け口を公開する */
+  window.Trk.synth = Object.assign(window.Trk.synth || {}, {
+    KEY_RANGES, KEY_RANGE_IDS, KEY_FIT_IDS, KEYMAP_BASE,
+    keyRangeFor, whiteKeyCount, pianoLayoutFor, parseMidiMessage, bendOffsetFromValue,
+    keyMapFromLegacy, sanitizeKeyMap, keyMapMidiFor, isMappableKeyCode,
+    /* 実機の代わりに、MIDI の 3 バイトをそのまま流せる（画面を開いているときだけ鳴る） */
+    midiMessage: data => handleMidiMessage(data),
+    midiState: () => midiStateKey,
+    midiSupported
+  });
+
   /* Keep track state and labels current while the modal is open. */
   for (const type of ["play", "pause", "volumechange", "loadedmetadata", "loadeddata", "canplay", "ended"]) core.video.addEventListener(type, updateTrackControls);
   on("chart", updateTrackControls);
@@ -1043,6 +1375,7 @@ addEventListener("DOMContentLoaded", () => {
   const restoreId = String(state.preset || "sine");
   choosePreset(PRESET_BY_ID[restoreId] || customById(restoreId) ? restoreId : "sine", true);
   renderVoiceControls(); renderSources(); renderPiano(); updateTrackControls(); updatePowerHint();
+  if (window._trkSyncSynthModeSettings) window._trkSyncSynthModeSettings();
 });
 })();
 /* ✅ synth-mode.js 完了 */
