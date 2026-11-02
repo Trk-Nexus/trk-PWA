@@ -108,8 +108,8 @@
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | 53 種（本体 49＋ミク 4）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1339 pass / 0 fail**（trk258 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.02-trk258@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk258@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| テスト | `npm run check` **1350 pass / 0 fail**（trk259 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.02-trk259@<スコープ>`**（実体は `trkPWA-trk-v2026.11.02-trk259@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | **組織 `Trk-Nexus` へ移籍済み**（trk250〜trk252）。Pages は稼働中（開発版 <https://trk-nexus.github.io/trk-PWA/>）。個人側の同名リポジトリは**空のまま**（墓標 README は所有者待ち・[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md) §6 X4） |
 
@@ -831,6 +831,14 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **🗓 trk259：レビュー（`trk-Nexus-review-trk258-2026-11-02`）の推奨 3 点を手当て（2026-11-02）**：必須は無し。設計メモ＝[`POLISH-TRK259-2026-11-02.md`](POLISH-TRK259-2026-11-02.md)。
+  - **R3 目録の版を端末の日付に**：`updatedAt`（UTC）を `slice(0,10)` していたので、日本では**朝 9 時前の更新が前日**に出た。`catalogDay()` を通して端末の `getFullYear/getMonth/getDate` で出す（日付だけの目録・読めない値は今までどおり）。
+  - **R4 セットの進捗の分母**：要約・確認は「これから入る分」なのに、途中だけ `n:plan.packs.length`（30）だった。`done++` を「飛ばす」の後に移し、分母も `pend.pending.length`（29）に。
+  - **R5 許可リストに根拠**：`tools/lib/button-names.mjs` に **[id, なぜ静的でないか, 根拠の式]** を置き、`check:a11y` が毎回 `js/` に照らす。文言の設定を消すと FAIL（実際に `studyOpenBtn.textContent` を消して FAIL を確認）。
+  - **手順書の期待値**を実測（**516 ファイル・追加 116／更新 45／同一 355／反転 62 ファイル・425 語／`git status` 161／上流 `npm run check` 1339/0**）に直し、「**数字は当てる直前の dry-run を正**」と明記。
+  - **`TRK_PWA_REF` は 40 桁**（`722409a04de3fd72526f19d87e78c25c97983226`）に統一。`actions/checkout` は短い SHA を枝名として探すため。
+  - `npm run check` **1350 pass / 0 fail**（+11）・a11y **9/0**（根拠つき）。cache は **`trk-v2026.11.02-trk259`**。
 
 - **🗓 trk258：r10 の受け皿（R3・R4・R5・2026-11-02）**：返事17（r10）で**目録の形が r9 と同じ**まま版だけ進んだので、取り違えと数字のずれを画面で分かるようにしました。設計メモ＝[`POLISH-TRK258-2026-11-02.md`](POLISH-TRK258-2026-11-02.md)。
   - **R3 目録の版**：📚 目録から入れる の要約に **`目録の版 2026-11-02`**（`catalog/index.json` の `updatedAt`・UTC の日付）。読む側は今のままなので `check-set --json` の形は不変。

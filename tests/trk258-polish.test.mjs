@@ -34,7 +34,8 @@ function dicts() {
 
 describe("trk258 R3 目録の版を一覧に出す", () => {
   test("要約に updatedAt（日付）を足している", () => {
-    assert.match(catalog, /tr\("catalogUpdated", \{ date: String\(current\.updatedAt\)\.slice\(0, 10\) \}\)/);
+    /* 🗓 trk259：UTC を切るのではなく、端末の日付に直す関数を通す（レビュー 01 §1 #1） */
+    assert.match(catalog, /tr\("catalogUpdated", \{ date: catalogDay\(current\.updatedAt\) \}\)/);
     assert.match(catalog, /updatedAt: str\(raw\.updatedAt, 40\)/, "読む側は今のまま（40字まで）");
   });
 
@@ -81,27 +82,32 @@ describe("trk258 R5 ボタンの読み上げ名", () => {
     }
   });
 
-  test("check-a11y にボタンの検査がある（許可リストは 10 件・HTML に実在する）", () => {
+  test("check-a11y にボタンの検査がある（許可リストは 10 件・HTML に実在する）", async () => {
     assert.match(a11y, /every <button> has an accessible name/);
-    const block = a11y.slice(a11y.indexOf("const runtimeNamed = new Map(["), a11y.indexOf("]);", a11y.indexOf("const runtimeNamed")));
-    const ids = [...block.matchAll(/\["([A-Za-z0-9_-]+)"/g)].map(m => m[1]);
-    assert.equal(ids.length, 10, ids.join(","));
-    for (const id of ids) assert.ok(html.includes(`id="${id}"`), `${id} が index.html に無い`);
+    /* 🗓 trk259：一覧は tools/lib/button-names.mjs へ（検査とテストで写しを持たない） */
+    const { RUNTIME_NAMED } = await import("../tools/lib/button-names.mjs");
+    assert.equal(RUNTIME_NAMED.length, 10, RUNTIME_NAMED.map(([id]) => id).join(","));
+    for (const [id] of RUNTIME_NAMED) assert.ok(html.includes(`id="${id}"`), `${id} が index.html に無い`);
   });
 
-  test("許可リストの id が HTML から消えたら FAIL する（見張りが効く）", () => {
-    assert.match(a11y, /許可リストの id が HTML にありません/);
+  test("許可リストの id が HTML から消えたら FAIL する（見張りが効く）", async () => {
+    const { namedProblems } = await import("../tools/lib/button-names.mjs");
+    const problems = namedProblems("<html></html>", "");
+    assert.ok(problems.some(p => /index\.html に id がありません/.test(p)));
   });
 });
 
 describe("trk258 版と記録", () => {
-  test("cache と meta が trk258 でそろっている", () => {
-    assert.match(swSrc, /const CACHE = "trk-v2026\.11\.02-trk258";/);
-    assert.match(html, /<meta name="trk-build" content="trk258">/);
+  test("cache と meta の版がそろっている（版上げで赤くならない）", () => {
+    const cache = (swSrc.match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
+    const meta = (html.match(/<meta name="trk-build" content="(trk\d+)">/) || [])[1];
+    assert.ok(cache, "sw.js の CACHE に版名がある");
+    assert.equal(cache, meta, "sw.js と index.html の版が違う");
     assert.equal((html.match(/name="trk-build"/g) || []).length, 1);
   });
 
-  test("HANDOFF §1.5 の cache 名も trk258", () => {
-    assert.match(handoff, /trk-v2026\.11\.02-trk258@<スコープ>/);
+  test("HANDOFF §1.5 の cache 名も同じ版", () => {
+    const cache = (swSrc.match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
+    assert.ok(handoff.includes(`trk-v2026.11.02-${cache}@<スコープ>`), cache);
   });
 });
