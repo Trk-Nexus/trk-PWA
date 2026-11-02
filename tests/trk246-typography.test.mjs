@@ -244,12 +244,16 @@ describe("trk253（2026-11-02 レビュー対応）", () => {
     }
   });
 
-  test("「雑誌の飾り」は実物どおりの説明にした", () => {
+  test("「雑誌の飾り」は r9 側で実物が直った（見出しはひな明朝）", () => {
+    /* trk253 では「説明を実物に合わせる」方に変えたが、先方（返事15 §2）は**実物を目録の説明に合わせる**
+       方で直した（見出しを TrkHinaMincho 400、hina-mincho.stpack をこの組のパックに追加、注記は本文と同じ書体に寄せる）。
+       trk254 で写しを目録から作り直したので、下の形が両者の合意になる */
     const { T } = load();
     const z = T.PAIRINGS.find(p => p.id === "zasshi");
-    assert.equal(z.why, "飾り明朝の題字と見出しに、しっぽり明朝の本文。紙の雑誌の感じ");
-    assert.equal(z.heading.family, z.display.family, "見出しは題字と同じ飾り明朝（重みだけ違い）");
+    assert.equal(z.why, "飾り明朝の題字に、ひな明朝の見出し。紙の雑誌の感じ");
+    assert.equal(z.heading.family, "TrkHinaMincho", "見出しはひな明朝（説明どおりの実物）");
     assert.equal(z.heading.weight, 400);
-    assert.equal(z.body.family, "TrkShipporiMincho");
+    assert.ok(z.packs.includes("hina-mincho.stpack"), "見出しのパックも、この組のパック一覧に入っている");
+    assert.equal(z.caption.family, z.body.family, "注記は本文と同じ書体に寄せられている（家族数を増やさない）");
   });
 });

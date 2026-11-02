@@ -94,3 +94,15 @@ CSS 変数2本（見出しは `display`→`heading`、本文は `body`→`captio
 - 契約の案（`settings.typography` の形・`slots`・`scale`）は**相手の §6 のまま**で通った。`pack.json` の `skin.typography` は読んでいない（書面合意を待つ）。
 - `check-typography.mjs` の「本文まわり3家族まで」は**こちらのテストでも同じ目盛り**で検査している（14組すべて3家族以内）。
 - お願い：`gallery/pairings.html` の**縮刷版を1枚 Drive に置けるか**（実機で「このくらいの差」と見比べたい）。エディター試作の操作感は、実機が見えてから②③の続きを決める。
+
+## 7. trk254（2026-11-02）：写しを「目録から生成」に切り替え
+
+返事15 §2 に **trk-PWA の写しは自動では届きません（手取り直しをお願いします）** とあったので、手写しをやめました。
+
+- **固定版**：`tests/fixtures/avatar-library-typography.json`＝相手の `catalog/typography.json` そのもの（34,194 B）。隣の `.meta.json` に `ref`（`7d7e5aec59…`）と `sha256`（`4301ac045b…`）
+- **生成**：`node tools/sync-typography-catalog.mjs --from=../trk-Avatar-Library/catalog/typography.json --ref=<sha>`（または `--against=main`）。写しの形（`packs` から `font-packs/` を落とす・役ごとに `tracking`/`leading` を畳む）は trk246 のまま、**値はすべて目録から**
+- **検査**：`tests/trk254-typography-copy.test.mjs`（固定版の sha256 がメタと合う／`PAIRINGS` ＝ 目録から作ったもの／r9 の直しが載っている／`trkUse` が14組にあり1〜34字／cache 名）。`npm run check` **1285 pass / 0 fail**
+- **進んだかどうかの照合**（通信が必要なので CI か手元）：`node tools/sync-typography-catalog.mjs --against=main --check` → ズレがあえば exit 1 と changed の組一覧
+- **r9 で入った中身**：雑誌の飾り=**見出し TrkHinaMincho 400**（注記は本文と同じ TrkShipporiMincho に寄せて家族数は3のまま）／電子ゲーム=注記 TrkZenKaku・見本文「こうげきは はやめに。ひかりの つぶを よけて。」／古道具と活字・しずかな読み物=「余白の書体」→「古い活字風のアンティーク体」／14組に `trkUse`（**UI にはまだ出しません**）
+- trk253 でこちらが変えた「雑誌の飾り」の説明は、**先方がデータ側を説明に合わせた**ので目録どおりに戻しました（二者が1点でそろった）
+

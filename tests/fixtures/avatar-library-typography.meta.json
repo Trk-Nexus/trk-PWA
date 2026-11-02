@@ -1,0 +1,9 @@
+{
+  "source": "Trk-Nexus/trk-Avatar-Library",
+  "file": "catalog/typography.json",
+  "ref": "7d7e5aec594c7432adb7feb579fc45053c29c93c",
+  "sha256": "4301ac045bc02b2f576f79448a54b770908d1e781948beb92aeabe40f5fedfed",
+  "bytes": 34194,
+  "pairings": 14,
+  "note": "js/typography.js の PAIRINGS はこのファイルから tools/sync-typography-catalog.mjs で作る（手で写さない）"
+}
