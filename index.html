@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk287">
+<meta name="trk-build" content="trk288">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -514,6 +514,17 @@
         <!-- ⌨ trk269：音・Tab 補完・履歴。補完と履歴の長さはスキンが決めます -->
         <label class="check"><input id="cliBellChk" type="checkbox"><span data-i18n="cliBellLabel"></span></label>
         <div class="hint" data-i18n="cliBellHint"></div>
+        <!-- ⌨ trk288（R7）：このスキンが音を出さないときだけ一言出す（音はアプリのいまのスキンで決まる） -->
+        <div class="hint" id="cliBellNote" hidden data-i18n="cliBellSkinOff"></div>
+        <!-- ⌨ trk288（R2）：文字の入れ方（既定はブラウザーに任せる。元に戻すを選ぶと Ctrl+Z が効く） -->
+        <div class="inline">
+          <span id="cliInsertLabel" data-i18n="cliInsertLabel"></span>
+          <select id="cliInsertSel" aria-labelledby="cliInsertLabel">
+            <option value="native" data-i18n="cliInsertNative"></option>
+            <option value="exec" data-i18n="cliInsertExec"></option>
+          </select>
+        </div>
+        <div class="hint" data-i18n="cliInsertHint"></div>
         <div class="hint" data-i18n="cliFeelHint"></div>
       </details>
 
@@ -2452,6 +2463,7 @@
 <!-- ✨ フレーム補完（動き補償・光学フロー／WebGL2） -->
 <script src="js/frame-interp.js"></script>
 <script src="js/media-player-mode.js"></script>
+<script src="js/cli-pure.js"></script>
 <script src="js/cli.js"></script>
 <!-- 📚 端末内の画像・テキスト閲覧モード（外部ライブラリ／アップロードなし） -->
 <script src="js/study-room-utils.js"></script>

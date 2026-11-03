@@ -15,9 +15,10 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { ROOT } from "./helpers/browser-data.mjs";
+import { cliSource } from "./helpers/cli-src.mjs";
 
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
-const src = read("js/cli.js");
+const src = cliSource();
 const core = read("js/core.js");
 const html = read("index.html");
 
@@ -63,7 +64,8 @@ describe("trk287：1 文字を、カーソルの位置に入れる", () => {
 describe("trk287：端末がキーボードを握る", () => {
   test("入力欄にフォーカスがあっても、文字はこちらで入れる", () => {
     assert.match(src, /const isTypeable = e => typeof e\.key === "string" && e\.key\.length === 1 &&\n    !e\.ctrlKey && !e\.metaKey && !e\.altKey;/);
-    assert.match(src, /const r = insertTextAt\(inputNode\.value, e\.key, inputNode\.selectionStart, inputNode\.selectionEnd\);/);
+    /* trk288（R2）：入れるのは insertOwn（ほかの処理が止めたときに、bubble の段から呼ぶ） */
+    assert.match(src, /function insertOwn\(ch\) \{[\s\S]*?const r = insertTextAt\(inputNode\.value, ch, inputNode\.selectionStart, inputNode\.selectionEnd\);/);
     assert.match(src, /inputNode\.value = r\.value;/);
     assert.match(src, /inputNode\.setSelectionRange\(r\.caret, r\.caret\)/);
     assert.match(src, /e\.preventDefault\(\);\n      e\.stopPropagation\(\);/);
@@ -105,7 +107,7 @@ describe("trk287：修飾キーを選べる（Win／⌘ = Super）", () => {
 
   test("呼び出しの判定と、いまのキーの表示に使う", () => {
     assert.match(src, /if \(!cliModPressed\(e\)\) return;/);
-    assert.match(src, /if \(value\) value\.textContent = modShort\(\) \+ " \+ " \+ core\.formatKey\(cliKeyCode\(\)\);/);
+    assert.match(src, /if \(value\) value\.textContent = modLabel\(\) \+ " \+ " \+ core\.formatKey\(cliKeyCode\(\)\);/);
     assert.match(src, /const CLI_MOD_SHORT = \{ ctrlOrMeta: "Ctrl／⌘", meta: "Win／⌘", ctrl: "Ctrl", alt: "Alt" \};/);
     assert.match(src, /if \(modSel\) modSel\.value = cliMod\(\);/);
   });

@@ -13,9 +13,10 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { ROOT } from "./helpers/browser-data.mjs";
+import { cliSource } from "./helpers/cli-src.mjs";
 
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
-const cli = read("js/cli.js");
+const cli = cliSource();
 const core = read("js/core.js");
 const html = read("index.html");
 const css = read("css/style.css");
@@ -83,7 +84,7 @@ test("⚙ に「入力の合図」と「いまの見え方」がある", () => {
 test("開いている間は、どこにフォーカスがあっても入力を奪う（1 文字目も落とさない）", () => {
   /* ⌨ trk287：1 文字は「こちらで」入れる（ブラウザーが止めても落ちない） */
   assert.match(cli, /const isTypeable = e => typeof e\.key === "string" && e\.key\.length === 1 &&/, "打った 1 文字を拾う");
-  assert.match(cli, /const r = insertTextAt\(inputNode\.value, e\.key, inputNode\.selectionStart, inputNode\.selectionEnd\);/, "カーソルの位置へ入れる");
+  assert.match(cli, /function insertOwn\(ch\) \{[\s\S]*?const r = insertTextAt\(inputNode\.value, ch, inputNode\.selectionStart, inputNode\.selectionEnd\);/, "カーソルの位置へ入れる（insertOwn・trk288）");
   assert.match(cli, /inputNode\.setSelectionRange\(r\.caret, r\.caret\)/, "カーソルは入れた文字の後ろへ");
   assert.match(cli, /if \(t && t\.closest && t\.closest\("#cliSpellPanel"\)\) return;/, "辞書は邪魔しない");
   assert.match(cli, /if \(!inside && t && \(\["INPUT", "TEXTAREA", "SELECT"\]\.includes\(t\.tagName\) \|\| t\.isContentEditable\)\) return;/);

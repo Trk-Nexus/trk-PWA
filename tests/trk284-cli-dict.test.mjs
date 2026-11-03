@@ -14,9 +14,10 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { ROOT } from "./helpers/browser-data.mjs";
+import { cliSource } from "./helpers/cli-src.mjs";
 
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
-const cli = read("js/cli.js");
+const cli = cliSource();
 const html = read("index.html");
 const css = read("css/style.css");
 

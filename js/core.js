@@ -552,7 +552,12 @@ const settings = {
   cliBell: prefs.cliBell !== false,   /* ⌨ trk269：エラーの音を鳴らしてよいか（鳴らすかはスキンが決める） */
   /* ⌨ trk283：呼び出しキー（同じキーで開閉・Ctrl/⌘ と一緒に押す）・実行後に閉じる・
      入力できるかの見せ方（既定は常時バッジ）・端末のスキンを個別に選ぶか。 */
-  cliKey: validCode(prefs.cliKey) ? prefs.cliKey : "Backquote",
+  /* ⌨ trk288（Q1）：呼び出しキーの既定は Ctrl+.（Period）。Backquote は JIS で IME に取られやすいため */
+  cliKey: validCode(prefs.cliKey) ? prefs.cliKey : "Period",
+  /* ⌨ trk288（C3）：呼び出しに Shift を一緒に押すか（Ctrl+Shift+K などを登録したとき） */
+  cliShift: prefs.cliShift === true,
+  /* ⌨ trk288（R2）：入力欄の文字の入れ方。native＝ブラウザーの挿入に任せる（既定）／exec＝execCommand（元に戻す履歴に残る） */
+  cliInsert: pick(prefs.cliInsert, ["native", "exec"], "native"),
   /* ⌨ trk287：呼び出しキーと一緒に押す修飾キー。既定は Ctrl か ⌘／Win のどちらでも。
      "meta" を選ぶと「Win（Super）+ キー」で呼べます（Windows は Win+D などを OS が先に取る点に注意） */
   cliMod: pick(prefs.cliMod, ["ctrlOrMeta", "meta", "ctrl", "alt"], "ctrlOrMeta"),
@@ -876,7 +881,7 @@ function resetAllPrefs() {
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
   /* ⌨ trk267：ターミナルの行き先（プレイヤー）・見た目（自動）・覚えた呪文（無し）も工場出荷状態へ */
-  settings.cliPlay = "media"; settings.cliSkin = "keep"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Backquote"; settings.cliMod = "ctrlOrMeta"; settings.cliAutoClose = false; settings.cliSheetSize = "tall"; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = ""; settings.cliPromptStyle = "linux";
+  settings.cliPlay = "media"; settings.cliSkin = "keep"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Period"; settings.cliShift = false; settings.cliInsert = "native"; settings.cliMod = "ctrlOrMeta"; settings.cliAutoClose = false; settings.cliSheetSize = "tall"; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = ""; settings.cliPromptStyle = "linux";
   /* ⚖ trk279：⚙ の段（スタンダード）と「触った設定」も工場出荷状態へ */
   settings.setLevel = "standard"; settings.setTouched = [];
 }

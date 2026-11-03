@@ -12,9 +12,10 @@ import path from "node:path";
 import vm from "node:vm";
 import { execFileSync } from "node:child_process";
 import { ROOT } from "./helpers/browser-data.mjs";
+import { cliSource } from "./helpers/cli-src.mjs";
 
 const css = fs.readFileSync(path.join(ROOT, "css/style.css"), "utf8");
-const cliSrc = fs.readFileSync(path.join(ROOT, "js/cli.js"), "utf8");
+const cliSrc = cliSource();
 
 /* ---------- js/data.js を画面なしで読む（道具と同じ読み方） ---------- */
 function loadData() {
