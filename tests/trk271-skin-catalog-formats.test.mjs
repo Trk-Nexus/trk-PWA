@@ -61,6 +61,62 @@ test("生成物の .js（const ＋ ESM の export）も読める", () => {
   assert.equal(catalogFromJs(`module.exports = ${JSON.stringify([SKIN])};`).list.length, 1);
 });
 
+test("生成物の .js（`S[\"id\"] = { … }`）も読める（trk273：鍵を id として補う）", () => {
+  const { id, ...rest } = SKIN;
+  const file = `"use strict";\n(() => {\n  const S = window.Trk.data.SKINS;\n  S[${JSON.stringify(id)}] = {\n` +
+    Object.entries(rest).map(([k, v]) => `    ${k}: ${JSON.stringify(v)},`).join("\n") +
+    "\n  };\n})();\n";
+  const got = catalogFromJs(file);
+  assert.equal(got.error, undefined, got.error);
+  assert.equal(got.list.length, 1);
+  assert.equal(got.list[0].id, id);
+  assert.deepEqual(got.list[0].colors, SKIN.colors);
+});
+
+test("コメント・末尾カンマ・単一引用符・引用符なしの鍵を読める", () => {
+  const file = `// 生成物
+const SKINS_WIZARD = [
+  /* 1 枚目 */
+  {
+    id: 'wizard-one',
+    cat: ['wizard',],
+    colors: { bg: '#101010', text: '#f0f0f0', },
+  },
+];
+export { SKINS_WIZARD };
+`;
+  const got = catalogFromJs(file);
+  assert.equal(got.error, undefined, got.error);
+  assert.equal(got.list[0].id, "wizard-one");
+  assert.deepEqual(got.list[0].cat, ["wizard"]);
+  assert.equal(got.list[0].colors.text, "#f0f0f0");
+});
+
+test("式・関数・テンプレート文字列は、評価せずに断る（trk273・レビュー M2）", () => {
+  for (const body of [
+    "const SKINS_WIZARD = [ makeSkin() ];",
+    "const SKINS_WIZARD = [ { id: \"x\", cat: SOME } ];",
+    "const SKINS_WIZARD = [ { id: `x` } ];",
+  ]) {
+    const got = catalogFromJs(body);
+    assert.ok(got.error, body + " は読めてはいけない: " + JSON.stringify(got.list));
+  }
+});
+
+test("信用しない .js は、読ませても実行しない（レビュー M2 のペイロード）", () => {
+  const dir = tmp();
+  const victim = path.join(dir, "escaped.txt");
+  const payload = [
+    `const p = Object.constructor("return process")();`,
+    `p.getBuiltinModule("fs").writeFileSync(${JSON.stringify(victim)}, "pid " + p.pid);`,
+    `const SKINS_WIZARD = []; export { SKINS_WIZARD };`,
+  ].join("\n");
+  const got = catalogFromJs(payload);
+  assert.equal(fs.existsSync(victim), false, "評価していたら（vm 経由でも）ファイルが作られてしまう");
+  /* 空の配列は「読めた」扱いになる（中身が無いだけ）。実行されていないことが肝心 */
+  assert.equal(got.error === undefined ? got.list.length : 0, 0);
+});
+
 test("読めないものは、理由付きで断る（例外で落ちない）", () => {
   assert.match(catalogFromJs("const x = 1;").error, /配列/);
   assert.match(catalogFromJs("this is not js (((").error, /\S/);

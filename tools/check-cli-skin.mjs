@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // SPDX-License-Identifier: GPL-3.0-or-later
-/* ⌨ CLI 用スキンの受け入れ検査（trk268 → trk269 v2 → trk270 v2.1 → trk271 v3）
+/* ⌨ CLI 用スキンの受け入れ検査（trk268 → trk269 v2 → trk270 v2.1 → trk271 v3 → trk273 v3）
 
    なぜ要るか：
    CLI（⌨ ターミナル）用のスキンは、倉庫（trk-Avatar-Library）側が値を決めて渡してくれます。
@@ -15,6 +15,8 @@
        ③ 倉庫の目録      { "format": "trk-avatar-library-skins", "skins": [ ...①... ] }
        ④ 生成物の .js    `const SKINS_WIZARD = [ ...①... ]`（ESM の export も可）
        `--catalog` を付けると「目録まるごと」として扱います（③④ は自動でも目録と見なします）。
+       ⚠ ④ の `.js` は**実行しません**（trk273）。文字として読み、配列・`S["id"] = {…}` の
+         **リテラルだけ**を JSON にして読むので、関数・式・テンプレート文字列は通りません。
    終了コード：0＝受け取れる／1＝直すところがある／2＝読めない（JSON でない・形が違う）
      ⚠ 1 は「直すところがある」**全部**です（名前なし・色・コントラスト・cli）。
        どの種類かは `--json` の `reason`（name／color／contrast／cli）で分かります。
