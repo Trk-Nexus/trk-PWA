@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk282">
+<meta name="trk-build" content="trk283">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1298,6 +1298,15 @@
             <div class="miniActions">
               <button id="cliOpenBtn" type="button" data-i18n="cliOpenBtn" aria-haspopup="dialog" aria-controls="cliMode"></button>
             </div>
+            <!-- ⌨ trk283：呼び出しキー（同じキーで開閉）。Ctrl／⌘ と一緒に押します -->
+            <div class="keyRows">
+              <div class="keyRow">
+                <strong data-i18n="cliKeyLabel"></strong><span class="keyValue" id="cliKeyValue"></span>
+                <button id="cliKeyAssign" type="button" data-i18n="assign"></button>
+              </div>
+            </div>
+            <label class="check"><input id="cliAutoCloseChk" type="checkbox"><span data-i18n="cliAutoClose"></span></label>
+            <div class="hint" data-i18n="cliKeyHint"></div>
             <div class="inline">
               <span id="cliPlayLabel" data-i18n="cliPlayLabel"></span>
               <select id="cliPlaySel" aria-labelledby="cliPlayLabel">
@@ -1314,6 +1323,22 @@
               </select>
             </div>
             <div class="hint" data-i18n="cliSkinHint"></div>
+            <!-- ⌨ trk283：端末のスキンを個別に選ぶ（オンのときは上の「見た目」より優先） -->
+            <label class="check"><input id="cliSkinPickChk" type="checkbox"><span data-i18n="cliSkinPickChk"></span></label>
+            <div class="inline">
+              <span id="cliSkinPickLabel" data-i18n="cliSkinPickLabel"></span>
+              <select id="cliSkinPickSel" aria-labelledby="cliSkinPickLabel"></select>
+            </div>
+            <!-- ⌨ trk283：入力できるかの見せ方（バッジ／状態行／打てないときだけ） -->
+            <div class="inline">
+              <span id="cliTypingLabel" data-i18n="cliTypingLabel"></span>
+              <select id="cliTypingSel" aria-labelledby="cliTypingLabel">
+                <option value="badge" data-i18n="cliTypingBadge"></option>
+                <option value="status" data-i18n="cliTypingStatus"></option>
+                <option value="quiet" data-i18n="cliTypingQuiet"></option>
+              </select>
+            </div>
+            <div class="hint" data-i18n="cliTypingHint"></div>
             <!-- ⌨ trk269：音・Tab 補完・履歴。補完と履歴の長さはスキンが決めます -->
             <label class="check"><input id="cliBellChk" type="checkbox"><span data-i18n="cliBellLabel"></span></label>
             <div class="hint" data-i18n="cliBellHint"></div>

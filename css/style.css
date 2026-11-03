@@ -2310,6 +2310,11 @@ body.trk-typo-on .hint,body.trk-typo-on .brand p{font-family:var(--trk-typo-body
 .cliLine.cliIn{color:var(--ui-accent-ink,var(--ui-accent))}
 .cliLine.cliErr{color:var(--j-miss,#ff8f8f)}
 .cliLine.cliOut{color:var(--ui-text)}
+/* ⌨ trk283：入力できるかのバッジ（設定で 出す／状態行だけ／打てないときだけ を選ぶ） */
+.cliTypingBadge{align-self:flex-start;margin:8px 14px 0;padding:4px 10px;border-radius:999px;border:1px solid var(--ui-border);
+  background:var(--ui-soft);color:var(--ui-muted);font-size:12px;line-height:1.4}
+.cliTypingBadge[data-ok="1"]{border-color:color-mix(in oklab,var(--ui-accent) 45%,var(--ui-border));color:var(--ui-accent-ink,var(--ui-accent))}
+.cliTypingBadge[data-ok="0"]{color:var(--ui-text);background:color-mix(in oklab,var(--j-miss,#ff8f8f) 18%,var(--ui-field))}
 .cliForm{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--ui-border);background:rgba(0,0,0,.18)}
 .cliPromptChar{flex:none;color:var(--ui-accent-ink,var(--ui-accent));font-weight:900}
 .cliPromptChar::before{content:var(--cli-prompt,">")}

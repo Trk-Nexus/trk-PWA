@@ -36,7 +36,8 @@
     uiPanel: 1, secSound: 1, secControls: 1, updatePanel: 1, storagePanel: 1,
     secDisplay: 2, secOptions: 2, mediaKeepPanel: 2, backupPanel: 2, libSharePanel: 2, favPanel: 2,
     packPanel: 3, trkPanel: 3, ghostPanel: 3,
-    cliPanel: 4, vrmPanel: 4, iosPanel: 4, addonPanel: 4, emergencyPanel: 4,
+    /* ⌨ trk283：ターミナルは**ウィザードの段から**（マスターでは隠す＝段の差を作る） */
+    cliPanel: 5, vrmPanel: 4, iosPanel: 4, addonPanel: 4, emergencyPanel: 4,
   };
 
   /* ---------- パネルの中の「まとまり」ごとの段（見出し・まとまりの id・中の操作子の id） ---------- */

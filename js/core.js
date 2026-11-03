@@ -549,6 +549,13 @@ const settings = {
   cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "auto"),
   cliSpells: cleanCliSpells(prefs.cliSpells),
   cliBell: prefs.cliBell !== false,   /* ⌨ trk269：エラーの音を鳴らしてよいか（鳴らすかはスキンが決める） */
+  /* ⌨ trk283：呼び出しキー（同じキーで開閉・Ctrl/⌘ と一緒に押す）・実行後に閉じる・
+     入力できるかの見せ方（既定は常時バッジ）・端末のスキンを個別に選ぶか。 */
+  cliKey: validCode(prefs.cliKey) ? prefs.cliKey : "Backquote",
+  cliAutoClose: prefs.cliAutoClose !== false,
+  cliTypingCheck: pick(prefs.cliTypingCheck, ["badge", "status", "quiet"], "badge"),
+  cliSkinPickOn: prefs.cliSkinPickOn === true,
+  cliSkinPick: typeof prefs.cliSkinPick === "string" && has(window.Trk.data.SKINS, prefs.cliSkinPick) ? prefs.cliSkinPick : "",
   /* ▶ メディアプレーヤー（TV電源長押し） */
   mediaRepeat: pick(prefs.mediaRepeat, ["off", "one", "all"], "off"),
   mediaShuffle: prefs.mediaShuffle === true,
@@ -860,7 +867,7 @@ function resetAllPrefs() {
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
   /* ⌨ trk267：ターミナルの行き先（プレイヤー）・見た目（自動）・覚えた呪文（無し）も工場出荷状態へ */
-  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {}; settings.cliBell = true;
+  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Backquote"; settings.cliAutoClose = true; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = "";
   /* ⚖ trk279：⚙ の段（スタンダード）と「触った設定」も工場出荷状態へ */
   settings.setLevel = "standard"; settings.setTouched = [];
 }
