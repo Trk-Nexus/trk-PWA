@@ -36,10 +36,13 @@
     cliSkinAuto: "自動（wizard・cli・console のスキンがあればそれ、無ければ terminal）",
     cliSkinTerminal: "terminal を当てる",
     cliSkinKeep: "いまのスキンのまま",
-    cliSkinHint: "ここで当てたスキンは、ターミナルを開いている間だけです。閉じると元のスキンに戻ります（ターミナルで skin を唱えたときは、そのスキンが残ります）。",
+    cliSkinHint: "既定はいまのスキンのまま（後ろと同じ見た目で下から出ます）。ここで別のスキンを選ぶと、ターミナルの中だけその見た目になります（閉じれば元どおり）。",
     /* ⌨ trk283：呼び出しキー・実行後に閉じる・スキンの個別指定・入力できるかの知らせ */
     cliKeyLabel: "🪄 Terminal Key Setting（Ctrl／⌘ ＋ このキー）",
     cliKeyHint: "呪文を呼ぶ鍵です。同じキーで開いて閉じます（Esc でも閉じられます）。割り当て中は Esc で取り消します。",
+    cliKeyWaiting: "キーを押してください（Esc で取り消し）。Ctrl や Shift だけでは決まりません。",
+    cliKeyBadKey: "そのキーだけでは決められません。文字・数字・矢印・ファンクションキーなどにしてください。",
+    cliKeySaved: "呼び出しキーを Ctrl／⌘ + {key} にしました。",
     cliHelpAll: "help all … 全部の呪文（{n} 本）を出す",
     cliSheetSizeLabel: "ターミナルの高さ",
     cliSheetHalf: "小さめ（画面の半分）",
@@ -196,10 +199,13 @@
     cliSkinAuto: "Auto (a wizard / cli / console skin if present, otherwise terminal)",
     cliSkinTerminal: "Apply terminal",
     cliSkinKeep: "Keep the current skin",
-    cliSkinHint: "The skin here lasts only while the terminal is open; it goes back when you close it (a skin you cast inside stays).",
+    cliSkinHint: "By default the sheet keeps your current skin (it looks the same as the page). Pick another skin here to change only the terminal (closing it goes back).",
     /* ⌨ trk283：key · auto-close · a terminal skin of your own · the typing note */
     cliKeyLabel: "🪄 Terminal Key Setting (Ctrl / ⌘ + this key)",
     cliKeyHint: "The key that calls the spells. The same key opens and closes it (Esc also closes). While assigning, Esc cancels.",
+    cliKeyWaiting: "Press a key (Esc to cancel). Ctrl or Shift alone will not do.",
+    cliKeyBadKey: "That key alone cannot be used. Pick a letter, number, arrow or function key.",
+    cliKeySaved: "The call key is now Ctrl / ⌘ + {key}.",
     cliHelpAll: "help all … list every spell ({n})",
     cliSheetSizeLabel: "Terminal height",
     cliSheetHalf: "Small (half the screen)",
@@ -356,10 +362,13 @@
     cliSkinAuto: "自动（有 wizard・cli・console 皮肤就用它，否则用 terminal）",
     cliSkinTerminal: "使用 terminal",
     cliSkinKeep: "保持当前皮肤",
-    cliSkinHint: "这里应用的皮肤只在终端打开期间有效，关闭后恢复原皮肤（在终端里用 skin 指定的皮肤会保留）。",
+    cliSkinHint: "默认保持当前皮肤（与后面的画面相同）。在这里另选皮肤时，只有终端内部改变（关闭后恢复）。",
     /* ⌨ trk283 */
     cliKeyLabel: "🪄 Terminal Key Setting（Ctrl／⌘ ＋ 此键）",
     cliKeyHint: "呼唤咒文的键。同一个键开关终端（Esc 也能关闭）。分配时按 Esc 取消。",
+    cliKeyWaiting: "请按键（Esc 取消）。只按 Ctrl 或 Shift 不能确定。",
+    cliKeyBadKey: "仅凭这个键无法确定。请用字母、数字、方向键或功能键。",
+    cliKeySaved: "调用键已设为 Ctrl／⌘ + {key}。",
     cliHelpAll: "help all … 列出全部咒文（{n} 条）",
     cliSheetSizeLabel: "终端高度",
     cliSheetHalf: "小（屏幕一半）",
@@ -516,10 +525,13 @@
     cliSkinAuto: "자동(wizard・cli・console 스킨이 있으면 그것, 없으면 terminal)",
     cliSkinTerminal: "terminal 적용",
     cliSkinKeep: "지금 스킨 그대로",
-    cliSkinHint: "여기서 적용한 스킨은 터미널을 여는 동안만입니다. 닫으면 원래 스킨으로 돌아갑니다(터미널에서 skin 을 외친 경우는 그 스킨이 남습니다).",
+    cliSkinHint: "기본은 지금 스킨 그대로(뒤 화면과 같은 모습). 여기서 다른 스킨을 고르면 터미널 안만 바뀝니다(닫으면 원래대로).",
     /* ⌨ trk283 */
     cliKeyLabel: "🪄 Terminal Key Setting (Ctrl／⌘ ＋ 이 키)",
     cliKeyHint: "주문을 부르는 열쇠입니다. 같은 키로 열고 닫습니다(Esc 로도 닫힘). 지정 중에는 Esc 로 취소합니다.",
+    cliKeyWaiting: "키를 눌러 주세요(Esc 로 취소). Ctrl 이나 Shift 만으로는 정해지지 않습니다.",
+    cliKeyBadKey: "그 키만으로는 정할 수 없습니다. 문자·숫자·방향키·기능키 등을 눌러 주세요.",
+    cliKeySaved: "호출 키를 Ctrl／⌘ + {key} 로 했습니다.",
     cliHelpAll: "help all … 모든 주문({n}개) 보기",
     cliSheetSizeLabel: "터미널 높이",
     cliSheetHalf: "작게(화면 절반)",
@@ -1815,7 +1827,21 @@
     const keyBtn = document.getElementById("cliKeyAssign");
     if (keyBtn && !keyBtn.dataset.cliWired) {
       keyBtn.dataset.cliWired = "1";
-      keyBtn.addEventListener("click", () => { cliKeyBinding = 0; syncCliKeyUI(); });
+      /* ⌨ trk286：もう一度押したら取り消し（待ちっぱなしにしない） */
+      keyBtn.addEventListener("click", () => {
+        cliKeyBinding = cliKeyBinding === null ? 0 : null;
+        syncCliKeyUI();
+      });
+    }
+    /* ⌨ trk286：ほかを触ったら割り当てをやめる（キーを吸い続けるのを防ぐ） */
+    if (!document.documentElement.dataset.cliKeyOutside) {
+      document.documentElement.dataset.cliKeyOutside = "1";
+      document.addEventListener("pointerdown", e => {
+        if (cliKeyBinding === null) return;
+        const t = e.target;
+        if (t && t.closest && t.closest("#cliKeyAssign")) return;
+        cliKeyBinding = null; syncCliKeyUI("");
+      }, true);
     }
     syncCliKeyUI();
     const autoChk = document.getElementById("cliAutoCloseChk");
@@ -1912,27 +1938,46 @@
   /* ---------- 呼び出しキー（Ctrl／⌘ + 選んだキー・同じキーで開閉） ---------- */
   const cliKeyCode = () => (core.validCode(core.settings.cliKey) ? core.settings.cliKey : "Backquote");
   let cliKeyBinding = null;
-  function syncCliKeyUI() {
-    const value = document.getElementById("cliKeyValue"), button = document.getElementById("cliKeyAssign");
-    if (value) value.textContent = "Ctrl／⌘ + " + core.formatKey(cliKeyCode());
-    if (button) button.classList.toggle("listening", cliKeyBinding !== null);
+  /* ⌨ trk286：割り当てに使えないキー。
+     ・修飾キーだけ（Ctrl／Shift／Alt／⌘・CapsLock など）＝押すと「Ctrl+Ctrl」になって呼び出せない
+     ・Esc ＝取り消しに使う／Tab ＝フォーカス移動を奪う */
+  const CLI_KEY_MODIFIERS = ["ControlLeft", "ControlRight", "ShiftLeft", "ShiftRight", "AltLeft", "AltRight",
+    "MetaLeft", "MetaRight", "OSLeft", "OSRight", "CapsLock", "NumLock", "ScrollLock", "Dead"];
+  const cliKeyUsable = code => !!code && code !== "Escape" && code !== "Tab" && !CLI_KEY_MODIFIERS.includes(code) && core.validCode(code);
+  /* ほかの操作と重なるキー（遊ぶキー・メニュー・プレイヤー・📚 の音量キー） */
+  function cliKeyUsed(code) {
+    const S = core.settings;
+    return [...(S.keys || []), ...(S.subKeys || []), ...(S.videoKeys || []),
+      S.menuKey, S.mediaExitKey, S.skinVolKeyL, S.skinVolKeyR, S.skinVolKeyU, S.skinVolKeyD].filter(Boolean).includes(code);
   }
-  /* 押されたキーを覚える。Esc は取り消し。遊ぶキーなどと重なるキーは受けない */
+  function syncCliKeyUI(message) {
+    const value = document.getElementById("cliKeyValue"), button = document.getElementById("cliKeyAssign");
+    const status = document.getElementById("cliKeyStatus");
+    const on = cliKeyBinding !== null;
+    if (value) value.textContent = "Ctrl／⌘ + " + core.formatKey(cliKeyCode());
+    if (button) { button.classList.toggle("listening", on); button.setAttribute("aria-pressed", String(on)); }
+    if (status) status.textContent = message !== undefined ? message : (on ? tr("cliKeyWaiting") : "");
+  }
+  /* 押されたキーを覚える。Esc は取り消し。使えないキーは受けない（待ちは続ける） */
   function captureCliKey(code) {
-    if (cliKeyBinding === null) return;
-    if (!code || code === "Escape") { cliKeyBinding = null; syncCliKeyUI(); return; }
-    const used = [...(core.settings.keys || []), ...(core.settings.subKeys || []), ...(core.settings.videoKeys || []),
-      core.settings.menuKey, core.settings.mediaExitKey].filter(Boolean);
-    if (used.includes(code)) { toastNote(tr("cliKeyTaken")); return; }
+    if (cliKeyBinding === null) return false;
+    if (!code || code === "Escape") { cliKeyBinding = null; syncCliKeyUI(""); return false; }
+    if (!cliKeyUsable(code)) { syncCliKeyUI(tr("cliKeyBadKey")); return false; }
+    if (cliKeyUsed(code)) { toastNote(tr("cliKeyTaken")); syncCliKeyUI(tr("cliKeyTaken")); return false; }
     core.settings.cliKey = code;
     cliKeyBinding = null;
     core.saveUserPrefs();
-    syncCliKeyUI();
+    syncCliKeyUI(tr("cliKeySaved", { key: core.formatKey(code) }));
+    return true;
   }
 
   addEventListener("keydown", e => {
     /* 割り当て中は、押されたキーをそのまま受け取る（Esc は取り消し） */
-    if (cliKeyBinding !== null) { e.preventDefault(); e.stopPropagation(); captureCliKey(core.keyCodeOf(e)); return; }
+    if (cliKeyBinding !== null) {
+      e.preventDefault(); e.stopPropagation();
+      if (!e.repeat) captureCliKey(core.keyCodeOf(e));
+      return;
+    }
     if (e.defaultPrevented || e.altKey || e.shiftKey) return;
     if (!(e.ctrlKey || e.metaKey)) return;
     if ((core.keyCodeOf(e) || "") !== cliKeyCode()) return;

@@ -546,7 +546,8 @@ const settings = {
      開いている間の見た目（auto＝wizard を含むスキン→無ければ terminal／terminal／keep）、
      覚えた呪文。どれもこの settings の中だけ（新しい localStorage のキーは増やしません）。 */
   cliPlay: pick(prefs.cliPlay, ["media", "preview"], "media"),
-  cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "auto"),
+  /* ⌨ trk286：既定は「いまのスキンのまま」＝端末の中だけ、後ろと同じ見た目で開く */
+  cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "keep"),
   cliSpells: cleanCliSpells(prefs.cliSpells),
   cliBell: prefs.cliBell !== false,   /* ⌨ trk269：エラーの音を鳴らしてよいか（鳴らすかはスキンが決める） */
   /* ⌨ trk283：呼び出しキー（同じキーで開閉・Ctrl/⌘ と一緒に押す）・実行後に閉じる・
@@ -872,7 +873,7 @@ function resetAllPrefs() {
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
   /* ⌨ trk267：ターミナルの行き先（プレイヤー）・見た目（自動）・覚えた呪文（無し）も工場出荷状態へ */
-  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Backquote"; settings.cliAutoClose = false; settings.cliSheetSize = "tall"; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = ""; settings.cliPromptStyle = "linux";
+  settings.cliPlay = "media"; settings.cliSkin = "keep"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Backquote"; settings.cliAutoClose = false; settings.cliSheetSize = "tall"; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = ""; settings.cliPromptStyle = "linux";
   /* ⚖ trk279：⚙ の段（スタンダード）と「触った設定」も工場出荷状態へ */
   settings.setLevel = "standard"; settings.setTouched = [];
 }

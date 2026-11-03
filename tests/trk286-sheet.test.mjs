@@ -145,3 +145,41 @@ describe("trk286：文言", () => {
     }
   });
 });
+
+/* ==================== 6. 呼び出しキーの割り当て（追いかけ） ==================== */
+describe("trk286：呼び出しキーの割り当てが、ちゃんと決まる", () => {
+  test("既定の見た目は「いまのスキンのまま」", () => {
+    assert.match(core, /cliSkin: pick\(prefs\.cliSkin, \["auto", "terminal", "keep"\], "keep"\)/);
+    assert.match(core, /settings\.cliSkin = "keep";/);
+    assert.match(cli, /cliSkinKeep: "いまのスキンのまま"/);
+  });
+
+  test("修飾キーだけ・Esc・Tab では決めない（Ctrl+Ctrl にならない）", () => {
+    assert.match(cli, /const CLI_KEY_MODIFIERS = \["ControlLeft", "ControlRight", "ShiftLeft", "ShiftRight", "AltLeft", "AltRight",/);
+    assert.match(cli, /const cliKeyUsable = code => !!code && code !== "Escape" && code !== "Tab" && !CLI_KEY_MODIFIERS\.includes\(code\) && core\.validCode\(code\);/);
+    assert.match(cli, /if \(!cliKeyUsable\(code\)\) \{ syncCliKeyUI\(tr\("cliKeyBadKey"\)\); return false; \}/, "待ちは続ける");
+    assert.match(cli, /if \(!code \|\| code === "Escape"\) \{ cliKeyBinding = null; syncCliKeyUI\(""\); return false; \}/);
+  });
+
+  test("ほかの操作と重なるキーは受けない（📚 の音量キーも見る）", () => {
+    assert.match(cli, /function cliKeyUsed\(code\) \{/);
+    assert.match(cli, /S\.skinVolKeyL, S\.skinVolKeyR, S\.skinVolKeyU, S\.skinVolKeyD/);
+    assert.match(cli, /if \(cliKeyUsed\(code\)\) \{ toastNote\(tr\("cliKeyTaken"\)\); syncCliKeyUI\(tr\("cliKeyTaken"\)\); return false; \}/);
+  });
+
+  test("待ちっぱなしにしない（押し直し・ほかを触る・Esc で取り消し）", () => {
+    assert.match(cli, /cliKeyBinding = cliKeyBinding === null \? 0 : null;/, "ボタンをもう一度押したら取り消し");
+    assert.match(cli, /document\.addEventListener\("pointerdown", e => \{/, "外を触ったら取り消し");
+    assert.match(cli, /if \(t && t\.closest && t\.closest\("#cliKeyAssign"\)\) return;/);
+    assert.match(cli, /if \(cliKeyBinding !== null\) \{\n      e\.preventDefault\(\); e\.stopPropagation\(\);\n      if \(!e\.repeat\) captureCliKey\(core\.keyCodeOf\(e\)\);/);
+  });
+
+  test("決まったこと・駄目だったことを、その場に出す（読み上げつき）", () => {
+    assert.match(html, /id="cliKeyStatus" aria-live="polite"/);
+    assert.match(cli, /button\.setAttribute\("aria-pressed", String\(on\)\)/);
+    assert.match(cli, /syncCliKeyUI\(tr\("cliKeySaved", \{ key: core\.formatKey\(code\) \}\)\)/);
+    for (const key of ["cliKeyWaiting", "cliKeyBadKey", "cliKeySaved"]) {
+      assert.equal((cli.match(new RegExp(`\\b${key}:`, "g")) || []).length, 4, `${key} は 4 言語`);
+    }
+  });
+});

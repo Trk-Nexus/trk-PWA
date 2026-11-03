@@ -138,8 +138,10 @@ test("呼び出しキーは Ctrl／⌘ + 選んだキー（既定 `）で、同�
   assert.match(cli, /if \(state\.open\) closeCli\(\);/, "開いていれば閉じる（トグル）");
   /* 割り当て：押されたキーを覚える・Esc は取り消し・遊ぶキーと重なるキーは受けない */
   assert.match(cli, /function captureCliKey\(code\)/);
-  assert.match(cli, /if \(!code \|\| code === "Escape"\) \{ cliKeyBinding = null; syncCliKeyUI\(\); return; \}/);
-  assert.match(cli, /if \(used\.includes\(code\)\) \{ toastNote\(tr\("cliKeyTaken"\)\); return; \}/);
+  /* ⌨ trk286：Esc は取り消し・修飾キーだけや Tab は受けない・ほかの操作と重なるキーも受けない */
+  assert.match(cli, /if \(!code \|\| code === "Escape"\) \{ cliKeyBinding = null; syncCliKeyUI\(""\); return false; \}/);
+  assert.match(cli, /const cliKeyUsable = code => !!code && code !== "Escape" && code !== "Tab"/);
+  assert.match(cli, /if \(cliKeyUsed\(code\)\) \{ toastNote\(tr\("cliKeyTaken"\)\); syncCliKeyUI\(tr\("cliKeyTaken"\)\); return false; \}/);
   assert.match(cli, /core\.settings\.cliKey = code;/, "覚えたら設定に入れる");
   assert.match(cli, /core\.saveUserPrefs\(\);/, "保存する");
   assert.match(html, /id="cliKeyAssign"/, "⚙ に割り当てボタン");

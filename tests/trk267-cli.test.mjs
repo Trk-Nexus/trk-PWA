@@ -334,9 +334,10 @@ describe("trk267：文言（4言語）と配線", () => {
     const core = read("js/core.js");
     assert.ok(core.includes('{ study:false, media:false, synth:false, cli:false }'));
     assert.ok(core.includes('cliPlay: pick(prefs.cliPlay, ["media", "preview"], "media")'));
-    assert.ok(core.includes('cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "auto")'));
+    /* ⌨ trk286：端末の見た目の既定は「いまのスキンのまま」 */
+    assert.ok(core.includes('cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "keep")'));
     assert.ok(core.includes("cliSpells: cleanCliSpells(prefs.cliSpells)"));
-    assert.ok(core.includes("settings.cliPlay = \"media\"; settings.cliSkin = \"auto\"; settings.cliSpells = {};"));
+    assert.ok(core.includes("settings.cliPlay = \"media\"; settings.cliSkin = \"keep\"; settings.cliSpells = {};"));
   });
 
   test("メディアプレーヤーへ渡す窓口がある", () => {
