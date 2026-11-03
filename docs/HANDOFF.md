@@ -832,6 +832,17 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 
 ## 7. 最近の変更
 
+- **🧙 trk270：Skin 側の返事を受けて Wizard を 24 種に（2026-11-03）**：記録＝[`VIEWER-TRK270-2026-11-03.md`](VIEWER-TRK270-2026-11-03.md)、洗い出し＝[`PLAN-TRK270-2026-11-03.md`](PLAN-TRK270-2026-11-03.md)、Skin 側へ返す文書＝[`SKIN-RETURN-TRK270-2026-11-03.md`](SKIN-RETURN-TRK270-2026-11-03.md)。元は Drive の `返事-trk269-2026-11-03.md`（`1XaDstwo2rADOeF6LIVeeEmE25GiUtX9u`）と、trk-Avatar-Library の **PR #34**（`main`・`c0292bb8`）で更新された `catalog/skins.json`（253 種）。
+  - **Wizard 24 種を全部**（`--cli-only` を外す）。`js/skins-wizard.js` は生成物のまま・`--check` で目録どおりを確認。**スキンは 61 → 77 種**（本体 49＋ミク 4＋Wizard 24）。
+  - **取り込み v2**：基準に届かない色は**文字ではなく背景（ボタン・地）**を動かして寄せる（`fitAway`）。文字は 1 色も動かしていない。エラー色は 3:1 へ。**寄せた 14 件**は実行時に内訳を出す（同じ目録なら同じバイト列）。
+  - **`wizard-hermetic` だけ地も動かした**（`#5c4033 → #aea099`）：パネルが明るく地が暗いと、1 つのうすい文字で両方は物理的に両立しない。
+  - **`auto` の選び方**：`skinCatalog` に **`look`（cli を名乗るか）** を足し、`pickCliSkin` は **cli を名乗るスキンを先に**選ぶ。24 種になると辞書順の先頭が `wizard-alchemy`（cli なし）になるため（当たるのは `wizard-arcane` で trk269 と同じ）。
+  - **道具 v2.1**：`tools/check-cli-skin.mjs` の**誤検知 2 つ**を修正＝半透明のパネル（`rgba(...)`・前は 20 種が誤検知）を色として受け取る／`bell:false` を「鳴らさない」として扱う（前は 2 種）。目録に当てると 12 種 OK／7 種 NG（10 件・**目録の生の値**の話で、本体は取り込み時に寄せる）。
+  - **返事との差分**：返事は「24 種に cli を追加」だが、実際の目録で `cli` を持つのは **12 種**（5 つの操作感は 12 種にすべて入っていた）。残り 12 種に付けるかは先方の判断、と返した。
+  - 見張り：`tests/trk270-wizard24.test.mjs` **13 件**。jsdom（本物の 77 種で端末を操作）**14 項目 0 NG**。`npm run check` **1537 pass / 0 fail**。cache は **`trk-v2026.11.03-trk270`**。
+  - **新しい保存キー 0**。`TRK_PWA_REF` は **`c36029ac07acc21f50b518a604052b5405437874`**。
+  - **`/trk/` に当てる版は保留**のまま（Skin 側の応答後）。
+
 - **⌨ trk269：端末の定番コマンドと Wizard のスキン 12 種（2026-11-03）**：記録＝[`VIEWER-TRK269-2026-11-03.md`](VIEWER-TRK269-2026-11-03.md)、洗い出し＝[`PLAN-TRK269-2026-11-03.md`](PLAN-TRK269-2026-11-03.md)、Skin 側へ返す文書＝[`SKIN-RETURN-TRK269-2026-11-03.md`](SKIN-RETURN-TRK269-2026-11-03.md)。元は Skin 側から Drive で届いた 4 ファイル（`CLI-定番機能とWizardスキン案.md`・`check-cli-skin.mjs`・`skins.json`・`HANDOFF.md`）。
   - **伝達事項 4 つをそのまま反映**：§4-1 の `cli` 拡張 5 つ（`cursor`／`opacity`／`history`／`completion`／`bell`）・§4-2 のトリガー（`wizard`／`cli`／`console`）・§4-3 のコントラスト（4.5:1・エラー 3:1）・§4-4 の検査ツール（v2 に）。
   - **コマンドは「別名＋新規」（U2）**：`ls`／`dir`＝`list`、`cd`＝`skin`、`man`＝`help`（`man <cmd>` は 1 つだけ）。新しく `pwd`・`cat`（`cat spell <id>` も）・`grep`・`history`・`clear`・`echo`・`bell on/off`。`|` は `;` と同じ区切り。`execute` は `{out, quit, clear}` を返し、`clear` は**先にログを消して**「消しました」だけ残す。
