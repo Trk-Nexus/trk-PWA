@@ -554,6 +554,8 @@ const settings = {
   cliKey: validCode(prefs.cliKey) ? prefs.cliKey : "Backquote",
   cliAutoClose: prefs.cliAutoClose !== false,
   cliTypingCheck: pick(prefs.cliTypingCheck, ["badge", "status", "quiet"], "badge"),
+  /* ⌨ trk285：入力の合図（プロンプト）の形。既定は Linux 系の「<スキン名(English)> ~ %」 */
+  cliPromptStyle: pick(prefs.cliPromptStyle, ["linux", "bash", "root", "fish", "ps", "plain", "skin"], "linux"),
   cliSkinPickOn: prefs.cliSkinPickOn === true,
   cliSkinPick: typeof prefs.cliSkinPick === "string" && has(window.Trk.data.SKINS, prefs.cliSkinPick) ? prefs.cliSkinPick : "",
   /* ▶ メディアプレーヤー（TV電源長押し） */
@@ -867,7 +869,7 @@ function resetAllPrefs() {
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
   /* ⌨ trk267：ターミナルの行き先（プレイヤー）・見た目（自動）・覚えた呪文（無し）も工場出荷状態へ */
-  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Backquote"; settings.cliAutoClose = true; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = "";
+  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Backquote"; settings.cliAutoClose = true; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = ""; settings.cliPromptStyle = "linux";
   /* ⚖ trk279：⚙ の段（スタンダード）と「触った設定」も工場出荷状態へ */
   settings.setLevel = "standard"; settings.setTouched = [];
 }

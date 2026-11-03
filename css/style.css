@@ -2330,6 +2330,10 @@ body.trk-typo-on .hint,body.trk-typo-on .brand p{font-family:var(--trk-typo-body
 .cliForm{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--ui-border);background:rgba(0,0,0,.18)}
 .cliPromptChar{flex:none;color:var(--ui-accent-ink,var(--ui-accent));font-weight:900}
 .cliPromptChar::before{content:var(--cli-prompt,">")}
+/* ⌨ trk285：文字で出す合図（<スキン名(English)> ~ %）。空のとき（スキンに任せる）は --cli-prompt の記号 */
+.cliPromptChar[data-text="1"]::before{content:none}
+.cliPromptChar[data-text="1"]{white-space:pre;font-weight:700;opacity:.92;max-width:min(52%,320px);overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){.cliPromptChar[data-text="1"]{max-width:40%;font-size:12px}}
 .cliInput{flex:1 1 auto;min-width:0;padding:8px 10px;border:1px solid var(--ui-border);border-radius:10px;background:var(--ui-bg);color:var(--ui-text);font:inherit;font-size:14px;caret-color:var(--cli-caret,currentColor);caret-shape:var(--cli-cursor-shape,auto)}
 .cliInput:focus-visible{outline:2px solid var(--ui-accent-ink,var(--ui-accent));outline-offset:1px}
 .cliRunBtn{flex:none}

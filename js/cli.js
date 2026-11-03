@@ -71,6 +71,17 @@
     cliSpellDelBtn: "削除",
     cliSpellCount: "辞書 {n} 本（うち自作 {m} 本・上限 {max}）",
     cliSpellFull: "辞書がいっぱいです（{max} 本まで）。使わないものを消してください。",
+    /* ⌨ trk285：入力の合図（プロンプト） */
+    cliPromptStyleLabel: "入力の合図（プロンプト）",
+    cliPromptLinux: "Linux 系：<スキン名> ~ %",
+    cliPromptBash: "bash 系：<スキン名>:~$",
+    cliPromptRoot: "root 系：<スキン名>:~#",
+    cliPromptFish: "fish 系：<スキン名> ~>",
+    cliPromptPs: "PowerShell 系：PS <スキン名>>",
+    cliPromptPlain: "シンプル：>",
+    cliPromptSkin: "スキンに任せる（スキンの cli）",
+    cliPromptPreview: "いまの見え方：{text}",
+    cliPromptHint: "スキン名は English の表記です（例：The Art of War ~ %）。端末を開いているあいだは、画面のどこにフォーカスがあっても入力を奪います。",
     cliBellLabel: "エラーの音（ピン）を鳴らす",
     cliBellHint: "音は、スキンが「鳴らす」と言っているときだけ鳴ります。ここを切れば、どのスキンでも鳴りません（ターミナルで bell off と唱えても切れます）。",
     cliFeelHint: "Tab 補完の有無・履歴の長さ・カーソルの形・地の透け方は、スキン（cli の項目）が決めます。",
@@ -213,6 +224,17 @@
     cliSpellDelBtn: "Delete",
     cliSpellCount: "{n} spells ({m} of your own · up to {max})",
     cliSpellFull: "The dictionary is full (up to {max}). Delete one you no longer use.",
+    /* ⌨ trk285：the prompt */
+    cliPromptStyleLabel: "Prompt",
+    cliPromptLinux: "Linux style: <skin> ~ %",
+    cliPromptBash: "bash style: <skin>:~$",
+    cliPromptRoot: "root style: <skin>:~#",
+    cliPromptFish: "fish style: <skin> ~>",
+    cliPromptPs: "PowerShell style: PS <skin>>",
+    cliPromptPlain: "Plain: >",
+    cliPromptSkin: "Leave it to the skin (its cli)",
+    cliPromptPreview: "Looks like: {text}",
+    cliPromptHint: "The skin name is the English label (e.g. The Art of War ~ %). While the terminal is open, typing anywhere lands in the input.",
     cliBellLabel: "Play the error beep",
     cliBellHint: "It only sounds when the skin says it may. Turn this off and no skin will beep (you can also cast bell off in the terminal).",
     cliFeelHint: "Tab completion, how long the history is, the cursor shape and how see-through the background is all come from the skin (its cli values).",
@@ -355,6 +377,17 @@
     cliSpellDelBtn: "删除",
     cliSpellCount: "词典 {n} 条（自制 {m} 条・上限 {max}）",
     cliSpellFull: "词典已满（最多 {max} 条）。请删除不用的条目。",
+    /* ⌨ trk285 */
+    cliPromptStyleLabel: "输入提示符",
+    cliPromptLinux: "Linux 系：<皮肤名> ~ %",
+    cliPromptBash: "bash 系：<皮肤名>:~$",
+    cliPromptRoot: "root 系：<皮肤名>:~#",
+    cliPromptFish: "fish 系：<皮肤名> ~>",
+    cliPromptPs: "PowerShell 系：PS <皮肤名>>",
+    cliPromptPlain: "简洁：>",
+    cliPromptSkin: "交给皮肤（其 cli）",
+    cliPromptPreview: "现在看起来：{text}",
+    cliPromptHint: "皮肤名用英文表记（例：The Art of War ~ %）。终端打开期间，无论焦点在哪里，输入都会进入终端的输入框。",
     cliBellLabel: "播放出错提示音",
     cliBellHint: "只有当皮肤说可以响时才会响。关掉这里，任何皮肤都不会响（也可以在终端里说 bell off）。",
     cliFeelHint: "Tab 补全的有无、历史长度、光标形状、背景的透明度，都由皮肤（cli 项）决定。",
@@ -497,6 +530,17 @@
     cliSpellDelBtn: "삭제",
     cliSpellCount: "사전 {n} 개(직접 만든 것 {m} 개・최대 {max})",
     cliSpellFull: "사전이 가득 찼습니다(최대 {max}개). 쓰지 않는 것을 지워 주세요.",
+    /* ⌨ trk285 */
+    cliPromptStyleLabel: "입력 프롬프트",
+    cliPromptLinux: "Linux 계열: <스킨명> ~ %",
+    cliPromptBash: "bash 계열: <스킨명>:~$",
+    cliPromptRoot: "root 계열: <스킨명>:~#",
+    cliPromptFish: "fish 계열: <스킨명> ~>",
+    cliPromptPs: "PowerShell 계열: PS <스킨명>>",
+    cliPromptPlain: "간단히: >",
+    cliPromptSkin: "스킨에 맡김(스킨의 cli)",
+    cliPromptPreview: "지금 보이는 모습: {text}",
+    cliPromptHint: "스킨 이름은 English 표기입니다(예: The Art of War ~ %). 터미널이 열려 있는 동안에는 화면 어디에 포커스가 있어도 입력이 터미널로 들어갑니다.",
     cliBellLabel: "오류 소리(삑) 내기",
     cliBellHint: "스킨이 \"내도 된다\"고 할 때만 울립니다. 여기서 끄면 어떤 스킨도 울리지 않습니다(터미널에서 bell off 라고 외쳐도 꺼집니다).",
     cliFeelHint: "Tab 자동완성 여부, 기록 길이, 커서 모양, 배경의 투명도는 스킨(cli 항목)이 정합니다.",
@@ -638,6 +682,22 @@
     if (shiftKey === true || completionOn === false) return false;
     return String(text == null ? "" : text).trim() !== "";
   }
+  /* ⌨ trk285：よく見る端末の合図（プロンプト）。<スキン名(English)> を頭に置きます。
+     linux＝`<name> ~ %`（macOS・zsh 風。既定）／bash＝`<name>:~$`／root＝`<name>:~#`／
+     fish＝`<name> ~>`／ps＝`PS <name>>`／plain＝`>`／skin＝スキスの --cli-prompt に任せる（空文字） */
+  const PROMPT_STYLES = ["linux", "bash", "root", "fish", "ps", "plain", "skin"];
+  function promptText(style, name) {
+    const id = PROMPT_STYLES.includes(style) ? style : "linux";
+    if (id === "skin") return "";
+    const who = String(name == null ? "" : name).trim() || "trk";
+    if (id === "bash") return who + ":~$ ";
+    if (id === "root") return who + ":~# ";
+    if (id === "fish") return who + " ~> ";
+    if (id === "ps") return "PS " + who + "> ";
+    if (id === "plain") return "> ";
+    return who + " ~ % ";
+  }
+
   /* 辞書（呪文）の下書きを検査する。返す値：""＝よい／id／body／builtin／full */
   function spellDraftProblem(id, body, opts) {
     const o = opts || {};
@@ -1024,6 +1084,8 @@
   let overlay = null, dialog = null, logNode = null, inputNode = null, typingBadge = null;
   /* ⌨ trk284：辞書登録（呪文）の GUI の部品 */
   let spellList = null, spellStatus = null, spellIdInput = null, spellBodyInput = null;
+  /* ⌨ trk285：入力の合図（プロンプト）の見出し */
+  let promptNode = null;
   const state = { built: false, open: false, history: [], hi: -1, swapSkin: "", userSkin: false, returnFocus: null, composing: false };
 
   const t = (key, vars) => tr(key, vars);
@@ -1284,8 +1346,11 @@
 
     const form = core.el("form", "cliForm");
     form.id = "cliForm";
-    const prompt = core.el("span", "cliPromptChar");   /* 記号は CSS（--cli-prompt）。スキンが変えられます */
-    prompt.setAttribute("aria-hidden", "true");
+    /* ⌨ trk285：合図は「<スキン名(English)> ~ %」のように文字で出す（空のときはスキンの --cli-prompt） */
+    promptNode = core.el("span", "cliPromptChar");
+    promptNode.id = "cliPromptChar";
+    promptNode.setAttribute("aria-hidden", "true");
+    const prompt = promptNode;
     inputNode = core.el("input", "cliInput");
     inputNode.id = "cliInput";
     inputNode.type = "text";
@@ -1534,6 +1599,38 @@
     return st;
   }
 
+  /* ---------- ⌨ trk285：入力の合図（<スキン名(English)> ~ %） ---------- */
+  /* いまのスキンの English 名（label.en を優先。無ければ ja・id） */
+  function skinEnglishName(id) {
+    const all = (window.Trk.data && window.Trk.data.SKINS) || {};
+    const key = id || core.settings.skin;
+    const def = all[key] || {};
+    const label = def.label || {};
+    return String(label.en || label.ja || key || "trk");
+  }
+  const promptStyle = () => (PROMPT_STYLES.includes(core.settings.cliPromptStyle) ? core.settings.cliPromptStyle : "linux");
+  const promptNow = () => promptText(promptStyle(), skinEnglishName());
+  /* 合図を出し直す（入力欄の読み上げ名にも入れる） */
+  function updatePrompt() {
+    const text = promptNow();
+    if (promptNode) {
+      promptNode.textContent = text;
+      promptNode.dataset.text = text ? "1" : "0";
+    }
+    if (inputNode) inputNode.setAttribute("aria-label", (text ? text.trim() + " … " : "") + tr("cliPromptLabel"));
+    return text;
+  }
+  /* ⚙ の「いまの見え方」を合わせる（スキン・言語・選んだ形が変わったとき） */
+  function syncPromptPreview() {
+    const sel = document.getElementById("cliPromptSel");
+    const preview = document.getElementById("cliPromptPreview");
+    if (sel) sel.value = promptStyle();
+    if (preview) {
+      const text = promptStyle() === "skin" ? String(skinCli().prompt || ">") : promptNow().trim();
+      preview.textContent = tr("cliPromptPreview", { text });
+    }
+  }
+
   /* ⌨ trk283：開くときに当てるスキン（モード＝auto/terminal/keep、個別指定があれば優先） */
   function chooseCliSkin() {
     const mode = ["terminal", "keep"].includes(core.settings.cliSkin) ? core.settings.cliSkin : "auto";
@@ -1574,6 +1671,7 @@
     const cur = deps.current();
     log("out", tr("cliSkinCurrent", { id: cur.skin }) + "  ·  " + tr("cliVolumeSet", { n: cur.volume }));
     /* ⌨ trk283：打てる状態かを検めてから、知らせる（設定で バッジ／状態行／静か を選ぶ） */
+    updatePrompt();   /* ⌨ trk285：当てたスキンの English 名で「<name> ~ %」を出す */
     renderSpells();
     ensureFocus(0);
     showTyping(true);
@@ -1649,6 +1747,17 @@
       pickChk.dataset.cliWired = "1";
       syncPick();
       pickChk.addEventListener("change", () => { core.settings.cliSkinPickOn = pickChk.checked; syncPick(); core.saveUserPrefs(); });
+    }
+    const promptSel = document.getElementById("cliPromptSel");
+    if (promptSel && !promptSel.dataset.cliWired) {
+      promptSel.dataset.cliWired = "1";
+      syncPromptPreview();
+      promptSel.addEventListener("change", () => {
+        core.settings.cliPromptStyle = PROMPT_STYLES.includes(promptSel.value) ? promptSel.value : "linux";
+        core.saveUserPrefs();
+        updatePrompt();
+        syncPromptPreview();
+      });
     }
     const typingSel = document.getElementById("cliTypingSel");
     if (typingSel && !typingSel.dataset.cliWired) {
@@ -1731,13 +1840,36 @@
     else if (!openCli()) toastNote(tr("cliOnlyTitle"));
   }, true);
 
+  /* ⌨ trk285：開いている間は、画面のどこにフォーカスがあっても入力を奪う（1 文字目も落とさない） */
+  addEventListener("keydown", e => {
+    if (!state.open || !inputNode) return;
+    if (cliKeyBinding !== null || e.defaultPrevented) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (compositionBlocked(e.isComposing, e.keyCode)) return;
+    const t = e.target;
+    if (t === inputNode) return;
+    if (t && t.closest && t.closest("#cliForm, #cliSpellPanel")) return;   /* 端末の入力欄・辞書は邪魔しない */
+    if (t && ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName)) return;
+    if (typeof e.key === "string" && e.key.length === 1) {
+      inputNode.value += e.key;
+      try { inputNode.setSelectionRange(inputNode.value.length, inputNode.value.length); } catch (_) {}
+      e.preventDefault();
+    }
+    focusInput();
+  }, true);
+
   /* 言語を変えたら、端末の中の文言も入れ替える */
   core.on("language", () => {
     if (!state.built || !overlay) return;
     overlay.querySelectorAll("[data-i18n]").forEach(n => { n.textContent = tr(n.dataset.i18n); });
     overlay.querySelectorAll("[data-i18n-aria]").forEach(n => n.setAttribute("aria-label", tr(n.dataset.i18nAria)));
     renderSpells();   /* ⌨ trk284：辞書の「削除」など、GUI が作る文言も入れ替える */
+    updatePrompt();   /* ⌨ trk285：合図の読み上げ名も入れ替える */
+    syncPromptPreview();
   });
+  /* ⌨ trk285：スキンが変わったら合図も変える（スキン名を出しているため） */
+  core.on("skin", () => { if (state.open || promptNode) updatePrompt(); syncPromptPreview(); });
+
   /* 選曲画面を離れたら閉じる（ゲーム・書斎・プレイヤーへ行ったとき） */
   core.on("phase", p => { if (p !== "title" && state.open) closeCli(); });
 
@@ -1759,6 +1891,9 @@
     pickCliSkin,
     chooseCliSkin,
     spellDraftProblem,
+    promptText,
+    PROMPT_STYLES,
+    skinEnglishName,
     normalizeCommand,
     compositionBlocked,
     tabShouldComplete,
