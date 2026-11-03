@@ -214,22 +214,24 @@ test("CSS は opacity とカーソルの形を受け取る（文字は薄くし�
 });
 
 /* ==================== Wizard のスキン 12 種 ==================== */
-test("Wizard のスキンは 24 種。どれも cat に wizard を持つ（cli は 12 種）", () => {
+/* 📚 trk274：目録の 291 種を受けたので、Wizard は 24 → 62 種（cli は 12 → 50 種）になった */
+test("Wizard のスキンは 62 種。どれも cat に wizard を持つ（cli は 50 種）", () => {
   const ids = Object.keys(D.SKINS).filter(id => (D.SKINS[id].cat || []).includes("wizard"));
-  assert.equal(ids.length, 24);
-  assert.equal(ids.filter(id => D.SKINS[id].cli).length, 12, "cli を名乗るのは 12 種");
+  assert.equal(ids.length, 62);
+  assert.equal(ids.filter(id => D.SKINS[id].cli).length, 50, "cli を名乗るのは 50 種");
   for (const id of ids) {
     const s = D.SKINS[id];
     assert.ok(s.ui["--ui-text"] && s.ui["--ui-field"], id + " の色が足りません");
     assert.ok(s.label && s.label.ja, id + " に名前がありません");
   }
-  assert.ok(Object.keys(D.SKINS).length >= 73, "data.js（49）＋ Wizard（24）");
+  assert.ok(Object.keys(D.SKINS).length >= 111, "data.js（49）＋ Wizard（62）");
 });
 
 test("目録から作ったファイルは、手で直さない・出どころが分かる", () => {
   assert.match(wizardSrc, /tools\/import-skin-catalog\.mjs/, "作り方が書いてある");
   assert.match(wizardSrc, /手で直さないでください/);
-  assert.equal((wizardSrc.match(/^ {2}S\["[a-z0-9-]+"\] = \{/gm) || []).length, 24);
+  /* 📚 trk274：camelCase の id（wizard-auraCaster などではなく目録の id）も通るので、字種を広げる */
+  assert.equal((wizardSrc.match(/^ {2}S\["[A-Za-z0-9_.-]+"\] = \{/gm) || []).length, 62);
   /* 書体の二重エスケープ（\"Courier New\"）が残っていない */
   assert.doesNotMatch(wizardSrc, /\\\\"/, "font の \\\" が残っています");
 });

@@ -273,6 +273,9 @@ const settings = {
   /* 🧺 trk229：棚の整理。⭐お気に入り・🚫隠した・使用回数・最後に使った日時・並び順・絞り込み（すべてこの端末だけ） */
   skinShelfOnly: pick(prefs.skinShelfOnly, ["", "fav", "recent", "hidden"], ""),
   skinSort: pick(prefs.skinSort, ["default", "name", "used", "recent"], "default"),
+  /* 📚 trk274：棚の「巻」。"" は**定番＋ウィザードだけ**（vol.1〜10・glitch は選んだときだけ出す）。
+     "all" は全部。ほかは巻の id（vol-01 など）。新しい保存キーは作らず、この中に入れます */
+  skinShelfVol: typeof prefs.skinShelfVol === "string" ? prefs.skinShelfVol.slice(0, 24) : "",
   skinFav: cleanSkinIdList(prefs.skinFav),
   skinHidden: cleanSkinIdList(prefs.skinHidden),
   skinUse: cleanSkinMap(prefs.skinUse),
@@ -808,7 +811,7 @@ function resetAllPrefs() {
   settings.mmdQuickUI = true; settings.mmdMotionFavs = [];
   settings.skin = "shadow"; settings.layout = "classic";
   /* 🧺 trk229：棚の整理（お気に入り・隠した・回数・日時・並び・絞り込み）も工場出荷状態へ */
-  settings.skinShelfOnly = ""; settings.skinSort = "default"; settings.skinFav = []; settings.skinHidden = [];
+  settings.skinShelfOnly = ""; settings.skinSort = "default"; settings.skinShelfVol = ""; settings.skinFav = []; settings.skinHidden = [];
   settings.skinUse = {}; settings.skinLast = {};
   /* 🖥 trk221/222：画面の形（自動）・下の再生バー（つねに表示）・拡大率（100%）も工場出荷状態へ戻す */
   settings.uiMode = "auto"; settings.playerBar = "on";
@@ -1361,16 +1364,41 @@ function skinMatchesQuery(id, s, query) {
   const text = skinSearchText(id, s);
   return words.every(w => text.includes(w));
 }
-/* 絞り込み（カテゴリ・⭐・🕒・🚫・検索）と並べ替えを、1か所で決める */
+/* 📚 trk274：巻の一覧（`js/skins-volumes.js` が入れた SKIN_VOLUMES）。無ければ空。
+   巻の目録は**データ**なので、選んだ巻に属する ID をそのまま使います。 */
+function skinVolumes() {
+  const v = window.Trk && window.Trk.data && window.Trk.data.SKIN_VOLUMES;
+  return Array.isArray(v) ? v : [];
+}
+/* 絞り込み（カテゴリ・⭐・🕒・🚫・巻・検索）と並べ替えを、1か所で決める */
 function skinShelfEntries(skins, opt) {
   const o = opt || {}, cat = o.cat || "all", only = o.only || "";
   const fav = new Set(o.fav || []), hidden = new Set(o.hidden || []);
   const use = o.use || {}, last = o.last || {}, locale = o.locale || "ja";
   const nameOf = id => { const s = skins[id]; return String((s.label && (s.label[locale] || s.label.en)) || id); };
   const byName = (a, b) => nameOf(a[0]).localeCompare(nameOf(b[0]), locale) || a[0].localeCompare(b[0]);
+  /* 📚 trk274：巻の絞り込み。"" は**定番＋ウィザードだけ**（vol.1〜10・glitch は選んだときだけ）、
+     "all" は全部、それ以外はその巻の ID だけ。純粋関数のまま（テストから同じものを動かせる） */
+  const volumes = Array.isArray(o.volumes) ? o.volumes : [];
+  const vol = o.vol || "";
+  let volSet = null, outside = null;
+  if (vol && vol !== "all") {
+    const g = volumes.find(x => x && x.id === vol);
+    if (g && Array.isArray(g.ids)) volSet = new Set(g.ids);
+  }
+  if (!volSet && vol !== "all") {
+    /* "" （既定）と、知らない巻名（古い保存・目録が減ったとき）は同じ扱い＝定番＋ウィザード */
+    outside = new Set();
+    for (const g of volumes) {
+      if (!g || g.id === "wizard" || g.id === "other") continue;
+      for (const id of Array.isArray(g.ids) ? g.ids : []) outside.add(id);
+    }
+  }
   const out = [];
   for (const [id, s] of Object.entries(skins)) {
     if (cat !== "all" && !skinCatList(s).includes(cat)) continue;
+    if (volSet && !volSet.has(id)) continue;
+    if (outside && outside.has(id)) continue;
     /* 隠したスキンは「🚫 隠した」を見ているときだけ出す。
        ⚠ trk241：**いま使っているスキンだけは、隠しても棚に残す**（消えたように見えると、
           当たっているのに「効かない」と誤解されるため。印は 🚫 で出す）。 */
@@ -1466,6 +1494,78 @@ function wireSkinFind() {
   sort.addEventListener("change", () => {
     settings.skinSort = pick(sort.value, SKIN_SORT_IDS, "default"); saveUserPrefs(); buildSkinGrid();
   });
+  /* 📚 trk274：巻の絞り込み。<select> は**どのブラウザでも効く**控えめな入口、
+     popover のパネルは同じ値を選ぶ近道（G-1） */
+  const volSel = $("skinVol");
+  if (volSel) volSel.addEventListener("change", () => { setSkinVol(volSel.value); });
+  const volPanel = $("skinVolPanel"), volBtn = $("skinVolBtn");
+  if (volPanel) {
+    /* popover を知らないブラウザ（古い Safari など）では、出しっぱなしにせず**隠す**。
+       その場合も <select> で選べるので、用は足ります */
+    if (typeof volPanel.showPopover !== "function") {
+      volPanel.hidden = true;
+      if (volBtn) volBtn.hidden = true;
+    } else {
+      volPanel.hidden = false;
+      if (volBtn) volBtn.hidden = false;
+    }
+  }
+}
+/* 棚に出している枚数（読み上げに使う。buildSkinGrid が毎回入れ直す） */
+let skinShownCount = 0;
+/* 巻を切り替えた結果を、見た目と同時に読み上げる（G-3・aria-live） */
+function announceSkinVol(vol) {
+  const box = $("skinVolStatus");
+  if (!box) return;
+  const volumes = skinVolumes();
+  const g = volumes.find(x => x && x.id === vol);
+  const name = vol === "" ? tr("skinVolDefault") : vol === "all" ? tr("skinVolAll") : (g ? g.title : vol);
+  const text = tr("skinVolShown", { name, n: skinShownCount });
+  box.textContent = "";                       /* 同じ文でも読み上げ直されるように、いったん空へ */
+  requestAnimationFrame(() => { box.textContent = text; });
+}
+/* 巻を選ぶ（保存して棚を作り直す）。"" は定番＋ウィザード、"all" は全部 */
+function setSkinVol(vol) {
+  const volumes = skinVolumes();
+  const known = ["", "all", ...volumes.map(g => g && g.id).filter(Boolean)];
+  settings.skinShelfVol = known.includes(vol) ? vol : "";
+  saveUserPrefs();
+  buildSkinGrid();
+  announceSkinVol(settings.skinShelfVol);
+  const panel = $("skinVolPanel");
+  if (panel && typeof panel.hidePopover === "function" && panel.matches(":popover-open")) panel.hidePopover();
+}
+/* 巻の <select> と popover のパネルを、いまの目録から作り直す */
+function buildSkinVolControls(volumes, total) {
+  const sel = $("skinVol");
+  if (sel) {
+    const want = settings.skinShelfVol || "";
+    const opts = [["", tr("skinVolDefault")], ["all", tr("skinVolAll")],
+      ...volumes.map(g => [g.id, `${g.title}（${g.ids.length}）`])];
+    sel.textContent = "";
+    for (const [value, label] of opts) {
+      const o = document.createElement("option");
+      o.value = value; o.textContent = label;
+      sel.append(o);
+    }
+    sel.value = opts.some(([v]) => v === want) ? want : "";
+  }
+  const list = $("skinVolList");
+  if (list) {
+    list.textContent = "";
+    const add = (value, label, count) => {
+      const b = el("button", "skinVolCard");
+      b.type = "button";
+      b.classList.toggle("on", (settings.skinShelfVol || "") === value);
+      b.setAttribute("aria-pressed", String((settings.skinShelfVol || "") === value));
+      b.append(el("b", "", label), el("small", "", tr("skinVolItems", { n: count })));
+      b.addEventListener("click", () => setSkinVol(value));
+      list.append(b);
+    };
+    add("", tr("skinVolDefault"), total);
+    add("all", tr("skinVolAll"), total);
+    for (const g of volumes) add(g.id, g.title, g.ids.length);
+  }
 }
 function buildSkinGrid() {
   const grid = $("skinGrid"); if (!grid) return;
@@ -1501,11 +1601,17 @@ function buildSkinGrid() {
       });
     }
   }
+  const volumes = skinVolumes();
+  const totalSkins = Object.keys(skins).length;
+  buildSkinVolControls(volumes, totalSkins);
+  const vol = settings.skinShelfVol || "";
   const list = skinShelfEntries(skins, {
     cat, only, query: skinQuery, sort: settings.skinSort, locale: lang, current: settings.skin,
-    fav: settings.skinFav, hidden: settings.skinHidden, use: settings.skinUse, last: settings.skinLast
+    fav: settings.skinFav, hidden: settings.skinHidden, use: settings.skinUse, last: settings.skinLast,
+    vol, volumes
   });
   const total = Object.keys(skins).length;
+  skinShownCount = list.length;
   const count = $("skinShelfCount");
   if (count) count.textContent = list.length === total ? `（${total}）` : tr("skinCountShown", { shown: list.length, all: total });
   const noMatch = $("skinNoMatch"); if (noMatch) noMatch.hidden = list.length > 0;

@@ -7,6 +7,8 @@
 > trk250 時点：**リポジトリは組織 `Trk-Nexus` に移籍済み**（本番URL **`https://trk-nexus.github.io/trk-PWA/`**・旧 git URL は死亡）。
 > 0円方針のまま独自ドメインは取らず、上流 `trk`（個人）との保存領域共有を解きました＝経緯と残作業は [`ORIGIN-TRK-NEXUS-2026-11-02.md`](ORIGIN-TRK-NEXUS-2026-11-02.md)。アプリ本体は trk248（**初回案内に「保存はこの端末だけ」の1行**）、trk247（**設定の書き出し・読み込みの導線**＝⚙ → 💾 端末の保存に 📤📥・上限 20 MiB・**壊れた項目だけ除く**）、trk246（**書体の組み合わせ14組**＝見出し用の字を目録から選べる）、trk245（**密度の自動**＝窓の広さに合わせる／**曲リストの高さを画面に合わせる**）で、trk244 は**表示の密度**（PCで縮小しても文字を小さくせず詰める）、trk243 は**設定のさがす**、trk242 は**新しい版の知らせ**でした。`npm run check` は **1285 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.02-trk254`**（実体は `trkPWA-trk-v2026.11.02-trk254@trk-pwa`。trk253 でレビュー対応、trk254 で 🔤 の写しを目録から生成方式に）。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
 >
+> **2026-11-03：** trk273 まで merge 済み（`main` = `48147c46a1caa8f4413aeea007579e7b07120f30`）。いまは **trk274（巻別スキン 291 種の受け皿と、画面の手当て）** が進行中です。進み具合は [`PLAN-TRK274-2026-11-03.md`](PLAN-TRK274-2026-11-03.md) **§9**、画面の物差しは [`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md)、いまの状態は §1.5 の「trk274」の行。
+>
 > 現在の仕様・守る条件・未確認事項の要約です。過去の詳細な変更履歴・検証記録は [`HANDOFF-ARCHIVE.md`](HANDOFF-ARCHIVE.md)、利用者向け仕様は [`../README.md`](../README.md) と [`guide/`](guide/)、権利表記は [`../NOTICE.md`](../NOTICE.md)、品質・安全確認は [`QUALITY-CHECKS.md`](QUALITY-CHECKS.md) と [`SECURITY.md`](SECURITY.md)。**レビューと実機確認のお願いは [`REVIEW-REQUEST-TRK258-2026-11-02.md`](REVIEW-REQUEST-TRK258-2026-11-02.md)（前回は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md)）**、その指摘への対応は [`REVIEW-RESPONSE-2026-10-31.md`](REVIEW-RESPONSE-2026-10-31.md)、trk223 を実際の端末で見る手順は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)。
 
 ## 0. この文書の使い方
@@ -94,9 +96,10 @@
 - 変更後は `npm run check` と `git diff --check` を実行。静的・VM・スモーク検査の成功を、実音声・実機での確認済みとは扱いません。
 - **時刻はタイムゾーンに依存させない**（trk224・レビュー F1）。CI は UTC なので、UTC だけで緑でも油断できません。日時を作る・比べるコードを触ったら `TZ=Asia/Tokyo node tools/run-tests.mjs` も流してください（PowerShell は `$env:TZ="Asia/Tokyo"; node tools/run-tests.mjs`）。`toISOString()` は UTC、`getFullYear()`／`getHours()` はローカルです。
 - 公開JSを変更したら関連テスト・文書・`sw.js` のcache名更新要否を確認します。vendor pinの正は `tools/vendor-lock.json` です。
+- **画面（UX）の手当ては、Web 標準のガイドを読んでから決めます**（trk274）。`GoogleChrome/modern-web-guidance-src` の `guides/<分類>/<名前>/guide.md` と `features/*.md` を読み、**採る／採らないと理由**を [`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md) に残します。採るのは「今日のブラウザで効き、効かないブラウザでは**黙って素通りする**」ものだけ（このアプリは file: でも動く）。**写しは同梱せず、実行時に取りに行きません**。版は sha で記録します（いま読んだ版は main `dbf45b9`）。
 - `js/fx.js`／`js/fx-presets.js` の凍結は **trk114で解除**しました（2026-10-11、空さんの判断。trk109でfx.jsに足したMIDI MIXの経路も追認）。ほかのファイルと同じく、変更時はテスト・文書・実音声で確認します。fx.jsが読むための互換名（`chartMeta`・`phase`・`prefs`・`stats`・`videoReady`、読み取り専用の `_trkStudyRoomOpen`）はまだ残っていて、fx.jsを書き換えれば外せます（`docs/ADDONS.md` §0、`docs/NAMESPACE-PLAN.md`）。
 
-## 1.5 このリポジトリ（trk-PWA）の今（2026-11-02）
+## 1.5 このリポジトリ（trk-PWA）の今（2026-11-03）
 
 このチェックアウトは **`trk-PWA`**＝上流 `trk` 1.1.8 を履歴ごと取り込み、**通信を行わない standalone PWA** として仕上げる系統です。配り方が上流と違う（ZIP ではなく Pages）ため、§9 は上流の話として読んでください。
 
@@ -107,9 +110,10 @@
 | 配り方 | GitHub Pages（`.github/workflows/pages.yml`）＋ `manifest.webmanifest` ＋ `sw.js`。配布ZIPは作りません |
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
-| スキン | **77 種（本体 49＋ミク 4＋ウィザード 24）**。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
-| テスト | `npm run check` **1558 pass / 0 fail**（trk273 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.03-trk273@<スコープ>`**（実体は `trkPWA-trk-v2026.11.03-trk273@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| スキン | **291 種（本体 49＋ミク 4＋ウィザード 62＋巻別 176）**。trk274 で Skin 側の目録（`catalog/skins.json` の 291 種）を全部受け、棚に **📚 巻** の絞り込みを足した（既定は「定番＋ウィザード」＝115 種）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
+| **trk274（進行中）** | **巻別スキン 291 種（13 巻）の受け皿**。U1〜U4 は **A／A／A／A**（全部内蔵・カスタム 20 とは別枠・背景を寄せて見せる・UX 控えめ 4 つ）。いまは**道具**（`tools/import-skin-catalog.mjs` **v4**）が `vol-01`・`vol-02` の 16 種ずつを通すところまで。次は **Wizard 62 種 → 229 種＋巻の目録 → 棚の「巻」→ UX 4 つ**。進み具合＝[`PLAN-TRK274-2026-11-03.md`](PLAN-TRK274-2026-11-03.md) §9、画面の物差し＝[`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md) |
+| テスト | `npm run check` **1578 pass / 0 fail**（trk274 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.03-trk274@<スコープ>`**（実体は `trkPWA-trk-v2026.11.03-trk274@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | **組織 `Trk-Nexus` へ移籍済み**（trk250〜trk252）。Pages は稼働中（開発版 <https://trk-nexus.github.io/trk-PWA/>）。個人側の同名リポジトリは**空のまま**（墓標 README は所有者待ち・[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md) §6 X4） |
 
@@ -831,6 +835,18 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 | PC／スマホ実機で 1.1.2 のUIを操作（📂 の共有・🔓） | **未確認** | ヘッドレスsmokeは実機のタッチ・許可ダイアログを再現しない。#43・#44・#45 の手順で確認する |
 
 ## 7. 最近の変更
+
+- **📚 trk274：巻別スキン 291 種の受け皿と、画面の手当て 4 つ（2026-11-03）**：記録＝[`PLAN-TRK274-2026-11-03.md`](PLAN-TRK274-2026-11-03.md)・画面の物差し＝[`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md)
+  - **受け取ったもの**：Skin 側の目録 `catalog/skins.json` **291 種（13 巻）**。うち**新顔 214 種**（Wizard 38＋vol.1〜10・glitch 176）。こちらの定番 53 種（本体 49＋ミク 4）は目録の `other` にそのまま入っていたので、**書き戻さず**に残した。
+  - **道具の穴を塞いだ**（`tools/import-skin-catalog.mjs` v4）：①**グラデーションの地**（68 種）を 1 色に潰さず読む ②`stage` のグラデーション（72 種）も受ける ③**camelCase の id**（37 種）を通す ④`--exclude-cat`・`--only-new`・`--volumes`（巻の目録）を実装。実測＝`vol-01` **16/16**・`vol-02` **16/16**（v3 は 0/16・6/16）。
+  - **色の寄せ方を一本化**：目録の文字が白側か黒側かで**向きを決め**、届かないぶんは**面（パネル・入力欄・ボタン・地・舞台）**を反対側へ動かす。暗い地＋暗い文字で「黒地に黒」を作っていた組み合わせが無くなった。`data.js` の `accentInk` も通るまで寄せる（amber などの小さなアクセント文字）。
+  - **既存 24 種は 22 種そのまま**。変えたのは 2 種だけで、どちらも**元データが読めなかった**もの＝`wizard-hermetic` の舞台（3.19:1 → 合格）と `wizard-void` の文字（黒地に黒 1.00:1 → 白）。
+  - **棚**：`core.settings.skinShelfVol`（**新しい保存キーは増やしていない**）。既定は「定番＋ウィザード」115 種、`<select id="skinVol">` と `popover` の 📚 パネルで巻を選ぶ。`SKIN_VOLUMES`（13 巻・291 種を重複なく）は生成物に同梱。
+  - **画面の手当て（U4-A の 4 つ）**：G-1 `popover`（モーダルにしない・効かないブラウザでは隠す）／G-2 `@starting-style`＋`transition-behavior: allow-discrete`／G-3 `aria-live` の読み上げ（`#skinVolStatus`）／G-4 `content-visibility: auto`＋`contain-intrinsic-size`（棚の 1 か所だけ）。
+  - **返事と実機の 1 枚**：`docs/SKIN-RETURN-TRK274-2026-11-03.md`（受け取った目録の sha256・相談 6 つへのお返事・決めた 4 つ・寄せた数＝Wizard 38 種／巻別 161 種）と `docs/VIEWER-TRK274-2026-11-03.md`（実機で見てほしい 7 つ・画面の手当て 4 つ）。`TRK_PWA_REF` は `672ee4774dc4ae72b377b8412eed9ce654e69103`（trk274 のコード）。**`/trk/` は trk219 のまま**・LETTER-TRK273 の A〜D は保留。
+  - **検める道具（E-6）**：`tools/check-skin-contrast.mjs` を新設し `npm run check` に追加（生成物の `.js` を**実行せず**読み、文字 4.5:1・エラー 3:1・小さなアクセントの入れ子まで見る）。`npm run check` **1578 pass / 0 fail**・`check-repo` 0 failure / 0 warning・cache は `trk-v2026.11.03-trk274`。
+  - **配布物（Drive・7 本）**：フォルダ `trk-PWA-trk274-巻別スキン291種-2026-11-03`＝`1EyOg5OMCfOiGp87J1nj349pxzW5l6u9l`（親＝倉庫 `1ppyvt9ML9LpBJQJ1a938AmDRtdRYugZc`）。ZIP `1TiaeWFmTprE3m-uWmMrlzQogbdUJUmKt`（**361 エントリ・7,745,289 B・sha256 `f1338ffb9b58d51e1d9f499bd3d1b01e435d3cb5e8447a07bd3a2017147b9958`**・全エントリ 2026-11-03 12:00 UTC・`unzip -t` 破損なし・**落とし直して `cmp` バイト一致**）／`SHA256SUMS-trk274.txt` `1qz5hlCZtmgCOAN5CjerqQuJhY5ZQP95F`／`00-まず読む.txt` `1QwQ0ZECABQy5usBQenWTMMIZ5fmTLsy5`／`SKIN-RETURN-TRK274` `19FkE75V5yxvGt2Z02wEsMVYAkZ1_dXhC`／`VIEWER-TRK274` `1Eq8squRkgqjb1kkU6xwT_Ott0xdqOtmV`／`PLAN-TRK274` `1-yhI28vrybLNP4r7GFU6VCQJw1lCycUM`／`UX-GUIDANCE-TRK274` `1CPSeBeQ9vEoVzktbFJ374JWgZMusWEdF`。ZIP は `node tools/pack-standalone.mjs --out=/tmp/dist --name=trk-PWA-trk274 --date=2026-11-03T12:00:00Z`（359 ファイルを集め 361 エントリ・vendor 100 件そろい）。
+  - **次に待つもの**：Skin 側の相談 6 つへのお返事（`SKIN-RETURN` §4）と `LETTER-TRK273` の A〜D。**`/trk/` は trk219 のまま**。
 
 - **📄 trk273：レビュー（M1〜M3・R1〜R3）を反映して、送る前の文面を整える（2026-11-03）**：記録＝[`VIEWER-TRK273-2026-11-03.md`](VIEWER-TRK273-2026-11-03.md)、洗い出し＝[`PLAN-TRK273-2026-11-03.md`](PLAN-TRK273-2026-11-03.md)、Skin 側へ送る文面＝[`LETTER-TRK273-2026-11-03.md`](LETTER-TRK273-2026-11-03.md)。**アプリ本体（`js/*`・`css/*`）は 0 バイト**＝道具・文書・README の回。trk272 のレビュー（M1〜M3・R1〜R3）への手当て。
   - **M2（いちばん重い指摘）**：`tools/lib/skin-catalog.mjs` が `.js` を **`node:vm` で評価**していた。vm は安全のための仕組みではなく、ホストの `Object` を渡していたので `Object.constructor("return process")()` → `getBuiltinModule("fs")` で**書き込みまで届く**（レビューで実演・こちらでも再現）。**評価をやめ**、`.js` を**文字として読み**、`= [` の配列リテラル／`S["id"] = {…}` のオブジェクトリテラルだけを**自前の読み取り**で JSON にして `JSON.parse` する形に変えた。コメント・末尾カンマ・`'…'`・引用符なしの鍵は読める／式・関数・テンプレート文字列は**読めないと断る**。ペイロードが**動かない**ことをテストで固定（`/tmp` にファイルが出来ない）。
