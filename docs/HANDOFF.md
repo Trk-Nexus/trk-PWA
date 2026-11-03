@@ -7,6 +7,8 @@
 > trk250 時点：**リポジトリは組織 `Trk-Nexus` に移籍済み**（本番URL **`https://trk-nexus.github.io/trk-PWA/`**・旧 git URL は死亡）。
 > 0円方針のまま独自ドメインは取らず、上流 `trk`（個人）との保存領域共有を解きました＝経緯と残作業は [`ORIGIN-TRK-NEXUS-2026-11-02.md`](ORIGIN-TRK-NEXUS-2026-11-02.md)。アプリ本体は trk248（**初回案内に「保存はこの端末だけ」の1行**）、trk247（**設定の書き出し・読み込みの導線**＝⚙ → 💾 端末の保存に 📤📥・上限 20 MiB・**壊れた項目だけ除く**）、trk246（**書体の組み合わせ14組**＝見出し用の字を目録から選べる）、trk245（**密度の自動**＝窓の広さに合わせる／**曲リストの高さを画面に合わせる**）で、trk244 は**表示の密度**（PCで縮小しても文字を小さくせず詰める）、trk243 は**設定のさがす**、trk242 は**新しい版の知らせ**でした。`npm run check` は **1285 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.02-trk254`**（実体は `trkPWA-trk-v2026.11.02-trk254@trk-pwa`。trk253 でレビュー対応、trk254 で 🔤 の写しを目録から生成方式に）。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
 >
+> **2026-11-03：** trk273 まで merge 済み（`main` = `48147c46a1caa8f4413aeea007579e7b07120f30`）。いまは **trk274（巻別スキン 291 種の受け皿と、画面の手当て）** が進行中です。進み具合は [`PLAN-TRK274-2026-11-03.md`](PLAN-TRK274-2026-11-03.md) **§9**、画面の物差しは [`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md)、いまの状態は §1.5 の「trk274」の行。
+>
 > 現在の仕様・守る条件・未確認事項の要約です。過去の詳細な変更履歴・検証記録は [`HANDOFF-ARCHIVE.md`](HANDOFF-ARCHIVE.md)、利用者向け仕様は [`../README.md`](../README.md) と [`guide/`](guide/)、権利表記は [`../NOTICE.md`](../NOTICE.md)、品質・安全確認は [`QUALITY-CHECKS.md`](QUALITY-CHECKS.md) と [`SECURITY.md`](SECURITY.md)。**レビューと実機確認のお願いは [`REVIEW-REQUEST-TRK258-2026-11-02.md`](REVIEW-REQUEST-TRK258-2026-11-02.md)（前回は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md)）**、その指摘への対応は [`REVIEW-RESPONSE-2026-10-31.md`](REVIEW-RESPONSE-2026-10-31.md)、trk223 を実際の端末で見る手順は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)。
 
 ## 0. この文書の使い方
@@ -94,9 +96,10 @@
 - 変更後は `npm run check` と `git diff --check` を実行。静的・VM・スモーク検査の成功を、実音声・実機での確認済みとは扱いません。
 - **時刻はタイムゾーンに依存させない**（trk224・レビュー F1）。CI は UTC なので、UTC だけで緑でも油断できません。日時を作る・比べるコードを触ったら `TZ=Asia/Tokyo node tools/run-tests.mjs` も流してください（PowerShell は `$env:TZ="Asia/Tokyo"; node tools/run-tests.mjs`）。`toISOString()` は UTC、`getFullYear()`／`getHours()` はローカルです。
 - 公開JSを変更したら関連テスト・文書・`sw.js` のcache名更新要否を確認します。vendor pinの正は `tools/vendor-lock.json` です。
+- **画面（UX）の手当ては、Web 標準のガイドを読んでから決めます**（trk274）。`GoogleChrome/modern-web-guidance-src` の `guides/<分類>/<名前>/guide.md` と `features/*.md` を読み、**採る／採らないと理由**を [`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md) に残します。採るのは「今日のブラウザで効き、効かないブラウザでは**黙って素通りする**」ものだけ（このアプリは file: でも動く）。**写しは同梱せず、実行時に取りに行きません**。版は sha で記録します（いま読んだ版は main `dbf45b9`）。
 - `js/fx.js`／`js/fx-presets.js` の凍結は **trk114で解除**しました（2026-10-11、空さんの判断。trk109でfx.jsに足したMIDI MIXの経路も追認）。ほかのファイルと同じく、変更時はテスト・文書・実音声で確認します。fx.jsが読むための互換名（`chartMeta`・`phase`・`prefs`・`stats`・`videoReady`、読み取り専用の `_trkStudyRoomOpen`）はまだ残っていて、fx.jsを書き換えれば外せます（`docs/ADDONS.md` §0、`docs/NAMESPACE-PLAN.md`）。
 
-## 1.5 このリポジトリ（trk-PWA）の今（2026-11-02）
+## 1.5 このリポジトリ（trk-PWA）の今（2026-11-03）
 
 このチェックアウトは **`trk-PWA`**＝上流 `trk` 1.1.8 を履歴ごと取り込み、**通信を行わない standalone PWA** として仕上げる系統です。配り方が上流と違う（ZIP ではなく Pages）ため、§9 は上流の話として読んでください。
 
@@ -108,6 +111,7 @@
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | **77 種（本体 49＋ミク 4＋ウィザード 24）**。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
+| **trk274（進行中）** | **巻別スキン 291 種（13 巻）の受け皿**。U1〜U4 は **A／A／A／A**（全部内蔵・カスタム 20 とは別枠・背景を寄せて見せる・UX 控えめ 4 つ）。いまは**道具**（`tools/import-skin-catalog.mjs` **v4**）が `vol-01`・`vol-02` の 16 種ずつを通すところまで。次は **Wizard 62 種 → 229 種＋巻の目録 → 棚の「巻」→ UX 4 つ**。進み具合＝[`PLAN-TRK274-2026-11-03.md`](PLAN-TRK274-2026-11-03.md) §9、画面の物差し＝[`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md) |
 | テスト | `npm run check` **1558 pass / 0 fail**（trk273 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
 | Service Worker | cache は **`trk-v2026.11.03-trk273@<スコープ>`**（実体は `trkPWA-trk-v2026.11.03-trk273@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |

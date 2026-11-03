@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // SPDX-License-Identifier: GPL-3.0-or-later
-/* 🧙 スキン目録の取り込み（trk269）
+/* 🧙 スキン目録の取り込み（trk269 → trk274 v4）
 
    なぜ要るか：
    Skin 側（trk-Avatar-Library）は自分の目録（`catalog/skins.json`）でスキンを増やします。
@@ -9,13 +9,16 @@
    ＝ 手で写さない（写し間違いが出ない）・同じ目録からは同じバイト列（`--check` で見張れる）。
 
    使い方：
-     node tools/import-skin-catalog.mjs <目録> [--cat=wizard] [--cli-only] [--out=js/skins-wizard.js] [--check]
+     node tools/import-skin-catalog.mjs <目録> [--cat=wizard] [--exclude-cat=wizard] [--cli-only]
+                                        [--out=js/skins-wizard.js] [--volumes=<volumes.json>] [--check]
        <目録> は 3 つの形のどれでも（trk271）：
          ① catalog/skins.json（{ "skins": [...] }）
          ② スキン 1 枚の JSON
          ③ ジェネレーターの出力（.js・`const SKINS_WIZARD = [...]`／ESM の export も可）
-       --cat      このカテゴリを持つスキンだけ（既定は wizard）
+       --cat      このカテゴリを持つスキンだけ（既定は wizard・`--cat=` で絞らない）
+       --exclude-cat このカテゴリを持つスキンを除く（trk274：Wizard を別ファイルにするとき）
        --cli-only `cli` を持つ（＝端末で着られる）スキンだけ
+       --volumes  trk-Avatar-Library の `skin-volumes/volumes.json`。渡すと**巻の目録**も一緒に書く
        --out      書き出す先（既定 js/skins-wizard.js）
        --check    書き出さずに、いまのファイルと同じかだけを見る（違えば終了コード 1）
 
@@ -29,6 +32,9 @@
      ・cli は `js/data.js` の sanitizeCliLook と同じ規則で整える（本体と同じ判断）
      ・video は CSS のフィルタだけ通す（`url(` `;` `{` などは落とす）
      ・並びは id の辞書順（同じ目録なら同じバイト列）
+     ・trk274：地（bg）と舞台（stage）の **`linear-gradient(…deg,#a,#b…)` をそのまま受ける**。
+       コントラストは**全部の停止点**で満たすように寄せる（1 色に潰さない）
+     ・trk274：id の形はアプリ側（`SKIN_ID_RE`）に合わせる＝`A-Za-z0-9_.-` の 1〜48 文字。camelCase も通る
    ⚠ 外へは取りに行きません。読むのは渡されたファイルだけです。 */
 import fs from "node:fs";
 import path from "node:path";
@@ -38,7 +44,7 @@ import { loadCatalogFile } from "./lib/skin-catalog.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TOOL = "import-skin-catalog";
-const VERSION = 3;
+const VERSION = 4;
 
 const args = process.argv.slice(2);
 const file = args.find(a => !a.startsWith("--"));
@@ -47,6 +53,8 @@ const opt = (name, def) => {
   return hit ? hit.slice(name.length + 3) : def;
 };
 const wantCat = opt("cat", "wizard");
+const excludeCat = opt("exclude-cat", "");
+const volumesRel = opt("volumes", "");
 const cliOnly = args.includes("--cli-only");
 const outRel = opt("out", "js/skins-wizard.js");
 const checkOnly = args.includes("--check");
@@ -76,7 +84,11 @@ if (loaded.error) { console.error(loaded.error); process.exit(2); }
 const list = loaded.list;
 
 /* ---------- 安全な値だけ通す ---------- */
-const ID_RE = /^[a-z][a-z0-9-]{1,31}$/;
+/* trk274：アプリの `SKIN_ID_RE`（core.js）と同じ形まで広げた。
+   目録には `lanternAlley` のような camelCase が 37 種あり、前の規則では**読めないまま黙って落ちていた**。
+   道の文字（/ \ ` ~ :）と `..` は、ここでも通さない。 */
+const ID_RE = /^[A-Za-z][A-Za-z0-9_.-]{1,47}$/;
+const PATHY_RE = /[/\\`~]|\.\./;
 const HEX_RE = /^#[0-9a-f]{6}$/i;
 const RGBA_RE = /^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(?:,\s*(?:0|1|0?\.\d{1,3})\s*)?\)$/i;
 const FILTER_RE = /^[a-z-]+\([a-z0-9 .,%+-]*\)(?:\s+[a-z-]+\([a-z0-9 .,%+-]*\))*$/i;
@@ -95,6 +107,36 @@ function cleanColor(v, fallback) {
   const t = v.trim();
   if (HEX_RE.test(t) || RGBA_RE.test(t)) return t;
   return fallback || "";
+}
+/* trk274：`linear-gradient(180deg,#a,#b)` を「角度＋停止点の色」に読む。
+   受けるのは**色と角度だけ**（`url(`・`var(`・`;`・`{` などは 1 文字でも混ざれば断る）。
+   3 色以上のグラデーションもあるので、停止点は 2〜6 個まで。 */
+const GRAD_HEAD_RE = /^linear-gradient\(\s*(-?\d{1,3})deg\s*,/i;
+const GRAD_BODY_RE = /^linear-gradient\([0-9a-z#(),.% -]+\)$/i;
+const COLOR_TOKEN_RE = /#[0-9a-f]{6}|rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(?:,\s*(?:0|1|0?\.\d{1,3})\s*)?\)/gi;
+function parseGradient(v) {
+  if (typeof v !== "string") return null;
+  const t = v.trim();
+  if (t.length > 300 || !GRAD_BODY_RE.test(t)) return null;
+  const head = GRAD_HEAD_RE.exec(t);
+  if (!head) return null;
+  const colors = [...t.matchAll(COLOR_TOKEN_RE)].map(m => m[0]);
+  if (colors.length < 2 || colors.length > 6) return null;
+  /* 色の字だけを取り除いて、残りが角度と区切りだけか確かめる（余計な関数を混ぜさせない） */
+  const rest = t.replace(COLOR_TOKEN_RE, "#").replace(/^linear-gradient\(/i, "").replace(/\)$/, "");
+  if (!/^\s*-?\d{1,3}deg\s*(,\s*#\s*)+$/i.test(rest)) return null;
+  return { angle: Number(head[1]), colors };
+}
+const gradientCss = g => `linear-gradient(${g.angle}deg,${g.colors.join(",")})`;
+/* グラデーションの全部の停止点を、文字から遠ざけて合格点まで動かす */
+function fitGradient(g, fg, need) {
+  const colors = g.colors.slice();
+  let moved = false;
+  for (let i = 0; i < colors.length; i++) {
+    const fit = fitAway(colors[i], fg, need);
+    if (fit.color !== colors[i]) { colors[i] = fit.color; moved = true; }
+  }
+  return { gradient: { angle: g.angle, colors }, moved };
 }
 function cleanFilter(v) {
   if (typeof v !== "string") return "";
@@ -143,7 +185,10 @@ const pickLang = v => {
 /* ---------- 目録の 1 枚 → 本体の 1 枚 ---------- */
 function convert(s) {
   const c = s.colors || {};
-  const bg = cleanColor(c.bg), panel = cleanColor(c.panel), text = cleanColor(c.text), accent = cleanColor(c.accent), gold = cleanColor(c.gold);
+  /* trk274：地は**グラデーションのまま**受ける（1 色に潰すと目録と見た目が変わる） */
+  const bgGrad = parseGradient(c.bg);
+  const bg = bgGrad ? bgGrad.colors[0] : cleanColor(c.bg);
+  const panel = cleanColor(c.panel), text = cleanColor(c.text), accent = cleanColor(c.accent), gold = cleanColor(c.gold);
   if (!bg || !panel || !text || !accent || !gold) return null;
   const field0 = cleanColor(c.field, D.mixHex(bg, panel, 0.5));
   const button = cleanColor(c.button, D.mixHex(panel, text, 0.06));
@@ -166,25 +211,36 @@ function convert(s) {
   /* 地（bg）とうすい文字（muted）は、**両方**が合格する組み合わせを探す（trk270）。
      地が暗くパネルが明るいテーマ（wizard-hermetic）では、どちらか一方だけでは 4.5:1 に届かない。
      まず地をうすい文字から遠ざけ、その地でうすい文字をもう一度合わせる（2 回で足りる）。 */
-  let bgOut = bg;
+  let bgStops = bgGrad ? bgGrad.colors.slice() : [bg];
   let muted = cleanColor(c.muted, D.mixHex(inkText, panel, 0.38));
   let bgMoved = false;
+  /* 順番が大事（trk274）：**先にうすい文字を濃くする**（元の色を残しやすい）。
+     それでも届かないときだけ、地のほうを寄せる（明るい地を白へ飛ばさないため）。 */
   for (let pass = 0; pass < 2; pass++) {
-    const bgFix = fitAway(bgOut, muted, 4.5);
-    if (bgFix.color !== bgOut) { bgOut = bgFix.color; bgMoved = true; }
-    muted = fitInk(muted, [buttonFace, hover, field0, bgOut, panel], 4.5).color;
+    muted = fitInk(muted, [buttonFace, hover, field0, ...bgStops, panel], 4.5).color;
+    for (let i = 0; i < bgStops.length; i++) {
+      const bgFix = fitAway(bgStops[i], muted, 4.5);
+      if (bgFix.color !== bgStops[i]) { bgStops[i] = bgFix.color; bgMoved = true; }
+    }
   }
-  const bgList = [buttonFace, hover, field0, bgOut, panel];
+  /* 仕上げ：本文（text）も地の**全部の停止点**で 4.5:1 に届かせる（グラデーションの途中で読みにくくならないように） */
+  for (let i = 0; i < bgStops.length; i++) {
+    const f = fitAway(bgStops[i], inkText, 4.5);
+    if (f.color !== bgStops[i]) { bgStops[i] = f.color; bgMoved = true; }
+  }
+  const bgOut = bgStops[0];
+  const bgCss = bgGrad ? gradientCss({ angle: bgGrad.angle, colors: bgStops }) : bgOut;
+  const bgList = [buttonFace, hover, field0, ...bgStops, panel];
   const mutedFit = { color: muted, moved: muted !== cleanColor(c.muted, "") };
   const field = field0;
-  const dark = D.luminance(bgOut) < 0.35;
+  const dark = bgStops.reduce((sum, h) => sum + D.luminance(h), 0) / bgStops.length < 0.35;
   /* onAccent も同じ。目録の値が合格ならそれを使い、だめなら黒か白の合うほうへ */
   const catalogOn = cleanColor(c.onAccent, D.luminance(accent) > 0.179 ? "#000000" : "#ffffff");
   const onAccent = ratio(catalogOn, accent) >= 4.5 ? catalogOn
     : (ratio("#000000", accent) >= ratio("#ffffff", accent) ? "#000000" : "#ffffff");
   const ink = cleanColor(c.ink, inkText);
   const ui = {
-    "--ui-bg": bgOut,
+    "--ui-bg": bgCss,
     "--ui-panel": D.hexToRgba(panel, 0.96),
     "--ui-soft": D.hexToRgba(inkText, 0.05),
     "--ui-text": inkText,
@@ -200,10 +256,20 @@ function convert(s) {
     "--ui-glow": D.hexToRgba(accent, 0.14),
   };
   const missFit = fitInk(D.mixHex(inkText, bg, 0.45), [field], 3);
+  /* trk274：舞台（stage）のグラデーションも受ける。文字（ink）が全部の停止点で 4.5:1 に届くように寄せる */
+  const stageGrad = parseGradient(c.stage);
+  let stage = bgCss;
+  let stageMoved = false;
+  if (stageGrad) {
+    const fitted = fitGradient(stageGrad, ink, 4.5);
+    stage = gradientCss(fitted.gradient); stageMoved = fitted.moved;
+  } else if (cleanColor(c.stage)) {
+    stage = cleanColor(c.stage);
+  }
   const game = {
     don: cleanColor(c.don, accent),
     ka: cleanColor(c.ka, gold),
-    stage: cleanColor(c.stage, bgOut),
+    stage,
     lane: D.hexToRgba(panel, dark ? 0.6 : 0.82),
     track: D.hexToRgba(inkText, 0.24),
     ink,
@@ -245,7 +311,8 @@ function convert(s) {
   const moved = [];
   if (textFit.moved) moved.push("文字 " + text + " → " + inkText);
   if (buttonFit.moved) moved.push("ボタン " + buttonRaw + " → " + buttonFace);
-  if (bgMoved) moved.push("地 " + bg + " → " + bgOut);
+  if (bgMoved) moved.push(bgGrad ? "地（グラデーション）を合格点まで寄せた → " + bgCss : "地 " + bg + " → " + bgOut);
+  if (stageMoved) moved.push("舞台（グラデーション）を合格点まで寄せた → " + stage);
   if (mutedFit.moved) moved.push("うすい文字 " + cleanColor(c.muted, "(なし)") + " → " + muted);
   if (missFit.moved) moved.push("エラー色 → " + missFit.color);
   return { id: s.id, skin, moved };
