@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk268">
+<meta name="trk-build" content="trk269">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1248,6 +1248,10 @@
               </select>
             </div>
             <div class="hint" data-i18n="cliSkinHint"></div>
+            <!-- ⌨ trk269：音・Tab 補完・履歴。補完と履歴の長さはスキンが決めます -->
+            <label class="check"><input id="cliBellChk" type="checkbox"><span data-i18n="cliBellLabel"></span></label>
+            <div class="hint" data-i18n="cliBellHint"></div>
+            <div class="hint" data-i18n="cliFeelHint"></div>
           </details>
 
           <details class="panel" id="packPanel">
@@ -2252,6 +2256,8 @@
 <!-- ▼ キャラクター（data.js の後、core.js の前）
      初音ミク：PCL（非営利・無償のみ）。商用の派生版では、この1行とファイルを削除してください。 -->
 <script src="js/characters/miku.js"></script>
+<!-- 🧙 trk269：Wizard のスキン（Skin 側の目録から生成。data.js の後・core.js の前に） -->
+<script src="js/skins-wizard.js"></script>
 <script src="js/tv-presets.js"></script>
 <!-- ▲ 自作キャラのMODは、この下に <script src="js/characters/○○.js"></script> を足してください -->
 <!-- ===== 土台 ===== -->

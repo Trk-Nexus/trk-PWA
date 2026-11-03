@@ -522,6 +522,7 @@ const settings = {
   cliPlay: pick(prefs.cliPlay, ["media", "preview"], "media"),
   cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "auto"),
   cliSpells: cleanCliSpells(prefs.cliSpells),
+  cliBell: prefs.cliBell !== false,   /* ⌨ trk269：エラーの音を鳴らしてよいか（鳴らすかはスキンが決める） */
   /* ▶ メディアプレーヤー（TV電源長押し） */
   mediaRepeat: pick(prefs.mediaRepeat, ["off", "one", "all"], "off"),
   mediaShuffle: prefs.mediaShuffle === true,
@@ -823,7 +824,7 @@ function resetAllPrefs() {
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
   /* ⌨ trk267：ターミナルの行き先（プレイヤー）・見た目（自動）・覚えた呪文（無し）も工場出荷状態へ */
-  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {};
+  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {}; settings.cliBell = true;
 }
 /* trk247：設定JSONの「中身」を決める1か所（書き出しと、書き出しsizes表示が同じ物を見る）。
    ⚠ kind ごとに載せる物が違う（notes／tv／audio／all）。all は settings 全体。 */
@@ -1307,7 +1308,7 @@ function applyLanguage(code) {
 }
 
 /* ---------- スキン ---------- */
-const SKIN_CATS = [["all","catAll"],["basic","catBasic"],["type","catType"],["miku","catMiku"],["dark","catDark"],["light","catLight"],["grad","catGrad"],["fun","catFun"],["access","catAccess"],["life","catLife"],["custom","catCustom"]];
+const SKIN_CATS = [["all","catAll"],["basic","catBasic"],["type","catType"],["miku","catMiku"],["dark","catDark"],["light","catLight"],["grad","catGrad"],["fun","catFun"],["access","catAccess"],["life","catLife"],["wizard","catWizard"],["custom","catCustom"]];
 const skinCatList = s => (s.custom || s.pack) ? ["custom"] : (Array.isArray(s.cat) && s.cat.length ? s.cat : ["basic"]);
 /* 🔤 書体スキン（trk228）：棚カードの中だけに書体・太さ・字間を効かせる。書体見本の文字も添える */
 function skinCardType(b, s) {

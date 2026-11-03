@@ -818,6 +818,11 @@ function sanitizeSkinCats(raw) {
 const CLI_FONT_RE = /^[A-Za-z0-9 _,"'-]{1,120}$/;            /* 書体名だけ（かっこ・セミコロン・波かっこは通さない） */
 const CLI_PROMPT_BAD = /["\\(){};]/;                         /* かっこ・引用符・区切りは通さない（url( を作らせない） */
 const CLI_COLOR_RE = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;       /* カーソルの色は #rgb／#rrggbb だけ */
+/* ⌨ trk269：操作感の決まった値（ここに無い語は通さない） */
+const CLI_CURSORS = ["block", "underline", "bar"];
+const CLI_COMPLETIONS = ["tab", "off"];
+const CLI_HISTORY_MIN = 10, CLI_HISTORY_MAX = 200;
+const CLI_CURSOR_SHAPE = { block: "block", bar: "bar", underline: "underscore" };
 function sanitizeCliLook(raw) {
   if (!raw || typeof raw !== "object") return null;
   const out = {};
@@ -829,6 +834,16 @@ function sanitizeCliLook(raw) {
   if (caret === "currentColor" || CLI_COLOR_RE.test(caret)) out.caret = caret;
   const scan = Number(raw.scan);
   if (Number.isFinite(scan) && scan > 0) out.scan = Math.min(0.6, Math.round(scan * 100) / 100);
+  /* ⌨ trk269：端末の「操作感」も受け取る（§4-1） */
+  const cursor = typeof raw.cursor === "string" ? raw.cursor.trim().toLowerCase() : "";
+  if (CLI_CURSORS.includes(cursor)) out.cursor = cursor;             /* block / underline / bar */
+  const opacity = Number(raw.opacity);
+  if (Number.isFinite(opacity)) out.opacity = Math.min(1, Math.max(0.5, Math.round(opacity * 100) / 100));
+  const history = Number(raw.history);
+  if (Number.isFinite(history) && history > 0) out.history = Math.min(CLI_HISTORY_MAX, Math.max(CLI_HISTORY_MIN, Math.round(history)));
+  const completion = typeof raw.completion === "string" ? raw.completion.trim().toLowerCase() : "";
+  if (CLI_COMPLETIONS.includes(completion)) out.completion = completion;   /* tab / off */
+  if (raw.bell === true) out.bell = true;                            /* 既定は鳴らさない（名乗ったときだけ） */
   return Object.keys(out).length ? out : null;
 }
 /* 整えた値 → CSS 変数（プロンプトは content にそのまま入るので括ります） */
@@ -839,6 +854,8 @@ function cliLookVars(look) {
   if (look.prompt) out["--cli-prompt"] = '"' + look.prompt + '"';
   if (look.caret) out["--cli-caret"] = look.caret;
   if (look.scan) out["--cli-scan"] = String(look.scan);
+  if (look.cursor) out["--cli-cursor-shape"] = CLI_CURSOR_SHAPE[look.cursor] || "auto";   /* caret-shape（未対応のブラウザは無視） */
+  if (look.opacity != null) out["--cli-opacity"] = String(look.opacity);
   return Object.keys(out).length ? out : null;
 }
 function buildCustomSkin(def) {
@@ -954,5 +971,5 @@ window.sanitizeSkinDef = sanitizeSkinDef;
 window.toHex = toHex;
 /* 領域（window.Trk.data）：公開名の正規の場所。旧名（window.X）は別名として残す（利用者の決定） */
 window.Trk = window.Trk || {};
-window.Trk.data = Object.assign(window.Trk.data || {}, { DIFFS, DIFF_IDS, EGG_KEYS, EGG_WORDS, FONT_DEFAULT, H, HEX, LAYOUTS, MASCOT_CAPTIONS, MASCOT_DEFS, MASCOT_FAMILY, MASCOT_IDS, MASCOT_POS, NOTE_PRESETS, NOTE_SHAPES, SKINS, TAU, VRM_RECT, W, accentInk, accentInkBackground, buildCustomSkin, has, hexToRgba, luminance, mixHex, parseGrad, registerMascot, sanitizeNotes, sanitizeSkinDef, sanitizeSkinCats, sanitizeCliLook, cliLookVars, toHex });
+window.Trk.data = Object.assign(window.Trk.data || {}, { DIFFS, DIFF_IDS, EGG_KEYS, EGG_WORDS, FONT_DEFAULT, H, HEX, LAYOUTS, MASCOT_CAPTIONS, MASCOT_DEFS, MASCOT_FAMILY, MASCOT_IDS, MASCOT_POS, NOTE_PRESETS, NOTE_SHAPES, SKINS, TAU, VRM_RECT, W, accentInk, accentInkBackground, buildCustomSkin, has, hexToRgba, luminance, mixHex, parseGrad, registerMascot, sanitizeNotes, sanitizeSkinDef, sanitizeSkinCats, sanitizeCliLook, cliLookVars, CLI_CURSOR_SHAPE, CLI_CURSORS, CLI_COMPLETIONS, CLI_HISTORY_MIN, CLI_HISTORY_MAX, toHex });
 })();
