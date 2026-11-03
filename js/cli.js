@@ -40,9 +40,15 @@
     /* ⌨ trk283：呼び出しキー・実行後に閉じる・スキンの個別指定・入力できるかの知らせ */
     cliKeyLabel: "🪄 Terminal Key Setting（Ctrl／⌘ ＋ このキー）",
     cliKeyHint: "呪文を呼ぶ鍵です。同じキーで開いて閉じます（Esc でも閉じられます）。割り当て中は Esc で取り消します。",
-    cliKeyWaiting: "キーを押してください（Esc で取り消し）。Ctrl や Shift だけでは決まりません。",
+    cliKeyWaiting: "キーを押してください（Esc で取り消し）。修飾キーだけでは決まりません。",
     cliKeyBadKey: "そのキーだけでは決められません。文字・数字・矢印・ファンクションキーなどにしてください。",
-    cliKeySaved: "呼び出しキーを Ctrl／⌘ + {key} にしました。",
+    cliKeySaved: "呼び出しキーを {mod} + {key} にしました。",
+    cliModLabel: "修飾キー（一緒に押すキー）",
+    cliModCtrlOrMeta: "Ctrl または ⌘／Win（どちらでも）",
+    cliModMeta: "Win／⌘（Super）だけ",
+    cliModCtrl: "Ctrl だけ",
+    cliModAlt: "Alt だけ",
+    cliModHint: "「Win／⌘」を選ぶと Win + キー（Super + キー）で呼べます。ただし Windows は Win+D や Win+L など多くを OS が先に取るので、Win+Enter や Win+` のような空いている組み合わせにしてください。",
     cliHelpAll: "help all … 全部の呪文（{n} 本）を出す",
     cliSheetSizeLabel: "ターミナルの高さ",
     cliSheetHalf: "小さめ（画面の半分）",
@@ -203,9 +209,15 @@
     /* ⌨ trk283：key · auto-close · a terminal skin of your own · the typing note */
     cliKeyLabel: "🪄 Terminal Key Setting (Ctrl / ⌘ + this key)",
     cliKeyHint: "The key that calls the spells. The same key opens and closes it (Esc also closes). While assigning, Esc cancels.",
-    cliKeyWaiting: "Press a key (Esc to cancel). Ctrl or Shift alone will not do.",
+    cliKeyWaiting: "Press a key (Esc to cancel). A modifier alone will not do.",
     cliKeyBadKey: "That key alone cannot be used. Pick a letter, number, arrow or function key.",
-    cliKeySaved: "The call key is now Ctrl / ⌘ + {key}.",
+    cliKeySaved: "The call key is now {mod} + {key}.",
+    cliModLabel: "Modifier (pressed with the key)",
+    cliModCtrlOrMeta: "Ctrl or ⌘ / Win (either)",
+    cliModMeta: "Win / ⌘ (Super) only",
+    cliModCtrl: "Ctrl only",
+    cliModAlt: "Alt only",
+    cliModHint: "Choose Win / ⌘ to call it with Win + key (Super + key). Windows itself claims many of them (Win+D, Win+L, …), so use one that is free, such as Win+Enter or Win+`.",
     cliHelpAll: "help all … list every spell ({n})",
     cliSheetSizeLabel: "Terminal height",
     cliSheetHalf: "Small (half the screen)",
@@ -366,9 +378,15 @@
     /* ⌨ trk283 */
     cliKeyLabel: "🪄 Terminal Key Setting（Ctrl／⌘ ＋ 此键）",
     cliKeyHint: "呼唤咒文的键。同一个键开关终端（Esc 也能关闭）。分配时按 Esc 取消。",
-    cliKeyWaiting: "请按键（Esc 取消）。只按 Ctrl 或 Shift 不能确定。",
+    cliKeyWaiting: "请按键（Esc 取消）。只按修饰键不能确定。",
     cliKeyBadKey: "仅凭这个键无法确定。请用字母、数字、方向键或功能键。",
-    cliKeySaved: "调用键已设为 Ctrl／⌘ + {key}。",
+    cliKeySaved: "调用键已设为 {mod} + {key}。",
+    cliModLabel: "修饰键（与之同时按下）",
+    cliModCtrlOrMeta: "Ctrl 或 ⌘／Win（任一）",
+    cliModMeta: "仅 Win／⌘（Super）",
+    cliModCtrl: "仅 Ctrl",
+    cliModAlt: "仅 Alt",
+    cliModHint: "选择「Win／⌘」后可用 Win + 键（Super + 键）呼出。不过 Windows 会先占用 Win+D、Win+L 等，请选用 Win+Enter 或 Win+` 等空闲组合。",
     cliHelpAll: "help all … 列出全部咒文（{n} 条）",
     cliSheetSizeLabel: "终端高度",
     cliSheetHalf: "小（屏幕一半）",
@@ -529,9 +547,15 @@
     /* ⌨ trk283 */
     cliKeyLabel: "🪄 Terminal Key Setting (Ctrl／⌘ ＋ 이 키)",
     cliKeyHint: "주문을 부르는 열쇠입니다. 같은 키로 열고 닫습니다(Esc 로도 닫힘). 지정 중에는 Esc 로 취소합니다.",
-    cliKeyWaiting: "키를 눌러 주세요(Esc 로 취소). Ctrl 이나 Shift 만으로는 정해지지 않습니다.",
+    cliKeyWaiting: "키를 눌러 주세요(Esc 로 취소). 수정 키만으로는 정해지지 않습니다.",
     cliKeyBadKey: "그 키만으로는 정할 수 없습니다. 문자·숫자·방향키·기능키 등을 눌러 주세요.",
-    cliKeySaved: "호출 키를 Ctrl／⌘ + {key} 로 했습니다.",
+    cliKeySaved: "호출 키를 {mod} + {key} 로 했습니다.",
+    cliModLabel: "수정 키(함께 누르는 키)",
+    cliModCtrlOrMeta: "Ctrl 또는 ⌘／Win(어느 쪽이든)",
+    cliModMeta: "Win／⌘(Super)만",
+    cliModCtrl: "Ctrl만",
+    cliModAlt: "Alt만",
+    cliModHint: "「Win／⌘」를 고르면 Win + 키(Super + 키)로 부를 수 있습니다. 다만 Windows 는 Win+D, Win+L 등 많은 조합을 먼저 가져가므로 Win+Enter 나 Win+` 처럼 비어 있는 조합을 쓰세요.",
     cliHelpAll: "help all … 모든 주문({n}개) 보기",
     cliSheetSizeLabel: "터미널 높이",
     cliSheetHalf: "작게(화면 절반)",
@@ -728,6 +752,19 @@
   /* ⌨ trk285：よく見る端末の合図（プロンプト）。<スキン名(English)> を頭に置きます。
      linux＝`<name> ~ %`（macOS・zsh 風。既定）／bash＝`<name>:~$`／root＝`<name>:~#`／
      fish＝`<name> ~>`／ps＝`PS <name>>`／plain＝`>`／skin＝スキスの --cli-prompt に任せる（空文字） */
+  /* ⌨ trk287：1 文字を、カーソルの位置（選択があればその範囲）に入れる。
+     端末の入力は**こちらで入れる**ので、ほかの処理が preventDefault しても文字が落ちません。
+     返すのは「新しい値」と「新しいカーソル位置」。 */
+  function insertTextAt(value, ch, start, end) {
+    const text = String(value == null ? "" : value);
+    const ch2 = String(ch == null ? "" : ch);
+    let a = Number.isInteger(start) ? start : text.length;
+    let b = Number.isInteger(end) ? end : a;
+    a = Math.max(0, Math.min(text.length, a));
+    b = Math.max(a, Math.min(text.length, b));
+    const next = text.slice(0, a) + ch2 + text.slice(b);
+    return { value: next, caret: a + ch2.length };
+  }
   const PROMPT_STYLES = ["linux", "bash", "root", "fish", "ps", "plain", "skin"];
   function promptText(style, name) {
     const id = PROMPT_STYLES.includes(style) ? style : "linux";
@@ -1833,6 +1870,17 @@
         syncCliKeyUI();
       });
     }
+    /* ⌨ trk287：一緒に押す修飾キー（Ctrl／⌘・Win（Super）・Alt） */
+    const modSel = document.getElementById("cliModSel");
+    if (modSel && !modSel.dataset.cliWired) {
+      modSel.dataset.cliWired = "1";
+      modSel.value = cliMod();
+      modSel.addEventListener("change", () => {
+        core.settings.cliMod = CLI_MODS.includes(modSel.value) ? modSel.value : "ctrlOrMeta";
+        core.saveUserPrefs();
+        syncCliKeyUI();
+      });
+    }
     /* ⌨ trk286：ほかを触ったら割り当てをやめる（キーを吸い続けるのを防ぐ） */
     if (!document.documentElement.dataset.cliKeyOutside) {
       document.documentElement.dataset.cliKeyOutside = "1";
@@ -1937,6 +1985,21 @@
 
   /* ---------- 呼び出しキー（Ctrl／⌘ + 選んだキー・同じキーで開閉） ---------- */
   const cliKeyCode = () => (core.validCode(core.settings.cliKey) ? core.settings.cliKey : "Backquote");
+  /* ⌨ trk287：一緒に押す修飾キー。既定は Ctrl か ⌘／Win のどちらでも。
+     "meta"＝Win／⌘（Super）だけ／"ctrl"＝Ctrl だけ／"alt"＝Alt だけ */
+  const CLI_MODS = ["ctrlOrMeta", "meta", "ctrl", "alt"];
+  const cliMod = () => (CLI_MODS.includes(core.settings.cliMod) ? core.settings.cliMod : "ctrlOrMeta");
+  /* 表示用の短い名前（キーの名前なので、どの言語でも同じ） */
+  const CLI_MOD_SHORT = { ctrlOrMeta: "Ctrl／⌘", meta: "Win／⌘", ctrl: "Ctrl", alt: "Alt" };
+  const modShort = () => CLI_MOD_SHORT[cliMod()] || CLI_MOD_SHORT.ctrlOrMeta;
+  /* 押されている修飾キーが、選んだものと合うか */
+  function cliModPressed(e) {
+    const m = cliMod();
+    if (m === "meta") return e.metaKey === true && !e.ctrlKey && !e.altKey;
+    if (m === "ctrl") return e.ctrlKey === true && !e.metaKey && !e.altKey;
+    if (m === "alt") return e.altKey === true && !e.ctrlKey && !e.metaKey;
+    return (e.ctrlKey === true || e.metaKey === true) && !e.altKey;
+  }
   let cliKeyBinding = null;
   /* ⌨ trk286：割り当てに使えないキー。
      ・修飾キーだけ（Ctrl／Shift／Alt／⌘・CapsLock など）＝押すと「Ctrl+Ctrl」になって呼び出せない
@@ -1954,7 +2017,9 @@
     const value = document.getElementById("cliKeyValue"), button = document.getElementById("cliKeyAssign");
     const status = document.getElementById("cliKeyStatus");
     const on = cliKeyBinding !== null;
-    if (value) value.textContent = "Ctrl／⌘ + " + core.formatKey(cliKeyCode());
+    const modSel = document.getElementById("cliModSel");
+    if (modSel) modSel.value = cliMod();
+    if (value) value.textContent = modShort() + " + " + core.formatKey(cliKeyCode());
     if (button) { button.classList.toggle("listening", on); button.setAttribute("aria-pressed", String(on)); }
     if (status) status.textContent = message !== undefined ? message : (on ? tr("cliKeyWaiting") : "");
   }
@@ -1967,7 +2032,7 @@
     core.settings.cliKey = code;
     cliKeyBinding = null;
     core.saveUserPrefs();
-    syncCliKeyUI(tr("cliKeySaved", { key: core.formatKey(code) }));
+    syncCliKeyUI(tr("cliKeySaved", { mod: modShort(), key: core.formatKey(code) }));
     return true;
   }
 
@@ -1978,8 +2043,8 @@
       if (!e.repeat) captureCliKey(core.keyCodeOf(e));
       return;
     }
-    if (e.defaultPrevented || e.altKey || e.shiftKey) return;
-    if (!(e.ctrlKey || e.metaKey)) return;
+    if (e.defaultPrevented || e.shiftKey) return;
+    if (!cliModPressed(e)) return;
     if ((core.keyCodeOf(e) || "") !== cliKeyCode()) return;
     const tag = (e.target && e.target.tagName || "").toLowerCase();
     if (!state.open && (tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable))) return;
@@ -1989,21 +2054,32 @@
     else if (!openCli()) toastNote(tr("cliOnlyTitle"));
   }, true);
 
-  /* ⌨ trk285：開いている間は、画面のどこにフォーカスがあっても入力を奪う（1 文字目も落とさない） */
+  /* ⌨ trk287：開いているあいだは、端末がキーボードを握る。
+     trk285 は「フォーカスが入力欄の外のときだけ」拾っていたので、ブラウザーやほかの処理が
+     preventDefault した文字（報告のあった p・: など）が落ちることがありました。
+     いまは**入力欄にフォーカスがあっても、文字はこちらで入れる**（＝どこで止められても落ちない）。
+     端末の外の操作（P＝一時停止・/＝設定の検索・`＝リトライ）には渡しません。 */
+  const isTypeable = e => typeof e.key === "string" && e.key.length === 1 &&
+    !e.ctrlKey && !e.metaKey && !e.altKey;
   addEventListener("keydown", e => {
-    if (!state.open || !inputNode) return;
-    if (cliKeyBinding !== null || e.defaultPrevented) return;
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (compositionBlocked(e.isComposing, e.keyCode)) return;
+    if (!state.open || !inputNode || cliKeyBinding !== null) return;
+    if (compositionBlocked(e.isComposing, e.keyCode)) return;   /* IME の変換中は、そのまま渡す */
     const t = e.target;
-    if (t === inputNode) return;
-    if (t && t.closest && t.closest("#cliForm, #cliSpellPanel")) return;   /* 端末の入力欄・辞書は邪魔しない */
-    if (t && ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName)) return;
-    if (typeof e.key === "string" && e.key.length === 1) {
-      inputNode.value += e.key;
-      try { inputNode.setSelectionRange(inputNode.value.length, inputNode.value.length); } catch (_) {}
+    if (t && t.closest && t.closest("#cliSpellPanel")) return;   /* 辞書の入力欄は邪魔しない */
+    const inside = !!(t && t.closest && t.closest("#cliMode"));
+    if (!inside && t && (["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName) || t.isContentEditable)) return;
+    if (isTypeable(e)) {
+      const r = insertTextAt(inputNode.value, e.key, inputNode.selectionStart, inputNode.selectionEnd);
+      inputNode.value = r.value;
+      try { inputNode.setSelectionRange(r.caret, r.caret); } catch (_) {}
       e.preventDefault();
+      e.stopPropagation();   /* 外の操作に渡さない（1 文字を二重にしない） */
+      focusInput();
+      return;
     }
+    if (!inside) return;
+    if (e.key === "Tab") return;                                                    /* Tab はフォーカス移動に譲る（trk284） */
+    if (t && t.closest && t.closest("#cliLog") && /^(Arrow|Page|Home|End)/.test(e.key)) return;  /* 出力の読み返し */
     focusInput();
   }, true);
 
@@ -2055,6 +2131,9 @@
     typableState,
     typingMode,
     cliKeyCode,
+    cliMod,
+    cliModPressed,
+    insertTextAt,
     historyCap,
     completionOn
   });

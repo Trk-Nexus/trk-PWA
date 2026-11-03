@@ -81,13 +81,14 @@ test("⚙ に「入力の合図」と「いまの見え方」がある", () => {
 });
 
 test("開いている間は、どこにフォーカスがあっても入力を奪う（1 文字目も落とさない）", () => {
-  assert.match(cli, /if \(typeof e\.key === "string" && e\.key\.length === 1\) \{/, "打った 1 文字を拾う");
-  assert.match(cli, /inputNode\.value \+= e\.key;/, "入力欄へ足す");
-  assert.match(cli, /try \{ inputNode\.setSelectionRange\(inputNode\.value\.length, inputNode\.value\.length\); \} catch \(_\) \{\}/, "カーソルは末尾へ");
-  assert.match(cli, /if \(t && t\.closest && t\.closest\("#cliForm, #cliSpellPanel"\)\) return;/, "端末の入力欄・辞書は邪魔しない");
-  assert.match(cli, /if \(t && \["INPUT", "TEXTAREA", "SELECT"\]\.includes\(t\.tagName\)\) return;/);
+  /* ⌨ trk287：1 文字は「こちらで」入れる（ブラウザーが止めても落ちない） */
+  assert.match(cli, /const isTypeable = e => typeof e\.key === "string" && e\.key\.length === 1 &&/, "打った 1 文字を拾う");
+  assert.match(cli, /const r = insertTextAt\(inputNode\.value, e\.key, inputNode\.selectionStart, inputNode\.selectionEnd\);/, "カーソルの位置へ入れる");
+  assert.match(cli, /inputNode\.setSelectionRange\(r\.caret, r\.caret\)/, "カーソルは入れた文字の後ろへ");
+  assert.match(cli, /if \(t && t\.closest && t\.closest\("#cliSpellPanel"\)\) return;/, "辞書は邪魔しない");
+  assert.match(cli, /if \(!inside && t && \(\["INPUT", "TEXTAREA", "SELECT"\]\.includes\(t\.tagName\) \|\| t\.isContentEditable\)\) return;/);
   assert.match(cli, /if \(compositionBlocked\(e\.isComposing, e\.keyCode\)\) return;/, "IME の変換中は奪わない");
-  assert.match(cli, /if \(e\.ctrlKey \|\| e\.metaKey \|\| e\.altKey\) return;/, "修飾キー付きは奪わない（呼び出しキーを壊さない）");
+  assert.match(cli, /!e\.ctrlKey && !e\.metaKey && !e\.altKey/, "修飾キー付きは奪わない（呼び出しキーを壊さない）");
 });
 
 test("合図は文字で出し、読み上げ名にも入れる（空ならスキンの記号）", () => {

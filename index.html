@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk286">
+<meta name="trk-build" content="trk287">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -451,6 +451,17 @@
           </select>
         </div>
         <div class="hint" data-i18n="cliSheetHint"></div>
+        <!-- ⌨ trk287：一緒に押す修飾キー（Win／⌘ = Super でも呼べる） -->
+        <div class="inline">
+          <span id="cliModLabel" data-i18n="cliModLabel"></span>
+          <select id="cliModSel" aria-labelledby="cliModLabel">
+            <option value="ctrlOrMeta" data-i18n="cliModCtrlOrMeta"></option>
+            <option value="meta" data-i18n="cliModMeta"></option>
+            <option value="ctrl" data-i18n="cliModCtrl"></option>
+            <option value="alt" data-i18n="cliModAlt"></option>
+          </select>
+        </div>
+        <div class="hint" data-i18n="cliModHint"></div>
         <div class="hint" data-i18n="cliKeyHint"></div>
         <div class="hint" id="cliKeyStatus" aria-live="polite"></div>
         <div class="inline">
