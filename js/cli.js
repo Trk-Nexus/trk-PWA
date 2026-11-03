@@ -550,7 +550,8 @@
     const has = id => list.some(s => s.id === id);
     if (mode === "keep") return "";
     if (mode === "terminal") return has("terminal") ? "terminal" : "";
-    const wiz = list.find(s => isCliCat(s.cats));
+    /* trk270：端末向けの見た目（cli）を名乗るスキンを先に。無ければ名乗り（cat）だけのもの */
+    const wiz = list.find(s => isCliCat(s.cats) && s.look === true) || list.find(s => isCliCat(s.cats));
     if (wiz) return wiz.id;
     return has("terminal") ? "terminal" : "";
   }
@@ -864,7 +865,9 @@
       const def = all[id] || {};
       const label = def.label && (def.label[lang] || def.label.ja || def.label.en) || id;
       const cats = Array.isArray(def.cat) ? def.cat.slice() : (def.custom || def.pack ? ["custom"] : ["basic"]);
-      return { id, label, cats, cli: isCliCat(cats), locked: !!def.locked };
+      /* trk270：cli を名乗る（＝端末向けの見た目を持つ）ものは `look:true`。
+         wizard 24 種のうち 12 種だけが cli を持つので、`auto` はそちらを先に選びます */
+      return { id, label, cats, cli: isCliCat(cats), look: !!(def.cli && typeof def.cli === "object"), locked: !!def.locked };
     });
   }
   function readSpells() {

@@ -94,6 +94,10 @@ const ratio = (a, b) => {
 };
 const fmt = n => (Math.round(n * 100) / 100).toFixed(2);
 const NEED = ["bg", "panel", "text", "accent", "gold"];
+/* パネルは `rgba(13,59,13,.97)` のような半透明でも正しい（目録はこの形を使う）。
+   色として受け取れるのは #rgb・#rrggbb・rgb()・rgba() の 4 つ。 */
+const COLOR_OK = v => typeof v === "string" && (D.HEX.test(v) || /^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(?:,\s*(?:0|1|0?\.\d{1,3})\s*)?\)$/i.test(v.trim()));
+const opaque = v => typeof v === "string" && D.HEX.test(v) ? v : "";
 
 const problems = [];
 const notes = [];
@@ -116,7 +120,7 @@ for (const skin of list) {
 
   /* 2. 色 */
   const colors = skin.colors && typeof skin.colors === "object" ? skin.colors : null;
-  const missing = !colors ? NEED.slice() : NEED.filter(k => typeof colors[k] !== "string" || !D.HEX.test(colors[k]));
+  const missing = !colors ? NEED.slice() : NEED.filter(k => !COLOR_OK(colors[k]));
   if (missing.length) { bad.push("colors が足りません：" + missing.join("・")); kinds.add("color"); }
   else {
     /* 3. コントラスト（アプリと同じ組み立てで測る） */
@@ -131,25 +135,30 @@ for (const skin of list) {
     } catch (_) { bad.push("スキンとして組み立てられません（colors の値を見てください）"); kinds.add("color"); }
     if (built) {
       const ui = built.ui;
-      const text = colors.text, panel = colors.panel;
-      const field = ui["--ui-field"] || panel;
-      /* 目録が muted を持っているなら、それで測る（アプリはそのまま使うため） */
-      const muted = typeof colors.muted === "string" && D.HEX.test(colors.muted) ? colors.muted : (ui["--ui-muted"] || text);
-      const button = typeof colors.button === "string" && D.HEX.test(colors.button) ? colors.button : (ui["--ui-button"] || panel);
+      const text = colors.text;
+      const field = opaque(colors.field) || opaque(ui["--ui-field"]) || opaque(colors.panel);
+      /* 半透明のパネルは、地の上に重ねた見た目になる。比を測れる不透明の面を探す
+         （field → button → bg の順。どれも不透明でなければパネルの行は測らない） */
+      const panel = opaque(colors.panel) || field || opaque(colors.bg);
+      const surface = panel || field;
+      const muted = opaque(colors.muted) || opaque(ui["--ui-muted"]) || text;
+      const button = opaque(colors.button) || opaque(ui["--ui-button"]) || surface;
       const ink = D.accentInk(ui);
-      const miss = (built.game && built.game.miss) || text;
-      const onAccent = typeof colors.onAccent === "string" && D.HEX.test(colors.onAccent) ? colors.onAccent : ui["--ui-on-accent"];
+      const miss = opaque(built.game && built.game.miss) || text;
+      const onAccent = opaque(colors.onAccent) || opaque(ui["--ui-on-accent"]);
       const rows = [
-        ["文字（text）／パネル", ratio(text, panel), 4.5, "contrast"],
-        ["文字（text）／入力欄", ratio(text, field), 4.5, "contrast"],
-        ["文字（text）／ボタン", ratio(text, button), 4.5, "contrast"],
-        ["うすい文字（muted）／パネル", ratio(muted, panel), 4.5, "contrast"],
-        ["うすい文字（muted）／入力欄", ratio(muted, field), 4.5, "contrast"],
-        ["選択中のボタン（onAccent）／アクセント", ratio(onAccent, colors.accent), 4.5, "contrast"],
-        ["ちょっとした文字（accent-ink）／パネル", ratio(ink, panel), 4.5, "contrast"],
-        ["エラー行（game.miss）／入力欄", ratio(miss, field), 3, "contrast"],
+        ["文字（text）／パネル", text, surface, 4.5, "contrast"],
+        ["文字（text）／入力欄", text, field, 4.5, "contrast"],
+        ["文字（text）／ボタン", text, button, 4.5, "contrast"],
+        ["うすい文字（muted）／パネル", muted, surface, 4.5, "contrast"],
+        ["うすい文字（muted）／入力欄", muted, field, 4.5, "contrast"],
+        ["選択中のボタン（onAccent）／アクセント", onAccent, opaque(colors.accent), 4.5, "contrast"],
+        ["ちょっとした文字（accent-ink）／パネル", ink, surface, 4.5, "contrast"],
+        ["エラー行（game.miss）／入力欄", miss, field, 3, "contrast"],
       ];
-      for (const [name, r, need, kind] of rows) {
+      for (const [name, fg, bg, need, kind] of rows) {
+        if (!opaque(fg) || !opaque(bg)) { notes.push(`${where}：${name} は半透明なので測りませんでした`); continue; }
+        const r = ratio(fg, bg);
         if (r >= need) good.push(`${name} ${fmt(r)}:1`);
         else { bad.push(`${name} ${fmt(r)}:1（${need}:1 以上に）`); kinds.add(kind); }
       }
@@ -158,7 +167,8 @@ for (const skin of list) {
       const want = skin.cli && typeof skin.cli === "object" ? skin.cli : null;
       const got = D.sanitizeCliLook(skin.cli);
       if (want) {
-        const dropped = Object.keys(want).filter(k => !got || !has(got, k));
+        /* `bell:false` は「鳴らさない」という正しい書き方（名乗らないのと同じ扱い） */
+        const dropped = Object.keys(want).filter(k => !(k === "bell" && want[k] === false) && (!got || !has(got, k)));
         if (dropped.length) {
           bad.push("cli の値が通りません：" + dropped.join("・") + "（font は書体名 120 字まで／prompt は 1〜4 文字／caret は #rgb・#rrggbb・currentColor／scan は 0〜0.6／cursor は block・underline・bar／opacity は 0.5〜1／history は 10〜200／completion は tab・off／bell は true）");
           kinds.add("cli");
