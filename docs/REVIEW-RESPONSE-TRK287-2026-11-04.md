@@ -4,7 +4,7 @@
 **この節だけ読めば、何が直り、何が直っていないかが分かります。**
 
 - 版：`trk288`（`index.html` の `trk-build`・`sw.js` の cache `trk-v2026.11.04-trk288`）
-- 検査：`npm run check` **1746 pass / 0 fail**（exit 0）。新しい見張りは `tests/trk288-review.test.mjs`（29 件）と `tests/trk288-boot.test.mjs`（3 件）。
+- 検査：`npm run check` **1747 pass / 0 fail**（exit 0）。新しい見張りは `tests/trk288-review.test.mjs`（29 件）と `tests/trk288-boot.test.mjs`（3 件）。
 - **確かめた範囲**：この環境では Chromium 131（npm の配布物から取得・ヘッドレス）で、起動時のページエラー 0 件、Ctrl+. で端末が開く・Ctrl+K では開かない、800×420 と 390×640 で入力欄が画面内に残る、を確認しました。iPhone・Android の実機（ソフトウェアキーボード・iOS の自動修正）は未確認で、§7 にまとめました。
 
 ---
