@@ -213,6 +213,49 @@ function colorGap(a, b) {
   if (!x || !y) return 0;   /* rgba() などは数えない（寄せの対象はほぼ hex） */
   return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
 }
+/* trk275：色の隔たりを OKLab で測る（レビュー Q2）。
+   レビューで「面の色差が 0.15 を超えたら差し戻す」と提案されたので、同じ物差しを持つ。
+   `rgba(r,g,b,a)` は**不透明として**rgbだけ見る（面の色味の変化を見たいので、これで足りる）。 */
+function hexOf(v) {
+  const h = /#([0-9a-f]{6})/i.exec(v || "");
+  if (h) return h[1].toLowerCase();
+  const m = /rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/i.exec(v || "");
+  if (!m) return "";
+  return [m[1], m[2], m[3]].map(n => Math.max(0, Math.min(255, +n)).toString(16).padStart(2, "0")).join("");
+}
+function toOklab(hex) {
+  const n = parseInt(hex, 16);
+  if (!hex || !Number.isFinite(n)) return null;
+  const lin = c => (c /= 255, c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const r = lin((n >> 16) & 255), g = lin((n >> 8) & 255), b = lin(n & 255);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s2 = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787745 * b);
+  return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s2,
+    1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s2,
+    0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s2];
+}
+function dEok(a, b) {
+  const x = toOklab(hexOf(a)), y = toOklab(hexOf(b));
+  if (!x || !y) return 0;
+  return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
+}
+/* 面の色差の上限（レビュー Q2 の 0.15）。これを超える寄せは「別のテーマ」なので差し戻す */
+const SURFACE_LIMIT = 0.15;
+/* うすい文字が本文と同化したら、**本文から遠ざける**向きに少しだけ置き直す（レビュー Q2）。
+   本文が白へ寄った（暗いテーマ）なら、うすい文字は少し暗く。本文が黒へ寄った（明るいテーマ）なら、
+   うすい文字は少し明るく。置き直したあとも、面の上で 4.5:1 を満たすことを確かめます。 */
+function separateMuted(muted, ink, bgs, oppositeEnd) {
+  if (dEok(muted, ink) >= 0.03) return muted;
+  /* **読めること優先**：4.5:1 を保てる範囲で、いちばん小さい一歩から試す */
+  const pass = v => dEok(v, ink) >= 0.03 && Math.min(...bgs.map(bg => ratio(v, bg))) >= 4.5 - 1e-9;
+  for (const amt of [0.06, 0.09, 0.13, 0.18, 0.25]) {
+    const v = D.mixHex(ink, oppositeEnd, amt);
+    if (pass(v)) return v;
+  }
+  return muted;   /* 離すと読めなくなるなら、**同じ色のまま**（読めるほうを採る） */
+}
+
 /* 地（bg）とうすい文字（muted）は、**両方**が合格する組み合わせを探す（trk270・trk274）。
    順番は 2 通り試して、**元の色からの隔たりが小さいほう**を採る。
    ・先に muted（明るい地のテーマ向け：地を白へ飛ばさない）
@@ -248,6 +291,29 @@ const pickLang = v => {
 };
 
 /* ---------- 目録の 1 枚 → 本体の 1 枚 ---------- */
+/* trk275：色以外（書体・型・形・動画・cli・locked）は、寄せても差し戻しても同じ。
+   convert と convertRaw の両方から使います。 */
+function applyExtras(skin, s) {
+  const font = cleanFont(s.font);
+  if (font) skin.font = font;
+  if (s.type && typeof s.type === "object") {
+    const t = {};
+    const tf = cleanFont(s.type.title);
+    if (tf) t.title = tf;
+    for (const k of ["weight", "lh", "titleWeight", "titleSpace", "titleTransform"]) {
+      if (typeof s.type[k] === "string" && /^[a-z0-9.%+-]{1,20}$/i.test(s.type[k])) t[k] = s.type[k];
+    }
+    if (typeof s.type.mark === "string" && s.type.mark.length <= 40) t.mark = s.type.mark;
+    if (Object.keys(t).length) skin.type = t;
+  }
+  skin.shapes = Array.isArray(s.shapes) && s.shapes.length === 2 && s.shapes.every(v => typeof v === "string" && /^[a-z]{3,12}$/.test(v))
+    ? s.shapes.slice() : ["circle", "circle"];
+  const video = cleanFilter(s.video);
+  if (video) skin.video = video;
+  if (s.locked === true) skin.locked = true;
+  const cli = D.sanitizeCliLook(s.cli);
+  if (cli) skin.cli = cli;
+}
 function convert(s) {
   const c = s.colors || {};
   /* trk274：地は**グラデーションのまま**受ける（1 色に潰すと目表と見た目が変わる） */
@@ -305,7 +371,11 @@ function convert(s) {
     if (ratio(inkText, cand) >= 4.5) break;
   }
   /* うすい文字も、本文と同じ向きのまま合格点まで（目録の値が合格ならそのまま） */
-  const muted = pushInk(muted0, [buttonFace, hover, field, ...bgStops, panel], 4.5, inkEnd);
+  const mutedFit = pushInk(muted0, [buttonFace, hover, field, ...bgStops, panel], 4.5, inkEnd);
+  /* trk275：寄せた結果、うすい文字が**本文と同じ色**になると階層が消える（レビュー Q2 の 38 種）。
+     そのときは中間に置き直す（本文と面のあいだ）。 */
+  const oppositeEnd = inkEnd === "#ffffff" ? "#000000" : "#ffffff";
+  const muted = separateMuted(mutedFit, inkText, [buttonFace, hover, field, ...bgStops, panel], oppositeEnd);
   const bgMoved = bgStops.some((stop, i) => stop !== bgStops0[i]);
   const bgCss = bgGrad ? gradientCss({ angle: bgGrad.angle, colors: bgStops }) : bgStops[0];
   const dark = bgStops.reduce((sum, h) => sum + D.luminance(h), 0) / bgStops.length < 0.35;
@@ -374,6 +444,28 @@ function convert(s) {
     stage = pushBg(raw, ink, 4.5, stageEnd);
     stageMoved = stage !== raw;
   }
+  /* trk275：**面を寄せすぎていないか**を測る（レビュー Q2）。
+     地・パネル・入力欄の色差（OKLab）が 0.15 を超えるなら、寄せると別のテーマになる。
+     そのときは**目録の色のまま**内蔵し、既定の棚から外して「差し戻し」にする。 */
+  const surfaceDelta = (() => {
+    const bgPairs = bgGrad
+      ? bgStops.map((stop, i) => dEok(bgStops0[Math.min(i, bgStops0.length - 1)], stop))
+      : [dEok(bgStops0[0], bgStops[0])];
+    return Math.max(
+      Math.max(...bgPairs),
+      dEok(panel0, panel),
+      dEok(field0, field),
+    );
+  })();
+  if (surfaceDelta > SURFACE_LIMIT) {
+    const raw = convertRaw(s);
+    if (raw) {
+      raw.holdback = true;
+      raw.holdbackReason = "面の色差 " + surfaceDelta.toFixed(2) + "（上限 " + SURFACE_LIMIT + "）";
+      raw.moved = [raw.holdbackReason + " → 目録の色のまま・既定の棚から外す"];
+      return raw;
+    }
+  }
   const game = {
     don: cleanColor(c.don, accent),
     ka: cleanColor(c.ka, gold),
@@ -395,27 +487,9 @@ function convert(s) {
     label: pickLang(s.label) || { en: s.id },
     desc: pickLang(s.desc) || { en: "" },
   };
-  const font = cleanFont(s.font);
-  if (font) skin.font = font;
-  if (s.type && typeof s.type === "object") {
-    const t = {};
-    const tf = cleanFont(s.type.title);
-    if (tf) t.title = tf;
-    for (const k of ["weight", "lh", "titleWeight", "titleSpace", "titleTransform"]) {
-      if (typeof s.type[k] === "string" && /^[a-z0-9.%+-]{1,20}$/i.test(s.type[k])) t[k] = s.type[k];
-    }
-    if (typeof s.type.mark === "string" && s.type.mark.length <= 40) t.mark = s.type.mark;
-    if (Object.keys(t).length) skin.type = t;
-  }
+  applyExtras(skin, s);
   skin.ui = ui;
   skin.game = game;
-  skin.shapes = Array.isArray(s.shapes) && s.shapes.length === 2 && s.shapes.every(v => typeof v === "string" && /^[a-z]{3,12}$/.test(v))
-    ? s.shapes.slice() : ["circle", "circle"];
-  const video = cleanFilter(s.video);
-  if (video) skin.video = video;
-  if (s.locked === true) skin.locked = true;
-  const cli = D.sanitizeCliLook(s.cli);
-  if (cli) skin.cli = cli;
   const moved = [];
   if (textMoved.length) moved.push("文字 " + textMoved[0]);
   if (panel !== panel0) moved.push("パネル " + panel0 + " → " + panel);
@@ -425,7 +499,67 @@ function convert(s) {
   if (stageMoved) moved.push("舞台を合格点まで寄せた → " + stage);
   if (muted !== muted0) moved.push("うすい文字 " + cleanColor(c.muted, "(なし)") + " → " + muted);
   if (missFit.moved) moved.push("エラー色 → " + missFit.color);
-  return { id: s.id, skin, moved };
+  return { id: s.id, skin, moved, mutedFixed: muted !== mutedFit };
+}
+
+/* ---------- 差し戻し（holdback）：目録の色のまま内蔵する ---------- */
+/* trk275（レビュー Q2）：寄せ幅が上限を超える 1 枚は、**色を 1 つも動かさず**内蔵します。
+   そのかわり既定の棚から外し（`ALL` と その巻では見える）、道具は「差し戻し」として
+   毎回一覧に出します（黙って通しません）。直すのは目録側の仕事、という線引きです。 */
+function convertRaw(s) {
+  const c = s.colors || {};
+  const bgGrad = parseGradient(c.bg);
+  const bg = bgGrad ? bgGrad.colors[0] : cleanColor(c.bg);
+  const panel = cleanColor(c.panel), text = cleanColor(c.text), accent = cleanColor(c.accent), gold = cleanColor(c.gold);
+  if (!bg || !panel || !text || !accent || !gold) return null;
+  const field = cleanColor(c.field, D.mixHex(bg, panel, 0.5));
+  const button = cleanColor(c.button, D.mixHex(panel, text, 0.06));
+  const muted = cleanColor(c.muted, D.mixHex(text, panel, 0.38));
+  const bgCss = bgGrad ? gradientCss(bgGrad) : bg;
+  const stops = bgGrad ? bgGrad.colors : [bg];
+  const dark = stops.reduce((sum, h) => sum + D.luminance(h), 0) / stops.length < 0.35;
+  const ink = cleanColor(c.ink, text);
+  const stageGrad = parseGradient(c.stage);
+  const stage = stageGrad ? gradientCss(stageGrad) : cleanColor(c.stage, bgCss);
+  const skin = {
+    cat: D.sanitizeSkinCats(s.cat),
+    label: pickLang(s.label) || { en: s.id },
+    desc: pickLang(s.desc) || { en: "" },
+    holdback: true,
+  };
+  applyExtras(skin, s);
+  skin.ui = {
+    "--ui-bg": bgCss,
+    "--ui-panel": D.hexToRgba(panel, 0.96),
+    "--ui-soft": D.hexToRgba(text, 0.05),
+    "--ui-text": text,
+    "--ui-muted": muted,
+    "--ui-border": cleanColor(c.border, D.hexToRgba(text, 0.18)),
+    "--ui-button": button,
+    "--ui-button-hover": D.mixHex(button, text, 0.13),
+    "--ui-field": field,
+    "--ui-accent": accent,
+    "--ui-on-accent": cleanColor(c.onAccent, D.luminance(accent) > 0.179 ? "#000000" : "#ffffff"),
+    "--ui-gold": gold,
+    "--ui-shadow": dark ? "0 24px 80px rgba(0,0,0,.55)" : "0 24px 70px rgba(30,40,60,.16)",
+    "--ui-glow": D.hexToRgba(accent, 0.14),
+  };
+  skin.game = {
+    don: cleanColor(c.don, accent),
+    ka: cleanColor(c.ka, gold),
+    stage,
+    lane: D.hexToRgba(panel, dark ? 0.6 : 0.82),
+    track: D.hexToRgba(text, 0.24),
+    ink,
+    inkShadow: dark ? "rgba(0,0,0,.85)" : "rgba(255,255,255,.9)",
+    noteBorder: "#ffffff",
+    panel: D.hexToRgba(panel, 0.95),
+    perfect: gold,
+    good: ink,
+    miss: cleanColor(c.miss, D.mixHex(text, bg, 0.45)),
+    glow: !!s.glow,
+  };
+  return { id: s.id, skin, moved: [], holdback: true };
 }
 
 /* ---------- 本体が既に持っている ID（--only-new） ---------- */
@@ -464,6 +598,33 @@ function loadExistingIds() {
   return S ? new Set(Object.keys(S)) : null;
 }
 const existingIds = onlyNew ? loadExistingIds() : null;
+
+/* trk275：本体（data.js・ミク・skins-wizard.js）の**値**を読む。`--check` の突き合わせ用。
+   ここも vm ですが、走らせるのは**自分のコード**だけです（目録の .js は実行しません）。 */
+function loadBuiltInSkins() {
+  const sandbox = {
+    console, Math, JSON, Object, Array, String, Number, Date, Set, Map, Error, RegExp, Intl,
+    parseInt, parseFloat, isNaN, isFinite,
+    TEXT: { ja: {}, en: {}, zh: {}, ko: {} }, tr: () => "",
+    document: {
+      documentElement: { style: { setProperty() {} } }, getElementById: () => null,
+      createElement: () => ({ style: {}, append() {}, addEventListener() {} }),
+    },
+  };
+  sandbox.window = sandbox;
+  vm.createContext(sandbox);
+  const files = ["js/data.js"];
+  const dir = path.join(ROOT, "js/characters");
+  if (fs.existsSync(dir)) for (const f of fs.readdirSync(dir).sort()) if (f.endsWith(".js")) files.push("js/characters/" + f);
+  const wizard = path.join(ROOT, "js/skins-wizard.js");
+  if (fs.existsSync(wizard)) files.push("js/skins-wizard.js");
+  for (const f of files) {
+    try { vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), sandbox, { filename: f }); }
+    catch (_) { return {}; }
+  }
+  const S = sandbox.window && sandbox.window.Trk && sandbox.window.Trk.data && sandbox.window.Trk.data.SKINS;
+  return S || {};
+}
 if (onlyNew && !existingIds) {
   console.error("✗ 既にある ID を読めませんでした（--only-new を外して作り直してください）");
   process.exit(2);
@@ -517,6 +678,8 @@ const chosen = [];
 const skipped = [];
 const already = [];   /* 既にある（--only-new） */
 const fitted = [];    /* 4.5:1／3:1 に届かせるために色を動かしたもの（trk270） */
+const holdbacks = []; /* 寄せ幅が上限を超えて、目録の色のまま内蔵するもの（trk275・レビュー Q2） */
+const mutedFixed = [];/* うすい文字が本文と同化したので中間に置き直したもの（trk275） */
 for (const s of list) {
   if (!s || typeof s.id !== "string") continue;
   const cats = D.sanitizeSkinCats(s.cat);
@@ -528,7 +691,9 @@ for (const s of list) {
   const conv = convert({ ...s, cat: cats });
   if (!conv) { skipped.push(s.id + "（色が足りない）"); continue; }
   chosen.push(conv);
-  if (conv.moved && conv.moved.length) fitted.push(conv.id + "：" + conv.moved.join("・"));
+  if (conv.holdback) holdbacks.push(conv.id + "：" + (conv.holdbackReason || "面の色差が上限超え"));
+  else if (conv.moved && conv.moved.length) fitted.push(conv.id + "：" + conv.moved.join("・"));
+  if (conv.mutedFixed) mutedFixed.push(conv.id);
 }
 chosen.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
@@ -588,10 +753,20 @@ for (const { id, skin } of chosen) {
   if (skin.video) lines.push("    video:" + q(skin.video) + ",");
   if (skin.cli) lines.push("    cli:" + q(skin.cli) + ",");
   if (skin.locked) lines.push("    locked:true,");
+  if (skin.holdback) lines.push("    holdback:true,");
   /* 最後の 1 つは末尾のカンマを外す（読みやすさのためだけ） */
   const last = lines[lines.length - 1];
   lines[lines.length - 1] = last.replace(/,$/, "");
   lines.push("  };");
+}
+{ /* trk275：差し戻しの一覧（道具が読んで「黙って通さない」ために使う） */
+  const hb = chosen.filter(c => c.holdback).map(c => c.id);
+  if (hb.length) {
+    lines.push("  /* ⚠ 差し戻し（目録へお返しした色のもの）：寄せると別のテーマになるので、");
+    lines.push("     **色は目録のまま**内蔵し、既定の棚から外しています（ALL と その巻では見えます）。");
+    lines.push("     直すのは目録側です（`tools/check-skin-contrast` もこの一覧を読みます）。 */");
+    lines.push("  if (D) D.SKIN_HOLDBACK = " + q(hb) + ";");
+  }
 }
 if (volumes) {
   lines.push("  /* 📚 巻の目録（13 巻）。`ids` は**この目録に居る ID の全部**（既に本体が持っているものも含む）。");
@@ -613,6 +788,30 @@ if (checkOnly) {
     process.exit(1);
   }
   console.log(`✓ ${outRel} は目録どおり（${chosen.length} 種${volumes ? `・巻 ${volumes.groups.length}` : ""}）`);
+  /* trk275（レビュー Q1）：目録の `other`（こちらの定番）と本体の値がずれていないかを 1 行で出す。
+     `--only-new` で書き戻さない代わりに、**ずれを数えて知らせる**のがここの役目。 */
+  {
+    const other = volumes && volumes.groups.find(g => g.id === "other");
+    const ids = other && Array.isArray(other.ids) ? other.ids : [];
+    const builtInSkins = loadBuiltInSkins();
+    const known = existingIds || new Set(Object.keys(builtInSkins));
+    let diff = 0, missing = 0;
+    for (const id of ids) {
+      const cat = list.find(x => x && x.id === id);
+      if (!cat) continue;
+      if (!known.has(id)) { missing++; continue; }
+      /* 目録の text／accent と、本体の値を突き合わせる（本体は vm で読む＝自分のコード） */
+      const now = builtInSkins[id];
+      if (!now || !now.ui) { missing++; continue; }
+      const a = cleanColor(cat.colors && cat.colors.text), b = now.ui["--ui-text"];
+      const p = cleanColor(cat.colors && cat.colors.accent), r = now.ui["--ui-accent"];
+      if (a && b && a.toLowerCase() !== String(b).toLowerCase()) diff++;
+      else if (p && r && p.toLowerCase() !== String(r).toLowerCase()) diff++;
+    }
+    console.log(`  目録の other（${ids.length} 種）と本体の差：${diff} 件` +
+      (missing ? `（本体に無い：${missing} 件）` : "") +
+      (diff ? " ⚠ 目録か本体のどちらかを直してください" : ""));
+  }
   process.exit(0);
 }
 fs.writeFileSync(outPath, body);
@@ -624,3 +823,9 @@ if (volumes) {
 if (already.length) console.log(`  既にあるので書かない：${already.length} 件（--only-new）`);
 if (skipped.length) console.log(`  飛ばした：${skipped.length} 件（${skipped.slice(0, 5).join(" / ")}${skipped.length > 5 ? " …" : ""}）`);
 if (fitted.length) console.log(`  合格点まで寄せた：${fitted.length} 件\n    ` + fitted.join("\n    "));
+if (holdbacks.length) console.log(`  ⚠ 差し戻し（目録の色のまま・既定の棚から外す）：${holdbacks.length} 件\n    ` + holdbacks.join("\n    "));
+if (mutedFixed.length) console.log(`  うすい文字を中間に置き直した：${mutedFixed.length} 件`);
+{ /* 読めることを優先して「同化のまま」にしたものは、黙らずに数える（レビュー Q2 の残り） */
+  const stay = chosen.filter(c => !c.holdback && dEok(c.skin.ui["--ui-muted"], c.skin.ui["--ui-text"]) < 0.03).map(c => c.id);
+  if (stay.length) console.log(`  ⚠ うすい文字が本文と同化したまま（読めるほうを優先）：${stay.length} 件\n    ` + stay.slice(0, 12).join(", ") + (stay.length > 12 ? " …" : ""));
+}

@@ -326,10 +326,11 @@
     type:{"title":"\"Trajan Pro\",serif","weight":"400","lh":"1.7","titleWeight":"600","titleSpace":".04em","mark":"☿"},
     label:{"ja":"ヘルメティック","en":"Hermetic","zh":"赫密斯","ko":"헤르메스"},
     desc:{"ja":"ヘルメス主義、黄金の黄昏と秘教幾何学","en":"Hermeticism, golden twilight and occult geometry","zh":"赫密斯主义，金色黄昏与秘教几何","ko":"헤르메스주의, 황금 황혼과 비밀 기하학"},
-    ui:{"--ui-bg":"#aea099","--ui-panel":"rgba(224,192,160,0.96)","--ui-soft":"rgba(58,42,90,0.05)","--ui-text":"#3a2a5a","--ui-muted":"#3a2a5a","--ui-border":"rgba(212,175,55,.35)","--ui-button":"#b49b5e","--ui-button-hover":"#b2995e","--ui-field":"#ffe0b2","--ui-accent":"#ffd700","--ui-on-accent":"#000000","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,215,0,0.14)"},
-    game:{"don":"#ffd700","ka":"#d4af37","stage":"#936b09","lane":"rgba(224,192,160,0.82)","track":"rgba(58,42,90,0.24)","ink":"#fffdf0","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(224,192,160,0.95)","perfect":"#ffe082","good":"#fffdf0","miss":"#493448","glow":false},
+    ui:{"--ui-bg":"#5c4033","--ui-panel":"rgba(224,192,160,0.96)","--ui-soft":"rgba(58,42,90,0.05)","--ui-text":"#3a2a5a","--ui-muted":"#3a2a5a","--ui-border":"rgba(212,175,55,.35)","--ui-button":"#8b6508","--ui-button-hover":"#805d13","--ui-field":"#ffe0b2","--ui-accent":"#ffd700","--ui-on-accent":"#000000","--ui-gold":"#ffe082","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(255,215,0,0.14)"},
+    game:{"don":"#ffd700","ka":"#d4af37","stage":"#b8860b","lane":"rgba(224,192,160,0.6)","track":"rgba(58,42,90,0.24)","ink":"#fffdf0","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(224,192,160,0.95)","perfect":"#ffe082","good":"#fffdf0","miss":"#493448","glow":false},
     shapes:["square","circle"],
-    video:"sepia(.25) saturate(1.1) brightness(1.02)"
+    video:"sepia(.25) saturate(1.1) brightness(1.02)",
+    holdback:true
   };
   S["wizard-history"] = {
     cat:["wizard","life","dark"],
@@ -744,4 +745,8 @@
     video:"sepia(.15) saturate(1.1) contrast(1.15) brightness(.9)",
     cli:{"font":"Cascadia Mono, Consolas, monospace","prompt":"尉","caret":"#6b8e23","scan":0.15,"cursor":"block","opacity":1,"history":50,"completion":"tab","bell":true}
   };
+  /* ⚠ 差し戻し（目録へお返しした色のもの）：寄せると別のテーマになるので、
+     **色は目録のまま**内蔵し、既定の棚から外しています（ALL と その巻では見えます）。
+     直すのは目録側です（`tools/check-skin-contrast` もこの一覧を読みます）。 */
+  if (D) D.SKIN_HOLDBACK = ["wizard-hermetic"];
 })();

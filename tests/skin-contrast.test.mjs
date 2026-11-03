@@ -45,6 +45,10 @@ function contrast(fg, bg) {
 }
 
 const ids = Object.keys(SKINS);
+/* 📚 trk275（レビュー Q2）：色を寄せても 4.5:1 に届かない 18 種は**目録へ差し戻し**、
+   目録の色のまま `holdback:true` にして既定の棚から外しています（見本としては ALL で見える）。
+   ここで見張るのは「棚に並ぶ 273 種」の読みやすさなので、差し戻しは別のテストで数えます。 */
+const READABLE = Object.entries(SKINS).filter(([, s]) => !s.holdback);
 /* 目録から作ったスキン（data.js＋ミクより後に足されたもの） */
 const builtinIds = new Set(Object.keys(SKINS).slice(0, BUILTIN_COUNT));
 
@@ -58,7 +62,7 @@ describe("game UI contrast across the skin catalogue", () => {
   });
 
   test("selected play-mode buttons use AA text on the accent background", () => {
-    for (const [id, skin] of Object.entries(SKINS)) {
+    for (const [id, skin] of READABLE) {
       const ui = skin.ui;
       assert.ok(contrast(ui["--ui-on-accent"], ui["--ui-accent"]) >= 4.5,
         `${id}: selected button ${ui["--ui-on-accent"]} on ${ui["--ui-accent"]} is ${contrast(ui["--ui-on-accent"], ui["--ui-accent"]).toFixed(2)}:1`);
@@ -71,7 +75,7 @@ describe("game UI contrast across the skin catalogue", () => {
     assert.match(css, /\.fileBtn\.small:hover\{[^}]*color:var\(--ui-text\)/);
     assert.match(css, /\.libRow\.cur\{[^}]*color:var\(--ui-text\)[^}]*background:var\(--ui-button-hover\)/);
     assert.match(css, /\.miniActions button\.selected\{[^}]*color:var\(--ui-text\)/);
-    for (const [id, skin] of Object.entries(SKINS)) {
+    for (const [id, skin] of READABLE) {
       const ui = skin.ui;
       assert.ok(contrast(ui["--ui-text"], ui["--ui-field"]) >= 4.5, `${id}: unselected segmented field`);
       assert.ok(contrast(ui["--ui-text"], ui["--ui-button"]) >= 4.5, `${id}: normal button`);
@@ -80,7 +84,7 @@ describe("game UI contrast across the skin catalogue", () => {
   });
 
   test("muted song-list and guide text meet AA on their opaque skin backgrounds", () => {
-    for (const [id, skin] of Object.entries(SKINS)) {
+    for (const [id, skin] of READABLE) {
       const ui = skin.ui, muted = ui["--ui-muted"];
       const backgrounds = [ui["--ui-button"], ui["--ui-button-hover"], ui["--ui-field"]];
       /* 📚 trk274：地がグラデーションなら**全部の停止点**で確かめる。
@@ -126,7 +130,7 @@ describe("game UI contrast across the skin catalogue", () => {
     assert.doesNotMatch(shelfCount, /opacity\s*:/, "#skinShelfCount must not use opacity");
 
     // Verify text on field contrast across all 77 skins
-    for (const [id, skin] of Object.entries(SKINS)) {
+    for (const [id, skin] of READABLE) {
       const ui = skin.ui;
       assert.ok(contrast(ui["--ui-text"], ui["--ui-field"]) >= 4.5,
         `${id}: select text ${ui["--ui-text"]} on ${ui["--ui-field"]} is ${contrast(ui["--ui-text"], ui["--ui-field"]).toFixed(2)}:1`);
@@ -139,7 +143,7 @@ describe("game UI contrast across the skin catalogue", () => {
        on the worst surface: card (--ui-panel) + panel (--ui-soft) + sub-panel (--ui-soft). */
     const { accentInk, accentInkBackground } = sandbox.window.Trk.data;
     const toHex = rgb => "#" + rgb.slice(0, 3).map(v => Math.round(v).toString(16).padStart(2, "0")).join("");
-    for (const [id, skin] of Object.entries(SKINS)) {
+    for (const [id, skin] of READABLE) {
       const ink = accentInk(skin.ui), back = toHex(accentInkBackground(skin.ui));
       const inkHex = /^#[0-9a-f]{6}$/i.test(ink) ? ink : sandbox.window.Trk.data.toHex(ink);
       assert.ok(contrast(inkHex, back) >= 4.5, `${id}: accent ink ${ink} on nested ${back} is ${contrast(inkHex, back).toFixed(2)}:1`);
@@ -172,5 +176,21 @@ describe("game UI contrast across the skin catalogue", () => {
       assert.ok(contrast(skin.ui["--ui-on-accent"], accent) >= 4.5,
         `${accent}: custom accent text ${skin.ui["--ui-on-accent"]} is below 4.5:1`);
     }
+  });
+
+  test("差し戻しの 18 種は、目録の色のまま名乗っていて、既定の棚には並ばない（trk275）", () => {
+    const hb = Object.entries(SKINS).filter(([, s]) => s.holdback).map(([id]) => id).sort();
+    assert.equal(hb.length, 18, "Wizard 1＋巻別 17");
+    /* 生成物の SKIN_HOLDBACK と同じ顔ぶれ（手で足したり消したりしていない） */
+    for (const rel of ["js/skins-wizard.js", "js/skins-volumes.js"]) {
+      const src = fs.readFileSync(path.join(ROOT, rel), "utf8");
+      const m = /SKIN_HOLDBACK = \[([^\]]*)\]/.exec(src);
+      assert.ok(m, `${rel}: SKIN_HOLDBACK`);
+      for (const id of [...m[1].matchAll(/"([^"]+)"/g)].map(x => x[1])) {
+        assert.ok(hb.includes(id), `${id} は holdback の印がある`);
+      }
+    }
+    assert.ok(hb.includes("wizard-hermetic"));
+    assert.equal(READABLE.length, 291 - 18);
   });
 });

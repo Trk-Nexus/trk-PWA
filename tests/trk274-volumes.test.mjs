@@ -114,8 +114,11 @@ test("目録から作ったファイルは、手で直さない・どこから�
 /* ==================== 既存 24 種を壊していない ==================== */
 test("Wizard 24 種は、22 種がそのまま・2 種だけ読みにくさを直した", () => {
   /* trk270 で入れた 24 種のうち、値が変わってよいのはこの 2 種だけ（どちらも元データが読めない組） */
-  /* ・wizard-hermetic：舞台 #b8860b の上に文字 #fffdf0（3.19:1）→ 舞台を #936b09 にして合格 */
-  assert.equal(S["wizard-hermetic"].game.stage, "#936b09");
+  /* ・wizard-hermetic：舞台 #b8860b の上に文字 #fffdf0（3.19:1）。
+     trk275（レビュー Q2）で**寄せ幅の上限**を入れたため、この 1 種は寄せずに
+     **目録の色のまま**（舞台 #b8860b）＋差し戻し（既定の棚から外す）になりました。 */
+  assert.equal(S["wizard-hermetic"].game.stage, "#b8860b");
+  assert.equal(S["wizard-hermetic"].holdback, true, "寄せずに差し戻す");
   /* ・wizard-void：舞台 #000000 の上に文字 #000000（1.00:1）→ 文字を #ffffff に */
   assert.equal(S["wizard-void"].game.ink, "#ffffff");
   /* それ以外の 22 種は trk270 の値のまま（代表 4 種） */
@@ -147,7 +150,8 @@ test("SKIN_VOLUMES は 13 巻で、291 種を重複なく覆う", () => {
 /* ==================== 棚の絞り込み ==================== */
 test("棚の既定は「定番＋ウィザード」だけ（176 種は選んだときだけ出す）", () => {
   const def = shelfIds({ volumes });
-  assert.equal(def.length, 115, "53＋62");
+  /* 115（53＋62）から、差し戻しの wizard-hermetic を除いた 114（trk275） */
+  assert.equal(def.length, 114, "53＋62−差し戻し 1");
   assert.equal(def.filter(id => VOLUME_ONLY.includes(id)).length, 0);
   assert.ok(def.includes("shadow") && def.includes("wizard-cli"));
 });
@@ -164,9 +168,10 @@ test("巻を選ぶと、その巻だけが出る", () => {
 
 test("「すべての巻」で 291 種。知らない巻の名前は既定に戻る", () => {
   assert.equal(shelfIds({ volumes, vol: "all" }).length, 291);
-  assert.equal(shelfIds({ volumes, vol: "vol-99" }).length, 115, "知らない巻名は既定扱い");
-  /* 巻の目録が無い（古い版のキャッシュ）ときも壊れない */
-  assert.equal(shelfIds({ volumes: [] }).length, 291);
+  assert.equal(shelfIds({ volumes, vol: "vol-99" }).length, 114, "知らない巻名は既定扱い");
+  /* 巻の目録が無い（古い版のキャッシュ）ときも壊れない。
+     差し戻しの 18 種は既定の棚に出さないので、そのぶん減る（trk275） */
+  assert.equal(shelfIds({ volumes: [] }).length, 273);
 });
 
 test("巻の絞り込みは、カテゴリ・⭐・検索と重ねられる", () => {
@@ -174,6 +179,46 @@ test("巻の絞り込みは、カテゴリ・⭐・検索と重ねられる", ()
   assert.ok(dark.every(id => (S[id].cat || []).includes("dark")));
   const q = shelfIds({ volumes, vol: "vol-02", query: "ruby" });
   assert.deepEqual(q, ["ruby"]);
+});
+
+/* ==================== trk275：レビュー M2 の番人（3 本） ==================== */
+test("巻の外にある「いま使っているスキン」は、棚から消えない（M2-a）", () => {
+  /* vol.2 の amber を当てたまま、既定の棚に戻す */
+  const list = shelfIds({ volumes, vol: "", current: "amber" });
+  assert.ok(list.includes("amber"), "使用中のスキンは巻の外でも残る");
+  assert.equal(list.length, 114 + 1, "既定 114 に 1 枚だけ足される");
+  /* 巻を選んでいても同じ（amber は vol.2。vol.1 を選んでいても残す） */
+  assert.ok(shelfIds({ volumes, vol: "vol-01", current: "amber" }).includes("amber"));
+});
+
+test("⭐・🕒・🚫 の絞り込みは、巻の外も見る（M2-b）", () => {
+  /* ⭐ を付けた amber（vol.2）を、既定の巻で絞っても出す */
+  assert.deepEqual(shelfIds({ volumes, vol: "", only: "fav", fav: ["amber"] }), ["amber"]);
+  /* 🕒 も同じ（ruby は vol.2） */
+  assert.deepEqual(shelfIds({ volumes, vol: "", only: "recent", last: { ruby: 1 } }), ["ruby"]);
+  /* 🚫 の一覧も、巻で切り落とさない */
+  assert.deepEqual(shelfIds({ volumes, vol: "", only: "hidden", hidden: ["absinthe"] }), ["absinthe"]);
+});
+
+test("検索は巻をまたぐ（M2-c）：既定の棚で「ruby」が見つかる", () => {
+  assert.deepEqual(shelfIds({ volumes, vol: "", query: "ruby" }), ["ruby"]);
+  /* 巻を選んでいるときも、検索が入れば巻で切り落とさない（「0 枚」で驚かせない） */
+  assert.deepEqual(shelfIds({ volumes, vol: "vol-01", query: "ruby" }), ["ruby"]);
+});
+
+/* ==================== trk275：差し戻し（Q2） ==================== */
+test("差し戻しの 18 種は、生成物が自分で名乗り・既定の棚に出ない", () => {
+  const hb = ids.filter(id => S[id].holdback);
+  assert.equal(hb.length, 18, "18 種（Wizard 1＋巻別 17）");
+  for (const [name, src] of [["js/skins-wizard.js", wizardSrc], ["js/skins-volumes.js", volumeSrc]]) {
+    const m = /SKIN_HOLDBACK = \[([^\]]*)\]/.exec(src);
+    assert.ok(m, `${name}：SKIN_HOLDBACK を書いている`);
+    for (const id of [...m[1].matchAll(/"([^"]+)"/g)].map(x => x[1])) {
+      assert.equal(S[id].holdback, true, `${id}：名乗りと印が一致`);
+    }
+  }
+  for (const id of hb) assert.ok(!shelfIds({ volumes, vol: "" }).includes(id), `${id} は既定の棚に出ない`);
+  for (const id of hb) assert.ok(shelfIds({ volumes, vol: "all" }).includes(id), `${id} は ALL では見える`);
 });
 
 /* ==================== 取り込みの道具 ==================== */

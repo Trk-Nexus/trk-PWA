@@ -63,11 +63,34 @@ const ratio = (fg, bg) => {
   if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN;
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 };
-/* 地はグラデーションのこともある（`linear-gradient(180deg,#a,#b)`）。全部の停止点に開く */
+/* 地はグラデーションのこともある（`linear-gradient(180deg,#a,#b)`）。全部の停止点に開く。
+   trk275（レビュー R2）：**角度の無い** `linear-gradient(#fff,#000)` を落としていた
+   （最初の色を「向き」と決め打ちしていたため）。向きらしい語だけを飛ばします。 */
+function splitTop(v) {
+  const out = [];
+  let depth = 0, cur = "";
+  for (const ch of v) {
+    if (ch === "(") depth++;
+    if (ch === ")") depth--;
+    if (ch === "," && depth === 0) { out.push(cur); cur = ""; continue; }
+    cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+const DIRECTION_RE = /^(?:-?\d{1,3}deg|to\s+[a-z ]+|in\s+[a-z ]+|-?\d{1,3}\.?\d*\s+\w+)$/i;
 function stopsOf(v) {
   if (typeof v !== "string") return [];
-  if (!/^linear-gradient\(/i.test(v.trim())) return [v.trim()];
-  return v.slice(v.indexOf("(") + 1, -1).split(",").slice(1).map(s => s.trim().replace(/\s+\d+%$/, ""));
+  const t = v.trim();
+  if (!/^linear-gradient\(/i.test(t)) return [t];
+  const inner = t.slice(t.indexOf("(") + 1, t.lastIndexOf(")"));
+  const colors = [];
+  for (const part of splitTop(inner)) {
+    const p = part.trim().replace(/\s+\d{1,3}(\.\d+)?%$/, "");
+    if (!p || DIRECTION_RE.test(p)) continue;
+    colors.push(p);
+  }
+  return colors.length ? colors : [t];
 }
 const rgbHex = v => Array.isArray(v)
   ? "#" + v.slice(0, 3).map(n => Math.round(n).toString(16).padStart(2, "0")).join("")
@@ -120,13 +143,37 @@ function readGeneratedJs(text) {
   const volumes = [];
   const volRe = /\{id:"([a-z][a-z0-9-]{1,23})",title:"[^"]*",ids:\[([^\]]*)\]\}/g;
   while ((m = volRe.exec(text))) volumes.push(m[1]);
-  return { skins, volumes };
+  /* trk275（レビュー R2）：`S['id']`（一重引用符）などは数に入らず、黙って飛ばされていた。
+     `S[` の出現数と読めた数を突き合わせ、合わなければ**落とす**（どの id かも出す）。 */
+  const seen = (text.match(/\bS\s*\[/g) || []).length;
+  const dangling = Math.max(0, seen - ids.length);
+  const looseIds = [];
+  const looseRe = /\bS\s*\[\s*['"]([A-Za-z0-9_.-]{1,48})['"]\s*\]/g;
+  while ((m = looseRe.exec(text))) if (!ids.includes(m[1])) looseIds.push(m[1]);
+  /* 差し戻しの一覧（生成物が自分で名乗っている） */
+  const holdback = [];
+  const hbRe = /\bSKIN_HOLDBACK\s*=\s*\[([^\]]*)\]/;
+  const hbMatch = hbRe.exec(text);
+  if (hbMatch) for (const q of hbMatch[1].matchAll(/"([^"]+)"/g)) holdback.push(q[1]);
+  return { skins, volumes, dangling, looseIds, holdback };
 }
 
 /* ---------- 1 枚を検める ---------- */
 function checkSkin(skin) {
   const problems = [];
   const ui = skin.ui || {}, game = skin.game || {};
+  /* trk275（レビュー R2）：面が欠けていると「比を 1 つも測らずに合格」になっていた。
+     必須の面が無ければ**落とす**（黙って通さない）。 */
+  const required = [["--ui-bg", "地"], ["--ui-panel", "パネル"], ["--ui-field", "入力欄"], ["--ui-button", "ボタン"],
+    ["--ui-text", "本文"], ["--ui-muted", "うすい文字"], ["--ui-accent", "アクセント"], ["--ui-on-accent", "選択中の文字"]];
+  for (const [key, name] of required) {
+    if (!ui[key]) problems.push({ reason: "missing", label: name, message: `${name}（${key}）がありません` });
+  }
+  for (const [key, name] of [["stage", "舞台"], ["ink", "ゲームの文字"], ["miss", "エラー色"]]) {
+    if (!game[key]) problems.push({ reason: "missing", label: name, message: `${name}（game.${key}）がありません` });
+  }
+  if (problems.length) return problems;   /* 欠けているときは比を測らない */
+
   const need = (label, fg, bg, floor) => {
     const r = ratio(fg, bg);
     if (Number.isFinite(r) && r >= floor - 1e-9) return;
@@ -161,11 +208,14 @@ for (const rel of files) {
     report.problems.push({ reason: "io", file: rel, message: `読めません：${rel}` });
     continue;
   }
-  let list = [], volumeCount = 0;
+  let list = [], volumeCount = 0, dangling = 0, looseIds = [], holdback = [];
   try {
     const read = readGeneratedJs(fs.readFileSync(abs, "utf8"));
     list = read.skins;
     volumeCount = read.volumes.length;
+    dangling = read.dangling || 0;
+    looseIds = read.looseIds || [];
+    holdback = read.holdback || [];
   } catch (e) {
     report.ok = false;
     report.problems.push({ reason: "parse", file: rel, message: `読めません（${e.message}）` });
@@ -177,20 +227,35 @@ for (const rel of files) {
     continue;
   }
   const mine = [];
+  if (dangling) {
+    /* 読めなかった 1 枚を黙って通さない（レビュー R2） */
+    mine.push({
+      reason: "unread", file: rel,
+      message: `S[…] が ${list.length + dangling} か所ありますが、読めたのは ${list.length} 種です` +
+        (looseIds.length ? `（読めていない id：${looseIds.slice(0, 5).join(", ")}${looseIds.length > 5 ? " …" : ""}）` : ""),
+    });
+  }
   for (const skin of list) {
     const id = skin && typeof skin.id === "string" ? skin.id : "?";
     if (!skin || !skin.ui || !skin.game) {
       mine.push({ reason: "shape", file: rel, id, message: `${id}: ui / game がありません（目録の形ですか？ 生成物を渡してください）` });
       continue;
     }
-    for (const p of checkSkin(skin)) mine.push({ file: rel, id, ...p });
+    const hb = holdback.includes(id);
+    for (const p of checkSkin(skin)) mine.push({ file: rel, id, holdback: hb, ...p });
   }
   const skinCount = list.length;   /* 巻の目録は list に入っていません（別に数える） */
   report.skins += skinCount;
-  report.files.push({ file: rel, skins: skinCount, volumes: volumeCount, problems: mine.length });
-  report.problems.push(...mine);
-  report.ok = report.ok && mine.length === 0;
+  /* 差し戻し（目録の色のまま）は**落とさずに見せる**。数えて一覧に出す（黙って通さない） */
+  const hold = mine.filter(p => p.holdback);
+  const fail = mine.filter(p => !p.holdback);
+  report.holdbackCount = (report.holdbackCount || 0) + new Set(hold.map(p => p.id)).size;
+  report.files.push({ file: rel, skins: skinCount, volumes: volumeCount, problems: fail.length, holdback: new Set(hold.map(p => p.id)).size, holdbackIds: [...new Set(hold.map(p => p.id))] });
+  report.problems.push(...fail);
+  report.holdbackProblems = (report.holdbackProblems || []).concat(hold);
+  report.ok = report.ok && fail.length === 0;
 }
+report.unread = report.problems.filter(p => p.reason === "unread").length;
 report.problems = report.problems.map(p => ({ tool: TOOL, version: VERSION, ...p }));
 
 if (asJson) {
@@ -198,10 +263,15 @@ if (asJson) {
 } else {
   for (const f of report.files) {
     const extra = f.volumes ? `＋巻の目録 ${f.volumes}` : "";
-    if (f.problems) console.log(`✗ ${f.file}：${f.skins} 種のうち ${f.problems} 件が基準に届きません`);
-    else if (!quiet) console.log(`✓ ${f.file}：${f.skins} 種${extra}は全部合格（文字 4.5:1・エラー 3:1）`);
+    const hb = f.holdback ? `・⚠ 差し戻し ${f.holdback} 種（目録の色のまま）` : "";
+    if (f.problems) console.log(`✗ ${f.file}：${f.skins} 種のうち ${f.problems} 件が基準に届きません${hb}`);
+    else if (!quiet) console.log(`✓ ${f.file}：${f.skins} 種${extra}は全部合格（文字 4.5:1・エラー 3:1）${hb}`);
   }
   for (const p of report.problems) if (p.message && p.reason !== "io") console.log(`    ${p.id ? p.id + "：" : ""}${p.message}`);
+  if (!quiet) for (const f of report.files) {
+    if (!f.holdbackIds || !f.holdbackIds.length) continue;
+    console.log(`    ⚠ 差し戻し（目録へお返し中・既定の棚から外しています）：${f.holdbackIds.join(", ")}`);
+  }
   /* どの組を見たかを 1 行で（黙って通していないことの証拠） */
   if (!quiet) console.log(`  見た組：本文・うすい文字 ×（地・パネル・入力欄・ボタン・hover）／選択中 × アクセント／舞台 × ゲームの文字／エラー × 入力欄／小さなアクセント × 入れ子`);
 }
