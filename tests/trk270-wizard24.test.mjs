@@ -89,7 +89,12 @@ test("Wizard は 62 種（cli を名乗るのは 50 種）", () => {
 });
 
 test("24 種すべてが、文字 4.5:1・エラー行 3:1 を満たす", () => {
-  for (const id of WIZ) {
+  /* 📚 trk275（レビュー Q2「寄せ幅の上限」）：wizard-hermetic は目録の色
+     （舞台 #b8860b に文字 #fffdf0＝3.19:1）のままだと 4.5:1 に届かないため、
+     色を動かさず**差し戻し**（`holdback:true`・既定の棚から外す）になりました。
+     ここでは棚に並ぶ 23 種を見て、hermetic は差し戻しであることを別に確かめます。 */
+  assert.deepEqual(WIZ.filter(id => D.SKINS[id].holdback), ["wizard-hermetic"]);
+  for (const id of WIZ.filter(id => !D.SKINS[id].holdback)) {
     const ui = D.SKINS[id].ui, game = D.SKINS[id].game;
     const need = [
       ["text/field", ui["--ui-text"], ui["--ui-field"], 4.5],

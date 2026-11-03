@@ -1370,6 +1370,20 @@ function skinVolumes() {
   const v = window.Trk && window.Trk.data && window.Trk.data.SKIN_VOLUMES;
   return Array.isArray(v) ? v : [];
 }
+/* 📚 trk275（レビュー R4）：巻の題名は目録では**日本語**でした。画面の言語に合わせて出します
+   （辞書に無い巻は目録の題名をそのまま）。 */
+const SKIN_VOL_NAME_KEYS = {
+  "vol-01": "skinVolNameVol01", "vol-02": "skinVolNameVol02", "vol-03": "skinVolNameVol03",
+  "vol-04": "skinVolNameVol04", "vol-05": "skinVolNameVol05", "vol-06": "skinVolNameVol06",
+  "vol-07": "skinVolNameVol07", "vol-08": "skinVolNameVol08", "vol-09": "skinVolNameVol09",
+  "vol-10": "skinVolNameVol10", glitch: "skinVolNameGlitch", wizard: "skinVolNameWizard", other: "skinVolNameOther",
+};
+function skinVolTitle(g) {
+  if (!g) return "";
+  const key = SKIN_VOL_NAME_KEYS[g.id];
+  if (key) { const t = tr(key); if (t && t !== key) return t; }
+  return g.title || g.id || "";
+}
 /* 絞り込み（カテゴリ・⭐・🕒・🚫・巻・検索）と並べ替えを、1か所で決める */
 function skinShelfEntries(skins, opt) {
   const o = opt || {}, cat = o.cat || "all", only = o.only || "";
@@ -1381,12 +1395,16 @@ function skinShelfEntries(skins, opt) {
      "all" は全部、それ以外はその巻の ID だけ。純粋関数のまま（テストから同じものを動かせる） */
   const volumes = Array.isArray(o.volumes) ? o.volumes : [];
   const vol = o.vol || "";
+  /* 📚 trk275（レビュー M2）：⭐・🕒・🚫 の絞り込みと検索は、**巻の外も見る**。
+     trk241 の「いま使っているスキンは棚に残す」と同じ考え方で、
+     絞り込みを掛けているときに巻で切り落とすと「消えた」ように見えるためです。 */
+  const acrossVolumes = only === "fav" || only === "recent" || only === "hidden" || String(o.query || "").trim() !== "";
   let volSet = null, outside = null;
-  if (vol && vol !== "all") {
+  if (!acrossVolumes && vol && vol !== "all") {
     const g = volumes.find(x => x && x.id === vol);
     if (g && Array.isArray(g.ids)) volSet = new Set(g.ids);
   }
-  if (!volSet && vol !== "all") {
+  if (!acrossVolumes && !volSet && vol !== "all") {
     /* "" （既定）と、知らない巻名（古い保存・目録が減ったとき）は同じ扱い＝定番＋ウィザード */
     outside = new Set();
     for (const g of volumes) {
@@ -1397,8 +1415,15 @@ function skinShelfEntries(skins, opt) {
   const out = [];
   for (const [id, s] of Object.entries(skins)) {
     if (cat !== "all" && !skinCatList(s).includes(cat)) continue;
-    if (volSet && !volSet.has(id)) continue;
-    if (outside && outside.has(id)) continue;
+    /* 📚 trk275：**いま当てているスキン**は、選んだ巻の外でも棚に残す（M2-a） */
+    const inUse = id === o.current;
+    if (volSet && !volSet.has(id) && !inUse) continue;
+    if (outside && outside.has(id) && !inUse) continue;
+    /* ⚠ 差し戻し（目録の色のまま）は**既定の棚に出さない**（ALL と、その巻では見える）。
+       選んでいるとき・絞り込みのときは消さない（M2 と同じ理由） */
+    /* 差し戻し（目録へお返し中）は、**明示的にその巻を選んだとき**と ALL だけ（Q2）。
+     知らない巻名・巻の目録が読めないときは「選んでいない」扱いで外します。 */
+  if (s.holdback && !inUse && vol !== "all" && !(volSet && volSet.has(id))) continue;
     /* 隠したスキンは「🚫 隠した」を見ているときだけ出す。
        ⚠ trk241：**いま使っているスキンだけは、隠しても棚に残す**（消えたように見えると、
           当たっているのに「効かない」と誤解されるため。印は 🚫 で出す）。 */
@@ -1519,7 +1544,7 @@ function announceSkinVol(vol) {
   if (!box) return;
   const volumes = skinVolumes();
   const g = volumes.find(x => x && x.id === vol);
-  const name = vol === "" ? tr("skinVolDefault") : vol === "all" ? tr("skinVolAll") : (g ? g.title : vol);
+  const name = vol === "" ? tr("skinVolDefault") : vol === "all" ? tr("skinVolAll") : (g ? skinVolTitle(g) : vol);
   const text = tr("skinVolShown", { name, n: skinShownCount });
   box.textContent = "";                       /* 同じ文でも読み上げ直されるように、いったん空へ */
   requestAnimationFrame(() => { box.textContent = text; });
@@ -1536,12 +1561,20 @@ function setSkinVol(vol) {
   if (panel && typeof panel.hidePopover === "function" && panel.matches(":popover-open")) panel.hidePopover();
 }
 /* 巻の <select> と popover のパネルを、いまの目録から作り直す */
-function buildSkinVolControls(volumes, total) {
+/* 📚 trk275：巻の絞り込みで**実際に出る枚数**（既定・ALL・各巻）を数える。
+   レビュー M3/R6：「定番＋ウィザード」に全体の数（291）が入っていた／
+   「（115／291）」と言いながら実際は 114 枚だった、を同じ数え方で揃えます。 */
+function skinVolCount(skins, volumes, vol) {
+  return skinShelfEntries(skins, {
+    vol, volumes, locale: lang, fav: [], hidden: [], use: {}, last: {},
+  }).length;
+}
+function buildSkinVolControls(volumes, skins) {
   const sel = $("skinVol");
   if (sel) {
     const want = settings.skinShelfVol || "";
     const opts = [["", tr("skinVolDefault")], ["all", tr("skinVolAll")],
-      ...volumes.map(g => [g.id, `${g.title}（${g.ids.length}）`])];
+      ...volumes.map(g => [g.id, `${skinVolTitle(g)}（${g.ids.length}）`])];
     sel.textContent = "";
     for (const [value, label] of opts) {
       const o = document.createElement("option");
@@ -1553,18 +1586,29 @@ function buildSkinVolControls(volumes, total) {
   const list = $("skinVolList");
   if (list) {
     list.textContent = "";
+    /* 1 つだけ選ぶものなので radiogroup／radio（レビュー R5） */
+    list.setAttribute("role", "radiogroup");
     const add = (value, label, count) => {
       const b = el("button", "skinVolCard");
       b.type = "button";
+      b.setAttribute("role", "radio");
       b.classList.toggle("on", (settings.skinShelfVol || "") === value);
-      b.setAttribute("aria-pressed", String((settings.skinShelfVol || "") === value));
+      b.setAttribute("aria-checked", String((settings.skinShelfVol || "") === value));
       b.append(el("b", "", label), el("small", "", tr("skinVolItems", { n: count })));
       b.addEventListener("click", () => setSkinVol(value));
       list.append(b);
     };
-    add("", tr("skinVolDefault"), total);
-    add("all", tr("skinVolAll"), total);
-    for (const g of volumes) add(g.id, g.title, g.ids.length);
+    add("", tr("skinVolDefault"), skinVolCount(skins, volumes, ""));
+    add("all", tr("skinVolAll"), skinVolCount(skins, volumes, "all"));
+    for (const g of volumes) {
+      /* 定番とウィザードは既定と重なるので、区切りを 1 行入れてから並べる（レビュー R7） */
+      if (g.id === "wizard") {
+        const sep = el("p", "hint skinVolSep");
+        sep.textContent = tr("skinVolGroupClassic");
+        list.append(sep);
+      }
+      add(g.id, skinVolTitle(g), g.ids.length);
+    }
   }
 }
 function buildSkinGrid() {
@@ -1603,8 +1647,11 @@ function buildSkinGrid() {
   }
   const volumes = skinVolumes();
   const totalSkins = Object.keys(skins).length;
-  buildSkinVolControls(volumes, totalSkins);
-  const vol = settings.skinShelfVol || "";
+  buildSkinVolControls(volumes, skins);
+  /* 知らない巻名（古い保存・目録が減った）は既定に戻し、**状態の行に 1 行**出す（レビュー Q3） */
+  const wantVol = settings.skinShelfVol || "";
+  const volKnown = !wantVol || wantVol === "all" || volumes.some(g => g && g.id === wantVol);
+  const vol = volKnown ? wantVol : "";
   const list = skinShelfEntries(skins, {
     cat, only, query: skinQuery, sort: settings.skinSort, locale: lang, current: settings.skin,
     fav: settings.skinFav, hidden: settings.skinHidden, use: settings.skinUse, last: settings.skinLast,
@@ -1614,6 +1661,8 @@ function buildSkinGrid() {
   skinShownCount = list.length;
   const count = $("skinShelfCount");
   if (count) count.textContent = list.length === total ? `（${total}）` : tr("skinCountShown", { shown: list.length, all: total });
+  const volStatus = $("skinVolStatus");
+  if (volStatus && !volKnown) volStatus.textContent = tr("skinVolUnknown");
   const noMatch = $("skinNoMatch"); if (noMatch) noMatch.hidden = list.length > 0;
   /* 🧺 trk241：隠しているものがあるときは、棚の下に数と「戻す」を必ず出す（隠しっぱなしにしない） */
   const note = $("skinHiddenNote"), noteText = $("skinHiddenNoteText"), noteBtn = $("skinHiddenRestore");
@@ -1634,7 +1683,10 @@ function buildSkinGrid() {
       const q = el("button", "skinCard locked"); q.type = "button"; q.disabled = true; q.title = tr("skinLockedHint");
       q.style.setProperty("--sk-bg", "#10142a"); q.style.setProperty("--sk-text", "var(--ui-muted)"); q.style.setProperty("--sk-border", "var(--ui-border)");
       q.append(el("b", "", "❓ ？？？"), el("small", "", tr("skinLockedHint")));
-      grid.append(q); continue;
+      /* trk275（レビュー R6）：数（115）と描いた枚数がずれないよう、こちらも .skinCell で包む */
+      const lockedCell = el("div", "skinCell");
+      lockedCell.append(q);
+      grid.append(lockedCell); continue;
     }
     const cell = el("div", "skinCell");          /* 🧺 trk241：カード＋⭐／🚫 の小さなボタン */
     const b = el("button", "skinCard"); b.type = "button"; b.dataset.skin = id;
@@ -1647,6 +1699,7 @@ function buildSkinGrid() {
     b.append(dots, el("b", "", marks(id) + (s.label[lang] || s.label.en)));
     const spec = skinSpecNode(s); if (spec) b.append(spec);
     b.append(el("small", "", (s.desc && (s.desc[lang] || s.desc.en)) || ""));
+    if (s.holdback) b.append(el("small", "skinHoldback", tr("skinHoldbackNote")));
     b.classList.toggle("selected", id === settings.skin); b.setAttribute("aria-pressed", id === settings.skin);
     b.addEventListener("click", () => applySkin(id));
     const quick = el("div", "skinQuick");

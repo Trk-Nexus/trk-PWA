@@ -415,6 +415,8 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 .skinVolCard small{color:var(--ui-muted);font-size:11px;font-weight:700}
 .skinVolCard:hover{filter:brightness(1.12)}
 .skinVolCard.on{border-color:var(--ui-accent);box-shadow:inset 0 0 0 1px var(--ui-accent)}
+.skinVolSep{grid-column:1/-1;margin:6px 0 0;font-weight:800}
+.skinHoldback{color:var(--ui-muted);font-size:10px;font-weight:700}
 /* G-2（modern-web-guidance-src: animate-element-entry-exit）
    出るとき・消えるときを `@starting-style` と `transition-behavior: allow-discrete` で。
    古いブラウザでは**アニメーションが付かず、そのまま出る**だけ（崩れません） */
@@ -425,7 +427,9 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 .skinVolCard{transition-property:opacity,transform,filter,box-shadow,border-color}
 /* G-4（defer-rendering-heavy-content）：棚の**画面の外**は描かない。
    `contain-intrinsic-size` で 1 枚分の高さを先に伝え、スクロールバーを暴れさせない */
-#skinGrid>.skinCell{content-visibility:auto;contain-intrinsic-size:auto 118px}
+/* trk275（レビュー R1）：118px は実測（1280px 幅で 58〜79px）と合わず、下まで送ると棚が跳ねた。
+   `auto` は「一度描いた実寸を覚える」ので、初回の見積もりだけ実測に近づけます。 */
+#skinGrid>.skinCell{content-visibility:auto;contain-intrinsic-size:auto 72px}
 .skinFindBox input,.skinFindBox select{width:100%;padding:7px 10px;border-radius:10px;border:1px solid var(--ui-border);
   background:var(--ui-field);color:var(--ui-text);font:inherit;font-size:13px}
 #skinGrid:empty{display:none}

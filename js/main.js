@@ -279,7 +279,12 @@ addEventListener("keydown", e => {
     if (code === "Escape" && e.isTrusted && !e.repeat) escHoldStart();
     if (core.phase === "playing") { e.preventDefault(); window.Trk.play.pauseGame(); }
     else if (core.phase === "paused") { e.preventDefault(); window.Trk.play.resumeGame(); }
-    else if (core.phase === "title" && core.screen === "settings" && code === "Escape") { e.preventDefault(); core.closeSettings(); }
+    /* 📚 trk275（レビュー M1）：popover（📚 のパネル）が開いているときは**Esc を譲る**。
+       ここは前から `preventDefault()` して設定画面を閉じていたため、popover が自分で閉じられず、
+       パネルが開いたまま残って（次に設定を開くと開きっぱなし）下のボタンを奪っていました。 */
+    else if (core.phase === "title" && core.screen === "settings" && code === "Escape" && !document.querySelector(":popover-open")) {
+      e.preventDefault(); core.closeSettings();
+    }
     return;
   }
   if (e.code === "KeyF" && !e.repeat && !e.ctrlKey && !e.metaKey && core.slotOfKey("KeyF") < 0 && fullscreenSupported) toggleFullscreen();

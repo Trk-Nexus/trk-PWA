@@ -21,7 +21,7 @@ const i18n = read("js/i18n.js");
 
 /* ==================== G-1 popover ==================== */
 test("G-1 巻のパネルは popover（モーダルにしない・light-dismiss はブラウザが持つ）", () => {
-  assert.match(html, /<div id="skinVolPanel" popover>/, "popover 属性がある");
+  assert.match(html, /<div id="skinVolPanel" popover[ >]/, "popover 属性がある");
   assert.match(html, /<button[^>]*id="skinVolBtn"[^>]*popovertarget="skinVolPanel"/, "ボタンから開く");
   assert.doesNotMatch(html, /<dialog[^>]*id="skinVolPanel"/, "dialog（モーダル）にはしない");
   assert.match(css, /#skinVolPanel::backdrop\{/, "外側は ::backdrop で薄くする");
@@ -62,7 +62,13 @@ test("G-3 巻を切り替えた結果は、見た目と同時に読み上げる"
 
 /* ==================== G-4 描画の手当て ==================== */
 test("G-4 棚の画面の外は描かない（content-visibility＋contain-intrinsic-size）", () => {
-  assert.match(css, /#skinGrid>\.skinCell\{content-visibility:auto;contain-intrinsic-size:auto 118px\}/);
+  /* trk275（レビュー R1）：118px は実測（1280px 幅で 58〜79px）と離れていて、
+     下まで送ったときに棚が大きく跳ねました。実測の真ん中あたりへ。
+     `auto` を付けてあるので、一度描いたあとは覚えた実寸が使われます。 */
+  const m = /#skinGrid>\.skinCell\{content-visibility:auto;contain-intrinsic-size:auto (\d+)px\}/.exec(css);
+  assert.ok(m, "content-visibility と contain-intrinsic-size が 1 行で入っている");
+  const h = Number(m[1]);
+  assert.ok(h >= 58 && h <= 79, `${h}px は実測（58〜79px）の範囲`);
   /* 棚の一覧だけに当てる（設定のパネル・再生バーには当てない） */
   const matches = [...css.matchAll(/content-visibility:auto/g)];
   assert.equal(matches.length, 1, "content-visibility は 1 か所だけ");
@@ -79,8 +85,9 @@ test("保存は既存の settings の中（localStorage のキーは増やさな
 });
 
 test("版とキャッシュ：trk274 で上がっている", () => {
-  assert.match(html, /<meta name="trk-build" content="trk274">/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.03-trk274";/);
+  /* trk275（レビュー対応）で trk275 へ。版名は sw.js と index.html で揃っていることだけ見る */
+  assert.match(html, /<meta name="trk-build" content="trk275">/);
+  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.03-trk275";/);
   assert.match(html, /<script src="js\/skins-volumes\.js"><\/script>/);
   /* 依存の順：data.js → 目録（typography／characters／wizard／volumes）→ core.js */
   const at = s => html.indexOf(`<script src="${s}"></script>`);
