@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /* ⌨ trk269：端末の定番（pwd・ls・cd・cat・grep・history・clear・echo・man・bell と `|`）と、
-   Wizard のスキン 12 種（Skin 側の目録から生成）を守る見張り。 */
+   Wizard のスキン（Skin 側の目録から生成。trk270 で 24 種に）を守る見張り。 */
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -214,22 +214,22 @@ test("CSS は opacity とカーソルの形を受け取る（文字は薄くし�
 });
 
 /* ==================== Wizard のスキン 12 種 ==================== */
-test("Wizard のスキンは 12 種。どれも cat に wizard、cli を持つ", () => {
+test("Wizard のスキンは 24 種。どれも cat に wizard を持つ（cli は 12 種）", () => {
   const ids = Object.keys(D.SKINS).filter(id => (D.SKINS[id].cat || []).includes("wizard"));
-  assert.equal(ids.length, 12);
+  assert.equal(ids.length, 24);
+  assert.equal(ids.filter(id => D.SKINS[id].cli).length, 12, "cli を名乗るのは 12 種");
   for (const id of ids) {
     const s = D.SKINS[id];
-    assert.ok(s.cli && typeof s.cli === "object", id + " に cli がありません");
     assert.ok(s.ui["--ui-text"] && s.ui["--ui-field"], id + " の色が足りません");
     assert.ok(s.label && s.label.ja, id + " に名前がありません");
   }
-  assert.ok(Object.keys(D.SKINS).length >= 61, "data.js（49）＋ Wizard（12）");
+  assert.ok(Object.keys(D.SKINS).length >= 73, "data.js（49）＋ Wizard（24）");
 });
 
 test("目録から作ったファイルは、手で直さない・出どころが分かる", () => {
   assert.match(wizardSrc, /tools\/import-skin-catalog\.mjs/, "作り方が書いてある");
   assert.match(wizardSrc, /手で直さないでください/);
-  assert.equal((wizardSrc.match(/^ {2}S\["[a-z0-9-]+"\] = \{/gm) || []).length, 12);
+  assert.equal((wizardSrc.match(/^ {2}S\["[a-z0-9-]+"\] = \{/gm) || []).length, 24);
   /* 書体の二重エスケープ（\"Courier New\"）が残っていない */
   assert.doesNotMatch(wizardSrc, /\\\\"/, "font の \\\" が残っています");
 });

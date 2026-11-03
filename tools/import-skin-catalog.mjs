@@ -18,6 +18,9 @@
    写し方（決まり）：
      ・colors → ui / game（`js/data.js` の buildCustomSkin と同じ割合。ただし目録が持っている
        muted / field / button / onAccent / border はそのまま使う）
+     ・それでも 4.5:1／3:1 に届かない色は、**いちばん近い合格点**まで寄せる（trk270）：
+       文字（text）→ パネル・入力欄・ボタンに対して 4.5:1／エラー色（miss）→ 入力欄に対して 3:1。
+       寄せたときは、どの色をどれだけ動かしたかを画面に出す
      ・font の `\"` は `"` に戻す（目録によっては二重にエスケープされている）。通らない字は落とす
      ・cli は `js/data.js` の sanitizeCliLook と同じ規則で整える（本体と同じ判断）
      ・video は CSS のフィルタだけ通す（`url(` `;` `{` などは落とす）
@@ -30,7 +33,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TOOL = "import-skin-catalog";
-const VERSION = 1;
+const VERSION = 2;
 
 const args = process.argv.slice(2);
 const file = args.find(a => !a.startsWith("--"));
@@ -116,6 +119,17 @@ function fitInk(fg, bgs, need) {
   }
   return { color: best, moved: true };
 }
+/* 背景（ボタンなど）を**文字から遠ざけて**合格点まで動かす（trk270）。
+   文字の色は目録のまま残したいので、直すのは背景のほう。 */
+function fitAway(bg, fg, need, limit = 20) {
+  if (ratio(fg, bg) >= need) return { color: bg, moved: false };
+  const target = D.luminance(fg) > D.luminance(bg) ? "#000000" : "#ffffff";
+  for (let i = 1; i <= limit; i++) {
+    const c = D.mixHex(bg, target, i / limit);
+    if (ratio(fg, c) >= need) return { color: c, moved: true };
+  }
+  return { color: target, moved: true };
+}
 const pickLang = v => {
   if (!v || typeof v !== "object") return null;
   const out = {};
@@ -128,29 +142,53 @@ function convert(s) {
   const c = s.colors || {};
   const bg = cleanColor(c.bg), panel = cleanColor(c.panel), text = cleanColor(c.text), accent = cleanColor(c.accent), gold = cleanColor(c.gold);
   if (!bg || !panel || !text || !accent || !gold) return null;
-  const dark = D.luminance(bg) < 0.35;
-  const field = cleanColor(c.field, D.mixHex(bg, panel, 0.5));
+  const field0 = cleanColor(c.field, D.mixHex(bg, panel, 0.5));
   const button = cleanColor(c.button, D.mixHex(panel, text, 0.06));
   const buttonRaw = button;
-  const bgList = [buttonRaw, D.mixHex(buttonRaw, text, 0.13), field, bg];
-  /* 目録の muted が、ボタン・入力欄・地のどれかで 4.5:1 に届かないことがある（12 種のうち 3 種）。
-     届かないときは**一番近い合格点**まで寄せてから使う（見た目はほとんど変わらない）。 */
-  const mutedFit = fitInk(cleanColor(c.muted, D.mixHex(text, panel, 0.38)), bgList, 4.5);
-  const muted = mutedFit.color;
+  /* 文字（text）は、**パネルと入力欄**の上で 4.5:1 に届かせる（trk270）。
+     ボタンの上で届かないときは、文字ではなく**ボタンのほう**を動かす（下のbuttonFit）。
+     目録の値が合格なら**そのまま**使う（見た目を動かさない）。 */
+  const textFit = fitInk(text, [panel, field0], 4.5);
+  const inkText = textFit.color;
+  /* ボタンは、文字から遠ざけて 4.5:1 に（直すのは背景なので、見た目の印象は残りやすい） */
+  const buttonFit = fitAway(buttonRaw, inkText, 4.5);
+  const buttonFace = buttonFit.color;
+  /* ホバーは「少し明るく」だが、届かなくなるときは混ぜる量を減らす */
+  let hover = D.mixHex(buttonFace, inkText, 0.13);
+  for (const amt of [0.13, 0.1, 0.07, 0.04, 0.02, 0]) {
+    const c = D.mixHex(buttonFace, inkText, amt);
+    hover = c;
+    if (ratio(inkText, c) >= 4.5) break;
+  }
+  /* 地（bg）とうすい文字（muted）は、**両方**が合格する組み合わせを探す（trk270）。
+     地が暗くパネルが明るいテーマ（wizard-hermetic）では、どちらか一方だけでは 4.5:1 に届かない。
+     まず地をうすい文字から遠ざけ、その地でうすい文字をもう一度合わせる（2 回で足りる）。 */
+  let bgOut = bg;
+  let muted = cleanColor(c.muted, D.mixHex(inkText, panel, 0.38));
+  let bgMoved = false;
+  for (let pass = 0; pass < 2; pass++) {
+    const bgFix = fitAway(bgOut, muted, 4.5);
+    if (bgFix.color !== bgOut) { bgOut = bgFix.color; bgMoved = true; }
+    muted = fitInk(muted, [buttonFace, hover, field0, bgOut, panel], 4.5).color;
+  }
+  const bgList = [buttonFace, hover, field0, bgOut, panel];
+  const mutedFit = { color: muted, moved: muted !== cleanColor(c.muted, "") };
+  const field = field0;
+  const dark = D.luminance(bgOut) < 0.35;
   /* onAccent も同じ。目録の値が合格ならそれを使い、だめなら黒か白の合うほうへ */
   const catalogOn = cleanColor(c.onAccent, D.luminance(accent) > 0.179 ? "#000000" : "#ffffff");
   const onAccent = ratio(catalogOn, accent) >= 4.5 ? catalogOn
     : (ratio("#000000", accent) >= ratio("#ffffff", accent) ? "#000000" : "#ffffff");
-  const ink = cleanColor(c.ink, text);
+  const ink = cleanColor(c.ink, inkText);
   const ui = {
-    "--ui-bg": bg,
+    "--ui-bg": bgOut,
     "--ui-panel": D.hexToRgba(panel, 0.96),
-    "--ui-soft": D.hexToRgba(text, 0.05),
-    "--ui-text": text,
+    "--ui-soft": D.hexToRgba(inkText, 0.05),
+    "--ui-text": inkText,
     "--ui-muted": muted,
-    "--ui-border": cleanColor(c.border, D.hexToRgba(text, 0.18)),
-    "--ui-button": button,
-    "--ui-button-hover": D.mixHex(button, text, 0.13),
+    "--ui-border": cleanColor(c.border, D.hexToRgba(inkText, 0.18)),
+    "--ui-button": buttonFace,
+    "--ui-button-hover": hover,
     "--ui-field": field,
     "--ui-accent": accent,
     "--ui-on-accent": onAccent,
@@ -158,19 +196,21 @@ function convert(s) {
     "--ui-shadow": dark ? "0 24px 80px rgba(0,0,0,.55)" : "0 24px 70px rgba(30,40,60,.16)",
     "--ui-glow": D.hexToRgba(accent, 0.14),
   };
+  const missFit = fitInk(D.mixHex(inkText, bg, 0.45), [field], 3);
   const game = {
     don: cleanColor(c.don, accent),
     ka: cleanColor(c.ka, gold),
-    stage: cleanColor(c.stage, bg),
+    stage: cleanColor(c.stage, bgOut),
     lane: D.hexToRgba(panel, dark ? 0.6 : 0.82),
-    track: D.hexToRgba(text, 0.24),
+    track: D.hexToRgba(inkText, 0.24),
     ink,
     inkShadow: dark ? "rgba(0,0,0,.85)" : "rgba(255,255,255,.9)",
     noteBorder: "#ffffff",
     panel: D.hexToRgba(panel, 0.95),
     perfect: gold,
     good: ink,
-    miss: D.mixHex(text, bg, 0.45),
+    /* エラー色は入力欄の上で 3:1 に届かせる（trk270）。届いていれば目録どおりの割合のまま */
+    miss: missFit.color,
     glow: !!s.glow,
   };
   const skin = {
@@ -199,12 +239,19 @@ function convert(s) {
   if (s.locked === true) skin.locked = true;
   const cli = D.sanitizeCliLook(s.cli);
   if (cli) skin.cli = cli;
-  return { id: s.id, skin };
+  const moved = [];
+  if (textFit.moved) moved.push("文字 " + text + " → " + inkText);
+  if (buttonFit.moved) moved.push("ボタン " + buttonRaw + " → " + buttonFace);
+  if (bgMoved) moved.push("地 " + bg + " → " + bgOut);
+  if (mutedFit.moved) moved.push("うすい文字 " + cleanColor(c.muted, "(なし)") + " → " + muted);
+  if (missFit.moved) moved.push("エラー色 → " + missFit.color);
+  return { id: s.id, skin, moved };
 }
 
 /* ---------- 選ぶ ---------- */
 const chosen = [];
 const skipped = [];
+const fitted = [];   /* 4.5:1／3:1 に届かせるために色を動かしたもの（trk270） */
 for (const s of list) {
   if (!s || typeof s.id !== "string") continue;
   const cats = D.sanitizeSkinCats(s.cat);
@@ -214,6 +261,7 @@ for (const s of list) {
   const conv = convert({ ...s, cat: cats });
   if (!conv) { skipped.push(s.id + "（色が足りない）"); continue; }
   chosen.push(conv);
+  if (conv.moved && conv.moved.length) fitted.push(conv.id + "：" + conv.moved.join("・"));
 }
 chosen.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
@@ -223,7 +271,7 @@ if (!chosen.length) { console.error("取り込むスキンがありません"); 
 const q = v => JSON.stringify(v);
 const lines = [];
 lines.push("// SPDX-License-Identifier: GPL-3.0-or-later");
-lines.push("/* 🧙 ウィザードのスキン（trk269・Skin 側の目録から生成）");
+lines.push("/* 🧙 ウィザードのスキン（trk269・trk270・Skin 側の目録から生成）");
 lines.push("");
 lines.push("   出どころ：trk-Avatar-Library の `catalog/skins.json`（" + wantCat + " カテゴリ" + (cliOnly ? "・cli あり" : "") + "）");
 lines.push("   作り方：node tools/import-skin-catalog.mjs <目録.json> --cat=" + wantCat + (cliOnly ? " --cli-only" : "") + " --out=" + outRel);
@@ -268,3 +316,4 @@ if (checkOnly) {
 fs.writeFileSync(outPath, body);
 console.log(`✓ ${outRel} に ${chosen.length} 種を書きました（${chosen.map(c => c.id).join(", ")}）`);
 if (skipped.length) console.log(`  飛ばした：${skipped.length} 件（${skipped.slice(0, 5).join(" / ")}${skipped.length > 5 ? " …" : ""}）`);
+if (fitted.length) console.log(`  合格点まで寄せた：${fitted.length} 件\n    ` + fitted.join("\n    "));
