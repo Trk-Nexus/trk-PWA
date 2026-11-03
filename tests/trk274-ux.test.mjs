@@ -49,7 +49,8 @@ test("G-3 巻を切り替えた結果は、見た目と同時に読み上げる"
   assert.match(core, /box\.textContent = "";\s*\/\* 同じ文でも読み上げ直されるように、いったん空へ \*\//);
   assert.match(core, /requestAnimationFrame\(\(\) => \{ box\.textContent = text; \}\)/);
   /* 選んだときに呼ばれる（保存 → 作り直し → 読み上げ の順） */
-  assert.match(core, /buildSkinGrid\(\);\s*announceSkinVol\(settings\.skinShelfVol\);/);
+  /* trk278：選ぶ所と読み上げを分けた（連読では読み上げを変えるため） */
+  assert.match(core, /selectSkinVol\(vol\);\s*announceSkinVol\(settings\.skinShelfVol\);/);
   /* 読み上げる文は 4 言語にあり、{name} と {n} を受ける */
   for (const key of ["skinVolShown", "skinVolDefault", "skinVolAll", "skinVolItems", "skinVolLabel", "skinVolOpen", "skinVolHint"]) {
     assert.equal((i18n.match(new RegExp("\\b" + key + ":", "g")) || []).length, 4, `${key} は 4 言語`);
@@ -84,10 +85,11 @@ test("保存は既存の settings の中（localStorage のキーは増やさな
   assert.match(core, /const v = window\.Trk && window\.Trk\.data && window\.Trk\.data\.SKIN_VOLUMES;\s*return Array\.isArray\(v\) \? v : \[\];/);
 });
 
-test("版とキャッシュ：trk274 で上がっている", () => {
-  /* trk275（レビュー対応）で trk275 へ。版名は sw.js と index.html で揃っていることだけ見る */
-  assert.match(html, /<meta name="trk-build" content="trk275">/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.03-trk275";/);
+test("版とキャッシュ：版名は sw.js と index.html で揃っている", () => {
+  /* 版はラウンドごとに上がるので、固定の名前ではなく「両方そろっている」ことを見る */
+  const v = (read("sw.js").match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
+  assert.ok(v, "sw.js に版名がある");
+  assert.match(html, new RegExp(`<meta name="trk-build" content="${v}">`));
   assert.match(html, /<script src="js\/skins-volumes\.js"><\/script>/);
   /* 依存の順：data.js → 目録（typography／characters／wizard／volumes）→ core.js */
   const at = s => html.indexOf(`<script src="${s}"></script>`);
