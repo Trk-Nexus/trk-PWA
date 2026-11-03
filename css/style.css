@@ -399,6 +399,33 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 /* 🧺 trk229：棚のさがす・並べる・整理 */
 #skinFind{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin:10px 0 0}
 .skinFindBox{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ui-muted);font-weight:700}
+/* 📚 trk274：巻の絞り込み（`#skinFind` の 2 段目＝<select> と「巻から選ぶ」） */
+#skinFind>button.miniBtn{align-self:end;padding:8px 12px;border-radius:10px;border:1px solid var(--ui-border);
+  background:var(--ui-field);color:var(--ui-text);font-weight:700}
+#skinFind>button.miniBtn:hover{filter:brightness(1.12)}
+/* 📚 巻のパネル：`popover`＝トップレイヤー。モーダルにしない（light-dismiss はブラウザが持つ） */
+#skinVolPanel{position:fixed;inset:0;margin:auto;width:min(680px,92vw);height:fit-content;max-height:min(78vh,560px);
+  overflow:auto;padding:16px 18px;border-radius:16px;border:1px solid var(--ui-border);
+  background:var(--ui-panel);color:var(--ui-text);box-shadow:0 24px 80px rgba(0,0,0,.55)}
+#skinVolPanel::backdrop{background:rgba(0,0,0,.42)}
+#skinVolList{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.skinVolCard{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:9px 11px;border-radius:12px;
+  border:1px solid var(--ui-border);background:var(--ui-field);color:var(--ui-text);text-align:left;font-size:13px;line-height:1.35}
+.skinVolCard b{font-size:13px;font-weight:800}
+.skinVolCard small{color:var(--ui-muted);font-size:11px;font-weight:700}
+.skinVolCard:hover{filter:brightness(1.12)}
+.skinVolCard.on{border-color:var(--ui-accent);box-shadow:inset 0 0 0 1px var(--ui-accent)}
+/* G-2（modern-web-guidance-src: animate-element-entry-exit）
+   出るとき・消えるときを `@starting-style` と `transition-behavior: allow-discrete` で。
+   古いブラウザでは**アニメーションが付かず、そのまま出る**だけ（崩れません） */
+#skinVolPanel,.skinVolCard{transition:opacity .18s ease,transform .18s ease,display .18s allow-discrete,overlay .18s allow-discrete}
+#skinVolPanel{opacity:0;transform:translateY(6px)}
+#skinVolPanel:popover-open{opacity:1;transform:none}
+@starting-style{#skinVolPanel:popover-open{opacity:0;transform:translateY(6px)}}
+.skinVolCard{transition-property:opacity,transform,filter,box-shadow,border-color}
+/* G-4（defer-rendering-heavy-content）：棚の**画面の外**は描かない。
+   `contain-intrinsic-size` で 1 枚分の高さを先に伝え、スクロールバーを暴れさせない */
+#skinGrid>.skinCell{content-visibility:auto;contain-intrinsic-size:auto 118px}
 .skinFindBox input,.skinFindBox select{width:100%;padding:7px 10px;border-radius:10px;border:1px solid var(--ui-border);
   background:var(--ui-field);color:var(--ui-text);font:inherit;font-size:13px}
 #skinGrid:empty{display:none}

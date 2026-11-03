@@ -76,15 +76,16 @@ const COLORS = {
   muted: "#c8c8c8", field: "#151515", button: "#202020", onAccent: "#000000",
 };
 
-/* ==================== 24 種が入っている ==================== */
-test("Wizard は 24 種（cli を名乗るのは 12 種）", () => {
-  assert.equal(WIZ.length, 24);
-  assert.equal(CLI_IDS.length, 12);
+/* ==================== 24 種が入っている ====================
+   📚 trk274：目録の 291 種を受けたので 24 → 62 種（cli は 50 種）。ここは**数の見張り**だけを今に合わせます */
+test("Wizard は 62 種（cli を名乗るのは 50 種）", () => {
+  assert.equal(WIZ.length, 62);
+  assert.equal(CLI_IDS.length, 50);
   for (const id of ["wizard-cli", "wizard-alchemy", "wizard-hermetic", "wizard-necromancer", "wizard-void", "wizard-tarot"]) {
     assert.ok(D.SKINS[id], id + " がありません");
   }
-  /* スキン全体は 49＋ミク 4＋ウィザード 24＝77 */
-  assert.equal(Object.keys(D.SKINS).length, 77);
+  /* スキン全体は 49＋ミク 4＋ウィザード 62＝115（このファイルは巻別 176 種を読まない） */
+  assert.equal(Object.keys(D.SKINS).length, 115);
 });
 
 test("24 種すべてが、文字 4.5:1・エラー行 3:1 を満たす", () => {
@@ -153,7 +154,10 @@ test("同じ目録なら同じバイト列（--check で見張れる）", () => 
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "trk270-same-"));
   const a = importCatalog([{ id: "wizard-b", cat: ["wizard"], colors: COLORS }, { id: "wizard-a", cat: ["wizard"], colors: COLORS }], [], dir);
   const b = importCatalog([{ id: "wizard-a", cat: ["wizard"], colors: COLORS }, { id: "wizard-b", cat: ["wizard"], colors: COLORS }], [], dir);
-  assert.equal(a.file, b.file, "並び順が違っても同じバイト列");
+  /* 📚 trk274：見出しに**目録ファイルの sha256**（どの写しかの印）を載せるので、
+     並び順が違う目録ではその 1 行だけが変わります。スキンの表は同じでなければなりません。 */
+  const table = t => t.split("\n").filter(line => !/^   目録の sha256：/.test(line)).join("\n");
+  assert.equal(table(a.file), table(b.file), "並び順が違ってもスキンの表は同じバイト列");
   assert.ok(a.file.indexOf('"wizard-a"') < a.file.indexOf('"wizard-b"'), "id の辞書順");
 });
 
@@ -190,7 +194,7 @@ test("端末の見た目に、cli を名乗るかを載せている（skinCatalo
 test("生成物は目録から作ったもの（手を入れない・cli の並びも目録どおり）", () => {
   assert.match(wizardSrc, /--cat=wizard --out=js\/skins-wizard\.js/, "作り方が書いてある");
   assert.match(wizardSrc, /手で直さないでください/);
-  assert.equal((wizardSrc.match(/^ {2}S\["[a-z0-9-]+"\] = \{/gm) || []).length, 24);
+  assert.equal((wizardSrc.match(/^ {2}S\["[A-Za-z0-9_.-]+"\] = \{/gm) || []).length, 62);
   /* 書体の二重エスケープが残っていない */
   assert.doesNotMatch(wizardSrc, /\\\\"/);
   /* 明るいテーマ（hermetic）は、地を明るくして読めるようにしている */
@@ -227,7 +231,7 @@ test("道具：bell:false は正しい書き方（鳴らさない）", () => {
   assert.deepEqual(r.json.problems, []);
 });
 
-test("本物の 24 種でも、auto は cli を名乗る先頭（wizard-arcane）を選ぶ", () => {
+test("本物の 62 種でも、auto は cli を名乗る先頭を選ぶ", () => {
   /* skinCatalog と同じ形（読み込み順＝生成物の id 辞書順）に直して、実際に選ばせてみる */
   const list = Object.keys(D.SKINS).map(id => {
     const def = D.SKINS[id] || {};
@@ -235,8 +239,13 @@ test("本物の 24 種でも、auto は cli を名乗る先頭（wizard-arcane�
     return { id, label: id, cats, cli: cats.some(c => ["wizard", "cli", "console"].includes(c)), look: !!(def.cli && typeof def.cli === "object") };
   });
   const picked = C.pickCliSkin(list, "auto");
-  assert.equal(picked, "wizard-arcane", "cli を持つ最初の 1 枚");
+  /* 📚 trk274：62 種になったので「先頭」は目録の並び（id の辞書順）で決まる */
+  const firstCli = list.find(s => s.look);
+  assert.equal(picked, firstCli.id, "cli を持つ最初の 1 枚");
   assert.ok(D.SKINS[picked].cli, "選ばれたスキンは cli を持つ");
-  assert.equal(list.find(s => s.cats.includes("wizard")).id, "wizard-alchemy", "辞書順の先頭は cli なし");
-  assert.equal(D.SKINS["wizard-alchemy"].cli, undefined, "cli を持たないことを確かめる");
+  /* 62 種では辞書順の先頭（wizard-abramelin）も cli を持つので、
+     「cli を持たないものを飛ばす」確かめは、cli を持たない最初の 1 枚で行う */
+  const firstWithout = list.find(s => s.cats.includes("wizard") && !s.look);
+  assert.ok(firstWithout, "cli を持たないウィザードがある");
+  assert.equal(D.SKINS[firstWithout.id].cli, undefined, "cli を持たないことを確かめる");
 });

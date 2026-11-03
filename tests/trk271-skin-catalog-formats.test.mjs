@@ -151,8 +151,9 @@ test("JSON からでも .js からでも、同じスキンが同じバイト列�
   const js = write(dir, "skins.js", sidecarJs([SKIN]));
   const a = importFrom(json);
   const b = importFrom(js);
-  /* 先頭のコメント（作り方の行＝出力先の道）だけは違ってよい。スキンの表は同じ */
-  const body = t => t.replace(/^.*(作り方|入力).*$/gm, "");
+  /* 先頭のコメント（作り方・出力先の道・目録の sha256）だけは違ってよい。スキンの表は同じ
+     📚 trk274：目録の sha256 は**入力ファイル**の指紋なので、JSON と .js では当然ちがいます */
+  const body = t => t.replace(/^.*(作り方|入力|目録の sha256).*$/gm, "");
   assert.equal(body(a.file), body(b.file), "形が違っても同じ生成物");
   assert.match(a.file, /S\["wizard-check"\]/);
   /* .js は timestamp を持っているが、生成物には持ち込まない（同じ目録なら同じバイト列） */

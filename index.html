@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk273">
+<meta name="trk-build" content="trk274">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -510,10 +510,21 @@
                     <option value="used" data-i18n="skinSortUsed"></option>
                     <option value="recent" data-i18n="skinSortRecent"></option>
                   </select></label>
+                <!-- 📚 trk274：巻で絞る（既定は定番＋ウィザードだけ。全巻は選んだときだけ出す） -->
+                <label class="skinFindBox"><span data-i18n="skinVolLabel"></span>
+                  <select id="skinVol" data-i18n-aria="skinVolLabel"></select></label>
+                <button type="button" class="miniBtn" id="skinVolBtn" popovertarget="skinVolPanel" data-i18n="skinVolOpen"></button>
               </div>
+              <!-- 📚 trk274：巻を切り替えた結果を、画面の見た目と同時に読み上げる（G-3） -->
+              <p class="hint status" id="skinVolStatus" role="status" aria-live="polite"></p>
               <div id="skinChips"></div>
               <div id="skinGrid"></div>
               <p class="hint" id="skinNoMatch" hidden data-i18n="skinNoMatch"></p>
+              <!-- 📚 trk274：巻から選ぶ（popover＝トップレイヤー・外側タップと Esc で閉じる・モーダルにしない） -->
+              <div id="skinVolPanel" popover>
+                <p class="hint" data-i18n="skinVolHint"></p>
+                <div id="skinVolList"></div>
+              </div>
               <!-- 🧺 trk241：隠したスキンがあるときだけ出る案内（隠しっぱなしにしないため） -->
               <p class="hint skinHiddenNote" id="skinHiddenNote" hidden>
                 <span id="skinHiddenNoteText"></span>
@@ -2258,6 +2269,8 @@
 <script src="js/characters/miku.js"></script>
 <!-- 🧙 trk269：Wizard のスキン（Skin 側の目録から生成。data.js の後・core.js の前に） -->
 <script src="js/skins-wizard.js"></script>
+<!-- 📚 trk274：巻別のスキン 176 種と、巻の目録（13 巻）。Skin 側の目録から生成（同じく data.js の後・core.js の前） -->
+<script src="js/skins-volumes.js"></script>
 <script src="js/tv-presets.js"></script>
 <!-- ▲ 自作キャラのMODは、この下に <script src="js/characters/○○.js"></script> を足してください -->
 <!-- ===== 土台 ===== -->

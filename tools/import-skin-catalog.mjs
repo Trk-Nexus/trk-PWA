@@ -9,16 +9,20 @@
    ＝ 手で写さない（写し間違いが出ない）・同じ目録からは同じバイト列（`--check` で見張れる）。
 
    使い方：
-     node tools/import-skin-catalog.mjs <目録> [--cat=wizard] [--exclude-cat=wizard] [--cli-only]
-                                        [--out=js/skins-wizard.js] [--volumes=<volumes.json>] [--check]
+     node tools/import-skin-catalog.mjs <目録> [--cat=wizard] [--exclude-cat=wizard] [--only-new] [--cli-only]
+                                        [--out=js/skins-wizard.js] [--volumes=<volumes.json>] [--kind=wizard|volumes]
+                                        [--check]
        <目録> は 3 つの形のどれでも（trk271）：
          ① catalog/skins.json（{ "skins": [...] }）
          ② スキン 1 枚の JSON
          ③ ジェネレーターの出力（.js・`const SKINS_WIZARD = [...]`／ESM の export も可）
        --cat      このカテゴリを持つスキンだけ（既定は wizard・`--cat=` で絞らない）
        --exclude-cat このカテゴリを持つスキンを除く（trk274：Wizard を別ファイルにするとき）
+       --only-new 本体が既に持っている ID（`js/data.js`・`js/characters/*.js`・`js/skins-wizard.js`）は書かない
+                  （trk274：目録 291 種のうち 214 種が新顔。既にある 77 種を上書きしないため）
        --cli-only `cli` を持つ（＝端末で着られる）スキンだけ
-       --volumes  trk-Avatar-Library の `skin-volumes/volumes.json`。渡すと**巻の目録**も一緒に書く
+       --volumes  trk-Avatar-Library の `skin-volumes/volumes.json`。渡すと**巻の目録**（`SKIN_VOLUMES`）も書く
+       --kind     書き出すファイルの見出し（`wizard`＝既定／`volumes`＝巻別）。中身の作り方は同じ
        --out      書き出す先（既定 js/skins-wizard.js）
        --check    書き出さずに、いまのファイルと同じかだけを見る（違えば終了コード 1）
 
@@ -39,6 +43,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { loadCatalogFile } from "./lib/skin-catalog.mjs";
 
@@ -55,11 +60,13 @@ const opt = (name, def) => {
 const wantCat = opt("cat", "wizard");
 const excludeCat = opt("exclude-cat", "");
 const volumesRel = opt("volumes", "");
+const onlyNew = args.includes("--only-new");
+const kind = opt("kind", "wizard");
 const cliOnly = args.includes("--cli-only");
 const outRel = opt("out", "js/skins-wizard.js");
 const checkOnly = args.includes("--check");
 
-if (!file) {
+if (!file || !["wizard", "volumes"].includes(kind)) {
   console.error("使い方：node tools/import-skin-catalog.mjs <目録.json> [--cat=wizard] [--cli-only] [--out=...] [--check]");
   process.exit(2);
 }
@@ -164,6 +171,25 @@ function fitInk(fg, bgs, need) {
   }
   return { color: best, moved: true };
 }
+/* 文字を、その向きの端（白／黒）へ**必要なぶんだけ**寄せる（trk274） */
+function pushInk(fg, bgs, need, end) {
+  const ok = v => Math.min(...bgs.map(bg => ratio(v, bg))) >= need - 1e-9;
+  if (ok(fg)) return fg;
+  for (let i = 1; i <= 20; i++) {
+    const v = D.mixHex(fg, end, i / 20);
+    if (ok(v)) return v;
+  }
+  return end;
+}
+/* 面（パネル・地など）を、文字から遠ざける向きの端へ**必要なぶんだけ**寄せる（trk274） */
+function pushBg(bg, fg, need, end) {
+  if (ratio(fg, bg) >= need - 1e-9) return bg;
+  for (let i = 1; i <= 20; i++) {
+    const v = D.mixHex(bg, end, i / 20);
+    if (ratio(fg, v) >= need - 1e-9) return v;
+  }
+  return end;
+}
 /* 背景（ボタンなど）を**文字から遠ざけて**合格点まで動かす（trk270）。
    文字の色は目録のまま残したいので、直すのは背景のほう。 */
 function fitAway(bg, fg, need, limit = 20) {
@@ -175,6 +201,45 @@ function fitAway(bg, fg, need, limit = 20) {
   }
   return { color: target, moved: true };
 }
+/* trk274：色の隔たり（0〜441）。「どちらを動かすと元の色に近いまま済むか」を測るのに使う */
+function hexRgb(v) {
+  const m = /^#([0-9a-f]{6})$/i.exec(v || "");
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function colorGap(a, b) {
+  const x = hexRgb(a), y = hexRgb(b);
+  if (!x || !y) return 0;   /* rgba() などは数えない（寄せの対象はほぼ hex） */
+  return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
+}
+/* 地（bg）とうすい文字（muted）は、**両方**が合格する組み合わせを探す（trk270・trk274）。
+   順番は 2 通り試して、**元の色からの隔たりが小さいほう**を採る。
+   ・先に muted（明るい地のテーマ向け：地を白へ飛ばさない）
+   ・先に地（暗い地のテーマ向け：muted を黒や白へ飛ばさない。wizard-hermetic がこれ） */
+function fitMutedAndBg(muted0, stops0, others, need, order) {
+  let muted = muted0;
+  const stops = stops0.slice();
+  let bgMoved = false;
+  for (let pass = 0; pass < 2; pass++) {
+    if (order === "bg") {
+      for (let i = 0; i < stops.length; i++) {
+        const f = fitAway(stops[i], muted, need);
+        if (f.color !== stops[i]) { stops[i] = f.color; bgMoved = true; }
+      }
+      muted = fitInk(muted, [...others, ...stops], need).color;
+    } else {
+      muted = fitInk(muted, [...others, ...stops], need).color;
+      for (let i = 0; i < stops.length; i++) {
+        const f = fitAway(stops[i], muted, need);
+        if (f.color !== stops[i]) { stops[i] = f.color; bgMoved = true; }
+      }
+    }
+  }
+  const gap = colorGap(muted0, muted) + stops.reduce((sum, c, i) => sum + colorGap(stops0[i], c), 0);
+  const ok = [...others, ...stops].every(bg => ratio(muted, bg) >= need - 1e-9);
+  return { muted, stops, bgMoved, gap, ok };
+}
 const pickLang = v => {
   if (!v || typeof v !== "object") return null;
   const out = {};
@@ -185,61 +250,70 @@ const pickLang = v => {
 /* ---------- 目録の 1 枚 → 本体の 1 枚 ---------- */
 function convert(s) {
   const c = s.colors || {};
-  /* trk274：地は**グラデーションのまま**受ける（1 色に潰すと目録と見た目が変わる） */
+  /* trk274：地は**グラデーションのまま**受ける（1 色に潰すと目表と見た目が変わる） */
   const bgGrad = parseGradient(c.bg);
   const bg = bgGrad ? bgGrad.colors[0] : cleanColor(c.bg);
-  const panel = cleanColor(c.panel), text = cleanColor(c.text), accent = cleanColor(c.accent), gold = cleanColor(c.gold);
-  if (!bg || !panel || !text || !accent || !gold) return null;
-  const field0 = cleanColor(c.field, D.mixHex(bg, panel, 0.5));
-  const button = cleanColor(c.button, D.mixHex(panel, text, 0.06));
-  const buttonRaw = button;
-  /* 文字（text）は、**パネルと入力欄**の上で 4.5:1 に届かせる（trk270）。
-     ボタンの上で届かないときは、文字ではなく**ボタンのほう**を動かす（下のbuttonFit）。
-     目録の値が合格なら**そのまま**使う（見た目を動かさない）。 */
-  const textFit = fitInk(text, [panel, field0], 4.5);
-  const inkText = textFit.color;
-  /* ボタンは、文字から遠ざけて 4.5:1 に（直すのは背景なので、見た目の印象は残りやすい） */
-  const buttonFit = fitAway(buttonRaw, inkText, 4.5);
-  const buttonFace = buttonFit.color;
+  const panel0 = cleanColor(c.panel), text0 = cleanColor(c.text), accent = cleanColor(c.accent), gold = cleanColor(c.gold);
+  if (!bg || !panel0 || !text0 || !accent || !gold) return null;
+  const field0 = cleanColor(c.field, D.mixHex(bg, panel0, 0.5));
+  const button0 = cleanColor(c.button, D.mixHex(panel0, text0, 0.06));
+  const bgStops0 = bgGrad ? bgGrad.colors.slice() : [bg];
+  const muted0 = cleanColor(c.muted, D.mixHex(text0, panel0, 0.38));
+
+  /* ---------- 向き（明るい文字か、暗い文字か）を決める（trk274） ----------
+     これまでは「文字を寄せ、届かなければ地を寄せる」を場当たりに繰り返していたため、
+     暗い地＋暗い文字のテーマ（copperHour など）で**地が黒・文字も黒**に寄る組み合わせが作れました。
+     ここでは目録の文字が白側か黒側かで向きを決め、**文字はその向きのまま**、
+     届かないぶんは**面（パネル・入力欄・ボタン・地・舞台）を反対側へ**動かします＝
+     デザインの明暗（夜のテーマは夜のまま）を保ちます。 */
+  const lightInk = D.luminance(text0) >= 0.18;
+  const inkEnd = lightInk ? "#ffffff" : "#000000";   /* 文字を寄せる先 */
+  const surfEnd = lightInk ? "#000000" : "#ffffff";  /* 面を寄せる先（文字から遠ざける） */
+
+  let inkText = text0;
+  let panel = panel0, field = field0, button = button0;
+  let bgStops = bgStops0.slice();
+  const textMoved = [];
+  for (let pass = 0; pass < 2; pass++) {
+    const wasInk = inkText;
+    /* 文字はまず**読む面（パネル・入力欄）**で届かせる。ボタン・地は背景なので、あとで動かす */
+    inkText = pushInk(inkText, [panel, field], 4.5, inkEnd);
+    if (inkText !== wasInk && !textMoved.length) textMoved.push(text0 + " → " + inkText);
+    panel = pushBg(panel, inkText, 4.5, surfEnd);
+    field = pushBg(field, inkText, 4.5, surfEnd);
+    button = pushBg(button, inkText, 4.5, surfEnd);
+    bgStops = bgStops.map(stop => pushBg(stop, inkText, 4.5, surfEnd));
+  }
+  /* 仕上げ：ボタン・地が端まで行っても届かないときだけ、文字をもう一度寄せる */
+  {
+    const wasInk = inkText;
+    inkText = pushInk(inkText, [panel, field, button, ...bgStops], 4.5, inkEnd);
+    if (inkText !== wasInk) {
+      if (!textMoved.length) textMoved.push(text0 + " → " + inkText);
+      panel = pushBg(panel, inkText, 4.5, surfEnd);
+      field = pushBg(field, inkText, 4.5, surfEnd);
+      button = pushBg(button, inkText, 4.5, surfEnd);
+      bgStops = bgStops.map(stop => pushBg(stop, inkText, 4.5, surfEnd));
+    }
+  }
+  const buttonFace = button;
   /* ホバーは「少し明るく」だが、届かなくなるときは混ぜる量を減らす */
   let hover = D.mixHex(buttonFace, inkText, 0.13);
   for (const amt of [0.13, 0.1, 0.07, 0.04, 0.02, 0]) {
-    const c = D.mixHex(buttonFace, inkText, amt);
-    hover = c;
-    if (ratio(inkText, c) >= 4.5) break;
+    const cand = D.mixHex(buttonFace, inkText, amt);
+    hover = cand;
+    if (ratio(inkText, cand) >= 4.5) break;
   }
-  /* 地（bg）とうすい文字（muted）は、**両方**が合格する組み合わせを探す（trk270）。
-     地が暗くパネルが明るいテーマ（wizard-hermetic）では、どちらか一方だけでは 4.5:1 に届かない。
-     まず地をうすい文字から遠ざけ、その地でうすい文字をもう一度合わせる（2 回で足りる）。 */
-  let bgStops = bgGrad ? bgGrad.colors.slice() : [bg];
-  let muted = cleanColor(c.muted, D.mixHex(inkText, panel, 0.38));
-  let bgMoved = false;
-  /* 順番が大事（trk274）：**先にうすい文字を濃くする**（元の色を残しやすい）。
-     それでも届かないときだけ、地のほうを寄せる（明るい地を白へ飛ばさないため）。 */
-  for (let pass = 0; pass < 2; pass++) {
-    muted = fitInk(muted, [buttonFace, hover, field0, ...bgStops, panel], 4.5).color;
-    for (let i = 0; i < bgStops.length; i++) {
-      const bgFix = fitAway(bgStops[i], muted, 4.5);
-      if (bgFix.color !== bgStops[i]) { bgStops[i] = bgFix.color; bgMoved = true; }
-    }
-  }
-  /* 仕上げ：本文（text）も地の**全部の停止点**で 4.5:1 に届かせる（グラデーションの途中で読みにくくならないように） */
-  for (let i = 0; i < bgStops.length; i++) {
-    const f = fitAway(bgStops[i], inkText, 4.5);
-    if (f.color !== bgStops[i]) { bgStops[i] = f.color; bgMoved = true; }
-  }
-  const bgOut = bgStops[0];
-  const bgCss = bgGrad ? gradientCss({ angle: bgGrad.angle, colors: bgStops }) : bgOut;
-  const bgList = [buttonFace, hover, field0, ...bgStops, panel];
-  const mutedFit = { color: muted, moved: muted !== cleanColor(c.muted, "") };
-  const field = field0;
+  /* うすい文字も、本文と同じ向きのまま合格点まで（目録の値が合格ならそのまま） */
+  const muted = pushInk(muted0, [buttonFace, hover, field, ...bgStops, panel], 4.5, inkEnd);
+  const bgMoved = bgStops.some((stop, i) => stop !== bgStops0[i]);
+  const bgCss = bgGrad ? gradientCss({ angle: bgGrad.angle, colors: bgStops }) : bgStops[0];
   const dark = bgStops.reduce((sum, h) => sum + D.luminance(h), 0) / bgStops.length < 0.35;
   /* onAccent も同じ。目録の値が合格ならそれを使い、だめなら黒か白の合うほうへ */
   const catalogOn = cleanColor(c.onAccent, D.luminance(accent) > 0.179 ? "#000000" : "#ffffff");
   const onAccent = ratio(catalogOn, accent) >= 4.5 ? catalogOn
     : (ratio("#000000", accent) >= ratio("#ffffff", accent) ? "#000000" : "#ffffff");
-  const ink = cleanColor(c.ink, inkText);
-  const ui = {
+  const makeUi = () => ({
     "--ui-bg": bgCss,
     "--ui-panel": D.hexToRgba(panel, 0.96),
     "--ui-soft": D.hexToRgba(inkText, 0.05),
@@ -254,17 +328,51 @@ function convert(s) {
     "--ui-gold": gold,
     "--ui-shadow": dark ? "0 24px 80px rgba(0,0,0,.55)" : "0 24px 70px rgba(30,40,60,.16)",
     "--ui-glow": D.hexToRgba(accent, 0.14),
-  };
+  });
+  let ui = makeUi();
+  /* 小さなアクセント文字（`--ui-accent-ink`）は data.js が決めます。パネルが中間色だと
+     黒も白も 4.5:1 に届かず、そこだけ読みにくいテーマができます（amber など）。
+     アプリと同じ関数で測り、届かないときは**パネルを反対側へ**少しずつ寄せます。 */
+  if (typeof D.accentInk === "function" && typeof D.accentInkBackground === "function") {
+    /* accentInkBackground は [r,g,b,a] の配列を返します（文字列ではありません） */
+    const rgbHex = v => Array.isArray(v)
+      ? "#" + v.slice(0, 3).map(n => Math.round(n).toString(16).padStart(2, "0")).join("")
+      : D.toHex(v);
+    const inkOk = u => {
+      const back = D.accentInkBackground(u);
+      if (!back) return true;
+      return ratio(D.toHex(D.accentInk(u)), rgbHex(back)) >= 4.5;
+    };
+    for (let i = 0; i < 20 && !inkOk(ui); i++) {
+      panel = D.mixHex(panel, surfEnd, 0.05);
+      ui = makeUi();
+    }
+  }
   const missFit = fitInk(D.mixHex(inkText, bg, 0.45), [field], 3);
-  /* trk274：舞台（stage）のグラデーションも受ける。文字（ink）が全部の停止点で 4.5:1 に届くように寄せる */
+  /* trk274：舞台（stage）も受ける。**1 色でもグラデーションでも**、文字（ink）が
+     全部の停止点で 4.5:1 に届くまで、文字から遠ざける（trk274 で 1 色のstageも寄せるようにした） */
   const stageGrad = parseGradient(c.stage);
+  let ink = cleanColor(c.ink, inkText);
+  /* 目録の ink が舞台と**ほぼ同じ明るさ**（黒地に黒など）のときは、データの側が壊れている。
+     舞台を灰色に塗り替えるより、**文字を反対の端へ**（黒→白）動かすほうがテーマの意図に近い。 */
+  {
+    const rawStops = stageGrad ? stageGrad.colors : (cleanColor(c.stage) ? [cleanColor(c.stage)] : []);
+    if (rawStops.length && Math.min(...rawStops.map(stop => ratio(ink, stop))) < 1.6) {
+      ink = D.luminance(ink) >= 0.18 ? "#000000" : "#ffffff";
+    }
+  }
+  /* 舞台は**ゲーム画面の文字（ink）**から遠ざける（UI の文字とは別のことがある） */
+  const stageEnd = D.luminance(ink) >= 0.18 ? "#000000" : "#ffffff";
   let stage = bgCss;
   let stageMoved = false;
   if (stageGrad) {
-    const fitted = fitGradient(stageGrad, ink, 4.5);
-    stage = gradientCss(fitted.gradient); stageMoved = fitted.moved;
+    const stops = stageGrad.colors.map(stop => pushBg(stop, ink, 4.5, stageEnd));
+    stageMoved = stops.some((stop, i) => stop !== stageGrad.colors[i]);
+    stage = gradientCss({ angle: stageGrad.angle, colors: stops });
   } else if (cleanColor(c.stage)) {
-    stage = cleanColor(c.stage);
+    const raw = cleanColor(c.stage);
+    stage = pushBg(raw, ink, 4.5, stageEnd);
+    stageMoved = stage !== raw;
   }
   const game = {
     don: cleanColor(c.don, accent),
@@ -309,24 +417,113 @@ function convert(s) {
   const cli = D.sanitizeCliLook(s.cli);
   if (cli) skin.cli = cli;
   const moved = [];
-  if (textFit.moved) moved.push("文字 " + text + " → " + inkText);
-  if (buttonFit.moved) moved.push("ボタン " + buttonRaw + " → " + buttonFace);
-  if (bgMoved) moved.push(bgGrad ? "地（グラデーション）を合格点まで寄せた → " + bgCss : "地 " + bg + " → " + bgOut);
-  if (stageMoved) moved.push("舞台（グラデーション）を合格点まで寄せた → " + stage);
-  if (mutedFit.moved) moved.push("うすい文字 " + cleanColor(c.muted, "(なし)") + " → " + muted);
+  if (textMoved.length) moved.push("文字 " + textMoved[0]);
+  if (panel !== panel0) moved.push("パネル " + panel0 + " → " + panel);
+  if (field !== field0) moved.push("入力欄 " + field0 + " → " + field);
+  if (buttonFace !== button0) moved.push("ボタン " + button0 + " → " + buttonFace);
+  if (bgMoved) moved.push(bgGrad ? "地（グラデーション）を合格点まで寄せた → " + bgCss : "地 " + bg + " → " + bgStops[0]);
+  if (stageMoved) moved.push("舞台を合格点まで寄せた → " + stage);
+  if (muted !== muted0) moved.push("うすい文字 " + cleanColor(c.muted, "(なし)") + " → " + muted);
   if (missFit.moved) moved.push("エラー色 → " + missFit.color);
   return { id: s.id, skin, moved };
+}
+
+/* ---------- 本体が既に持っている ID（--only-new） ---------- */
+/* 目録はこちらの定番（`other` の 53 種）も含みます。それを書き戻すと、
+   手で整えた値（locked・type・cli など）を目録の写しで上書きしてしまうので、
+   `--only-new` のときは**新顔だけ**を書きます（trk274）。 */
+function loadExistingIds() {
+  const sandbox = {
+    console, Math, JSON, Object, Array, String, Number, Date, Set, Map, Error, RegExp, Intl,
+    parseInt, parseFloat, isNaN, isFinite,
+    TEXT: { ja: {}, en: {}, zh: {}, ko: {} }, tr: () => "",
+    document: {
+      documentElement: { style: { setProperty() {} } }, getElementById: () => null,
+      createElement: () => ({ style: {}, append() {}, addEventListener() {} }),
+    },
+  };
+  sandbox.window = sandbox;
+  vm.createContext(sandbox);
+  const files = ["js/data.js"];
+  const dir = path.join(ROOT, "js/characters");
+  if (fs.existsSync(dir)) {
+    for (const f of fs.readdirSync(dir).sort()) if (f.endsWith(".js")) files.push("js/characters/" + f);
+  }
+  /* 出力先が skins-wizard.js でないときだけ、それも「既にある」に数える */
+  const wizardPath = path.join(ROOT, "js/skins-wizard.js");
+  if (path.resolve(ROOT, outRel) !== wizardPath && fs.existsSync(wizardPath)) files.push("js/skins-wizard.js");
+  for (const f of files) {
+    try {
+      vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), sandbox, { filename: f });
+    } catch (e) {
+      console.error(`⚠ ${f} を読めませんでした（--only-new をやめます）：${e.message}`);
+      return null;
+    }
+  }
+  const S = sandbox.window && sandbox.window.Trk && sandbox.window.Trk.data && sandbox.window.Trk.data.SKINS;
+  return S ? new Set(Object.keys(S)) : null;
+}
+const existingIds = onlyNew ? loadExistingIds() : null;
+if (onlyNew && !existingIds) {
+  console.error("✗ 既にある ID を読めませんでした（--only-new を外して作り直してください）");
+  process.exit(2);
+}
+
+/* ---------- 巻の目録（--volumes） ---------- */
+/* 形：{ version:1, groups:[ {id,title,ids:[…]} | {id,title,category:"wizard"} | {id,title,remaining:true} ] }
+   ・`ids` は目録にある ID だけを残す（知らない ID は落として知らせる）
+   ・`category` は目録の cat から引く（wizard 62 種）
+   ・`remaining` は「ほかのどの巻にも入っていないもの」（other 53 種＝こちらの定番） */
+function buildVolumes() {
+  if (!volumesRel) return null;
+  let raw;
+  try {
+    raw = JSON.parse(fs.readFileSync(path.resolve(ROOT, volumesRel), "utf8"));
+  } catch (e) {
+    console.error(`✗ 巻の目録を読めませんでした（${volumesRel}）：${e.message}`);
+    process.exit(2);
+  }
+  const groups = raw && Array.isArray(raw.groups) ? raw.groups : null;
+  if (!groups) {
+    console.error(`✗ 巻の目録に groups がありません（${volumesRel}）`);
+    process.exit(2);
+  }
+  const allIds = list.filter(s => s && typeof s.id === "string" && ID_RE.test(s.id)).map(s => s.id);
+  const known = new Set(allIds);
+  const byCat = {};
+  for (const s of list) {
+    if (!s || typeof s.id !== "string" || !ID_RE.test(s.id)) continue;
+    for (const c of D.sanitizeSkinCats(s.cat)) (byCat[c] = byCat[c] || []).push(s.id);
+  }
+  const used = new Set();
+  const out = [];
+  for (const g of groups) {
+    if (!g || typeof g.id !== "string" || !/^[a-z][a-z0-9-]{1,23}$/.test(g.id)) continue;
+    const title = typeof g.title === "string" ? g.title.trim().slice(0, 60) : "";
+    let ids;
+    if (Array.isArray(g.ids)) ids = g.ids.filter(id => typeof id === "string" && ID_RE.test(id));
+    else if (typeof g.category === "string") ids = (byCat[g.category] || []).slice();
+    else if (g.remaining) ids = allIds.filter(id => !used.has(id));
+    else continue;
+    ids = [...new Set(ids)].filter(id => known.has(id));
+    for (const id of ids) used.add(id);
+    out.push({ id: g.id, title: title || g.id, ids });
+  }
+  return { version: 1, groups: out, orphan: allIds.filter(id => !used.has(id)) };
 }
 
 /* ---------- 選ぶ ---------- */
 const chosen = [];
 const skipped = [];
-const fitted = [];   /* 4.5:1／3:1 に届かせるために色を動かしたもの（trk270） */
+const already = [];   /* 既にある（--only-new） */
+const fitted = [];    /* 4.5:1／3:1 に届かせるために色を動かしたもの（trk270） */
 for (const s of list) {
   if (!s || typeof s.id !== "string") continue;
   const cats = D.sanitizeSkinCats(s.cat);
-  if (wantCat && !cats.includes(wantCat)) continue;
   if (!ID_RE.test(s.id)) { skipped.push(s.id + "（id の形）"); continue; }
+  if (wantCat && !cats.includes(wantCat)) continue;
+  if (excludeCat && cats.includes(excludeCat)) continue;
+  if (existingIds && existingIds.has(s.id)) { already.push(s.id); continue; }
   if (cliOnly && !(s.cli && typeof s.cli === "object")) { skipped.push(s.id + "（cli なし）"); continue; }
   const conv = convert({ ...s, cat: cats });
   if (!conv) { skipped.push(s.id + "（色が足りない）"); continue; }
@@ -335,7 +532,9 @@ for (const s of list) {
 }
 chosen.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
-if (!chosen.length) {
+const volumes = buildVolumes();
+
+if (!chosen.length && !volumes) {
   /* 目録に 1 枚も無い／このカテゴリが無い／色が無い（`ui` だけの生成物を渡した等）を言い分ける */
   const inCat = list.filter(s => s && D.sanitizeSkinCats(s.cat).includes(wantCat));
   const withColors = inCat.filter(s => s.colors && typeof s.colors === "object");
@@ -348,18 +547,33 @@ if (!chosen.length) {
 
 /* ---------- 書き出す（同じ目録なら同じバイト列） ---------- */
 const q = v => JSON.stringify(v);
+const sha256 = createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+const rebuild = "node tools/import-skin-catalog.mjs <目録.json>" +
+  ` --cat=${wantCat}` + (excludeCat ? ` --exclude-cat=${excludeCat}` : "") +
+  (onlyNew ? " --only-new" : "") + (cliOnly ? " --cli-only" : "") +
+  (volumesRel ? " --volumes=<volumes.json>" : "") +
+  (kind !== "wizard" ? ` --kind=${kind}` : "") + ` --out=${outRel}`;
 const lines = [];
 lines.push("// SPDX-License-Identifier: GPL-3.0-or-later");
-lines.push("/* 🧙 ウィザードのスキン（trk269・trk270・Skin 側の目録から生成）");
-lines.push("");
-lines.push("   出どころ：trk-Avatar-Library の `catalog/skins.json`（" + wantCat + " カテゴリ" + (cliOnly ? "・cli あり" : "") + "）");
-lines.push("   作り方：node tools/import-skin-catalog.mjs <目録.json> --cat=" + wantCat + (cliOnly ? " --cli-only" : "") + " --out=" + outRel);
+if (kind === "volumes") {
+  lines.push("/* 📚 巻別のスキン（trk274・Skin 側の目録から生成）");
+  lines.push("");
+  lines.push("   出どころ：trk-Avatar-Library の `catalog/skins.json`（巻の目録は `skin-volumes/volumes.json`）");
+} else {
+  lines.push("/* 🧙 ウィザードのスキン（trk269・trk270・trk274・Skin 側の目録から生成）");
+  lines.push("");
+  lines.push("   出どころ：trk-Avatar-Library の `catalog/skins.json`（" + (wantCat || "全部") + " カテゴリ" + (cliOnly ? "・cli あり" : "") + "）");
+}
+lines.push("   目録の sha256：" + sha256 + "（この写しがどの目録から作られたかの印）");
+lines.push("   作り方：" + rebuild);
 lines.push("   ・手で直さないでください（次の取り込みで消えます）。直すときは目録側（Skin 側）で。");
 lines.push("   ・このファイルは data.js の後・core.js の前に読みます（起動時のスキン復元より先に要るため）。");
+if (onlyNew) lines.push("   ・`--only-new`：本体が既に持っている ID（定番・ミク・Wizard）は書きません（上書きしないため）。");
 lines.push("   ============================================================================ */");
 lines.push('"use strict";');
 lines.push("(() => {");
-lines.push("  const S = window.Trk && window.Trk.data && window.Trk.data.SKINS;");
+lines.push("  const D = window.Trk && window.Trk.data;");
+lines.push("  const S = D && D.SKINS;");
 lines.push("  if (!S) return;   /* data.js が無い（別の読み込み方）ときは何もしない */");
 for (const { id, skin } of chosen) {
   lines.push("  S[" + q(id) + "] = {");
@@ -379,6 +593,15 @@ for (const { id, skin } of chosen) {
   lines[lines.length - 1] = last.replace(/,$/, "");
   lines.push("  };");
 }
+if (volumes) {
+  lines.push("  /* 📚 巻の目録（13 巻）。`ids` は**この目録に居る ID の全部**（既に本体が持っているものも含む）。");
+  lines.push("     ＝ 棚で巻を選ぶと、その巻の全員が出る（新顔も定番も同じ扱い）。 */");
+  lines.push("  if (D) D.SKIN_VOLUMES = [");
+  volumes.groups.forEach((g, i) => {
+    lines.push("    {id:" + q(g.id) + ",title:" + q(g.title) + ",ids:" + q(g.ids) + "}" + (i === volumes.groups.length - 1 ? "" : ","));
+  });
+  lines.push("  ];");
+}
 lines.push("})();");
 const body = lines.join("\n") + "\n";
 
@@ -386,13 +609,18 @@ const outPath = path.resolve(ROOT, outRel);
 if (checkOnly) {
   const now = fs.existsSync(outPath) ? fs.readFileSync(outPath, "utf8") : "";
   if (now !== body) {
-    console.error(`✗ ${outRel} が目録と違います（node tools/import-skin-catalog.mjs ${file} --cat=${wantCat}${cliOnly ? " --cli-only" : ""} で作り直してください）`);
+    console.error(`✗ ${outRel} が目録と違います（${rebuild} で作り直してください）`);
     process.exit(1);
   }
-  console.log(`✓ ${outRel} は目録どおり（${chosen.length} 種）`);
+  console.log(`✓ ${outRel} は目録どおり（${chosen.length} 種${volumes ? `・巻 ${volumes.groups.length}` : ""}）`);
   process.exit(0);
 }
 fs.writeFileSync(outPath, body);
 console.log(`✓ ${outRel} に ${chosen.length} 種を書きました（${chosen.map(c => c.id).join(", ")}）`);
+if (volumes) {
+  console.log(`  巻の目録：${volumes.groups.length} 巻（${volumes.groups.map(g => `${g.id}:${g.ids.length}`).join(" ")}）`);
+  if (volumes.orphan.length) console.log(`  どの巻にも入っていない ID：${volumes.orphan.length} 件（${volumes.orphan.slice(0, 8).join(", ")}${volumes.orphan.length > 8 ? " …" : ""}）`);
+}
+if (already.length) console.log(`  既にあるので書かない：${already.length} 件（--only-new）`);
 if (skipped.length) console.log(`  飛ばした：${skipped.length} 件（${skipped.slice(0, 5).join(" / ")}${skipped.length > 5 ? " …" : ""}）`);
 if (fitted.length) console.log(`  合格点まで寄せた：${fitted.length} 件\n    ` + fitted.join("\n    "));
