@@ -62,6 +62,15 @@
     cliHelpRe: "re … いまの曲を最初から（再生位置を 0 に）",
     cliRestartNone: "まだ鳴らしていません（先に play で選んでください）。",
     cliRestartDone: "{name} を最初からにしました。",
+    /* ⌨ trk284：辞書登録（呪文）の GUI */
+    cliSpellPanelTitle: "📖 辞書登録（呪文）",
+    cliSpellPanelHint: "よく唱える並びを名前で覚えておけます（例：night → skin terminal; volume 30）。ここで足すと、端末で spell <名前> と打つだけで唱えられます。",
+    cliSpellId: "名前（英数字と - で 24 文字まで）",
+    cliSpellBody: "唱える中身（; で区切る）",
+    cliSpellAddBtn: "＋ 辞書に登録",
+    cliSpellDelBtn: "削除",
+    cliSpellCount: "辞書 {n} 本（うち自作 {m} 本・上限 {max}）",
+    cliSpellFull: "辞書がいっぱいです（{max} 本まで）。使わないものを消してください。",
     cliBellLabel: "エラーの音（ピン）を鳴らす",
     cliBellHint: "音は、スキンが「鳴らす」と言っているときだけ鳴ります。ここを切れば、どのスキンでも鳴りません（ターミナルで bell off と唱えても切れます）。",
     cliFeelHint: "Tab 補完の有無・履歴の長さ・カーソルの形・地の透け方は、スキン（cli の項目）が決めます。",
@@ -195,6 +204,15 @@
     cliHelpRe: "re … restart the current track from the beginning",
     cliRestartNone: "Nothing is playing yet (pick a track with play first).",
     cliRestartDone: "Restarted {name}.",
+    /* ⌨ trk284：the spell dictionary GUI */
+    cliSpellPanelTitle: "📖 Spell dictionary",
+    cliSpellPanelHint: "Save a sequence you cast often under a name (e.g. night → skin terminal; volume 30). Register it here and cast it with spell <name>.",
+    cliSpellId: "Name (letters, digits and - up to 24)",
+    cliSpellBody: "What it casts (separate with ;)",
+    cliSpellAddBtn: "＋ Add to dictionary",
+    cliSpellDelBtn: "Delete",
+    cliSpellCount: "{n} spells ({m} of your own · up to {max})",
+    cliSpellFull: "The dictionary is full (up to {max}). Delete one you no longer use.",
     cliBellLabel: "Play the error beep",
     cliBellHint: "It only sounds when the skin says it may. Turn this off and no skin will beep (you can also cast bell off in the terminal).",
     cliFeelHint: "Tab completion, how long the history is, the cursor shape and how see-through the background is all come from the skin (its cli values).",
@@ -328,6 +346,15 @@
     cliHelpRe: "re … 从头播放当前曲（播放位置归 0）",
     cliRestartNone: "还没有播放（请先用 play 选择）。",
     cliRestartDone: "已从头播放 {name}。",
+    /* ⌨ trk284 */
+    cliSpellPanelTitle: "📖 咒语词典（登记）",
+    cliSpellPanelHint: "把常念的连招起个名字记住（例：night → skin terminal; volume 30）。在这里添加后，只需在终端输入 spell <名字>。",
+    cliSpellId: "名字（字母、数字和 - ，最多 24 个）",
+    cliSpellBody: "要念的内容（用 ; 分隔）",
+    cliSpellAddBtn: "＋ 添加到词典",
+    cliSpellDelBtn: "删除",
+    cliSpellCount: "词典 {n} 条（自制 {m} 条・上限 {max}）",
+    cliSpellFull: "词典已满（最多 {max} 条）。请删除不用的条目。",
     cliBellLabel: "播放出错提示音",
     cliBellHint: "只有当皮肤说可以响时才会响。关掉这里，任何皮肤都不会响（也可以在终端里说 bell off）。",
     cliFeelHint: "Tab 补全的有无、历史长度、光标形状、背景的透明度，都由皮肤（cli 项）决定。",
@@ -461,6 +488,15 @@
     cliHelpRe: "re … 지금 곡을 처음부터 (재생 위치 0)",
     cliRestartNone: "아직 재생하지 않았습니다 (먼저 play 로 고르세요).",
     cliRestartDone: "{name} 을(를) 처음부터 재생합니다.",
+    /* ⌨ trk284 */
+    cliSpellPanelTitle: "📖 주문 사전(등록)",
+    cliSpellPanelHint: "자주 외우는 순서를 이름으로 기억해 둘 수 있습니다(예: night → skin terminal; volume 30). 여기서 추가하면 터미널에서 spell <이름> 만 입력하면 됩니다.",
+    cliSpellId: "이름(영문·숫자·- 로 24자까지)",
+    cliSpellBody: "외울 내용(; 로 구분)",
+    cliSpellAddBtn: "＋ 사전에 등록",
+    cliSpellDelBtn: "삭제",
+    cliSpellCount: "사전 {n} 개(직접 만든 것 {m} 개・최대 {max})",
+    cliSpellFull: "사전이 가득 찼습니다(최대 {max}개). 쓰지 않는 것을 지워 주세요.",
     cliBellLabel: "오류 소리(삑) 내기",
     cliBellHint: "스킨이 \"내도 된다\"고 할 때만 울립니다. 여기서 끄면 어떤 스킨도 울리지 않습니다(터미널에서 bell off 라고 외쳐도 꺼집니다).",
     cliFeelHint: "Tab 자동완성 여부, 기록 길이, 커서 모양, 배경의 투명도는 스킨(cli 항목)이 정합니다.",
@@ -580,22 +616,53 @@
   const isCliCat = cats => Array.isArray(cats) && cats.some(c => CLI_CATS.includes(String(c).toLowerCase()));
 
   const SPELL_MAX = 24;
+  const SPELL_ID_MAX = 24;      /* ⌨ trk284：辞書の名前の長さ（入力欄の maxlength と揃える） */
   const SPELL_BODY_MAX = 200;
   const CLI_LIST_LIMIT = 40;
   const CAST_MAX = 12;
+
+  /* ---------- ⌨ trk284：入力の取りこぼしを防ぐ純粋な道具 ---------- */
+  /* 全角で打ってしまった呪文（ｐｌａｙ・ＰＬＡＹ）を、半角の小文字へ寄せる。NFKC は 1 文字→1 文字。 */
+  function normalizeCommand(text) {
+    const raw = String(text == null ? "" : text);
+    let s = raw;
+    try { s = raw.normalize("NFKC"); } catch (_) { s = raw; }
+    return s.trim().toLowerCase();
+  }
+  /* 変換中（IME）の Enter／Tab／矢印は、端末の操作に使わない。e.keyCode 229 は IME の目印。 */
+  function compositionBlocked(isComposing, keyCode) {
+    return isComposing === true || Number(keyCode) === 229;
+  }
+  /* Tab で補完してよいか：補完が有効・Shift でない・打っている文字がある。空ならフォーカスを動かす。 */
+  function tabShouldComplete(text, shiftKey, completionOn) {
+    if (shiftKey === true || completionOn === false) return false;
+    return String(text == null ? "" : text).trim() !== "";
+  }
+  /* 辞書（呪文）の下書きを検査する。返す値：""＝よい／id／body／builtin／full */
+  function spellDraftProblem(id, body, opts) {
+    const o = opts || {};
+    const key = String(id == null ? "" : id).trim().toLowerCase();
+    if (!/^[a-z0-9][a-z0-9-]{0,23}$/.test(key)) return "id";
+    if (!String(body == null ? "" : body).trim()) return "body";
+    if (o.builtin === true) return "builtin";
+    if (Number(o.count) >= Number(o.max == null ? SPELL_MAX : o.max)) return "full";
+    return "";
+  }
 
   function parseLine(line) {
     const raw = String(line == null ? "" : line).replace(/\s+/g, " ").trim();
     if (!raw) return { cmd: "", args: [], rest: "", raw: "" };
     const sp = raw.indexOf(" ");
-    const cmd = (sp < 0 ? raw : raw.slice(0, sp)).toLowerCase();
+    const cmd = normalizeCommand(sp < 0 ? raw : raw.slice(0, sp));   /* trk284：全角の呪文も通す */
     const rest = sp < 0 ? "" : raw.slice(sp + 1).trim();
     return { cmd, args: rest ? rest.split(" ") : [], rest, raw };
   }
 
   /* mm:ss / h:mm:ss / 秒（数だけ）。読めなければ null。 */
   function parseClock(text) {
-    const s = String(text == null ? "" : text).trim();
+    let raw = String(text == null ? "" : text);
+    try { raw = raw.normalize("NFKC"); } catch (_) {}
+    const s = raw.trim();
     if (!s) return null;
     if (/^\d{1,6}$/.test(s)) return Number(s);
     const m = s.match(/^(\d{1,3}):([0-5]?\d)(?::([0-5]?\d))?$/);
@@ -611,7 +678,9 @@
   }
   /* 0〜100 に寄せる。数でなければ null */
   function clampPercent(value) {
-    const n = Number(value);
+    let v = value;
+    try { v = String(value == null ? "" : value).normalize("NFKC"); } catch (_) {}
+    const n = Number(v);
     if (!Number.isFinite(n)) return null;
     return Math.max(0, Math.min(100, Math.round(n)));
   }
@@ -953,7 +1022,9 @@
 
   /* ==================== 端末の見た目と配線（ここから下はブラウザー側） ==================== */
   let overlay = null, dialog = null, logNode = null, inputNode = null, typingBadge = null;
-  const state = { built: false, open: false, history: [], hi: -1, swapSkin: "", userSkin: false, returnFocus: null };
+  /* ⌨ trk284：辞書登録（呪文）の GUI の部品 */
+  let spellList = null, spellStatus = null, spellIdInput = null, spellBodyInput = null;
+  const state = { built: false, open: false, history: [], hi: -1, swapSkin: "", userSkin: false, returnFocus: null, composing: false };
 
   const t = (key, vars) => tr(key, vars);
 
@@ -1231,18 +1302,77 @@
     const hint = labelled("p", "cliHint", "hint cliHintText");
     hint.id = "cliHint";
 
-    dialog.append(header, logNode, typingBadge, form, hint);
+    /* ⌨ trk284：辞書登録（呪文）の GUI。端末のいちばん下に置く（整理したいときに見つけやすい） */
+    const spellBox = core.el("details", "cliSpellPanel");
+    spellBox.id = "cliSpellPanel";
+    const spellSum = labelled("summary", "cliSpellPanelTitle");
+    const spellHint = labelled("p", "cliSpellPanelHint", "hint");
+    spellList = core.el("ul", "cliSpellList");
+    spellList.id = "cliSpellList";
+    spellList.setAttribute("aria-label", tr("cliSpellPanelTitle"));
+    spellList.dataset.i18nAria = "cliSpellPanelTitle";
+    const spellAdd = core.el("div", "cliSpellAdd");
+    const idField = core.el("label", "field");
+    idField.append(labelled("span", "cliSpellId"));
+    spellIdInput = core.el("input", "cliSpellIdInput");
+    spellIdInput.id = "cliSpellIdInput";
+    spellIdInput.type = "text";
+    spellIdInput.maxLength = SPELL_ID_MAX;
+    spellIdInput.autocomplete = "off";
+    spellIdInput.setAttribute("autocapitalize", "off");
+    spellIdInput.setAttribute("spellcheck", "false");
+    spellIdInput.setAttribute("aria-label", tr("cliSpellId"));
+    spellIdInput.dataset.i18nAria = "cliSpellId";
+    idField.append(spellIdInput);
+    const bodyField = core.el("label", "field");
+    bodyField.append(labelled("span", "cliSpellBody"));
+    spellBodyInput = core.el("input", "cliSpellBodyInput");
+    spellBodyInput.id = "cliSpellBodyInput";
+    spellBodyInput.type = "text";
+    spellBodyInput.maxLength = SPELL_BODY_MAX;
+    spellBodyInput.autocomplete = "off";
+    spellBodyInput.setAttribute("autocapitalize", "off");
+    spellBodyInput.setAttribute("spellcheck", "false");
+    spellBodyInput.setAttribute("aria-label", tr("cliSpellBody"));
+    spellBodyInput.dataset.i18nAria = "cliSpellBody";
+    bodyField.append(spellBodyInput);
+    spellStatus = core.el("p", "hint status cliSpellStatus");
+    spellStatus.id = "cliSpellStatus";
+    spellStatus.setAttribute("role", "status");
+    spellStatus.setAttribute("aria-live", "polite");
+    const spellAddBtn = labelled("button", "cliSpellAddBtn", "instSmallBtn");
+    spellAddBtn.type = "button";
+    spellAddBtn.id = "cliSpellAddBtn";
+    spellAddBtn.addEventListener("click", () => addSpellFromGui());
+    /* Enter でも登録できる（form の入れ子は作らない＝端末の form を壊さない） */
+    for (const node of [spellIdInput, spellBodyInput]) {
+      node.addEventListener("keydown", e => {
+        if (compositionBlocked(e.isComposing, e.keyCode)) return;
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        addSpellFromGui();
+      });
+    }
+    spellAdd.append(idField, bodyField, spellAddBtn);
+    spellBox.append(spellSum, spellHint, spellList, spellAdd, spellStatus);
+
+    dialog.append(header, logNode, typingBadge, form, hint, spellBox);
     overlay.append(backdrop, dialog);
     document.body.append(overlay);
 
-    form.addEventListener("submit", e => { e.preventDefault(); void submit(); });
+    form.addEventListener("submit", e => { e.preventDefault(); if (state.composing) return; void submit(); });
+    /* ⌨ trk284：IME の変換中かどうかを持つ（変換中の Enter で、書きかけを唱えない） */
+    inputNode.addEventListener("compositionstart", () => { state.composing = true; });
+    inputNode.addEventListener("compositionend", () => { state.composing = false; });
     inputNode.addEventListener("keydown", onInputKey);
     /* ⌨ trk283：入力欄以外へフォーカスが逃げたら、打てる状態へ戻す（ボタン・選択は除く） */
     overlay.addEventListener("focusin", e => {
       if (!state.open) return;
       const t = e.target;
       if (!t || t === inputNode) return;
-      if (t.tagName === "BUTTON" || t.tagName === "SELECT" || t.tagName === "TEXTAREA") return;
+      /* 出力を読み返す・辞書を書く・ボタンを押す、は邪魔しない（trk284） */
+      if (t.closest && t.closest("#cliLog, #cliSpellPanel")) return;
+      if (["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(t.tagName)) return;
       focusInput();
     });
     /* 入力欄をタップ→フォーカスが戻ったら、バッジを更新する */
@@ -1251,9 +1381,69 @@
     state.built = true;
     return true;
   }
+  /* ---------- ⌨ trk284：辞書登録（呪文）の GUI ---------- */
+  function renderSpells() {
+    if (!spellList) return;
+    const spells = allSpells();
+    const ids = Object.keys(spells);
+    spellList.textContent = "";
+    for (const id of ids) {
+      const li = core.el("li", "cliSpellRow");
+      const name = core.el("code", "cliSpellName", id);
+      const body = core.el("span", "cliSpellText", String(spells[id]));
+      const builtin = Object.prototype.hasOwnProperty.call(BUILTIN_SPELLS, id);
+      const del = core.el("button", "miniBtn cliSpellDel", tr("cliSpellDelBtn"));
+      del.type = "button";
+      del.setAttribute("aria-label", tr("cliSpellDelBtn") + " " + id);
+      if (builtin) { del.disabled = true; del.title = tr("cliSpellBuiltin"); }
+      else del.addEventListener("click", () => {
+        const r = delSpell(id);
+        log(r.ok ? "out" : "err", tr(r.ok ? "cliSpellRemoved" : "cliSpellUnknown", { id }));
+        renderSpells();
+        focusInput();
+      });
+      li.append(name, body, del);
+      spellList.append(li);
+    }
+    if (spellStatus) {
+      const mine = ids.filter(id => !Object.prototype.hasOwnProperty.call(BUILTIN_SPELLS, id)).length;
+      spellStatus.textContent = tr("cliSpellCount", { n: ids.length, m: mine, max: SPELL_MAX });
+    }
+  }
+  function addSpellFromGui() {
+    const key = String(spellIdInput ? spellIdInput.value : "").trim().toLowerCase();
+    const body = String(spellBodyInput ? spellBodyInput.value : "").trim();
+    const builtin = Object.prototype.hasOwnProperty.call(BUILTIN_SPELLS, key);
+    const count = Object.keys(readSpells()).length;
+    const problem = spellDraftProblem(key, body, { builtin, count, max: SPELL_MAX });
+    const say = { id: "cliSpellBadId", body: "cliSpellBadBody", builtin: "cliSpellBuiltin", full: "cliSpellFull" }[problem] || "";
+    if (problem) {
+      log("err", tr(say || "cliInternalError", { max: SPELL_MAX }));
+      if (spellStatus) spellStatus.textContent = tr(say || "cliInternalError", { max: SPELL_MAX });
+      if (problem === "id" && spellIdInput) spellIdInput.focus();
+      return false;
+    }
+    const r = saveSpell(key, body);
+    if (!r.ok) {
+      const why = r.reason === "builtin" ? "cliSpellBuiltin" : r.reason === "full" ? "cliSpellFull" : "cliInternalError";
+      log("err", tr(why, { max: SPELL_MAX }));
+      if (spellStatus) spellStatus.textContent = tr(why, { max: SPELL_MAX });
+      return false;
+    }
+    log("out", tr("cliSpellAdded", { id: key }));
+    if (spellStatus) spellStatus.textContent = tr("cliSpellAdded", { id: key });
+    if (spellIdInput) spellIdInput.value = "";
+    if (spellBodyInput) spellBodyInput.value = "";
+    renderSpells();
+    if (spellIdInput) { try { spellIdInput.focus({ preventScroll: true }); } catch (_) {} }
+    return true;
+  }
   function onInputKey(e) {
+    /* ⌨ trk284：変換中（IME）は、Enter・Tab・矢印を端末の操作に使わない */
+    if (compositionBlocked(e.isComposing, e.keyCode)) return;
     if (e.key === "Tab") {
-      if (!completionOn()) return;   /* スキンが completion:"off" と言ったら、Tab は何もしない */
+      /* 補完がオフ・Shift+Tab・空のときは、フォーカスを動かす（Tab で閉じ込めない） */
+      if (!tabShouldComplete(inputNode.value, e.shiftKey, completionOn())) return;
       e.preventDefault();
       const done = completeCommand(inputNode.value);
       if (done !== inputNode.value) inputNode.value = done;
@@ -1276,7 +1466,7 @@
     return hits.length === 1 ? hits[0] + " " : text;
   }
   async function submit() {
-    if (!inputNode) return;
+    if (!inputNode || state.composing) return;
     const line = inputNode.value;
     inputNode.value = "";
     if (!line.trim()) return;
@@ -1302,6 +1492,7 @@
     }
     focusInput();
     showTyping(false);
+    renderSpells();   /* 呪文を唱えて増減したときも、辞書の GUI を合わせる */
   }
   function focusInput() {
     if (!inputNode) return;
@@ -1383,6 +1574,7 @@
     const cur = deps.current();
     log("out", tr("cliSkinCurrent", { id: cur.skin }) + "  ·  " + tr("cliVolumeSet", { n: cur.volume }));
     /* ⌨ trk283：打てる状態かを検めてから、知らせる（設定で バッジ／状態行／静か を選ぶ） */
+    renderSpells();
     ensureFocus(0);
     showTyping(true);
     return true;
@@ -1544,6 +1736,7 @@
     if (!state.built || !overlay) return;
     overlay.querySelectorAll("[data-i18n]").forEach(n => { n.textContent = tr(n.dataset.i18n); });
     overlay.querySelectorAll("[data-i18n-aria]").forEach(n => n.setAttribute("aria-label", tr(n.dataset.i18nAria)));
+    renderSpells();   /* ⌨ trk284：辞書の「削除」など、GUI が作る文言も入れ替える */
   });
   /* 選曲画面を離れたら閉じる（ゲーム・書斎・プレイヤーへ行ったとき） */
   core.on("phase", p => { if (p !== "title" && state.open) closeCli(); });
@@ -1565,6 +1758,10 @@
     splitSpells,
     pickCliSkin,
     chooseCliSkin,
+    spellDraftProblem,
+    normalizeCommand,
+    compositionBlocked,
+    tabShouldComplete,
     typableState,
     typingMode,
     cliKeyCode,

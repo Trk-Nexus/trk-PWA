@@ -2315,6 +2315,18 @@ body.trk-typo-on .hint,body.trk-typo-on .brand p{font-family:var(--trk-typo-body
   background:var(--ui-soft);color:var(--ui-muted);font-size:12px;line-height:1.4}
 .cliTypingBadge[data-ok="1"]{border-color:color-mix(in oklab,var(--ui-accent) 45%,var(--ui-border));color:var(--ui-accent-ink,var(--ui-accent))}
 .cliTypingBadge[data-ok="0"]{color:var(--ui-text);background:color-mix(in oklab,var(--j-miss,#ff8f8f) 18%,var(--ui-field))}
+/* ⌨ trk284：辞書登録（呪文）の GUI。端末のいちばん下 */
+.cliSpellPanel{border-top:1px solid var(--ui-border);background:var(--ui-panel);padding:8px 14px 12px;max-height:34vh;overflow-y:auto;overscroll-behavior:contain}
+.cliSpellPanel>summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--ui-text)}
+.cliSpellPanel .hint{font-size:12px}
+.cliSpellList{list-style:none;margin:6px 0 8px;padding:0;display:flex;flex-direction:column;gap:4px}
+.cliSpellRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;padding:4px 6px;border-radius:8px;background:var(--ui-soft)}
+.cliSpellRow .cliSpellName{color:var(--ui-accent-ink,var(--ui-accent));font-family:var(--cli-font,ui-monospace,monospace)}
+.cliSpellRow .cliSpellText{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;color:var(--ui-text)}
+.cliSpellAdd{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.cliSpellAdd .field{flex:1 1 160px;margin-top:0}
+.cliSpellAdd input{font-size:13px}
+.cliSpellStatus{min-height:1.2em;margin:6px 0 0}
 .cliForm{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--ui-border);background:rgba(0,0,0,.18)}
 .cliPromptChar{flex:none;color:var(--ui-accent-ink,var(--ui-accent));font-weight:900}
 .cliPromptChar::before{content:var(--cli-prompt,">")}
