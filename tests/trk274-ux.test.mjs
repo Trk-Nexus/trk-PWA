@@ -84,10 +84,11 @@ test("保存は既存の settings の中（localStorage のキーは増やさな
   assert.match(core, /const v = window\.Trk && window\.Trk\.data && window\.Trk\.data\.SKIN_VOLUMES;\s*return Array\.isArray\(v\) \? v : \[\];/);
 });
 
-test("版とキャッシュ：trk274 で上がっている", () => {
-  /* trk275（レビュー対応）で trk275 へ。版名は sw.js と index.html で揃っていることだけ見る */
-  assert.match(html, /<meta name="trk-build" content="trk275">/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.03-trk275";/);
+test("版とキャッシュ：版名は sw.js と index.html で揃っている", () => {
+  /* 版はラウンドごとに上がるので、固定の名前ではなく「両方そろっている」ことを見る */
+  const v = (read("sw.js").match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
+  assert.ok(v, "sw.js に版名がある");
+  assert.match(html, new RegExp(`<meta name="trk-build" content="${v}">`));
   assert.match(html, /<script src="js\/skins-volumes\.js"><\/script>/);
   /* 依存の順：data.js → 目録（typography／characters／wizard／volumes）→ core.js */
   const at = s => html.indexOf(`<script src="${s}"></script>`);

@@ -416,6 +416,14 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 .skinVolCard:hover{filter:brightness(1.12)}
 .skinVolCard.on{border-color:var(--ui-accent);box-shadow:inset 0 0 0 1px var(--ui-accent)}
 .skinVolSep{grid-column:1/-1;margin:6px 0 0;font-weight:800}
+/* ⌨ trk276：📚 のキー操作（入切・読み方向・4 つのアサイン） */
+#skinVolKeyBox{margin-top:12px;border-top:1px solid var(--ui-border);padding-top:8px}
+.volSeg{margin-top:8px}
+.volSeg button{font-size:13px;padding:8px 10px}
+.volKeyPad{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.volKey{min-width:82px;padding:7px 10px;border-radius:10px;border:1px solid var(--ui-border);font-weight:700}
+.volKey.listening{border-color:var(--ui-accent);color:var(--ui-accent-ink);box-shadow:inset 0 0 0 1px var(--ui-accent)}
+#skinVolDirRow[data-off],#skinVolKeyPad[data-off]{opacity:.45}
 .skinHoldback{color:var(--ui-muted);font-size:10px;font-weight:700}
 /* G-2（modern-web-guidance-src: animate-element-entry-exit）
    出るとき・消えるときを `@starting-style` と `transition-behavior: allow-discrete` で。

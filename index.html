@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk275">
+<meta name="trk-build" content="trk276">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -524,6 +524,25 @@
               <div id="skinVolPanel" popover aria-labelledby="skinVolHintText">
                 <p class="hint" id="skinVolHintText" data-i18n="skinVolHint"></p>
                 <div id="skinVolList"></div>
+                <!-- ⌨ trk276：キーで選ぶ（使わない・読み方向・4 つのキーのアサイン） -->
+                <details class="subPanel" id="skinVolKeyBox">
+                  <summary data-i18n="skinVolKeysTitle"></summary>
+                  <div class="seg volSeg" id="skinVolNavRow">
+                    <button type="button" data-volnav="on" data-i18n="skinVolKeysOn"></button>
+                    <button type="button" data-volnav="off" data-i18n="skinVolKeysOff"></button>
+                  </div>
+                  <div class="seg volSeg" id="skinVolDirRow">
+                    <button type="button" data-voldir="row" data-i18n="skinVolDirRowLabel"></button>
+                    <button type="button" data-voldir="col" data-i18n="skinVolDirColLabel"></button>
+                  </div>
+                  <div class="volKeyPad" id="skinVolKeyPad">
+                    <button type="button" class="miniBtn volKey" data-volkey="L" data-i18n-aria="skinVolKeyLeft"></button>
+                    <button type="button" class="miniBtn volKey" data-volkey="R" data-i18n-aria="skinVolKeyRight"></button>
+                    <button type="button" class="miniBtn volKey" data-volkey="U" data-i18n-aria="skinVolKeyUp"></button>
+                    <button type="button" class="miniBtn volKey" data-volkey="D" data-i18n-aria="skinVolKeyDown"></button>
+                  </div>
+                  <p class="hint" data-i18n="skinVolKeysHint"></p>
+                </details>
               </div>
               <!-- 🧺 trk241：隠したスキンがあるときだけ出る案内（隠しっぱなしにしないため） -->
               <p class="hint skinHiddenNote" id="skinHiddenNote" hidden>

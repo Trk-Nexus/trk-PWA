@@ -124,9 +124,10 @@ test("R1 棚の 1 枚分の高さの見積もりは、実測（58〜79px）の�
 });
 
 /* ==================== 版 ==================== */
-test("版とキャッシュ：trk275 で上がっている", () => {
-  assert.match(html, /<meta name="trk-build" content="trk275">/);
-  assert.match(sw, /const CACHE = "trk-v2026\.11\.03-trk275";/);
+test("版とキャッシュ：版名は sw.js と index.html で揃っている", () => {
+  const v = (sw.match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
+  assert.ok(v, "sw.js に版名がある");
+  assert.match(html, new RegExp(`<meta name="trk-build" content="${v}">`));
 });
 
 /* ==================== R2 検める道具の穴 ==================== */
