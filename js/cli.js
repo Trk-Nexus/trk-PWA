@@ -37,6 +37,9 @@
     cliSkinTerminal: "terminal を当てる",
     cliSkinKeep: "いまのスキンのまま",
     cliSkinHint: "ここで当てたスキンは、ターミナルを開いている間だけです。閉じると元のスキンに戻ります（ターミナルで skin を唱えたときは、そのスキンが残ります）。",
+    cliBellLabel: "エラーの音（ピン）を鳴らす",
+    cliBellHint: "音は、スキンが「鳴らす」と言っているときだけ鳴ります。ここを切れば、どのスキンでも鳴りません（ターミナルで bell off と唱えても切れます）。",
+    cliFeelHint: "Tab 補完の有無・履歴の長さ・カーソルの形・地の透け方は、スキン（cli の項目）が決めます。",
     cliOnlyTitle: "選曲画面で開けます",
     cliOnlyHint: "ゲーム中や、書斎・メディアプレイヤーを開いている間は開けません。曲リストに戻ってからどうぞ。",
     cliHelpTitle: "使える呪文",
@@ -52,6 +55,31 @@
     cliHelpCast: "cast <呪文; 呪文> … 続けて唱える（; で区切る）",
     cliHelpHelp: "help … この一覧",
     cliHelpQuit: "quit / exit … 端末を閉じる",
+    cliHelpPwd: "pwd … いまの様子（スキン・曲・音量）",
+    cliHelpLs: "ls [言葉] … 曲の一覧（言葉を添えると絞り込み）",
+    cliHelpCd: "cd <id> … スキンを移る（skin と同じ）",
+    cliHelpCat: "cat <番号｜曲名> ／ cat spell <id> … 中身をのぞく",
+    cliHelpGrep: "grep <言葉> … 曲をさがす",
+    cliHelpHistory: "history … 打った呪文の履歴",
+    cliHelpClear: "clear … 出力を消す",
+    cliHelpEcho: "echo <文> … そのまま返す",
+    cliHelpBell: "bell <on|off> … エラーの音（スキンが鳴らす端末だけ）",
+    cliPwd: "いまの場所：スキン {skin} ／ 曲 {track} ／ 音量 {n}%",
+    cliPwdNone: "まだ鳴らしていません",
+    cliGrepNeed: "さがす言葉をください（例：grep 夜）",
+    cliGrepNone: "「{q}」に合う曲がありません。",
+    cliGrepTitle: "「{q}」に {n} 曲",
+    cliCatNeed: "何をのぞくかください（例：cat 2 ／ cat spell midnight）",
+    cliCatTitle: "{i}. {name}",
+    cliCatSrc: "出どころ：{src}",
+    cliCatPlayHint: "鳴らすときは play {i}",
+    cliCastHint: "唱えるときは spell <id> か cast <本文>",
+    cliHistoryEmpty: "まだ何も唱えていません。",
+    cliHistoryTitle: "打った呪文 {n} 件（↑↓ でも辿れます）",
+    cliCleared: "出力を消しました。",
+    cliBellUsage: "bell <on|off> で鳴らす／止める",
+    cliBellOn: "エラーの音：鳴らす",
+    cliBellOff: "エラーの音：止める",
     cliNoTracks: "まだ曲がありません。曲リストに音源を足してください。",
     cliListTitle: "{n} 曲（{from}–{to} を表示）",
     cliListItem: "{i}. {name} — {src}",
@@ -117,6 +145,9 @@
     cliSkinTerminal: "Apply terminal",
     cliSkinKeep: "Keep the current skin",
     cliSkinHint: "The skin here lasts only while the terminal is open; it goes back when you close it (a skin you cast inside stays).",
+    cliBellLabel: "Play the error beep",
+    cliBellHint: "It only sounds when the skin says it may. Turn this off and no skin will beep (you can also cast bell off in the terminal).",
+    cliFeelHint: "Tab completion, how long the history is, the cursor shape and how see-through the background is all come from the skin (its cli values).",
     cliOnlyTitle: "Open it from the song list",
     cliOnlyHint: "It can't open during a game, or while the study or media player is open. Come back to the song list first.",
     cliHelpTitle: "Spells you can cast",
@@ -132,6 +163,31 @@
     cliHelpCast: "cast <spell; spell> … cast several in a row (split by ;)",
     cliHelpHelp: "help … this list",
     cliHelpQuit: "quit / exit … close the terminal",
+    cliHelpPwd: "pwd … where you are (skin, song, volume)",
+    cliHelpLs: "ls [word] … the song list (with a word, it filters)",
+    cliHelpCd: "cd <id> … move to a skin (same as skin)",
+    cliHelpCat: "cat <number|title> / cat spell <id> … look inside",
+    cliHelpGrep: "grep <word> … find songs",
+    cliHelpHistory: "history … the spells you typed",
+    cliHelpClear: "clear … clear the output",
+    cliHelpEcho: "echo <text> … say it back",
+    cliHelpBell: "bell <on|off> … error beep (only where the skin asks)",
+    cliPwd: "Here: skin {skin} / song {track} / volume {n}%",
+    cliPwdNone: "nothing playing yet",
+    cliGrepNeed: "Give me a word to find (e.g. grep night)",
+    cliGrepNone: "No songs match “{q}”.",
+    cliGrepTitle: "{n} songs match “{q}”",
+    cliCatNeed: "What should I look inside? (e.g. cat 2 / cat spell midnight)",
+    cliCatTitle: "{i}. {name}",
+    cliCatSrc: "from: {src}",
+    cliCatPlayHint: "play {i} to hear it",
+    cliCastHint: "cast it with spell <id> or cast <text>",
+    cliHistoryEmpty: "Nothing cast yet.",
+    cliHistoryTitle: "{n} lines typed (↑↓ also walks them)",
+    cliCleared: "Output cleared.",
+    cliBellUsage: "bell <on|off> to beep or stay quiet",
+    cliBellOn: "Error beep: on",
+    cliBellOff: "Error beep: off",
     cliNoTracks: "No tracks yet. Add audio from the song list.",
     cliListTitle: "{n} tracks (showing {from}–{to})",
     cliListItem: "{i}. {name} — {src}",
@@ -197,6 +253,9 @@
     cliSkinTerminal: "使用 terminal",
     cliSkinKeep: "保持当前皮肤",
     cliSkinHint: "这里应用的皮肤只在终端打开期间有效，关闭后恢复原皮肤（在终端里用 skin 指定的皮肤会保留）。",
+    cliBellLabel: "播放出错提示音",
+    cliBellHint: "只有当皮肤说可以响时才会响。关掉这里，任何皮肤都不会响（也可以在终端里说 bell off）。",
+    cliFeelHint: "Tab 补全的有无、历史长度、光标形状、背景的透明度，都由皮肤（cli 项）决定。",
     cliOnlyTitle: "请在选曲画面打开",
     cliOnlyHint: "游戏中、书房或媒体播放器打开时无法使用。请先回到曲目列表。",
     cliHelpTitle: "可用的咒文",
@@ -212,6 +271,31 @@
     cliHelpCast: "cast <咒文; 咒文> … 连续施放（用 ; 分隔）",
     cliHelpHelp: "help … 此列表",
     cliHelpQuit: "quit / exit … 关闭终端",
+    cliHelpPwd: "pwd … 现在的位置（皮肤・曲・音量）",
+    cliHelpLs: "ls [词] … 曲目列表（带词则筛选）",
+    cliHelpCd: "cd <id> … 换到某个皮肤（同 skin）",
+    cliHelpCat: "cat <编号｜曲名> ／ cat spell <id> … 查看内容",
+    cliHelpGrep: "grep <词> … 查找曲目",
+    cliHelpHistory: "history … 输入过的咒文",
+    cliHelpClear: "clear … 清空输出",
+    cliHelpEcho: "echo <文字> … 原样返回",
+    cliHelpBell: "bell <on|off> … 出错音（仅皮肤要求时）",
+    cliPwd: "现在：皮肤 {skin} ／ 曲 {track} ／ 音量 {n}%",
+    cliPwdNone: "尚未播放",
+    cliGrepNeed: "请给出要查找的词（例：grep 夜）",
+    cliGrepNone: "没有与“{q}”相符的曲目。",
+    cliGrepTitle: "“{q}”共 {n} 首",
+    cliCatNeed: "要查看什么？（例：cat 2 ／ cat spell midnight）",
+    cliCatTitle: "{i}. {name}",
+    cliCatSrc: "来源：{src}",
+    cliCatPlayHint: "播放请用 play {i}",
+    cliCastHint: "施放请用 spell <id> 或 cast <文字>",
+    cliHistoryEmpty: "还没有施放过。",
+    cliHistoryTitle: "已输入 {n} 条（↑↓ 也可回溯）",
+    cliCleared: "已清空输出。",
+    cliBellUsage: "bell <on|off> 开启／关闭",
+    cliBellOn: "出错音：开启",
+    cliBellOff: "出错音：关闭",
     cliNoTracks: "还没有曲目。请从曲目列表添加音频。",
     cliListTitle: "{n} 首（显示 {from}–{to}）",
     cliListItem: "{i}. {name} — {src}",
@@ -277,6 +361,9 @@
     cliSkinTerminal: "terminal 적용",
     cliSkinKeep: "지금 스킨 그대로",
     cliSkinHint: "여기서 적용한 스킨은 터미널을 여는 동안만입니다. 닫으면 원래 스킨으로 돌아갑니다(터미널에서 skin 을 외친 경우는 그 스킨이 남습니다).",
+    cliBellLabel: "오류 소리(삑) 내기",
+    cliBellHint: "스킨이 \"내도 된다\"고 할 때만 울립니다. 여기서 끄면 어떤 스킨도 울리지 않습니다(터미널에서 bell off 라고 외쳐도 꺼집니다).",
+    cliFeelHint: "Tab 자동완성 여부, 기록 길이, 커서 모양, 배경의 투명도는 스킨(cli 항목)이 정합니다.",
     cliOnlyTitle: "곡 목록에서 열 수 있습니다",
     cliOnlyHint: "게임 중이거나 서재·미디어 플레이어가 열려 있을 때는 열 수 없습니다. 곡 목록으로 돌아와 주세요.",
     cliHelpTitle: "쓸 수 있는 주문",
@@ -292,6 +379,31 @@
     cliHelpCast: "cast <주문; 주문> … 이어서 외치기(; 로 구분)",
     cliHelpHelp: "help … 이 목록",
     cliHelpQuit: "quit / exit … 터미널 닫기",
+    cliHelpPwd: "pwd … 지금 상태(스킨・곡・음량)",
+    cliHelpLs: "ls [단어] … 곡 목록(단어를 붙이면 걸러내기)",
+    cliHelpCd: "cd <id> … 스킨 옮기기(skin 과 같음)",
+    cliHelpCat: "cat <번호|곡명> / cat spell <id> … 속을 들여다보기",
+    cliHelpGrep: "grep <단어> … 곡 찾기",
+    cliHelpHistory: "history … 입력한 주문 기록",
+    cliHelpClear: "clear … 출력 지우기",
+    cliHelpEcho: "echo <문장> … 그대로 돌려주기",
+    cliHelpBell: "bell <on|off> … 오류음(스킨이 요청한 터미널만)",
+    cliPwd: "지금: 스킨 {skin} / 곡 {track} / 음량 {n}%",
+    cliPwdNone: "아직 재생하지 않음",
+    cliGrepNeed: "찾을 단어를 주세요(예: grep 밤)",
+    cliGrepNone: "“{q}”에 맞는 곡이 없습니다.",
+    cliGrepTitle: "“{q}” {n}곡",
+    cliCatNeed: "무엇을 볼까요? (예: cat 2 / cat spell midnight)",
+    cliCatTitle: "{i}. {name}",
+    cliCatSrc: "출처: {src}",
+    cliCatPlayHint: "재생은 play {i}",
+    cliCastHint: "사용은 spell <id> 또는 cast <문장>",
+    cliHistoryEmpty: "아직 아무것도 사용하지 않았습니다.",
+    cliHistoryTitle: "입력한 주문 {n}건(↑↓ 로도 가능)",
+    cliCleared: "출력을 지웠습니다.",
+    cliBellUsage: "bell <on|off> 로 켜기/끄기",
+    cliBellOn: "오류음: 켬",
+    cliBellOff: "오류음: 끔",
     cliNoTracks: "아직 곡이 없습니다. 곡 목록에서 음원을 추가해 주세요.",
     cliListTitle: "{n} 곡({from}–{to} 표시)",
     cliListItem: "{i}. {name} — {src}",
@@ -344,11 +456,16 @@
      入力 → 文字列 だけで動くので、tests/trk267-cli.test.mjs が vm で読みます。 */
 
   /* 使えるコマンド（補完と help の並び順もこの配列） */
-  const CLI_COMMANDS = ["help", "list", "play", "skin", "grimoire", "volume", "seek", "repeat", "shuffle", "spell", "cast", "quit", "exit"];
+  const CLI_COMMANDS = ["help", "list", "play", "skin", "grimoire", "volume", "seek", "repeat", "shuffle", "spell", "cast",
+    "pwd", "ls", "cd", "cat", "grep", "history", "clear", "man", "echo", "bell", "quit", "exit"];
+  /* ⌨ trk269：端末の定番の呼び名。trk! の言葉に橋渡しする（ls＝一覧、cd＝スキンを移る、man＝説明） */
+  const CLI_ALIASES = { ls: "list", dir: "list", cd: "skin", man: "help" };
   const CLI_HELP = [
     ["play", "cliHelpPlay"], ["list", "cliHelpList"], ["skin", "cliHelpSkin"], ["grimoire", "cliHelpGrimoire"],
     ["volume", "cliHelpVolume"], ["seek", "cliHelpSeek"], ["repeat", "cliHelpRepeat"], ["shuffle", "cliHelpShuffle"],
-    ["spell", "cliHelpSpell"], ["cast", "cliHelpCast"], ["help", "cliHelpHelp"], ["quit", "cliHelpQuit"]
+    ["spell", "cliHelpSpell"], ["cast", "cliHelpCast"], ["help", "cliHelpHelp"], ["quit", "cliHelpQuit"],
+    ["pwd", "cliHelpPwd"], ["ls", "cliHelpLs"], ["cd", "cliHelpCd"], ["cat", "cliHelpCat"], ["grep", "cliHelpGrep"],
+    ["history", "cliHelpHistory"], ["clear", "cliHelpClear"], ["echo", "cliHelpEcho"], ["bell", "cliHelpBell"]
   ];
   /* 最初から入っている呪文（設計書 §4.1 の3つ）。中身はこの端末で唱えるコマンドの並び。
      midnight は「暗いスキン＋音量30」。夜のプレイリストは、この端末の曲リストから選ぶ形にしたら足せます。 */
@@ -423,7 +540,8 @@
     return { kind: "none" };
   }
   function splitSpells(text) {
-    return String(text == null ? "" : text).split(/[;\n]/).map(s => s.trim()).filter(Boolean).slice(0, CAST_MAX);
+    /* ⌨ trk269：`;` に加えて、パイプ `|` でも区切れる（定番の書き方に寄せる） */
+    return String(text == null ? "" : text).split(/[;|\n]/).map(s => s.trim()).filter(Boolean).slice(0, CAST_MAX);
   }
   /* ターミナルを開くときに当てるスキン。
      mode = auto（wizard を含むスキン → 無ければ terminal）／terminal／keep（何も当てない） */
@@ -444,13 +562,41 @@
     const out = [];
     const push = (kind, text) => { if (text !== undefined && text !== null && text !== "") out.push({ kind, text: String(text) }); };
     const t = (key, vars) => (typeof deps.t === "function" ? deps.t(key, vars) : key);
-    const q = parseLine(line);
-    if (!q.cmd) return { out, quit: false };
+    const q0 = parseLine(line);
+    if (!q0.cmd) return { out, quit: false, clear: false };
+    /* パイプ `|` は「続けて唱える」と同じ（cast の入れ子では見ない） */
+    if (!ctx.depth && q0.raw.includes("|")) {
+      const parts = splitSpells(q0.raw);
+      if (parts.length > 1) {
+        let quit = false;
+        for (const part of parts) {
+          const r = await execute(part, deps, { depth: 1 });
+          for (const o of r.out) out.push(o);
+          if (r.quit) { quit = true; break; }
+        }
+        return { out, quit, clear: false };
+      }
+    }
+    /* 定番の呼び名を trk! の言葉に読み替える（ls に言葉を添えたら絞り込み＝grep） */
+    let q = q0;
+    const alias = CLI_ALIASES[q0.cmd];
+    if (alias) {
+      if (alias === "list" && q0.rest) q = { ...q0, cmd: "grep" };
+      else q = { ...q0, cmd: alias };
+    }
     let quit = false;
+    let clear = false;
 
     if (q.cmd === "help") {
-      push("out", t("cliHelpTitle"));
-      for (const [, key] of CLI_HELP) push("out", "  " + t(key));
+      /* man <cmd> は 1 つだけ（trk269）。無ければ全部 */
+      const only = q.rest ? q.rest.split(" ")[0].toLowerCase() : "";
+      const picked = only ? CLI_HELP.filter(([word, key]) => word === only || key === only) : [];
+      if (only && !picked.length) {
+        push("err", t("cliUnknown", { cmd: only }));
+      } else {
+        push("out", t("cliHelpTitle"));
+        for (const [, key] of (picked.length ? picked : CLI_HELP)) push("out", "  " + t(key));
+      }
     } else if (q.cmd === "list") {
       const items = typeof deps.tracks === "function" ? deps.tracks() : [];
       if (!items.length) push("err", t("cliNoTracks"));
@@ -598,13 +744,88 @@
           if (r.quit) { quit = true; break; }
         }
       }
+    } else if (q.cmd === "pwd") {
+      /* 定番の pwd。trk! には道がないので「いまの様子」を 1 行で返す */
+      const cur = typeof deps.current === "function" ? deps.current() : {};
+      push("out", t("cliPwd", { skin: cur.skin || "-", track: cur.track || t("cliPwdNone"), n: cur.volume == null ? 0 : cur.volume }));
+    } else if (q.cmd === "grep") {
+      const word = q.rest;
+      const items = typeof deps.tracks === "function" ? deps.tracks() : [];
+      if (!word) push("err", t("cliGrepNeed"));
+      else if (!items.length) push("err", t("cliNoTracks"));
+      else {
+        const needle = word.toLowerCase();
+        const hits = [];
+        items.forEach((it, i) => {
+          const name = String(typeof deps.name === "function" ? deps.name(it) : (it.title || "")).toLowerCase();
+          const src = String(typeof deps.src === "function" ? deps.src(it) : "").toLowerCase();
+          if (name.includes(needle) || src.includes(needle)) hits.push({ it, i });
+        });
+        if (!hits.length) push("err", t("cliGrepNone", { q: word }));
+        else {
+          const limit = Math.max(1, Math.min(200, Number(deps.listLimit) || CLI_LIST_LIMIT));
+          push("out", t("cliGrepTitle", { q: word, n: hits.length }));
+          for (const { it, i } of hits.slice(0, limit)) {
+            const name = typeof deps.name === "function" ? deps.name(it) : (it.title || "");
+            const src = typeof deps.src === "function" ? deps.src(it) : "";
+            push("out", t("cliListItem", { i: i + 1, name, src }));
+          }
+        }
+      }
+    } else if (q.cmd === "cat") {
+      /* cat：中身をのぞく。`cat spell <id>` は呪文の本文、それ以外は曲の詳細 */
+      const words = q.args;
+      if (words[0] && words[0].toLowerCase() === "spell") {
+        const id = (words[1] || "").toLowerCase();
+        const spells = typeof deps.spells === "function" ? deps.spells() : {};
+        if (!id) push("err", t("cliSpellUsage"));
+        else if (!Object.prototype.hasOwnProperty.call(spells, id)) push("err", t("cliSpellUnknown", { id }));
+        else {
+          push("out", t("cliSpellItem", { id, cmds: spells[id] }));
+          push("out", t("cliCastHint"));
+        }
+      } else if (!q.rest) push("err", t("cliCatNeed"));
+      else {
+        const items = typeof deps.tracks === "function" ? deps.tracks() : [];
+        const hit = pickTrack(items, q.rest);
+        if (hit.kind === "path") push("err", t("cliPathRefused"));
+        else if (hit.kind === "many") push("err", t("cliManyMatch", { q: q.rest, n: hit.count }));
+        else if (hit.kind === "none") push("err", t("cliNoMatch", { q: q.rest }));
+        else {
+          const name = typeof deps.name === "function" ? deps.name(hit.item) : (hit.item.title || "");
+          const src = typeof deps.src === "function" ? deps.src(hit.item) : "";
+          const index = items.indexOf(hit.item) + 1;
+          push("out", t("cliCatTitle", { i: index, name }));
+          if (src) push("out", "  " + t("cliCatSrc", { src }));
+          push("out", "  " + t("cliCatPlayHint", { i: index }));
+        }
+      }
+    } else if (q.cmd === "history") {
+      const hist = typeof deps.history === "function" ? deps.history() : [];
+      if (!hist.length) push("out", t("cliHistoryEmpty"));
+      else {
+        push("out", t("cliHistoryTitle", { n: hist.length }));
+        hist.forEach((h, i) => push("out", "  " + (i + 1) + ". " + h));
+      }
+    } else if (q.cmd === "clear") {
+      clear = true;
+      push("out", t("cliCleared"));
+    } else if (q.cmd === "echo") {
+      push("out", q.rest);
+    } else if (q.cmd === "bell") {
+      const word = (q.args[0] || "").toLowerCase();
+      if (word !== "on" && word !== "off") push("err", t("cliBellUsage"));
+      else {
+        const ok = typeof deps.setBell === "function" ? deps.setBell(word === "on") !== false : false;
+        push(ok ? "out" : "err", t(ok ? (word === "on" ? "cliBellOn" : "cliBellOff") : "cliInternalError"));
+      }
     } else if (q.cmd === "quit" || q.cmd === "exit") {
       quit = true;
       push("out", t("cliQuit"));
     } else {
       push("err", t("cliUnknown", { cmd: q.cmd }));
     }
-    return { out, quit };
+    return { out, quit, clear };
   }
 
   /* ==================== 純粋な計算（trk267）ここまで ==================== */
@@ -769,8 +990,43 @@
     spells: allSpells,
     saveSpell,
     delSpell,
-    listLimit: CLI_LIST_LIMIT
+    listLimit: CLI_LIST_LIMIT,
+    history: () => state.history.slice(-historyCap()),   /* trk269：定番の history */
+    setBell: on => { core.settings.cliBell = on === true; core.saveUserPrefs(); return true; }
   };
+
+  /* ---------- スキンが決める操作感（trk269） ---------- */
+  /* いま当たっているスキンの cli.* を読む（color などは applySkin が CSS 変数にしている） */
+  function skinCli() {
+    try {
+      const all = (window.Trk.data && window.Trk.data.SKINS) || {};
+      const def = all[core.settings.skin];
+      return def && def.cli && typeof def.cli === "object" ? def.cli : {};
+    } catch (_) { return {}; }
+  }
+  const historyCap = () => Math.max(10, Math.min(200, Number(skinCli().history) || 50));
+  const completionOn = () => skinCli().completion !== "off";
+
+  /* エラーの音（trk269）。ファイルは使いません＝その場で作る短い音。
+     鳴らす条件：スキンが bell:true を名乗っている かつ 設定が鳴らしてよい（bell off で止まる）。 */
+  let audioCtx = null;
+  function beep() {
+    if (skinCli().bell !== true || core.settings.cliBell === false) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      audioCtx = audioCtx || new AC();
+      if (audioCtx.state === "suspended" && typeof audioCtx.resume === "function") void audioCtx.resume();
+      const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+      const now = audioCtx.currentTime;
+      osc.type = "square"; osc.frequency.value = 180;
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.05, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(now); osc.stop(now + 0.1);
+    } catch (_) { /* 音が出せない環境では黙って諦める */ }
+  }
 
   /* ---------- 見た目 ---------- */
   function log(kind, text) {
@@ -850,6 +1106,7 @@
   }
   function onInputKey(e) {
     if (e.key === "Tab") {
+      if (!completionOn()) return;   /* スキンが completion:"off" と言ったら、Tab は何もしない */
       e.preventDefault();
       const done = completeCommand(inputNode.value);
       if (done !== inputNode.value) inputNode.value = done;
@@ -877,11 +1134,13 @@
     inputNode.value = "";
     if (!line.trim()) return;
     state.history.push(line);
-    if (state.history.length > 50) state.history.shift();
+    if (state.history.length > historyCap()) state.history.shift();
     state.hi = state.history.length;
     log("in", "> " + line);
     const res = await execute(line, deps);
+    if (res.clear && logNode) logNode.textContent = "";                 /* clear：先に消して、残すのは「消しました」だけ */
     for (const o of res.out) log(o.kind, o.text);
+    if (res.out.some(o => o.kind === "err")) beep();                    /* エラーの音（スキンが名乗ったときだけ） */
     if (res.quit) closeCli();
     else focusInput();
   }
@@ -954,6 +1213,15 @@
         core.saveUserPrefs();
       });
     }
+    const bellChk = document.getElementById("cliBellChk");
+    if (bellChk && !bellChk.dataset.cliWired) {
+      bellChk.dataset.cliWired = "1";
+      bellChk.checked = core.settings.cliBell !== false;
+      bellChk.addEventListener("change", () => {
+        core.settings.cliBell = bellChk.checked;
+        core.saveUserPrefs();
+      });
+    }
     const skinSel = document.getElementById("cliSkinSel");
     if (skinSel && !skinSel.dataset.cliWired) {
       skinSel.dataset.cliWired = "1";
@@ -1007,6 +1275,8 @@
     formatClock,
     pickTrack,
     splitSpells,
-    pickCliSkin
+    pickCliSkin,
+    historyCap,
+    completionOn
   });
 })();

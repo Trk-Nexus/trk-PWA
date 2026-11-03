@@ -18,6 +18,8 @@ const sandbox = {
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(path.join(ROOT, "js/data.js"), "utf8"), sandbox, { filename: "js/data.js" });
 vm.runInContext(fs.readFileSync(path.join(ROOT, "js/characters/miku.js"), "utf8"), sandbox, { filename: "js/characters/miku.js" });
+/* 🧙 trk269：Wizard の 12 種（Skin 側の目録から生成した別ファイル）も同じ基準で見る */
+vm.runInContext(fs.readFileSync(path.join(ROOT, "js/skins-wizard.js"), "utf8"), sandbox, { filename: "js/skins-wizard.js" });
 const { SKINS, buildCustomSkin } = sandbox.window.Trk.data;
 const css = fs.readFileSync(path.join(ROOT, "css/style.css"), "utf8");
 
@@ -36,9 +38,12 @@ function contrast(fg, bg) {
 const ids = Object.keys(SKINS);
 
 describe("game UI contrast across the skin catalogue", () => {
-  test("includes the 49 built-in themes and four optional Miku themes", () => {
-    assert.equal(ids.length, 53);
+  test("includes the 49 built-in themes, four optional Miku themes and 12 Wizard themes", () => {
+    assert.equal(ids.length, 65);
     for (const id of ["miku39", "mikuNoir", "mikuClassic", "mikuIdol"]) assert.ok(SKINS[id], id);
+    const wizard = ids.filter(id => Array.isArray(SKINS[id].cat) && SKINS[id].cat.includes("wizard"));
+    assert.equal(wizard.length, 12, "the wizard family must be 12 skins");
+    for (const id of ["wizard-cli", "wizard-terminal", "wizard-nord"]) assert.ok(SKINS[id], id);
   });
 
   test("selected play-mode buttons use AA text on the accent background", () => {
@@ -100,7 +105,7 @@ describe("game UI contrast across the skin catalogue", () => {
     assert.match(shelfCount, /color:var\(--ui-muted\)/, "#skinShelfCount must use solid --ui-muted");
     assert.doesNotMatch(shelfCount, /opacity\s*:/, "#skinShelfCount must not use opacity");
 
-    // Verify text on field contrast across all 53 skins
+    // Verify text on field contrast across all 65 skins
     for (const [id, skin] of Object.entries(SKINS)) {
       const ui = skin.ui;
       assert.ok(contrast(ui["--ui-text"], ui["--ui-field"]) >= 4.5,
