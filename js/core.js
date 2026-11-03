@@ -291,8 +291,9 @@ const settings = {
      新しい保存キーは作らず、settings の中に入れます（工場出荷で既定に戻ります） */
   skinVolNav: prefs.skinVolNav === "off" ? "off" : "on",
   skinVolDir: prefs.skinVolDir === "col" ? "col" : "row",
-  /* 端まで行ったとき：端で止まる（既定）／反対側へ回り込む */
-  skinVolWrap: prefs.skinVolWrap === "on" ? "on" : "off",
+  /* 端まで行ったとき：stop＝端で止まる（既定）／wrap＝反対側へ回り込む／chain＝次の本へ続ける（連読） */
+  skinVolWrap: prefs.skinVolWrap === "chain" ? "chain"
+    : (prefs.skinVolWrap === "wrap" || prefs.skinVolWrap === "on") ? "wrap" : "stop",
   ...volKeyBoot(prefs),
   skinFav: cleanSkinIdList(prefs.skinFav),
   skinHidden: cleanSkinIdList(prefs.skinHidden),
@@ -830,7 +831,7 @@ function resetAllPrefs() {
   settings.skin = "shadow"; settings.layout = "classic";
   /* 🧺 trk229：棚の整理（お気に入り・隠した・回数・日時・並び・絞り込み）も工場出荷状態へ */
   settings.skinShelfOnly = ""; settings.skinSort = "default"; settings.skinShelfVol = ""; settings.skinFav = []; settings.skinHidden = [];
-  settings.skinVolNav = "on"; settings.skinVolDir = "row"; settings.skinVolWrap = "off"; Object.assign(settings, volKeyBoot(null));
+  settings.skinVolNav = "on"; settings.skinVolDir = "row"; settings.skinVolWrap = "stop"; Object.assign(settings, volKeyBoot(null));
   settings.skinUse = {}; settings.skinLast = {};
   /* 🖥 trk221/222：画面の形（自動）・下の再生バー（つねに表示）・拡大率（100%）も工場出荷状態へ戻す */
   settings.uiMode = "auto"; settings.playerBar = "on";
@@ -1682,9 +1683,29 @@ function setSkinVolDir(dir) {
   settings.skinVolDir = dir === "col" ? "col" : "row";
   saveUserPrefs(); renderSkinVolKeys();
 }
-function setSkinVolWrap(on) {
-  settings.skinVolWrap = on ? "on" : "off";
+const SKIN_VOL_WRAP_IDS = ["stop", "wrap", "chain"];
+function setSkinVolWrap(mode) {
+  settings.skinVolWrap = pick(mode, SKIN_VOL_WRAP_IDS, "stop");
   saveUserPrefs(); renderSkinVolKeys();
+}
+/* 一覧の中の 1 枚へフォーカスを移す（roving tabindex も一緒に） */
+function focusVolCard(cards, idx) {
+  if (!Array.isArray(cards) || !cards[idx]) return;
+  cards.forEach((c, i) => { c.tabIndex = i === idx ? 0 : -1; });
+  cards[idx].focus();
+}
+/* 連読：端の次を「次の本（巻）」へつなぐ。パネルは開いたまま、その本の先頭／末尾へ */
+function volChainStep(forward) {
+  const target = volChainTarget(skinVolBooks(), settings.skinShelfVol, forward);
+  if (!target) return false;                       /* 既定・ALL は「本」が決まらないので回り込みへ */
+  selectSkinVol(target);
+  const cards = skinVolCards();
+  focusVolCard(cards, forward ? 0 : cards.length - 1);
+  const g = skinVolumes().find(x => x && x.id === target);
+  announceVolText(tr(forward ? "skinVolChainedNext" : "skinVolChainedPrev", {
+    name: skinVolTitle(g), n: cards.length,
+  }));
+  return true;
 }
 function wireSkinVolKeys() {
   if (skinVolKeysWired) return;
@@ -1702,11 +1723,33 @@ function wireSkinVolKeys() {
     if (!move) return;
     const cards = skinVolCards();
     const from = cards.indexOf(document.activeElement);
-    const to = volMove(cards.map(c => { const r = c.getBoundingClientRect(); return { top: r.top, left: r.left }; }), from, move, settings.skinVolDir, settings.skinVolWrap === "on");
-    if (to < 0) { e.preventDefault(); return; }   /* 端で止まる */
+    if (from < 0) return;
+    const dir = settings.skinVolDir;
+    /* 読み進む向きか（横書き＝→、縦書き＝↓） */
+    const forward = dir === "col" ? move === "down" : move === "right";
+    const backward = dir === "col" ? move === "up" : move === "left";
+    const rects = cards.map(c => { const r = c.getBoundingClientRect(); return { top: r.top, left: r.left }; });
+    const plain = volMove(rects, from, move, dir, false);
     e.preventDefault();
-    cards.forEach((c, i) => { c.tabIndex = i === to ? 0 : -1; });
-    cards[to].focus();
+    if (plain >= 0) { focusVolCard(cards, plain); return; }
+    /* ここから端。stop＝止まる／wrap＝反対側へ回り込む／chain＝次の本へ続ける（連読） */
+    const mode = settings.skinVolWrap;
+    if (mode === "stop") return;
+    const wrapped = volMove(rects, from, move, dir, true);
+    if (mode === "wrap") {
+      if (wrapped >= 0) {
+        focusVolCard(cards, wrapped);
+        /* 「先頭に戻りました」「末尾に戻りました」（伝わる言い方で） */
+        announceVolText(tr(forward || move === "down" || move === "right" ? "skinVolWrappedTop" : "skinVolWrappedBottom"));
+      }
+      return;
+    }
+    /* chain：読み軸の向きだけ、次の本（巻）へ。本が決まらない（既定・ALL）ときは回り込み */
+    if ((forward || backward) && volChainStep(forward)) return;
+    if (wrapped >= 0) {
+      focusVolCard(cards, wrapped);
+      announceVolText(tr(forward || move === "down" || move === "right" ? "skinVolWrappedTop" : "skinVolWrappedBottom"));
+    }
   });
   /* フォーカスが入ったら、そこを Tab の入口にする（roving） */
   list.addEventListener("focusin", e => {
@@ -1717,7 +1760,7 @@ function wireSkinVolKeys() {
   /* 入切・読み方向 */
   document.querySelectorAll("[data-volnav]").forEach(b => b.addEventListener("click", () => setSkinVolNav(b.dataset.volnav !== "off")));
   document.querySelectorAll("[data-voldir]").forEach(b => b.addEventListener("click", () => setSkinVolDir(b.dataset.voldir)));
-  document.querySelectorAll("[data-volwrap]").forEach(b => b.addEventListener("click", () => setSkinVolWrap(b.dataset.volwrap === "on")));
+  document.querySelectorAll("[data-volwrap]").forEach(b => b.addEventListener("click", () => setSkinVolWrap(b.dataset.volwrap)));
   /* 4 方向のアサイン：押したら「キーを押してください」で待つ */
   document.querySelectorAll("[data-volkey]").forEach(b => b.addEventListener("click", () => {
     volKeyListening = volKeyListening === b.dataset.volkey ? "" : b.dataset.volkey;
@@ -1739,6 +1782,24 @@ function wireSkinVolKeys() {
 }
 /* 棚に出している枚数（読み上げに使う） */
 let skinShownCount = 0;
+/* 状態の行に 1 文を出す（読み上げは #skinVolStatus の aria-live が行う） */
+function announceVolText(text) {
+  const box = $("skinVolStatus");
+  if (!box) return;
+  box.textContent = "";
+  requestAnimationFrame(() => { box.textContent = text; });
+}
+/* 本（巻）の並び。"" と "all" は「本」ではないので、連読では使いません */
+function skinVolBooks() {
+  return skinVolumes().map(g => g && g.id).filter(Boolean);
+}
+/* 連読：前の本／次の本（端は反対側へつなぐ＝最後の本の次は最初の本） */
+function volChainTarget(books, cur, forward) {
+  const list = Array.isArray(books) ? books.filter(Boolean) : [];
+  const i = list.indexOf(cur);
+  if (i < 0 || !list.length) return "";
+  return list[(i + (forward ? 1 : -1) + list.length) % list.length];
+}
 /* 巻を切り替えた結果を、見た目と同時に読み上げる（G-3・aria-live） */
 function announceSkinVol(vol) {
   const box = $("skinVolStatus");
@@ -1751,12 +1812,17 @@ function announceSkinVol(vol) {
   requestAnimationFrame(() => { box.textContent = text; });
 }
 /* 巻を選ぶ（保存して棚を作り直す）。"" は定番＋ウィザード、"all" は全部 */
-function setSkinVol(vol) {
+/* 選ぶだけ（パネルは閉じない）。連読で「次の本へ移る」ときに使います */
+function selectSkinVol(vol) {
   const volumes = skinVolumes();
   const known = ["", "all", ...volumes.map(g => g && g.id).filter(Boolean)];
   settings.skinShelfVol = known.includes(vol) ? vol : "";
   saveUserPrefs();
   buildSkinGrid();
+  return settings.skinShelfVol;
+}
+function setSkinVol(vol) {
+  selectSkinVol(vol);
   announceSkinVol(settings.skinShelfVol);
   const panel = $("skinVolPanel");
   if (panel && typeof panel.hidePopover === "function" && panel.matches(":popover-open")) {

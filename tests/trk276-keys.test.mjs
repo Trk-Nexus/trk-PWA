@@ -133,10 +133,12 @@ test("矢印：フォーカスだけ動かす（決めるのは Enter／Space＝
   const kd = core.slice(core.indexOf('list.addEventListener("keydown"'), core.indexOf('list.addEventListener("focusin"'));
   assert.match(kd, /if \(settings\.skinVolNav === "off"\) return;/, "使わないときは動かない");
   assert.match(kd, /const from = cards\.indexOf\(document\.activeElement\);/);
-  assert.match(kd, /cards\[to\]\.focus\(\);/, "フォーカスを移すだけ");
-  assert.doesNotMatch(kd, /setSkinVol\(/, "矢印では決めない（棚を作り直さない）");
-  assert.match(kd, /if \(to < 0\) \{ e\.preventDefault\(\); return; \}/, "端では止まる");
-  assert.match(kd, /e\.preventDefault\(\);\s*\n\s*cards\.forEach/, "ページのスクロールを止める");
+  assert.match(kd, /if \(plain >= 0\) \{ focusVolCard\(cards, plain\); return; \}/, "ふつうの移動はフォーカスだけ");
+  /* 棚を作り直すのは、連読（設定で選んだとき）の端のときだけ */
+  assert.match(kd, /if \(\(forward \|\| backward\) && volChainStep\(forward\)\) return;/);
+  assert.doesNotMatch(kd, /setSkinVol\(/, "矢印で「決める」ことはしない");
+  assert.match(kd, /if \(mode === "stop"\) return;/, "端では止まる（既定）");
+  assert.match(kd, /e\.preventDefault\(\);/, "ページのスクロールを止める");
 });
 
 test("roving tabindex：選ばれている 1 枚だけ Tab で止まる", () => {

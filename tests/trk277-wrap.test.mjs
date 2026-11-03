@@ -74,11 +74,12 @@ test("最後の行が少ないとき（390px の 2 列で 5 枚）も回り込�
 });
 
 test("設定：既定は「端で止まる」・工場出荷で戻る・新しい保存キーは増やさない", () => {
-  assert.match(core, /skinVolWrap: prefs\.skinVolWrap === "on" \? "on" : "off"/);
-  assert.match(core, /settings\.skinVolNav = "on"; settings\.skinVolDir = "row"; settings\.skinVolWrap = "off";/);
-  assert.match(core, /function setSkinVolWrap\(on\) \{/);
+  assert.match(core, /skinVolWrap: prefs\.skinVolWrap === "chain" \? "chain"/);
+  assert.match(core, /\? "wrap" : "stop"/, "端で止まるが既定");
+  assert.match(core, /settings\.skinVolNav = "on"; settings\.skinVolDir = "row"; settings\.skinVolWrap = "stop";/);
+  assert.match(core, /function setSkinVolWrap\(mode\) \{/);
   assert.match(core, /document\.querySelectorAll\("\[data-volwrap\]"\)\.forEach\(b => b\.addEventListener\("click"/);
-  assert.match(core, /settings\.skinVolWrap === "on"\)/, "移動のときに設定を渡している");
+  assert.match(core, /settings\.skinVolWrap === "wrap"|volMove\(rects, from, move, dir, true\)/, "回り込む設定を見ている");
   assert.doesNotMatch(core, /localStorage\.setItem\("skinVolWrap/, "settings の中（新しい保存キーを作らない）");
 });
 
@@ -87,11 +88,12 @@ test("📚 のパネルに、言葉つきで並んでいる（読み方向 → �
   const dir = box.indexOf('data-i18n="skinVolDirTitle"');
   const dirBtn = box.indexOf('data-voldir="row"');
   const wrap = box.indexOf('data-i18n="skinVolWrapTitle"');
-  const wrapBtn = box.indexOf('data-volwrap="off"');
+  const wrapBtn = box.indexOf('data-volwrap="stop"');
   assert.ok(dir >= 0 && dir < dirBtn, "「読み方向」の見出しが、選択より前にある");
   assert.ok(wrap > dirBtn && wrap < wrapBtn, "「端まで行ったとき」の見出しが、選択より前にある");
-  assert.match(box, /data-volwrap="off"/);
-  assert.match(box, /data-volwrap="on"/);
+  assert.match(box, /data-volwrap="stop"/);
+  assert.match(box, /data-volwrap="wrap"/);
+  assert.match(box, /data-volwrap="chain"/);
   /* 言葉は言い換えずに、そのまま伝わる形で */
   assert.match(i18n, /skinVolWrapStop:"端で止まる"/);
   assert.match(i18n, /skinVolWrapLoop:"反対側へ回り込む"/);
@@ -100,7 +102,7 @@ test("📚 のパネルに、言葉つきで並んでいる（読み方向 → �
 });
 
 test("4 言語のキーがそろう（5 キー×4）", () => {
-  for (const k of ["skinVolDirTitle", "skinVolWrapTitle", "skinVolWrapStop", "skinVolWrapLoop"]) {
+  for (const k of ["skinVolDirTitle", "skinVolWrapTitle", "skinVolWrapStop", "skinVolWrapLoop", "skinVolWrapChain"]) {
     assert.equal((i18n.match(new RegExp("\\b" + k + ":", "g")) || []).length, 4, `${k} は 4 言語`);
   }
   assert.equal((i18n.match(/\bskinVolKeysHint:/g) || []).length, 4, "説明文も 4 言語（重複なし）");

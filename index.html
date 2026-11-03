@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk277">
+<meta name="trk-build" content="trk278">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -538,8 +538,9 @@
                   </div>
                   <p class="hint volLabel" data-i18n="skinVolWrapTitle"></p>
                   <div class="seg volSeg" id="skinVolWrapRow">
-                    <button type="button" data-volwrap="off" data-i18n="skinVolWrapStop"></button>
-                    <button type="button" data-volwrap="on" data-i18n="skinVolWrapLoop"></button>
+                    <button type="button" data-volwrap="stop" data-i18n="skinVolWrapStop"></button>
+                    <button type="button" data-volwrap="wrap" data-i18n="skinVolWrapLoop"></button>
+                    <button type="button" data-volwrap="chain" data-i18n="skinVolWrapChain"></button>
                   </div>
                   <div class="volKeyPad" id="skinVolKeyPad">
                     <button type="button" class="miniBtn volKey" data-volkey="L" data-i18n-aria="skinVolKeyLeft"></button>
