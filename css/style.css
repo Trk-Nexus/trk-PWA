@@ -1870,6 +1870,29 @@ body.plDragging .libTab[data-pl]{outline:1px dashed var(--ui-border);outline-off
 #setFindNothing{margin:8px 0 0}
 @media (max-width:760px){ .setFind{flex-wrap:wrap} .setFind .skinFindBox{flex:1 1 100%} }
 
+/* ⚖ trk279：設定の「段」（見せる量。値は変えません）
+   1 simple／2 standard／3 pro／4 master。行の data-tier と、画面の data-set-level で決まります。
+   触った行（data-changed）は、段が低くても必ず出します。 */
+.setLevel{margin:12px 0 0}
+.setLevelLabel{display:block;font-size:12px;font-weight:800;color:var(--ui-muted);letter-spacing:.02em}
+.setLevelBtns{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 0}
+.setLevelBtns button{padding:7px 12px;border-radius:999px;border:1px solid var(--ui-border);
+  background:var(--ui-field);color:var(--ui-text);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.setLevelBtns button:hover{border-color:var(--ui-accent)}
+.setLevelBtns button[aria-pressed="true"]{background:var(--ui-accent);border-color:var(--ui-accent);color:var(--ui-accent-ink)}
+.setLevelBtns button:focus-visible{outline:2px solid var(--ui-accent);outline-offset:2px}
+.setLevel .hint{margin:6px 0 0}
+.setLevelMore{margin:6px 0 0}
+.setLevelMore[hidden],#setLevelStatus:empty{display:none}
+#settingsScreen[data-set-level="simple"] [data-tier="2"]:not([data-changed]),
+#settingsScreen[data-set-level="simple"] [data-tier="3"]:not([data-changed]),
+#settingsScreen[data-set-level="simple"] [data-tier="4"]:not([data-changed]),
+#settingsScreen[data-set-level="standard"] [data-tier="3"]:not([data-changed]),
+#settingsScreen[data-set-level="standard"] [data-tier="4"]:not([data-changed]),
+#settingsScreen[data-set-level="pro"] [data-tier="4"]:not([data-changed]){display:none}
+/* 中の行が全部隠れるパネルは、見出しごと隠す（1 行でも残るパネルは出したまま） */
+#settingsScreen details.panel[data-level-hidden]{display:none}
+
 /* 🔄 trk242：新しい版の知らせ（画面の下の小さな帯）。窓で覆わない・遊びを止めない */
 .swUpdateBar{position:fixed;left:50%;transform:translateX(-50%);
   bottom:calc(96px + env(safe-area-inset-bottom, 0px));z-index:75;

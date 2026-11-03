@@ -266,6 +266,9 @@ const TRK_ENUM_VALUES = {
   chartGen: ["1", "2", "3", "4"], // 🎼 1・2は旧方式、3はAタイプ（従来）、4はBタイプ（既定。遊びの文法。js/chart-gen.js）
   mediaKeepLimit: ["1g", "5g", "unlimited"] // 🎵 保存棚の上限（ブラウザー側の容量上限は別に適用）
 };
+/* ⚖ trk279：⚙ の「段」。**見せる量**を選ぶだけで、値は変えません（js/settings-level.js が読みます）。
+   1＝シンプル／2＝スタンダード（既定）／3＝プロ／4＝マスター。 */
+const SET_LEVELS = ["simple", "standard", "pro", "master"];
 
 /* 🧭 チュートリアルのスタンプを読み込む（trk140）。既知の8つだけを残し、重複を除く。旧「曲を選ぶ」song は play へ引き継ぐ。 */
 function tutorialStampsFrom(raw) {
@@ -568,7 +571,13 @@ const settings = {
   mediaSubsSize: pick(prefs.mediaSubsSize, ["small", "normal", "large"], "normal"),
   /* ✨ フレーム補完（js/frame-interp.js）。既定はオフ（重いので） */
   frameInterp: pick(prefs.frameInterp, ["off", "blend", "flow"], "off"),
-  frameInterpStrength: num(prefs.frameInterpStrength, 0, 1, .85)
+  frameInterpStrength: num(prefs.frameInterpStrength, 0, 1, .85),
+  /* ⚖ trk279：⚙ の「段」（見せる量）。既定はスタンダード。
+     値は変えません（段を下げても、いまの動きはそのまま）。 */
+  setLevel: pick(prefs.setLevel, SET_LEVELS, "standard"),
+  /* ⚖ trk279：自分で動かしたことのある設定の名前。段で隠れる行でも、
+     一度でも触ったものは必ず出します（「設定したのに消えた」を作らない）。 */
+  setTouched: cleanSkinIdList(prefs.setTouched, 160)
 };
 /* 🖥 trk223（2026-10-31 レビュー⑤）：同じオリジンで2つの trk! を公開できる（/trk/ と /trk-PWA/）。
    localStorage はオリジンで共有なので、片方（古い版）が保存すると、その版が知らない設定
@@ -848,6 +857,8 @@ function resetAllPrefs() {
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
   /* ⌨ trk267：ターミナルの行き先（プレイヤー）・見た目（自動）・覚えた呪文（無し）も工場出荷状態へ */
   settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {}; settings.cliBell = true;
+  /* ⚖ trk279：⚙ の段（スタンダード）と「触った設定」も工場出荷状態へ */
+  settings.setLevel = "standard"; settings.setTouched = [];
 }
 /* trk247：設定JSONの「中身」を決める1か所（書き出しと、書き出しsizes表示が同じ物を見る）。
    ⚠ kind ごとに載せる物が違う（notes／tv／audio／all）。all は settings 全体。 */

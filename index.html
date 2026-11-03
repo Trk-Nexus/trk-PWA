@@ -386,12 +386,27 @@
   </section>
 
   <!-- ===== 設定画面 ===== -->
-  <section id="settingsScreen" class="screen" hidden>
+  <section id="settingsScreen" class="screen" hidden data-set-level="standard">
     <div class="card wide">
       <header class="head">
         <h2 class="setTitle" data-i18n="settingsTitle"></h2>
         <button id="closeSettingsBtn" type="button" class="primary slim" data-i18n="closeSettings"></button>
       </header>
+
+      <!-- ⚖ trk279：見せる量を選ぶ「段」。値は変えません（js/settings-level.js）
+           1＝シンプル／2＝スタンダード／3＝プロ／4＝マスター。既定はスタンダード -->
+      <div class="setLevel" role="group" aria-labelledby="setLevelTitle">
+        <span id="setLevelTitle" class="setLevelLabel" data-i18n="setLevelTitle"></span>
+        <div class="setLevelBtns">
+          <button type="button" id="setLevelSimple" data-set-level-btn="simple" data-i18n="setLevelSimple" aria-pressed="false"></button>
+          <button type="button" id="setLevelStandard" data-set-level-btn="standard" data-i18n="setLevelStandard" aria-pressed="true"></button>
+          <button type="button" id="setLevelPro" data-set-level-btn="pro" data-i18n="setLevelPro" aria-pressed="false"></button>
+          <button type="button" id="setLevelMaster" data-set-level-btn="master" data-i18n="setLevelMaster" aria-pressed="false"></button>
+        </div>
+        <button type="button" id="setLevelMore" class="miniBtn setLevelMore" data-i18n="setLevelMore" hidden></button>
+        <p class="hint" data-i18n="setLevelHint"></p>
+        <p id="setLevelStatus" class="hint status" role="status" aria-live="polite"></p>
+      </div>
 
       <!-- 🔍 trk243：設定のパネルが 19 枚になったので、言葉で絞れるようにしました（js/settings-find.js） -->
       <div id="setFind" class="setFind">
@@ -2383,6 +2398,8 @@
 <script src="js/sw-update.js"></script>
 <!-- 🔍 trk243：設定のさがす -->
 <script src="js/settings-find.js"></script>
+<!-- ⚖ trk279：設定の「段」（見せる量）。さがす・開閉の記憶より後に読みます -->
+<script src="js/settings-level.js"></script>
 <script src="js/ios-pwa.js"></script>
   <!-- 🔄 trk242：新しい版が入ったときだけ出る小さな帯（窓で覆わない・遊びを止めない） -->
   <div id="swUpdateBar" class="swUpdateBar" role="status" aria-live="polite" hidden>
