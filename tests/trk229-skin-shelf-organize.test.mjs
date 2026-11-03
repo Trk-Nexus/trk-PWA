@@ -45,10 +45,15 @@ function runIn(code, globals) {
 
 /* core.js から、棚の判定・並べ替え・掃除に使う部分だけを抜き出して動かす */
 const catListSrc = extractFn(coreSrc, "const skinCatList = s =>").replace(/;$/, "");
+/* ⚖ trk281：段ごとのスキンのカテゴリ（表と、可否を返す純粋関数） */
+const levelSrc = coreSrc.slice(coreSrc.indexOf("const SKIN_LEVEL_CATS = {"),
+  coreSrc.indexOf("\n};", coreSrc.indexOf("const SKIN_LEVEL_CATS = {")) + 3);
 const idRe = coreSrc.match(/const SKIN_ID_RE = .*;/)[0];
 const shelfApi = runIn(
   [catListSrc + ";", idRe, extractFn(coreSrc, "function cleanSkinIdList("), extractFn(coreSrc, "function cleanSkinMap("),
    extractFn(coreSrc, "function skinSearchText("), extractFn(coreSrc, "function skinMatchesQuery("),
+   levelSrc,
+   extractFn(coreSrc, "function skinLevelAllows("),
    extractFn(coreSrc, "function skinShelfEntries(")].join("\n") +
   "\nthis.api = { skinMatchesQuery, skinShelfEntries, cleanSkinIdList, cleanSkinMap };",
   { SKINS }
@@ -100,10 +105,11 @@ describe("trk229 スキンの棚の整理：絞り込みと並べ替え", () => 
 
   test("🚫 を付けたスキンは、ふだんの棚から消える（「🚫 隠した」を見ているときだけ出る）", () => {
     const hidden = ["typePop", "neon"];
-    const normal = shelfApi.skinShelfEntries(SKINS, { ...opt(), hidden });
+    /* ⚖ trk281：段でカテゴリが絞られるので、ここは全部のカテゴリが出るマスターで数えます */
+    const normal = shelfApi.skinShelfEntries(SKINS, { ...opt(), hidden, level:"master" });
     assert.equal(ids(normal).some(id => hidden.includes(id)), false);
     assert.equal(normal.length, Object.keys(SKINS).length - hidden.length);
-    const onlyHidden = shelfApi.skinShelfEntries(SKINS, { ...opt(), only:"hidden", hidden });
+    const onlyHidden = shelfApi.skinShelfEntries(SKINS, { ...opt(), only:"hidden", hidden, level:"master" });
     assert.deepEqual(ids(onlyHidden).sort(), hidden.slice().sort());
   });
 

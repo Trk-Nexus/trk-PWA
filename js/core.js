@@ -266,6 +266,10 @@ const TRK_ENUM_VALUES = {
   chartGen: ["1", "2", "3", "4"], // 🎼 1・2は旧方式、3はAタイプ（従来）、4はBタイプ（既定。遊びの文法。js/chart-gen.js）
   mediaKeepLimit: ["1g", "5g", "unlimited"] // 🎵 保存棚の上限（ブラウザー側の容量上限は別に適用）
 };
+/* ⚖ trk279・trk281：⚙ の「段」。**見せる量**を選ぶだけで、値は変えません（js/settings-level.js が読みます）。
+   1＝シンプル／2＝スタンダード（既定）／3＝プロ／4＝マスター／5＝ウィザード
+   （ウィザードは一番上。スキンの「wizard」もここでだけ棚に出ます）. */
+const SET_LEVELS = ["simple", "standard", "pro", "master", "wizard"];
 
 /* 🧭 チュートリアルのスタンプを読み込む（trk140）。既知の8つだけを残し、重複を除く。旧「曲を選ぶ」song は play へ引き継ぐ。 */
 function tutorialStampsFrom(raw) {
@@ -542,9 +546,22 @@ const settings = {
      開いている間の見た目（auto＝wizard を含むスキン→無ければ terminal／terminal／keep）、
      覚えた呪文。どれもこの settings の中だけ（新しい localStorage のキーは増やしません）。 */
   cliPlay: pick(prefs.cliPlay, ["media", "preview"], "media"),
-  cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "auto"),
+  /* ⌨ trk286：既定は「いまのスキンのまま」＝端末の中だけ、後ろと同じ見た目で開く */
+  cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "keep"),
   cliSpells: cleanCliSpells(prefs.cliSpells),
   cliBell: prefs.cliBell !== false,   /* ⌨ trk269：エラーの音を鳴らしてよいか（鳴らすかはスキンが決める） */
+  /* ⌨ trk283：呼び出しキー（同じキーで開閉・Ctrl/⌘ と一緒に押す）・実行後に閉じる・
+     入力できるかの見せ方（既定は常時バッジ）・端末のスキンを個別に選ぶか。 */
+  cliKey: validCode(prefs.cliKey) ? prefs.cliKey : "Backquote",
+  /* ⌨ trk286：実行後に閉じるのは**既定オフ**（1 回呼んで唱えて、そのまま何度も唱えられるように） */
+  cliAutoClose: prefs.cliAutoClose === true,
+  /* ⌨ trk286：ボトムシートの高さ（half＝52%／tall＝70%（既定）／full＝92%） */
+  cliSheetSize: pick(prefs.cliSheetSize, ["half", "tall", "full"], "tall"),
+  cliTypingCheck: pick(prefs.cliTypingCheck, ["badge", "status", "quiet"], "badge"),
+  /* ⌨ trk285：入力の合図（プロンプト）の形。既定は Linux 系の「<スキン名(English)> ~ %」 */
+  cliPromptStyle: pick(prefs.cliPromptStyle, ["linux", "bash", "root", "fish", "ps", "plain", "skin"], "linux"),
+  cliSkinPickOn: prefs.cliSkinPickOn === true,
+  cliSkinPick: typeof prefs.cliSkinPick === "string" && has(window.Trk.data.SKINS, prefs.cliSkinPick) ? prefs.cliSkinPick : "",
   /* ▶ メディアプレーヤー（TV電源長押し） */
   mediaRepeat: pick(prefs.mediaRepeat, ["off", "one", "all"], "off"),
   mediaShuffle: prefs.mediaShuffle === true,
@@ -568,7 +585,16 @@ const settings = {
   mediaSubsSize: pick(prefs.mediaSubsSize, ["small", "normal", "large"], "normal"),
   /* ✨ フレーム補完（js/frame-interp.js）。既定はオフ（重いので） */
   frameInterp: pick(prefs.frameInterp, ["off", "blend", "flow"], "off"),
-  frameInterpStrength: num(prefs.frameInterpStrength, 0, 1, .85)
+  frameInterpStrength: num(prefs.frameInterpStrength, 0, 1, .85),
+  /* ⚖ trk279：⚙ の「段」（見せる量）。既定はスタンダード。
+     値は変えません（段を下げても、いまの動きはそのまま）。 */
+  setLevel: pick(prefs.setLevel, SET_LEVELS, "standard"),
+  /* ⚖ trk279：自分で動かしたことのある設定の名前。段で隠れる行でも、
+     一度でも触ったものは必ず出します（「設定したのに消えた」を作らない）。 */
+  setTouched: cleanSkinIdList(prefs.setTouched, 160),
+  /* ⚖ trk281：TRUCK の揺れを全員オフへ寄せる「一回限りの印」（docs/MIGRATIONS.md）。
+     1 になったら二度と掛かりません（工場出荷でも戻しません）。 */
+  swayTruckOff1: prefs.swayTruckOff1 === 1 ? 1 : 0
 };
 /* 🖥 trk223（2026-10-31 レビュー⑤）：同じオリジンで2つの trk! を公開できる（/trk/ と /trk-PWA/）。
    localStorage はオリジンで共有なので、片方（古い版）が保存すると、その版が知らない設定
@@ -847,7 +873,9 @@ function resetAllPrefs() {
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
   /* ⌨ trk267：ターミナルの行き先（プレイヤー）・見た目（自動）・覚えた呪文（無し）も工場出荷状態へ */
-  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {}; settings.cliBell = true;
+  settings.cliPlay = "media"; settings.cliSkin = "keep"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Backquote"; settings.cliAutoClose = false; settings.cliSheetSize = "tall"; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = ""; settings.cliPromptStyle = "linux";
+  /* ⚖ trk279：⚙ の段（スタンダード）と「触った設定」も工場出荷状態へ */
+  settings.setLevel = "standard"; settings.setTouched = [];
 }
 /* trk247：設定JSONの「中身」を決める1か所（書き出しと、書き出しsizes表示が同じ物を見る）。
    ⚠ kind ごとに載せる物が違う（notes／tv／audio／all）。all は settings 全体。 */
@@ -1404,6 +1432,27 @@ function skinVolTitle(g) {
   if (key) { const t = tr(key); if (t && t !== key) return t; }
   return g.title || g.id || "";
 }
+/* ⚖ trk281：段ごとに、既定の棚へ出すスキンのカテゴリ（ご相談 2026-11-03）。
+   ・シンプル／スタンダード＝定番・書体・ダーク・ライト・グラデ（ミクの 4 種は「定番」に入っています）
+   ・プロ＝＋遊び心
+   ・マスター＝＋みやすさ・生活
+   ・ウィザード＝＋ウィザード（初見の驚きは、この段で。wizard の巻も既定の棚に戻ります）
+   巻を選んだとき・ALL のときは掛けません（選んだものは全部見せる）。
+   ウィザードの段だけは、既定の棚に wizard の巻も戻ります（trk280 で外した「定番＋ウィザード」）。 */
+const SKIN_LEVEL_CATS = {
+  simple:   ["basic", "type", "dark", "light", "grad"],
+  standard: ["basic", "type", "dark", "light", "grad"],
+  pro:      ["basic", "type", "dark", "light", "grad", "fun"],
+  master:   ["basic", "type", "dark", "light", "grad", "fun", "access", "life"],
+  wizard:   ["basic", "type", "dark", "light", "grad", "fun", "access", "life", "wizard"],
+};
+/* その段で、そのスキンを既定の棚に出してよいか。純粋関数。 */
+function skinLevelAllows(cats, level) {
+  const allowed = SKIN_LEVEL_CATS[level] || SKIN_LEVEL_CATS.standard;
+  const list = Array.isArray(cats) && cats.length ? cats : ["basic"];
+  return list.some(c => allowed.includes(c));
+}
+
 /* 絞り込み（カテゴリ・⭐・🕒・🚫・巻・検索）と並べ替えを、1か所で決める */
 function skinShelfEntries(skins, opt) {
   const o = opt || {}, cat = o.cat || "all", only = o.only || "";
@@ -1424,11 +1473,16 @@ function skinShelfEntries(skins, opt) {
     const g = volumes.find(x => x && x.id === vol);
     if (g && Array.isArray(g.ids)) volSet = new Set(g.ids);
   }
-  if (!acrossVolumes && !volSet && vol !== "all") {
-    /* "" （既定）と、知らない巻名（古い保存・目録が減ったとき）は同じ扱い＝定番＋ウィザード */
+  const defaultVol = !acrossVolumes && !volSet && vol !== "all";   /* "" と知らない巻名＝既定の棚 */
+  if (defaultVol) {
+    /* "" （既定）と、知らない巻名（古い保存・目録が減ったとき）は同じ扱い＝**定番だけ**。
+       ⚖ trk280：ご相談「ウィザードは定番＋ウィザードから外す（初見の驚きを残す）」により、
+       wizard も既定の棚から外しました（📚 の巻で wizard を選んだとき・ALL では見えます）。 */
     outside = new Set();
     for (const g of volumes) {
-      if (!g || g.id === "wizard" || g.id === "other") continue;
+      if (!g || g.id === "other") continue;
+      /* ⚖ trk281：ウィザードの段では、wizard の巻を既定の棚に戻す（5 段目だけの特権） */
+      if (o.level === "wizard" && g.id === "wizard") continue;
       for (const id of Array.isArray(g.ids) ? g.ids : []) outside.add(id);
     }
   }
@@ -1444,6 +1498,11 @@ function skinShelfEntries(skins, opt) {
     /* 差し戻し（目録へお返し中）は、**明示的にその巻を選んだとき**と ALL だけ（Q2）。
      知らない巻名・巻の目録が読めないときは「選んでいない」扱いで外します。 */
   if (s.holdback && !inUse && vol !== "all" && !(volSet && volSet.has(id))) continue;
+    /* ⚖ trk280：既定の棚にはウィザードを出さない（巻の目録が読めないときも同じ。
+       目録が無いと巻で切れないので、カテゴリで外します）。 */
+    if (defaultVol && !inUse && o.level !== "wizard" && skinCatList(s).includes("wizard")) continue;
+    /* ⚖ trk281：既定の棚は、段（シンプル〜ウィザード）でカテゴリを絞る */
+    if (defaultVol && !inUse && !skinLevelAllows(skinCatList(s), o.level)) continue;
     /* 隠したスキンは「🚫 隠した」を見ているときだけ出す。
        ⚠ trk241：**いま使っているスキンだけは、隠しても棚に残す**（消えたように見えると、
           当たっているのに「効かない」と誤解されるため。印は 🚫 で出す）。 */
@@ -1453,6 +1512,11 @@ function skinShelfEntries(skins, opt) {
     else if (hidden.has(id) && id !== o.current) continue;
     if (!skinMatchesQuery(id, s, o.query)) continue;
     out.push([id, s]);
+  }
+  /* ⚖ trk281：⭐ を付けたスキンは棚の先頭へ（隠しません。並びだけ）。
+     並べ方を選んでいるときは、その並びを尊重して動かしません。 */
+  if ((!o.sort || o.sort === "default") && fav.size) {
+    out.sort((a, b) => (fav.has(b[0]) ? 1 : 0) - (fav.has(a[0]) ? 1 : 0));
   }
   if (o.sort === "name") out.sort(byName);
   else if (o.sort === "used") out.sort((a, b) => (use[b[0]] || 0) - (use[a[0]] || 0) || byName(a, b));
@@ -1838,7 +1902,7 @@ function setSkinVol(vol) {
    「（115／291）」と言いながら実際は 114 枚だった、を同じ数え方で揃えます。 */
 function skinVolCount(skins, volumes, vol) {
   return skinShelfEntries(skins, {
-    vol, volumes, locale: lang, fav: [], hidden: [], use: {}, last: {},
+    vol, volumes, locale: lang, fav: [], hidden: [], use: {}, last: {}, level: settings.setLevel,
   }).length;
 }
 function buildSkinVolControls(volumes, skins) {
@@ -1876,7 +1940,8 @@ function buildSkinVolControls(volumes, skins) {
     add("", tr("skinVolDefault"), skinVolCount(skins, volumes, ""));
     add("all", tr("skinVolAll"), skinVolCount(skins, volumes, "all"));
     for (const g of volumes) {
-      /* 定番とウィザードは既定と重なるので、区切りを 1 行入れてから並べる（レビュー R7） */
+      /* 最後の 2 巻（定番・ウィザード）は仲間なので、区切りを 1 行入れてから並べる（レビュー R7）。
+         ⚖ trk280：既定の棚は「定番」だけになりました（wizard はここで選んだときだけ）。 */
       if (g.id === "wizard") {
         const sep = el("p", "hint skinVolSep");
         sep.textContent = tr("skinVolGroupClassic");
@@ -1936,7 +2001,7 @@ function buildSkinGrid() {
   const list = skinShelfEntries(skins, {
     cat, only, query: skinQuery, sort: settings.skinSort, locale: lang, current: settings.skin,
     fav: settings.skinFav, hidden: settings.skinHidden, use: settings.skinUse, last: settings.skinLast,
-    vol, volumes
+    vol, volumes, level: settings.setLevel
   });
   const total = Object.keys(skins).length;
   skinShownCount = list.length;

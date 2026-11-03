@@ -105,6 +105,7 @@ function resetRun() {
   core.practice = false; core.effects = []; core.errors = []; core.caption = null; core.lastMissT = -1e9;
   leadIn = null; goAt = 0; pausedInLeadIn = false; autoplayBlocked = false;
   resetTruck(); resetLives(); resetOrbit();
+  if (typeof resetRoad === "function") resetRoad();   /* 🛣 trk282：曲の頭で道を 1 回引く */
   if (core.settings.autoPlay) { lifeState.max = 0; lifeState.hp = 0; }   // AUTOには体力はありません
   if (typeof resetStage === "function") resetStage();
   if (typeof resetCatch === "function") resetCatch();

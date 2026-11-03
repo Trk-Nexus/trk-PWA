@@ -7,7 +7,7 @@
 > trk250 時点：**リポジトリは組織 `Trk-Nexus` に移籍済み**（本番URL **`https://trk-nexus.github.io/trk-PWA/`**・旧 git URL は死亡）。
 > 0円方針のまま独自ドメインは取らず、上流 `trk`（個人）との保存領域共有を解きました＝経緯と残作業は [`ORIGIN-TRK-NEXUS-2026-11-02.md`](ORIGIN-TRK-NEXUS-2026-11-02.md)。アプリ本体は trk248（**初回案内に「保存はこの端末だけ」の1行**）、trk247（**設定の書き出し・読み込みの導線**＝⚙ → 💾 端末の保存に 📤📥・上限 20 MiB・**壊れた項目だけ除く**）、trk246（**書体の組み合わせ14組**＝見出し用の字を目録から選べる）、trk245（**密度の自動**＝窓の広さに合わせる／**曲リストの高さを画面に合わせる**）で、trk244 は**表示の密度**（PCで縮小しても文字を小さくせず詰める）、trk243 は**設定のさがす**、trk242 は**新しい版の知らせ**でした。`npm run check` は **1285 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.02-trk254`**（実体は `trkPWA-trk-v2026.11.02-trk254@trk-pwa`。trk253 でレビュー対応、trk254 で 🔤 の写しを目録から生成方式に）。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
 >
-> **2026-11-03：** trk275 まで merge 済み（`main` = `22952da`）。いまは **trk276〜trk278（📚 をキーで動かす：アサイン・使わない・縦読み・回り込み・連読）** が PR #86 で進行中です。進み具合は [`PLAN-TRK274-2026-11-03.md`](PLAN-TRK274-2026-11-03.md) **§9**、画面の物差しは [`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md)、いまの状態は §1.5 の「trk274」の行。
+> **2026-11-03：** trk278 まで merge 済み（`main` = `1df448a`）。trk279 で **⚙ の「段」**（見せる量を選ぶ・trk281 で 5 段へ）、trk280 で **体力の数字をそろえ・TRUCK の揺れを既定オフ・既定の棚からウィザードを外す**。trk276〜trk278 で 📚 をキーで動かせるように（アサイン・使わない・縦読み・回り込み・連読）。trk279 の記録＝ [`PLAN-TRK279-2026-11-03.md`](PLAN-TRK279-2026-11-03.md)、数えた事実＝ [`SETTINGS-AUDIT-TRK279-2026-11-03.md`](SETTINGS-AUDIT-TRK279-2026-11-03.md)、画面の物差しは [`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md)。
 >
 > 現在の仕様・守る条件・未確認事項の要約です。過去の詳細な変更履歴・検証記録は [`HANDOFF-ARCHIVE.md`](HANDOFF-ARCHIVE.md)、利用者向け仕様は [`../README.md`](../README.md) と [`guide/`](guide/)、権利表記は [`../NOTICE.md`](../NOTICE.md)、品質・安全確認は [`QUALITY-CHECKS.md`](QUALITY-CHECKS.md) と [`SECURITY.md`](SECURITY.md)。**レビューと実機確認のお願いは [`REVIEW-REQUEST-TRK258-2026-11-02.md`](REVIEW-REQUEST-TRK258-2026-11-02.md)（前回は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md)）**、その指摘への対応は [`REVIEW-RESPONSE-2026-10-31.md`](REVIEW-RESPONSE-2026-10-31.md)、trk223 を実際の端末で見る手順は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)。
 
@@ -99,7 +99,7 @@
 - **画面（UX）の手当ては、Web 標準のガイドを読んでから決めます**（trk274）。`GoogleChrome/modern-web-guidance-src` の `guides/<分類>/<名前>/guide.md` と `features/*.md` を読み、**採る／採らないと理由**を [`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md) に残します。採るのは「今日のブラウザで効き、効かないブラウザでは**黙って素通りする**」ものだけ（このアプリは file: でも動く）。**写しは同梱せず、実行時に取りに行きません**。版は sha で記録します（いま読んだ版は main `dbf45b9`）。
 - `js/fx.js`／`js/fx-presets.js` の凍結は **trk114で解除**しました（2026-10-11、空さんの判断。trk109でfx.jsに足したMIDI MIXの経路も追認）。ほかのファイルと同じく、変更時はテスト・文書・実音声で確認します。fx.jsが読むための互換名（`chartMeta`・`phase`・`prefs`・`stats`・`videoReady`、読み取り専用の `_trkStudyRoomOpen`）はまだ残っていて、fx.jsを書き換えれば外せます（`docs/ADDONS.md` §0、`docs/NAMESPACE-PLAN.md`）。
 
-## 1.5 このリポジトリ（trk-PWA）の今（2026-11-03）
+## 1.5 このリポジトリ（trk-PWA）の今（2026-11-04）
 
 このチェックアウトは **`trk-PWA`**＝上流 `trk` 1.1.8 を履歴ごと取り込み、**通信を行わない standalone PWA** として仕上げる系統です。配り方が上流と違う（ZIP ではなく Pages）ため、§9 は上流の話として読んでください。
 
@@ -110,12 +110,18 @@
 | 配り方 | GitHub Pages（`.github/workflows/pages.yml`）＋ `manifest.webmanifest` ＋ `sw.js`。配布ZIPは作りません |
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
-| スキン | **291 種（本体 49＋ミク 4＋ウィザード 62＋巻別 176）**。trk274 で Skin 側の目録（`catalog/skins.json` の 291 種）を全部受け、棚に **📚 巻** の絞り込みを足した（既定は「定番＋ウィザード」＝**114 種**／色を目録へ差し戻した 18 種は既定の棚から外し、ALL とその巻では見えます）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
+| スキン | **291 種（本体 49＋ミク 4＋ウィザード 62＋巻別 176）**。trk274 で Skin 側の目録（`catalog/skins.json` の 291 種）を全部受け、棚に **📚 巻** の絞り込みを足した（既定は**「定番」だけ**（trk280 でウィザードを外し、trk281 で段のカテゴリに絞る＝スタンダード 44 種・マスター 53 種・ウィザードの段 114 種）／色を目録へ差し戻した 18 種は既定の棚から外し、ALL とその巻では見えます）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
 | **trk274（merge 済み）** | **巻別スキン 291 種（13 巻）の受け皿**。U1〜U4 は **A／A／A／A**（全部内蔵・カスタム 20 とは別枠・背景を寄せて見せる・UX 控えめ 4 つ）。記録＝[`PLAN-TRK274-2026-11-03.md`](PLAN-TRK274-2026-11-03.md) §9、画面の物差し＝[`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md) |
-| **trk276〜278（進行中）** | **📚 をキーで動かす**。ご要望＝上下を含む 4 方向の**キーアサイン**・**使わない**設定・**縦読み**。決めた形＝フォーカスだけ動く（Enter で決定）／読み方向「横書き・縦書き」／4 方向を個別に／📚 のパネルの中に置く。trk277 で**端の回り込み**（端で止まる／反対側へ回り込む）と**言葉の整理**（見出しを先に置く）。trk278 で**連読**（次の本へ続ける）と**「先頭に戻りました」**の読み上げ。記録＝[`PLAN-TRK276-2026-11-03.md`](PLAN-TRK276-2026-11-03.md)、返事＝[`LETTER-TRK276-2026-11-03.md`](LETTER-TRK276-2026-11-03.md)・[`LETTER-TRK277-2026-11-03.md`](LETTER-TRK277-2026-11-03.md)、実機＝[`VIEWER-TRK276-2026-11-03.md`](VIEWER-TRK276-2026-11-03.md) |
+| **trk279・trk281（実装済み）** | **⚙ の「段」＝見せる量**。決めた形＝**案 A（シンプル／スタンダード／プロ／マスター／ウィザードの 5 段。5 つ目は trk281）＋案内は段の外**、**既定はスタンダード**。段は**値ではなく見え方**（`settings.setLevel` と `settings.setTouched` の 2 つだけ保存）。**触った行はどの段でも出る**・**探しているあいだは段を無視**・**行が全部隠れるパネルだけ隠す**。記録＝[`PLAN-TRK279-2026-11-03.md`](PLAN-TRK279-2026-11-03.md)、洗い出し＝[`SETTINGS-AUDIT-TRK279-2026-11-03.md`](SETTINGS-AUDIT-TRK279-2026-11-03.md)、数える道具＝`tools/settings-inventory.mjs`。経過＝trk281 で**段ごとのスキンのカテゴリ**（スタンダード 44 種・マスター 53 種・ウィザードの段 114 種）・**⭐ は先頭**（隠さない）、trk282 で**揺れを「道」に**（8 割は高速道路＝静止）。次は **A（検索 1 本化・全部開閉・目次）→ D（🎨 の分割）→ F（説明文の圧縮）** |
+| **trk282（実装済み・PR #87）** | **🛣 道（揺れの作り）**。TRUCK の揺れを「毎回ちがう道」に＝**山道 5%（ゆるく蛇行）／坂道 5%（のぼる）／下り坂 5%（くだる）／海岸沿い 5%（斜めから）／高速道路 80%（揺れない）**の重み付き抽選（`ROAD_WEIGHTS`・純粋関数 `pickRoad`）。既定は **`settings.swayRoad = "auto"`（おまかせ）**＝**曲の頭で 1 回だけ**引き、⚙ で 6 つから選べば固定。**角度は時間だけの純粋関数 `roadAngle`**（乱数を使わない＝毎フレーム同じ）。**高速道路はビート揺れ・ヒット揺れも止める**（「揺れない道」と言いながら揺れると酔い対策の意味が無くなるため）。`swayTruck` は**既定オンへ戻した**（8 割は静止なので酔いにくい）。trk281 の `swayTruckOff1` は**保存がある人だけ `swayRoad="highway"` へ寄せる**形に変更（オフ固定にしない）。⚙ の「道の種類」は**スタンダードの段でも出す**（酔いやすい人が探せるように。ほかの揺れの設定はプロのまま） |
+| **trk283（実装済み・PR #87）** | **⌨ ターミナルの入口まわり**。①**段の差**＝`cliPanel` を **5（ウィザード）** へ（マスターでは隠す＝マスターとウィザードが同じに見えない）。ウィザードの段は **CLI と wizard スキン**が既定オン（wizard スキンは trk281 から）。②**開いたときのスキン**＝`cliSkinPickOn`＋`cliSkinPick` で**端末のスキンを個別に選べる**（既定オフ＝「ターミナルの見た目」に任せる）。`locked` は当てない・当てた（当てられない）ことを状態行に出す。③**文字が打てる状態かのチェック**＝`typableState()`（使える／見えている／フォーカス）を検めて、`cliTypingCheck`（**badge 既定**／status／quiet）で知らせ方を選ぶ。フォーカスが逃げたら自動で戻す（`ensureFocus`）。④**呼び出しキー**＝`cliKey`（既定 `・**Ctrl／⌘ と一緒**・同じキーで開閉・⚙ で割り当て・Esc で取り消し・遊ぶキーと重なるキーは受けない）。⑤**実行したら閉じる**＝`cliAutoClose`（既定オン）。何かをするコマンドだけ `action` が立ち、閉じたあと 1 行をトーストで残す。⑥**短い呼び名のコマンド**＝`next`／`back`／`re`（最初から使える） |
+| **trk284（実装済み・PR #87）** | **⌨ ターミナルの仕上げ**。①**置き場所**＝⌨ パネルを**設定のいちばん上**へ（画面・再生バーより上・全幅）。②**入力の取りこぼし**を洗って直す＝**IME の変換中は Enter／Tab／矢印を使わない**（`compositionBlocked`・`state.composing`）、**Tab は打っている文字があり Shift でないときだけ補完**（フォーカスを閉じ込めない・`tabShouldComplete`）、**全角の呪文と数字も通す**（`normalizeCommand`・NFKC）、**出力を読み返す／辞書を書く邪魔をしない**（`#cliLog`・`#cliSpellPanel` ではフォーカスを奪い返さない）。③**辞書登録（呪文）の GUI** を端末のいちばん下に（折りたたみ・一覧＋追加＋削除・最初から入っているものは消せない・上限 24 本・`spellDraftProblem` で検査・4 言語） |
+| **trk285（実装済み・PR #87）** | **⌨ 入力の合図（プロンプト）と入力の奪い方**。既定を **Linux 系の `<スキン名(English)> ~ %`** に（例：`The Art of War ~ %`／`Key of Solomon ~ %`・**スキン名は label.en 固定**）。形は **linux（既定）／bash `<name>:~$`／root `<name>:~#`／fish `<name> ~>`／PowerShell `PS <name>>`／シンプル `>`／スキンに任せる** の 7 択（`settings.cliPromptStyle`・純粋関数 `promptText(style, name)`）。⚙ に「いまの見え方：{text}」の下見を出す。**開いているあいだは画面のどこにフォーカスがあっても入力を奪う**（1 文字目も入力欄へ・IME の変換中と修飾キー付きは奪わない・端末の入力欄と辞書 `#cliForm`・`#cliSpellPanel` は邪魔しない） |
+| **trk286（実装済み・PR #87）** | **⌨ ターミナルを下から持ち上がる板（ボトムシート）に**。①**<dialog>＋showModal()** に替え、`role="dialog"`・`aria-modal`・フォーカスの閉じ込め・Esc・フォーカスの戻しは**ブラウザーに任せる**（自前の `instOverlay` をやめた）。背景クリックは `closedby="any"`（無いブラウザーは pointer の位置で判定）。②**出し入れは下から押し上げ**＝`@starting-style`＋`transition-behavior:allow-discrete`＋`overlay`、`::backdrop` も同じ。③**高さは 3 段**（`settings.cliSheetSize`：half 52%／**tall 70%（既定）**／full 92%）＝⚙ で選べて覚える。④**スキンは端末の中だけ**（`applySheetSkin()` が板の CSS 変数と `--ui-accent-ink` を差し替えるだけ。画面全体は `applySkin` しない＝後ろの曲リストがちらつかない）。⑤**既定は実行しても閉じない**（`cliAutoClose` を既定オン → **オフ**へ。閉じたい人だけ入れる）。⑥**`help` は 5 本＋案内・`help all` で全部**（24 本）・`help <語>` は 1 本。⑦文言は **"🪄 Terminal Key Setting"** 風に（4 言語） |
+| **trk276〜278（merge 済み）** | **📚 をキーで動かす**。ご要望＝上下を含む 4 方向の**キーアサイン**・**使わない**設定・**縦読み**。決めた形＝フォーカスだけ動く（Enter で決定）／読み方向「横書き・縦書き」／4 方向を個別に／📚 のパネルの中に置く。trk277 で**端の回り込み**（端で止まる／反対側へ回り込む）と**言葉の整理**（見出しを先に置く）。trk278 で**連読**（次の本へ続ける）と**「先頭に戻りました」**の読み上げ。記録＝[`PLAN-TRK276-2026-11-03.md`](PLAN-TRK276-2026-11-03.md)、返事＝[`LETTER-TRK276-2026-11-03.md`](LETTER-TRK276-2026-11-03.md)・[`LETTER-TRK277-2026-11-03.md`](LETTER-TRK277-2026-11-03.md)、実機＝[`VIEWER-TRK276-2026-11-03.md`](VIEWER-TRK276-2026-11-03.md) |
 | **trk275（merge 済み）** | **trk274 へのレビュー対応**。必須 **M1**（`Esc` で 📚 パネルが残る）・**M2**（巻の外の「使用中・⭐・🕒・🚫・検索」が消える）・**M3**（既定カードの数が 291）を直し、推奨 **R1〜R9** を反映（R3・R8・R9 は文書）。Q2 は「**寄せ幅の上限**」＝面の ΔE(OKLab) が 0.15 を超えるものは**目録へ差し戻し**（18 種）。返事＝[`LETTER-TRK275-2026-11-03.md`](LETTER-TRK275-2026-11-03.md) |
-| テスト | `npm run check` **1624 pass / 0 fail**（trk278 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
-| Service Worker | cache は **`trk-v2026.11.03-trk278@<スコープ>`**（実体は `trkPWA-trk-v2026.11.03-trk278@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
+| テスト | `npm run check` **1700 pass / 0 fail**（trk286 時点。版ごとの件数は §7）、`node tools/check-repo.mjs` 0 failure / 0 warning。**`TZ=Asia/Tokyo` でも同じ**（CI も両方で流します） |
+| Service Worker | cache は **`trk-v2026.11.04-trk286@<スコープ>`**（実体は `trkPWA-trk-v2026.11.04-trk286@<スコープ>`）（`/trk-PWA/` なら `@trk-pwa`）。install で `index.html` と、それが読み込む CSS・JS・アイコンを先に取ります（[`PWA.md`](PWA.md) §9.1）。同じオリジンに2つ置いても、片方の更新がもう片方のキャッシュを消しません |
 | まだ足りないもの | **実機・実ブラウザでの見た目**（この作業環境にブラウザも端末もない）。trk246 の確認項目は [`TYPOGRAPHY-TRK246-2026-11-01.md`](TYPOGRAPHY-TRK246-2026-11-01.md) §5、trk244・trk245 の確認項目は [`DENSITY-TRK244-2026-11-01.md`](DENSITY-TRK244-2026-11-01.md) §6 と [`DENSITY-WINDOW-TRK245-2026-11-01.md`](DENSITY-WINDOW-TRK245-2026-11-01.md) §5、trk229 の確認項目は [`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md) §6、trk228 の確認項目は [`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md) §7、trk227 の確認項目は [`PLAYER-BAR-TRK227-2026-10-31.md`](PLAYER-BAR-TRK227-2026-10-31.md) §5、trk226 は [`PLAYER-BAR-TRK226-2026-10-31.md`](PLAYER-BAR-TRK226-2026-10-31.md) §6、trk225 は [`PLAYER-BAR-TRK225-2026-10-31.md`](PLAYER-BAR-TRK225-2026-10-31.md) §5、trk223 の確認項目は [`REVIEW-REQUEST-TRK223-2026-10-31.md`](REVIEW-REQUEST-TRK223-2026-10-31.md)、trk220〜trk222 は [`REVIEW-REQUEST-2026-10-31.md`](REVIEW-REQUEST-2026-10-31.md) |
 | 移行 | **組織 `Trk-Nexus` へ移籍済み**（trk250〜trk252）。Pages は稼働中（開発版 <https://trk-nexus.github.io/trk-PWA/>）。個人側の同名リポジトリは**空のまま**（墓標 README は所有者待ち・[`BACKLOG-2026-11-02.md`](BACKLOG-2026-11-02.md) §6 X4） |
 
@@ -838,6 +844,87 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 
 ## 7. 最近の変更
 
+- **⌨ trk286：ターミナルを下から持ち上がる板に・スキンは端末の中だけ・既定は閉じない（2026-11-04）**
+  - **ご相談**：①曲名より下から押し上げる形（ボトムシート）で起動 ②スキンの適用が上手く行っている感触が無い ③キーの文言を "Terminal Key Setting" のようにウィザード風に ④`/help` で操作一覧がずらーっと出る形 ⑤既定は実行後も勝手に閉じない ⑥PC 版前提だが、スマホでもウィザードを出しているときは常時表示でよい・大きさの変更も可。
+  - **形**（`js/cli.js`・`css/style.css`）：自前の `div.instOverlay` ＋ `role="dialog"` ＋ Esc ハンドラをやめ、**ネイティブの `<dialog>` ＋ `showModal()`** に（modern-web-guidance の `ui-components/dialog`）。`aria-labelledby` だけ自分で付け、フォーカスの閉じ込め・Esc・フォーカスの戻しはブラウザーに任せます。閉じたあとの片づけは `close` イベント 1 か所（`finishClose()`）。背景クリックは `closedby="any"`、未対応のブラウザーは `pointerdown`／`pointerup` の位置で判定。
+  - **下から押し上げる**：`dialog.cliDialog{position:fixed;inset:auto 0 0 0}` で下端に置き、`@starting-style` ＋ `transition-behavior:allow-discrete` ＋ `transition-property` に `display`／`overlay` を入れて、閉じた状態（`translateY(100%)`・`opacity:0`）からせり上がります（`ui-behaviors/animate-to-from-top-layer`）。`::backdrop` も同じ組で暗くなります。`prefers-reduced-motion` では動かしません。上端につまみ（`.cliSheetHandle`）・下端に `env(safe-area-inset-bottom)`。
+  - **大きさ**：`settings.cliSheetSize`（`half` 52dvh／**`tall` 70dvh（既定）**／`full` 92dvh）。⚙ の ⌨ パネルに「ターミナルの高さ」の 3 択（`#cliSheetSize`）を足し、選ぶと保存して、開いていればすぐ合わせます（`syncSheet()`）。
+  - **スキンは端末の中だけ**：開くときに `applySheetSkin()` が板の `style` に `--ui-panel` などの CSS 変数と `--ui-accent-ink` を入れるだけにしました（`core.applySkin()` は呼ばない）。後ろの曲リスト・背景の色は変わらないので、開閉のたびに画面全体が塗り替わる「ちらつき」と「当たったのか分からない」が解消します。当てたスキンは状態行に 1 行（`cliSheetSkin`）で出し、合図の `<スキン名(English)>` も板のスキンを見ます（`state.sheetSkin`）。
+  - **既定は閉じない**：`cliAutoClose` の既定を **オン → オフ**へ（`prefs.cliAutoClose === true` のときだけ閉じる）。開いて唱えて、そのまま何度でも唱えられます。閉じるのは Esc・同じキー・背景・✕。文言も「唱えたら閉じる（既定はオフ：開いたまま何度でも）」に。
+  - **help**：`help` は**よく使う 5 本**（play／next／back／list／help）＋「help all … 全部の呪文（24 本）を出す」の案内。`help all` で全部、`help <語>`（`man` も同じ）で 1 本。
+  - **文言**：キーの見出しを **"🪄 Terminal Key Setting（Ctrl／⌘ ＋ このキー）"** に（4 言語）。ヒントも「呪文を呼ぶ鍵」と、何をするキーかを先に言う形へ。
+  - **追いかけ（同じ版）**：①**端末の見た目の既定を「いまのスキンのまま」**へ（`settings.cliSkin` の既定を `auto` → **`keep`**。開いても後ろと同じ見た目で下から出る。別のスキンを選んだ人だけ、中だけ変わる）。②**呼び出しキーの割り当てが決まらない**原因を直した＝**修飾キーだけ（Ctrl／Shift／Alt／⌘・CapsLock）を押すと `cliKey = "ControlLeft"` になって「Ctrl+Ctrl」で呼べなくなる**ので受けない（`cliKeyUsable`：Esc・Tab・修飾キー単独・`validCode` 外は断る）。**Tab も受けない**（フォーカス移動を奪うため）。**📚 の音量キー**も重なりの検査に入れ、**押し直し・ほかを触る・Esc** で待ちをやめる（`pointerdown` で取り消し）。決まった／駄目だったは `#cliKeyStatus`（`aria-live`）と `aria-pressed` でその場に出す。
+  - 見張り：`tests/trk286-sheet.test.mjs` **20 件**（dialog 化・showModal・Esc を拾わない・close で片づけ・背景クリック／下から押し上げの CSS・3 段の高さと保存・⚙ の選択・つまみ／安全領域／動きを減らす人・端末の中だけのスキン・合図の名前・既定で閉じない・help の短縮・4 言語）。
+  - `npm run check` **1700 pass / 0 fail**・`check-repo` 0 failure / 0 warning・cache は `trk-v2026.11.04-trk286`。
+  - **実機で見てほしい点**：①呼ぶと**下からスッと**出て、Esc・背景クリック・同じキーで戻るか ②**後ろの曲リストの色が変わらない**こと（端末の中だけスキンが当たる）③高さ 3 段の切り替えと、次に開いたときの記憶 ④唱えても**閉じない**こと（閉じたい人は ⚙ でオン）⑤`help` が短く、`help all` で全部出るか ⑥スマホでキーボードが出たときに板が潰れないか。
+- **⌨ trk285：入力の合図を `<スキン名(English)> ~ %` に・開いている間は入力を奪う（2026-11-04）**
+  - **ご相談**：ターミナルの下の入力欄が入力を吸ってしまう。**Linux 系の `<SkinName> ~ %`** で、強制的に入力を奪って受け付ける形に。よく見る端末の形も選べるように。`<SkinName>` は **English 表記**（例：`The Art of War ~ %`）。
+  - **合図**（`js/cli.js`）：純粋関数 `promptText(style, name)` と `PROMPT_STYLES`。既定は `linux` ＝ **`<スキン名(English)> ~ %`**。ほかに `bash` `<name>:~$`／`root` `<name>:~#`／`fish` `<name> ~>`／`ps` `PS <name>>`／`plain` `>`／`skin`（スキンの `--cli-prompt` に任せる）。
+  - **スキン名**：`skinEnglishName()` が `label.en` を優先（無ければ `ja` → id）。**日本語 UI でも English のまま**（`The Art of War`・`Key of Solomon` など）。スキンを変えたら合図も作り直します（`core.on("skin")`）。
+  - **見え方**：`<span class="cliPromptChar">` は文字を入れたとき `data-text="1"` で CSS の `::before` を消し、空白を保って出します（狭い画面は 40% で省略）。**読み上げ**は入力欄の `aria-label` の頭に合図を入れます。
+  - **入力を奪う**：開いているあいだの `keydown`（capture）で、フォーカスがどこにあっても**打った 1 文字を入力欄へ足して**カーソルを末尾へ。IME の変換中・修飾キー付き（呼び出しキー）は奪わず、**端末の入力欄（`#cliForm`）と辞書（`#cliSpellPanel`）は邪魔しません**。
+  - **⚙**：⌨ パネルに「入力の合図（プロンプト）」の 7 択と、**「いまの見え方：{text}」**の下見（`#cliPromptPreview`）。文言は 4 言語。
+  - 見張り：`tests/trk285-prompt.test.mjs` **8 件**（既定の形・7 択・English 名・既定と保存・⚙ の下見・入力を奪う条件・文字で出す/読み上げ・4 言語）。
+  - `npm run check` **1680 pass / 0 fail**・`check-repo` 0 failure / 0 warning・cache は `trk-v2026.11.04-trk285`。
+  - **実機で見てほしい点**：①`The Art of War ~ %` のような合図が、スキン名の English で出るか ②出力を読み返している最中に打っても、その 1 文字目が入力欄に入るか ③辞書の入力欄では奪わないこと ④狭い画面で合図が入力欄を潰さないか。
+- **⌨ trk284：ターミナルの置き場所・入力の取りこぼし・辞書登録の GUI（2026-11-04）**
+  - **ご相談**：①ウィザードの段のとき、⌨ のタブは**設定の一番上**（画面・再生バーより上）でよい ②**CLI への入力が上手に行かない場合**がありそうなので、洗って確かめる ③端末のいちばん下に**辞書登録の GUI**（整理に使いたいとき見つけやすい）。
+  - **置き場所**：`index.html` の `#cliPanel` を**設定の先頭**（検索欄の下・`<div class="grid">` の前）へ移しました＝全幅で、画面（`uiPanel`）と再生バーの上。
+  - **入力で見つけたこと・直したこと**（洗った結果）：
+    - **IME の変換中**に Enter を押すと、書きかけ（例：「ぷれい」）を唱えてエラーになっていた → `compositionBlocked(isComposing, keyCode)` を足し、`compositionstart/end` で `state.composing` を持って **submit と keydown の両方**で弾く。Tab・矢印も変換中は使わない。
+    - **Tab がフォーカスを閉じ込めていた**（入力欄から Tab で出られない）→ 補完は「**打っている文字がある・Shift でない・補完が有効**」のときだけ（`tabShouldComplete`）。空のときと Shift+Tab はフォーカス移動に譲る。
+    - **全角で打ってしまう**（`ｐｌａｙ`・`５０`・`１：３０`）→ `normalizeCommand`（NFKC＋小文字）と、`parseClock`・`clampPercent` の NFKC で通す。`echo` の本文は打ったまま返します（呪文の語だけ寄せる）。
+    - **出力を読み返す／辞書を書く**ときに、フォーカスを入力欄へ奪い返していた → `#cliLog`・`#cliSpellPanel` と入力欄・ボタン・セレクトでは奪わない。
+  - **辞書登録（呪文）の GUI**（`js/cli.js`）:端末のいちばん下に `<details id="cliSpellPanel">`＝📖 辞書。**一覧**（名前・中身・削除）＋**追加**（名前・中身・「＋ 辞書に登録」）＋状態行。**最初から入っている 3 本は消せない**（ボタンを無効に）・**上限 24 本**・検査は純粋関数 `spellDraftProblem(id, body, {builtin, count, max})`（`""`／`id`／`body`／`builtin`／`full`）。`form` の入れ子は作りません（端末の form を壊さない）。唱えて増減したとき・言語を変えたとき・開いたときに描き直します。
+  - 見張り：`tests/trk284-cli-dict.test.mjs` **8 件**（置き場所の順・IME・Tab・全角・フォーカス・下書きの検査・GUI の形・4 言語）。
+  - `npm run check` **1672 pass / 0 fail**・`check-repo` 0 failure / 0 warning・cache は `trk-v2026.11.04-trk284`。
+  - **実機で見てほしい点**：①ウィザードで ⌨ が設定の先頭にあるか ②日本語入力の変換中に Enter を押しても、書きかけが唱えられないか ③空の入力欄で Tab を押すと、閉じるボタンへ移れるか ④辞書の追加・削除（スマホのキーボードで入力欄が隠れないか）。
+- **⌨ trk283：ターミナルの入口まわり（スキン・入力・段・キー・自動で閉じる）（2026-11-04）**
+  - **ご相談**：①開いたときのスキンの適用 ②文字が打てる状態かのチェック ③マスターとウィザードに差が無いので**マスターは CLI を既定オフ・ウィザードで CLI と wizard スキンを既定オン** ④**呼び出し・閉じるのキーも割り当てたい**。
+  - **段**：`js/settings-level.js` の `PANEL_TIER` で `cliPanel` を **4 → 5**。マスターでは ⌨ パネルを隠し、**ウィザードの段だけ**出す（「そこまで使いたい人はウィザードを名乗る」）。ウィザードは CLI＋wizard スキンが既定オン。
+  - **スキン**：`settings.cliSkinPickOn`（既定オフ）＋`settings.cliSkinPick`（既定 `""`）を足し、⚙ のチェック＋一覧から**端末のスキンを個別に**選べる。`pickCliSkin(skins, mode, pick)` は **`locked` を飛ばし**、`pick` を優先（`keep` が最優先）。開いたときに当てた（当てられない）ことを状態行に出す。
+  - **入力**：`typableState()`（`disabled`/`readOnly`・見えている・フォーカス）を検め、`settings.cliTypingCheck`（**`badge` 既定**／`status`／`quiet`）で見せ方を選ぶ。バッジは `aria-live="polite"`。`focusin` で外れたら戻し、`ensureFocus()` で描画直後を 2 回まで拾い直す。
+  - **キー**：`settings.cliKey`（既定 `Backquote`・`validCode`）。**Ctrl／⌘ と一緒**に押し、**同じキーで開閉**。⚙ の「呼び出しキー」で割り当て（Esc で取り消し・遊ぶキー／メニュー／プレイヤーと重なるキーは受けない）。**Esc は端末の中では今までどおり閉じる**。
+  - **自動で閉じる**：`settings.cliAutoClose`（既定オン）。`execute()` が `action`（何かをした）を返し、閉じたあと**同じ 1 行をトースト**で残す。`help`/`list`/`pwd` のような読むだけのコマンドは閉じない（`action:false`）。
+  - **コマンド**：`next`（次の曲）／`back`（前の曲）／`re`（いまの曲を最初から）を追加（`play next` などの短い呼び名）。
+  - 見張り：`tests/trk283-cli.test.mjs` **9 件**（段・短い呼び名・`action` の印・自動で閉じる・キー・入力チェック・スキン・4 言語）。
+  - `npm run check` **1664 pass / 0 fail**・`check-repo` 0 failure / 0 warning・cache は `trk-v2026.11.04-trk283`。
+  - **実機で見てほしい点**：①ウィザードの段で ⌨ パネルが見え、マスターでは消えること ②開いた直後に**そのまま打てる**か（バッジが「入力可」か）③呼び出しキーを変えて、同じキーで開閉できるか ④実行後に閉じる／開いたままの切り替え。
+- **🛣 trk282：道（山道・坂道・下り坂・海岸沿い・高速道路）を引き、⚙ で固定できるようにする（2026-11-04）**
+  - **ご相談**：ノーツの振り方の視覚として「道」を既定にしたい。**山道 5%／坂道 5%／下り坂 5%／海岸沿い 5%／高速道路 80%** を抽選し、**固定もできる**ように。
+  - **決めた形**：`settings.swayRoad`（6 択・既定 `"auto"`＝おまかせ）。抽選は `ROAD_WEIGHTS`（合計 100）と**純粋関数 `pickRoad(rand)`**。`resetRoad()` は**曲の頭で 1 回だけ**（`resetRun` の `resetTruck(); resetLives(); resetOrbit();` の隣）。固定しているときは引いても使いません。
+  - **角度**：`roadAngle(road, p)` は**時間だけで決まる純粋関数**（山道 `sin(1.6t)*1.5 + sin(3.7t+1.1)*0.5`／坂道 `-1.8 + sin(0.9t)*0.3`／下り坂 `+1.8 + …`／海岸沿い `0.9 + sin(1.1t)*0.9`／高速道路 `0`）。`laneTilt` は TRUCK のとき道を土台にし、**高速道路はビート揺れ・ヒット揺れも止めます**。
+  - **揺れの既定**：`swayTruck` を**オンへ戻した**（8 割は静止の道なので酔いにくい）。`prefers-reduced-motion` と `swayTruck` オフは今までどおり最優先。
+  - **移行**：`swayTruckOff1`（trk281）の意味を「オフ固定」から**「静かな道へ寄せる」**に変更＝**保存がある人だけ `swayRoad="highway"`**、初めての人（保存が空）は「おまかせ」のまま。登録簿は [`MIGRATIONS.md`](MIGRATIONS.md)（削除予定 2027-04-30 は変えません）。
+  - **⚙**：🌀 レーンの揺れの中に「🛣 道の種類（トラック）」＝`<select id="swayRoad">` 6 択＋説明。**スタンダードの段でも出す**（酔いやすい人が探せるように。`js/settings-level.js` の `ID_TIER` に `swayRoad: 2`）。文言は 4 言語（`swayRoadLabel`／`swayRoadAuto`／`swayRoadHighway`／`swayRoadMountain`／`swayRoadUp`／`swayRoadDown`／`swayRoadCoast`／`swayRoadHint`）。
+  - 見張り：`tests/trk282-road.test.mjs` **9 件**（重み・1000 回の分布・境目・純粋性・向きと大きさ・おまかせと固定・保存・`resetRun`・画面と 4 言語・酔い対策）。trk280 / trk281 の揺れの検査は新しい既定へ更新。
+  - `npm run check` **1655 pass / 0 fail**・`check-repo` 0 failure / 0 warning・cache は `trk-v2026.11.04-trk282`。
+  - **実機で見てほしい点（PR #87 に書きます）**：①山道・坂道・下り坂・海岸沿いの**傾きの大きさ（1〜2 度）が伝わるか** ②「高速道路」で**本当に止まって見えるか** ③曲の頭で道が変わる瞬間が**唐突でないか** ④⚙ の「道の種類」が**スタンダードの段で見つけられるか**。
+- **⚖ trk281：段でスキンの棚を絞る・⭐ を先頭へ・揺れを全員オフへ（2026-11-04）**
+  - **ご相談の残り**：段（プリセット）ごとに、スキンの棚へ出すカテゴリを決める／⭐ の扱い／TRUCK の揺れの移行。
+  - **段は 5 つ**（`js/core.js` の `SET_LEVELS`・`js/settings-level.js`）：シンプル／スタンダード（既定）／プロ／マスター／**ウィザード（5 つ目・いちばん上）**。「次の段」はマスター→ウィザード。文言 `setLevelWizard` は 4 言語。
+  - **段ごとのカテゴリ**（`SKIN_LEVEL_CATS`・純粋関数 `skinLevelAllows`）：1・2＝`basic`/`type`/`dark`/`light`/`grad`（**ミクの 4 種は basic に同梱**）／プロ＝＋`fun`／マスター＝＋`access`/`life`／ウィザード＝＋`wizard`。**ウィザードの段だけ**、既定の棚に `wizard` の巻が戻ります（trk280 で外した「定番＋ウィザード」）。
+  - **既定の棚の枚数**：シンプル／スタンダード／プロ＝**44**・マスター＝**53**・ウィザード＝**114**（差し戻しの 1 種を除く）。**巻を選んだとき・ALL のときは段で絞りません**（選んだものは全部見せる）。**いま使っているスキン**は段の絞りより優先。
+  - **⭐**（`js/core.js` の棚）：隠さず、**先頭に固める**（並べ方が「おすすめ」のときだけ。名前順・よく使う順を選んだらその並びを尊重）。
+  - **揺れの移行**：`swayTruckOff1`（`js/truck.js`）＝**一回だけ全員オフ**。保存済みの「オン」もオフへ寄せ、以後は本人の設定で選べます。**工場出荷でも印は戻さない**（二度と掛からない）。登録簿は [`MIGRATIONS.md`](MIGRATIONS.md)（削除予定 2027-04-30）。
+  - 見張り：`tests/trk281-skin-level.test.mjs` **6 件**（段の表・枚数・巻を選んだとき・⭐ の先頭・画面のボタン・揺れの移行）。段の数を数えている `tests/trk279-level.test.mjs` と、棚の枚数を数えている既存テスト（trk229/trk274/trk280）も 5 段・新しい枚数へ更新。
+  - `npm run check` **1646 pass / 0 fail**・`check-repo` 0 failure / 0 warning・cache は `trk-v2026.11.04-trk281`。
+  - **お預け**：TRUCK の視覚プリセット（山道 5%／坂道 5%／下り坂 5%／海岸沿い 5%／高速道路 80%＝揺れない の重み付き乱択）。
+- **⚖ trk280：体力の数字をそろえ、TRUCK の揺れを既定オフ、既定の棚からウィザードを外す（2026-11-03）**
+  - **ご相談**：TRUCK の初期体力 3 が厳しすぎる（中級以降が遊びにくい）／TRUCK のレーンの揺れは酔うので既定オフ／ウィザードは「初見の驚き」に取っておき、既定の棚から外す。
+  - **体力（全モード共通・`js/modes.js`）**：スタンダード＝**開始 20・上限 30・10 コンボごとに 1 回復**／ナイト＝**開始 30・上限 30・回復なし**／チキン＝1（即死）／インフィニット＝体力なし。**ノーツ数・モードによる傾斜は廃止**（短い曲ほど不利・モードごとのばらつきを無くす）。
+  - **揺れ（`js/truck.js`）**：`swayTruck` を **既定オフ**（`prefs.swayTruck === true` のときだけ揺れる）。ビート揺れ・ヒット揺れの設定はそのまま。
+  - **棚（`js/core.js`）**：既定の巻＝**「定番」だけ（53 種）**。ウィザード 62 種は 📚 の巻で `wizard` を選んだとき・ALL で見えます（目録が読めないときもカテゴリで外す）。
+  - 言葉：`livesHint`（4 言語）を新しい数字に。`skinVolDefault`／`skinVolUnknown` も「定番」へ。
+  - 見張り：`tests/trk280-tune.test.mjs` **7 件**。`npm run check` **1640 pass / 0 fail**・`check-repo` 0 failure / 0 warning・cache は `trk-v2026.11.03-trk280`。
+  - **お預け（ご相談中）**：~~段ごとのスキンのカテゴリ絞り込み・⭐ 優先の効き方~~（trk281 で実装）・TRUCK の視覚プリセット（山道／坂道／海岸沿い／高速道路）。
+- **⚖ trk279：⚙ の「段」＝見せる量を 4 段で選ぶ（2026-11-03）**：記録＝[`PLAN-TRK279-2026-11-03.md`](PLAN-TRK279-2026-11-03.md)
+  - **ご相談**：modern-web-guidance の目線で「足りない／過剰」を洗い出し、プリセット（シンプル／スタンダード／プロ／マスター／ウィザード）で**見せる量**を減らせないか。
+  - **数えた**（`tools/settings-inventory.mjs`）：設定の値 **213**・パネル **19 枚**・操作子 **194 個**・説明 **132 か所**（日本語 6,826 字）。🎨 見た目 1 枚に **86 個**。洗い出しは [`SETTINGS-AUDIT-TRK279-2026-11-03.md`](SETTINGS-AUDIT-TRK279-2026-11-03.md)（足りない 7・過剰 6）。
+  - **決めた形**：**案 A＝4 段＋案内は段の外**（「ウィザード」はスキンの巻名とぶつかるため段の名前に使わない）、**既定はスタンダード**。
+  - **規則**：**段は値ではない**（保存は `settings.setLevel` と `settings.setTouched` の 2 つだけ・localStorage のキーは増やさない）／**触った行はどの段でも出す**／**探しているあいだは段を無視**／**行が全部隠れるパネルだけ隠す**（🎨 はスキンが残るので消えない）／切り替えは `aria-live` で読み上げ。
+  - 見張り：`tests/trk279-level.test.mjs` **9 件**。`npm run check` **1633 pass / 0 fail**・`check-repo` 0 failure / 0 warning・cache は `trk-v2026.11.03-trk279`。
+  - **次**：A（検索欄 1 本化・全部開く／閉じる・sticky＋目次）→ D（🎨 の分割）→ F（説明文の圧縮。最後なので、より良い方法も併せて検討）。
 - **📖 trk278：端の次を「次の本」へつなぐ連読と、回り込んだときの一言（2026-11-03）**：返事＝[`LETTER-TRK278-2026-11-03.md`](LETTER-TRK278-2026-11-03.md)
   - **ご要望**：①回り込んだら「**先頭に戻りました**」と言う ②回り込むと同じ動作で、**次の本に直接行き**、前の本と次の本を連結して**連読**できる設定。
   - `settings.skinVolWrap` を **stop／wrap／chain** に（既定 stop・前の版の `on` は wrap として読む＝保存の互換）。`chain`＝**読み軸の向きだけ**、次の本の先頭／前の本の末尾へ。**パネルは開いたまま**・端は反対側へつなぐ（最後の本の次は最初の本）。既定と ALL は本が決まらないので回り込みへ。

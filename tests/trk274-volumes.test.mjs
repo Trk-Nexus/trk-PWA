@@ -54,6 +54,10 @@ function extractFn(source, marker) {
   assert.notEqual(end, -1, `${marker} の閉じかっこがある`);
   return source.slice(start, end + 3);
 }
+/* ⚖ trk281：段ごとのスキンのカテゴリ（表と、可否を返す純粋関数） */
+const levelSrc = coreSrc.slice(coreSrc.indexOf("const SKIN_LEVEL_CATS = {"),
+  coreSrc.indexOf("\n};", coreSrc.indexOf("const SKIN_LEVEL_CATS = {")) + 3);
+
 const shelfApi = (() => {
   const code = [
     extractFn(coreSrc, "const skinCatList = s =>").replace(/;$/, "") + ";",
@@ -62,6 +66,8 @@ const shelfApi = (() => {
     extractFn(coreSrc, "function cleanSkinMap("),
     extractFn(coreSrc, "function skinSearchText("),
     extractFn(coreSrc, "function skinMatchesQuery("),
+    levelSrc,
+    extractFn(coreSrc, "function skinLevelAllows("),
     extractFn(coreSrc, "function skinShelfEntries("),
   ].join("\n") + "\nthis.api = { skinShelfEntries };";
   const sandbox = { console, Math, JSON, Object, Array, String, Number, Set, Map, Date };
@@ -148,12 +154,20 @@ test("SKIN_VOLUMES は 13 巻で、291 種を重複なく覆う", () => {
 });
 
 /* ==================== 棚の絞り込み ==================== */
-test("棚の既定は「定番＋ウィザード」だけ（176 種は選んだときだけ出す）", () => {
-  const def = shelfIds({ volumes });
-  /* 115（53＋62）から、差し戻しの wizard-hermetic を除いた 114（trk275） */
-  assert.equal(def.length, 114, "53＋62−差し戻し 1");
+test("棚の既定は「定番」だけ（wizard も段の 5 つ目でだけ。trk280・trk281）", () => {
+  const def = shelfIds({ volumes, level: "standard" });
+  /* ⚖ trk280：ウィザードを既定の棚から外しました（初見の驚きを残す）。
+     ⚖ trk281：既定の棚は段でカテゴリを絞ります（スタンダード＝定番・書体・ダーク・ライト・グラデ）。
+     スタンダード＝44 種（other 53 のうち「みやすさ・生活」だけの 9 種がマスターから） */
+  assert.equal(def.length, 44, "スタンダードの既定");
   assert.equal(def.filter(id => VOLUME_ONLY.includes(id)).length, 0);
-  assert.ok(def.includes("shadow") && def.includes("wizard-cli"));
+  assert.ok(def.includes("shadow"), "定番は出る");
+  assert.ok(!def.includes("wizard-cli"), "ウィザードは既定では出ない");
+  /* 段を上げると、出る数も上がる（マスター＝other の全部、ウィザード＝＋wizard の巻） */
+  assert.equal(shelfIds({ volumes, level: "master" }).length, 53);
+  const top = shelfIds({ volumes, level: "wizard" });
+  assert.equal(top.length, 114, "ウィザードの段だけ 定番＋ウィザード（差し戻しの 1 種を除く）");
+  assert.ok(top.includes("wizard-cli"), "ウィザードの段では出る");
 });
 
 test("巻を選ぶと、その巻だけが出る", () => {
@@ -168,10 +182,11 @@ test("巻を選ぶと、その巻だけが出る", () => {
 
 test("「すべての巻」で 291 種。知らない巻の名前は既定に戻る", () => {
   assert.equal(shelfIds({ volumes, vol: "all" }).length, 291);
-  assert.equal(shelfIds({ volumes, vol: "vol-99" }).length, 114, "知らない巻名は既定扱い");
+  assert.equal(shelfIds({ volumes, vol: "vol-99", level: "standard" }).length, 44, "知らない巻名は既定扱い（スタンダード）");
   /* 巻の目録が無い（古い版のキャッシュ）ときも壊れない。
      差し戻しの 18 種は既定の棚に出さないので、そのぶん減る（trk275） */
-  assert.equal(shelfIds({ volumes: [] }).length, 273);
+  assert.equal(shelfIds({ volumes: [], level: "wizard" }).length, 273, "目録が無いときもウィザードの段なら wizard も出る");
+  assert.equal(shelfIds({ volumes: [], level: "standard" }).length, 202, "スタンダードは段のカテゴリで絞る（trk281）");
 });
 
 test("巻の絞り込みは、カテゴリ・⭐・検索と重ねられる", () => {
@@ -184,9 +199,9 @@ test("巻の絞り込みは、カテゴリ・⭐・検索と重ねられる", ()
 /* ==================== trk275：レビュー M2 の番人（3 本） ==================== */
 test("巻の外にある「いま使っているスキン」は、棚から消えない（M2-a）", () => {
   /* vol.2 の amber を当てたまま、既定の棚に戻す */
-  const list = shelfIds({ volumes, vol: "", current: "amber" });
+  const list = shelfIds({ volumes, vol: "", current: "amber", level: "standard" });
   assert.ok(list.includes("amber"), "使用中のスキンは巻の外でも残る");
-  assert.equal(list.length, 114 + 1, "既定 114 に 1 枚だけ足される");
+  assert.equal(list.length, 44 + 1, "スタンダードの既定 44 に 1 枚だけ足される（段の絞りより使用中が優先）");
   /* 巻を選んでいても同じ（amber は vol.2。vol.1 を選んでいても残す） */
   assert.ok(shelfIds({ volumes, vol: "vol-01", current: "amber" }).includes("amber"));
 });

@@ -130,73 +130,29 @@ function makeColorRow(key, label, fallback) {
 }
 function hintEl(key) { const h = core.el("div", "hint", tr(key)); h.dataset.i18n = key; return h; }
 
-/* ============ ❤ 体力ルール（ノーツ数に応じた動的スケーリング） ============
-   音ゲー（IIDX・SDVX・太鼓・osu!・チュウニズム等）のライフ／ゲージ設計を研究し、
-   譜面の総ノーツ数（chart.length）に応じて初期体力・最大上限・コンボ回復間隔を最適化：
-   ・短曲（〜100ノーツ）：初期体力を確保しつつ小刻みなコンボで回復可能にして理不尽な即死を防ぐ
-   ・標準曲（300〜600ノーツ）：適度な緊張感と達成感のあるバランス
-   ・長曲・高密度曲（1000〜2000+ノーツ）：体力の余裕と相応のコンボ継続回復を求め、持続的な緊張感を維持
-   ※ trk!（chicken）：常に1ライフ・回復なしの即死（調整なし）
-   ※ Infinite（none）：体力なし・ミスしても完走 */
-const LIFE_RULES = {          // TRUCK（基準値）
-  standard:{ start:4, max:6, heal:35 }, knight:{ start:3, max:4, heal:50 }, chicken:{ max:1, heal:0 }, none:{ max:0, heal:0 }
+/* ============ ❤ 体力ルール（trk280：モードで変えず、1 つの表で決める） ============
+   ご相談（2026-11-03）：TRUCK の初期体力 3 が厳しすぎて、中級以降が遊びにくい。
+   ノーツ数で伸ばす作りは短い曲ほど不利になり、モードごとに数字もばらついていました。
+
+   決めたこと（全モード共通）：
+     ・スタンダード：開始 20・上限 30・**10 コンボごとに 1 回復**
+     ・ナイト（knight）：開始 30・上限 30・**回復なし**（ミスに厳しい）
+     ・チキン（chicken）：1・回復なしの即死（今までどおり）
+     ・インフィニット（none）：体力なし・ミスしても完走
+   ノーツ数・モードによる傾斜は廃止しました（読めない難しさを作らないため）。 */
+const LIFE_RULES = {
+  standard: { start:20, max:30, heal:10 },
+  knight:   { start:30, max:30, heal:0 },
+  chicken:  { start:1,  max:1,  heal:0 },
+  none:     { start:0,  max:0,  heal:0 },
 };
-const MANUAL_LIFE_RULES = {   // MANUAL・STAGE・CATCH（基準値）
-  standard:{ start:20, max:35, heal:12 }, knight:{ start:6, max:9, heal:28 }, chicken:{ max:1, heal:0 }, none:{ max:0, heal:0 }
-};
-const ORBIT_LIFE_RULES = {    // ORBIT（基準値）
-  standard:{ start:20, max:32, heal:16 }, knight:{ start:6, max:9, heal:32 }, chicken:{ max:1, heal:0 }, none:{ max:0, heal:0 }
-};
 
-function lifeRule(totalNotes) {
-  const opt = core.settings.lives || "standard";
-  if (opt === "none") return { start:0, max:0, heal:0 };
-  if (opt === "chicken") return { start:1, max:1, heal:0 }; // trk! 1-life sudden death (調整なし)
-
-  const n = (typeof totalNotes === "number" && totalNotes > 0)
-    ? totalNotes
-    : ((Array.isArray(core.chart) && core.chart.length > 0) ? core.chart.length : 350);
-  const factor = Math.max(0, Math.min(1, (n - 50) / 1150));
-  const m = core.settings.playMode;
-
-  if (m === "truck") {
-    if (opt === "knight") {
-      const start = n <= 250 ? 2 : 3;
-      const max = n <= 250 ? 3 : (n <= 650 ? 4 : 5);
-      const heal = Math.round(35 + 25 * factor);
-      return { start, max, heal };
-    }
-    const start = n <= 250 ? 3 : (n <= 650 ? 4 : 5);
-    const max = n <= 250 ? 5 : (n <= 650 ? 6 : 8);
-    const heal = Math.round(25 + 25 * factor);
-    return { start, max, heal };
-  }
-
-  if (m === "orbit") {
-    if (opt === "knight") {
-      const start = Math.round(5 + 5 * factor);
-      const max = Math.round(7 + 6 * factor);
-      const heal = Math.round(25 + 25 * factor);
-      return { start, max, heal };
-    }
-    const start = Math.round(15 + 15 * factor);
-    const max = Math.round(20 + 25 * factor);
-    const heal = Math.round(12 + 12 * factor);
-    return { start, max, heal };
-  }
-
-  // MANUAL・STAGE・CATCH
-  if (opt === "knight") {
-    const start = Math.round(5 + 5 * factor);
-    const max = Math.round(7 + 7 * factor);
-    const heal = Math.round(20 + 25 * factor);
-    return { start, max, heal };
-  }
-  // standard
-  const start = Math.round(15 + 20 * factor);
-  const max = Math.round(25 + 35 * factor);
-  const heal = Math.round(8 + 14 * factor);
-  return { start, max, heal };
+/* いまの体力ルール。知らない値はスタンダード。純粋関数（テストから同じものを動かす）。
+   引数は互換のために受け取りますが、もう使いません（ノーツ数で変えない）。 */
+function lifeRule() {
+  const opt = core.settings.lives;
+  const r = Object.prototype.hasOwnProperty.call(LIFE_RULES, opt) ? LIFE_RULES[opt] : LIFE_RULES.standard;
+  return { start:r.start, max:r.max, heal:r.heal };
 }
 
 const LIFE_TAGS = { knight:"KNIGHT", chicken:"TRK!", none:"INF" };
@@ -204,9 +160,9 @@ const lifeState = { hp:0, max:0, heal:0, lostAt:-1e9, healAt:-1e9 };
 const lifeTags = () => Object.prototype.hasOwnProperty.call(LIFE_TAGS, core.settings.lives) ? [LIFE_TAGS[core.settings.lives]] : [];
 
 function resetLives() {
-  /* ⚠ 体力の基準は**曲全体**のノーツ数（core.chart.length）で決める＝ショートプレイでも窓の中のノーツ数ではない。
-     短い窓でも曲相応の体力を持たせ、曲の詰まった序盤でも足りるようにする今の仕様（trk129のレビュー記録）。
-     窓の中の数（game.js の runNoteTotal）へ変えるなら、ここが切り替え点。 */
+  /* ⚠ trk280：体力は**曲の長さに依らず同じ**（開始 20・上限 30・10 コンボごとに 1 回復）。
+     以前は曲全体のノーツ数で伸ばしていましたが、短い曲ほど不利でモードごとにもばらついたため廃止。
+     ショートプレイでも同じ数字から始まります。 */
   const r = lifeRule();
   lifeState.max = core.settings.autoPlay ? 0 : r.max;
   lifeState.hp = lifeState.max ? Math.min(lifeState.max, r.start ?? r.max) : 0;

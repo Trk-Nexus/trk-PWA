@@ -22,7 +22,7 @@ assert.ok(from > 0 && to > from, "「純粋な計算（trk267）」の目印が�
 const sandbox = { Object, Math, Number, String, Array, JSON };
 vm.createContext(sandbox);
 vm.runInContext(src.slice(from, to) + `
-;globalThis.C = { CLI_COMMANDS, CLI_HELP, BUILTIN_SPELLS, parseLine, parseClock, formatClock,
+;globalThis.C = { CLI_COMMANDS, CLI_HELP, CLI_HELP_SHORT, BUILTIN_SPELLS, parseLine, parseClock, formatClock,
   clampPercent, looksLikePath, pickTrack, splitSpells, pickCliSkin, execute };
 `, sandbox, { filename: "js/cli.js#pure267" });
 const C = sandbox.C;
@@ -153,11 +153,18 @@ describe("trk267：呪文の分解と、当てるスキン", () => {
 });
 
 describe("trk267：唱える（help・list・play）", () => {
-  test("help は 12 行の一覧", async () => {
-    const { res } = await run("help");
-    assert.equal(res.out[0].text, "cliHelpTitle");
-    assert.equal(res.out.length, 1 + C.CLI_HELP.length);
-    assert.ok(C.CLI_HELP.length >= 12);
+  test("help は短い一覧（⌨ trk286）・help all で全部", async () => {
+    const short = await run("help");
+    assert.equal(short.res.out[0].text, "cliHelpTitle");
+    assert.equal(short.res.out.length, 1 + C.CLI_HELP_SHORT.length + 1, "見出し＋5 本＋案内");
+    assert.equal(short.res.out.at(-1).text, '  cliHelpAll{"n":' + C.CLI_HELP.length + "}");
+    assert.ok(C.CLI_HELP.length >= 12, "全部は 12 本以上ある");
+    const all = await run("help all");
+    assert.equal(all.res.out[0].text, "cliHelpTitle");
+    assert.equal(all.res.out.length, 1 + C.CLI_HELP.length);
+    /* 1 本だけ知りたいとき（man 相当）は今までどおり */
+    const one = await run("help play");
+    assert.equal(one.res.out.length, 2);
   });
 
   test("list は番号つきで、曲名と出どころを出す", async () => {
@@ -327,9 +334,10 @@ describe("trk267：文言（4言語）と配線", () => {
     const core = read("js/core.js");
     assert.ok(core.includes('{ study:false, media:false, synth:false, cli:false }'));
     assert.ok(core.includes('cliPlay: pick(prefs.cliPlay, ["media", "preview"], "media")'));
-    assert.ok(core.includes('cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "auto")'));
+    /* ⌨ trk286：端末の見た目の既定は「いまのスキンのまま」 */
+    assert.ok(core.includes('cliSkin: pick(prefs.cliSkin, ["auto", "terminal", "keep"], "keep")'));
     assert.ok(core.includes("cliSpells: cleanCliSpells(prefs.cliSpells)"));
-    assert.ok(core.includes("settings.cliPlay = \"media\"; settings.cliSkin = \"auto\"; settings.cliSpells = {};"));
+    assert.ok(core.includes("settings.cliPlay = \"media\"; settings.cliSkin = \"keep\"; settings.cliSpells = {};"));
   });
 
   test("メディアプレーヤーへ渡す窓口がある", () => {

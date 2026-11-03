@@ -99,9 +99,12 @@ test("cd は skin の別名（唱えたら残る扱い）", async () => {
 });
 
 test("man は help の別名（引数があると 1 つだけ説明する）", async () => {
-  const all = text(await run("man"));
+  /* ⌨ trk286：引数なしは短い一覧、全部は `help all` */
+  const all = text(await run("help all"));
   assert.match(all, /cliHelpPwd/);
   assert.match(all, /cliHelpGrep/);
+  const brief = text(await run("man"));
+  assert.doesNotMatch(brief, /cliHelpPwd/, "ふだんは短い");
   const one = text(await run("man grep"));
   assert.match(one, /cliHelpGrep/);
   assert.doesNotMatch(one, /cliHelpPwd/);

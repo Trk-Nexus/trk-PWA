@@ -36,7 +36,62 @@
     cliSkinAuto: "自動（wizard・cli・console のスキンがあればそれ、無ければ terminal）",
     cliSkinTerminal: "terminal を当てる",
     cliSkinKeep: "いまのスキンのまま",
-    cliSkinHint: "ここで当てたスキンは、ターミナルを開いている間だけです。閉じると元のスキンに戻ります（ターミナルで skin を唱えたときは、そのスキンが残ります）。",
+    cliSkinHint: "既定はいまのスキンのまま（後ろと同じ見た目で下から出ます）。ここで別のスキンを選ぶと、ターミナルの中だけその見た目になります（閉じれば元どおり）。",
+    /* ⌨ trk283：呼び出しキー・実行後に閉じる・スキンの個別指定・入力できるかの知らせ */
+    cliKeyLabel: "🪄 Terminal Key Setting（Ctrl／⌘ ＋ このキー）",
+    cliKeyHint: "呪文を呼ぶ鍵です。同じキーで開いて閉じます（Esc でも閉じられます）。割り当て中は Esc で取り消します。",
+    cliKeyWaiting: "キーを押してください（Esc で取り消し）。Ctrl や Shift だけでは決まりません。",
+    cliKeyBadKey: "そのキーだけでは決められません。文字・数字・矢印・ファンクションキーなどにしてください。",
+    cliKeySaved: "呼び出しキーを Ctrl／⌘ + {key} にしました。",
+    cliHelpAll: "help all … 全部の呪文（{n} 本）を出す",
+    cliSheetSizeLabel: "ターミナルの高さ",
+    cliSheetHalf: "小さめ（画面の半分）",
+    cliSheetTall: "ふつう（7 割）",
+    cliSheetFull: "大きめ（ほぼ全画面）",
+    cliSheetHint: "下から持ち上がる板（ボトムシート）です。中だけにスキンを当てるので、後ろの曲リストの色は変わりません。",
+    cliSheetSkin: "このターミナルの見た目：{id}（後ろの画面はそのまま）",
+    cliKeyTaken: "そのキーは、ほかの操作（遊ぶキー・メニュー・プレイヤー）で使っています。",
+    cliAutoClose: "唱えたら閉じる（既定はオフ：開いたまま何度でも）",
+    cliAutoCloseHint: "オフのままなら、当てたあとも板は開いたまま。続けて唱えられます（Esc・同じキーで閉じます）。",
+    cliSkinPickChk: "端末のスキンを自分で選ぶ",
+    cliSkinPickLabel: "端末のスキン",
+    cliSkinPickAuto: "（上の「ターミナルの見た目」に任せる）",
+    cliSkinApplied: "スキン：{id} を当てました（閉じると戻ります）。",
+    cliSkinAppliedFail: "スキンを当てられませんでした。",
+    cliTypingLabel: "入力できるかの知らせ",
+    cliTypingBadge: "入力欄の上にバッジ（入力可／タップで入力）",
+    cliTypingStatus: "開いたときに状態行へ 1 行",
+    cliTypingQuiet: "打てないときだけ知らせる",
+    cliTypingHint: "入力欄からフォーカスが外れたら、自動で戻します。",
+    cliTypable: "⌨ 入力できます",
+    cliNotTypable: "タップで入力",
+    cliTypableLog: "⌨ 入力できます（ここに打ってください）。",
+    cliNotTypableLog: "入力欄にフォーカスできませんでした。下の入力欄をタップしてください。",
+    cliHelpNext: "next … 次の曲へ（play next と同じ）",
+    cliHelpBack: "back … 前の曲へ（play prev と同じ）",
+    cliHelpRe: "re … いまの曲を最初から（再生位置を 0 に）",
+    cliRestartNone: "まだ鳴らしていません（先に play で選んでください）。",
+    cliRestartDone: "{name} を最初からにしました。",
+    /* ⌨ trk284：辞書登録（呪文）の GUI */
+    cliSpellPanelTitle: "📖 辞書登録（呪文）",
+    cliSpellPanelHint: "よく唱える並びを名前で覚えておけます（例：night → skin terminal; volume 30）。ここで足すと、端末で spell <名前> と打つだけで唱えられます。",
+    cliSpellId: "名前（英数字と - で 24 文字まで）",
+    cliSpellBody: "唱える中身（; で区切る）",
+    cliSpellAddBtn: "＋ 辞書に登録",
+    cliSpellDelBtn: "削除",
+    cliSpellCount: "辞書 {n} 本（うち自作 {m} 本・上限 {max}）",
+    cliSpellFull: "辞書がいっぱいです（{max} 本まで）。使わないものを消してください。",
+    /* ⌨ trk285：入力の合図（プロンプト） */
+    cliPromptStyleLabel: "入力の合図（プロンプト）",
+    cliPromptLinux: "Linux 系：<スキン名> ~ %",
+    cliPromptBash: "bash 系：<スキン名>:~$",
+    cliPromptRoot: "root 系：<スキン名>:~#",
+    cliPromptFish: "fish 系：<スキン名> ~>",
+    cliPromptPs: "PowerShell 系：PS <スキン名>>",
+    cliPromptPlain: "シンプル：>",
+    cliPromptSkin: "スキンに任せる（スキンの cli）",
+    cliPromptPreview: "いまの見え方：{text}",
+    cliPromptHint: "スキン名は English の表記です（例：The Art of War ~ %）。端末を開いているあいだは、画面のどこにフォーカスがあっても入力を奪います。",
     cliBellLabel: "エラーの音（ピン）を鳴らす",
     cliBellHint: "音は、スキンが「鳴らす」と言っているときだけ鳴ります。ここを切れば、どのスキンでも鳴りません（ターミナルで bell off と唱えても切れます）。",
     cliFeelHint: "Tab 補完の有無・履歴の長さ・カーソルの形・地の透け方は、スキン（cli の項目）が決めます。",
@@ -144,7 +199,62 @@
     cliSkinAuto: "Auto (a wizard / cli / console skin if present, otherwise terminal)",
     cliSkinTerminal: "Apply terminal",
     cliSkinKeep: "Keep the current skin",
-    cliSkinHint: "The skin here lasts only while the terminal is open; it goes back when you close it (a skin you cast inside stays).",
+    cliSkinHint: "By default the sheet keeps your current skin (it looks the same as the page). Pick another skin here to change only the terminal (closing it goes back).",
+    /* ⌨ trk283：key · auto-close · a terminal skin of your own · the typing note */
+    cliKeyLabel: "🪄 Terminal Key Setting (Ctrl / ⌘ + this key)",
+    cliKeyHint: "The key that calls the spells. The same key opens and closes it (Esc also closes). While assigning, Esc cancels.",
+    cliKeyWaiting: "Press a key (Esc to cancel). Ctrl or Shift alone will not do.",
+    cliKeyBadKey: "That key alone cannot be used. Pick a letter, number, arrow or function key.",
+    cliKeySaved: "The call key is now Ctrl / ⌘ + {key}.",
+    cliHelpAll: "help all … list every spell ({n})",
+    cliSheetSizeLabel: "Terminal height",
+    cliSheetHalf: "Small (half the screen)",
+    cliSheetTall: "Normal (70%)",
+    cliSheetFull: "Large (nearly full)",
+    cliSheetHint: "A bottom sheet that rises from below. The skin is applied to the sheet only, so the song list behind keeps its colours.",
+    cliSheetSkin: "This terminal looks like: {id} (the page behind is unchanged)",
+    cliKeyTaken: "That key is already used for playing, the menu or the player.",
+    cliAutoClose: "Close after casting (off by default: it stays open)",
+    cliAutoCloseHint: "While off, the sheet stays open after a spell so you can keep casting (Esc or the same key closes it).",
+    cliSkinPickChk: "Pick the terminal skin myself",
+    cliSkinPickLabel: "Terminal skin",
+    cliSkinPickAuto: "(leave it to “Terminal look” above)",
+    cliSkinApplied: "Skin: {id} is on (it goes back when you close).",
+    cliSkinAppliedFail: "Could not apply that skin.",
+    cliTypingLabel: "Tell me when I can type",
+    cliTypingBadge: "A badge above the input (ready / tap to type)",
+    cliTypingStatus: "One line in the log when it opens",
+    cliTypingQuiet: "Only warn when typing is not possible",
+    cliTypingHint: "If the focus leaves the input, it comes back automatically.",
+    cliTypable: "⌨ Ready to type",
+    cliNotTypable: "Tap to type",
+    cliTypableLog: "⌨ You can type here.",
+    cliNotTypableLog: "Could not focus the input. Tap the input below.",
+    cliHelpNext: "next … go to the next track (same as play next)",
+    cliHelpBack: "back … go to the previous track (same as play prev)",
+    cliHelpRe: "re … restart the current track from the beginning",
+    cliRestartNone: "Nothing is playing yet (pick a track with play first).",
+    cliRestartDone: "Restarted {name}.",
+    /* ⌨ trk284：the spell dictionary GUI */
+    cliSpellPanelTitle: "📖 Spell dictionary",
+    cliSpellPanelHint: "Save a sequence you cast often under a name (e.g. night → skin terminal; volume 30). Register it here and cast it with spell <name>.",
+    cliSpellId: "Name (letters, digits and - up to 24)",
+    cliSpellBody: "What it casts (separate with ;)",
+    cliSpellAddBtn: "＋ Add to dictionary",
+    cliSpellDelBtn: "Delete",
+    cliSpellCount: "{n} spells ({m} of your own · up to {max})",
+    cliSpellFull: "The dictionary is full (up to {max}). Delete one you no longer use.",
+    /* ⌨ trk285：the prompt */
+    cliPromptStyleLabel: "Prompt",
+    cliPromptLinux: "Linux style: <skin> ~ %",
+    cliPromptBash: "bash style: <skin>:~$",
+    cliPromptRoot: "root style: <skin>:~#",
+    cliPromptFish: "fish style: <skin> ~>",
+    cliPromptPs: "PowerShell style: PS <skin>>",
+    cliPromptPlain: "Plain: >",
+    cliPromptSkin: "Leave it to the skin (its cli)",
+    cliPromptPreview: "Looks like: {text}",
+    cliPromptHint: "The skin name is the English label (e.g. The Art of War ~ %). While the terminal is open, typing anywhere lands in the input.",
     cliBellLabel: "Play the error beep",
     cliBellHint: "It only sounds when the skin says it may. Turn this off and no skin will beep (you can also cast bell off in the terminal).",
     cliFeelHint: "Tab completion, how long the history is, the cursor shape and how see-through the background is all come from the skin (its cli values).",
@@ -252,7 +362,62 @@
     cliSkinAuto: "自动（有 wizard・cli・console 皮肤就用它，否则用 terminal）",
     cliSkinTerminal: "使用 terminal",
     cliSkinKeep: "保持当前皮肤",
-    cliSkinHint: "这里应用的皮肤只在终端打开期间有效，关闭后恢复原皮肤（在终端里用 skin 指定的皮肤会保留）。",
+    cliSkinHint: "默认保持当前皮肤（与后面的画面相同）。在这里另选皮肤时，只有终端内部改变（关闭后恢复）。",
+    /* ⌨ trk283 */
+    cliKeyLabel: "🪄 Terminal Key Setting（Ctrl／⌘ ＋ 此键）",
+    cliKeyHint: "呼唤咒文的键。同一个键开关终端（Esc 也能关闭）。分配时按 Esc 取消。",
+    cliKeyWaiting: "请按键（Esc 取消）。只按 Ctrl 或 Shift 不能确定。",
+    cliKeyBadKey: "仅凭这个键无法确定。请用字母、数字、方向键或功能键。",
+    cliKeySaved: "调用键已设为 Ctrl／⌘ + {key}。",
+    cliHelpAll: "help all … 列出全部咒文（{n} 条）",
+    cliSheetSizeLabel: "终端高度",
+    cliSheetHalf: "小（屏幕一半）",
+    cliSheetTall: "普通（七成）",
+    cliSheetFull: "大（几乎全屏）",
+    cliSheetHint: "从下方升起的面板（底部抽屉）。皮肤只作用于其中，后面的曲目列表颜色不变。",
+    cliSheetSkin: "此终端的观感：{id}（后面的画面不变）",
+    cliKeyTaken: "该键已用于游玩按键、菜单或播放器。",
+    cliAutoClose: "施法后关闭（默认关闭：保持打开）",
+    cliAutoCloseHint: "保持关闭时，施法后面板不会收起，可以继续施法（Esc 或同一按键关闭）。",
+    cliSkinPickChk: "自己选择终端皮肤",
+    cliSkinPickLabel: "终端皮肤",
+    cliSkinPickAuto: "（交给上面的“终端外观”）",
+    cliSkinApplied: "已应用皮肤：{id}（关闭后恢复）。",
+    cliSkinAppliedFail: "无法应用该皮肤。",
+    cliTypingLabel: "能否输入的提示",
+    cliTypingBadge: "输入框上方的徽章（可输入／点按输入）",
+    cliTypingStatus: "打开时在状态行显示一行",
+    cliTypingQuiet: "只在无法输入时提示",
+    cliTypingHint: "焦点离开输入框时，会自动回到输入框。",
+    cliTypable: "⌨ 可以输入",
+    cliNotTypable: "点按输入",
+    cliTypableLog: "⌨ 可以输入（请打在这里）。",
+    cliNotTypableLog: "无法聚焦输入框。请点按下方的输入框。",
+    cliHelpNext: "next … 下一曲（与 play next 相同）",
+    cliHelpBack: "back … 上一曲（与 play prev 相同）",
+    cliHelpRe: "re … 从头播放当前曲（播放位置归 0）",
+    cliRestartNone: "还没有播放（请先用 play 选择）。",
+    cliRestartDone: "已从头播放 {name}。",
+    /* ⌨ trk284 */
+    cliSpellPanelTitle: "📖 咒语词典（登记）",
+    cliSpellPanelHint: "把常念的连招起个名字记住（例：night → skin terminal; volume 30）。在这里添加后，只需在终端输入 spell <名字>。",
+    cliSpellId: "名字（字母、数字和 - ，最多 24 个）",
+    cliSpellBody: "要念的内容（用 ; 分隔）",
+    cliSpellAddBtn: "＋ 添加到词典",
+    cliSpellDelBtn: "删除",
+    cliSpellCount: "词典 {n} 条（自制 {m} 条・上限 {max}）",
+    cliSpellFull: "词典已满（最多 {max} 条）。请删除不用的条目。",
+    /* ⌨ trk285 */
+    cliPromptStyleLabel: "输入提示符",
+    cliPromptLinux: "Linux 系：<皮肤名> ~ %",
+    cliPromptBash: "bash 系：<皮肤名>:~$",
+    cliPromptRoot: "root 系：<皮肤名>:~#",
+    cliPromptFish: "fish 系：<皮肤名> ~>",
+    cliPromptPs: "PowerShell 系：PS <皮肤名>>",
+    cliPromptPlain: "简洁：>",
+    cliPromptSkin: "交给皮肤（其 cli）",
+    cliPromptPreview: "现在看起来：{text}",
+    cliPromptHint: "皮肤名用英文表记（例：The Art of War ~ %）。终端打开期间，无论焦点在哪里，输入都会进入终端的输入框。",
     cliBellLabel: "播放出错提示音",
     cliBellHint: "只有当皮肤说可以响时才会响。关掉这里，任何皮肤都不会响（也可以在终端里说 bell off）。",
     cliFeelHint: "Tab 补全的有无、历史长度、光标形状、背景的透明度，都由皮肤（cli 项）决定。",
@@ -360,7 +525,62 @@
     cliSkinAuto: "자동(wizard・cli・console 스킨이 있으면 그것, 없으면 terminal)",
     cliSkinTerminal: "terminal 적용",
     cliSkinKeep: "지금 스킨 그대로",
-    cliSkinHint: "여기서 적용한 스킨은 터미널을 여는 동안만입니다. 닫으면 원래 스킨으로 돌아갑니다(터미널에서 skin 을 외친 경우는 그 스킨이 남습니다).",
+    cliSkinHint: "기본은 지금 스킨 그대로(뒤 화면과 같은 모습). 여기서 다른 스킨을 고르면 터미널 안만 바뀝니다(닫으면 원래대로).",
+    /* ⌨ trk283 */
+    cliKeyLabel: "🪄 Terminal Key Setting (Ctrl／⌘ ＋ 이 키)",
+    cliKeyHint: "주문을 부르는 열쇠입니다. 같은 키로 열고 닫습니다(Esc 로도 닫힘). 지정 중에는 Esc 로 취소합니다.",
+    cliKeyWaiting: "키를 눌러 주세요(Esc 로 취소). Ctrl 이나 Shift 만으로는 정해지지 않습니다.",
+    cliKeyBadKey: "그 키만으로는 정할 수 없습니다. 문자·숫자·방향키·기능키 등을 눌러 주세요.",
+    cliKeySaved: "호출 키를 Ctrl／⌘ + {key} 로 했습니다.",
+    cliHelpAll: "help all … 모든 주문({n}개) 보기",
+    cliSheetSizeLabel: "터미널 높이",
+    cliSheetHalf: "작게(화면 절반)",
+    cliSheetTall: "보통(70%)",
+    cliSheetFull: "크게(거의 전체)",
+    cliSheetHint: "아래에서 올라오는 시트입니다. 스킨은 시트 안에만 적용되어 뒤의 곡 목록 색은 그대로입니다.",
+    cliSheetSkin: "이 터미널의 모습: {id} (뒤 화면은 그대로)",
+    cliKeyTaken: "그 키는 이미 플레이 키·메뉴·플레이어에서 쓰고 있습니다.",
+    cliAutoClose: "주문을 외치면 닫기 (기본은 꺼짐: 계속 열어 둠)",
+    cliAutoCloseHint: "꺼 두면 주문 뒤에도 시트가 열린 채로 남아 계속 외울 수 있습니다 (Esc 또는 같은 키로 닫기).",
+    cliSkinPickChk: "터미널 스킨을 직접 고르기",
+    cliSkinPickLabel: "터미널 스킨",
+    cliSkinPickAuto: "(위의 '터미널 모양'에 맡김)",
+    cliSkinApplied: "스킨: {id} 을(를) 적용했습니다 (닫으면 돌아갑니다).",
+    cliSkinAppliedFail: "스킨을 적용하지 못했습니다.",
+    cliTypingLabel: "입력 가능 여부 알림",
+    cliTypingBadge: "입력란 위에 배지 (입력 가능／탭하여 입력)",
+    cliTypingStatus: "열 때 상태 줄에 한 줄",
+    cliTypingQuiet: "입력할 수 없을 때만 알림",
+    cliTypingHint: "입력란에서 포커스가 벗어나면 자동으로 돌아옵니다.",
+    cliTypable: "⌨ 입력할 수 있습니다",
+    cliNotTypable: "탭하여 입력",
+    cliTypableLog: "⌨ 입력할 수 있습니다 (여기에 입력하세요).",
+    cliNotTypableLog: "입력란에 포커스하지 못했습니다. 아래 입력란을 탭하세요.",
+    cliHelpNext: "next … 다음 곡 (play next 와 같음)",
+    cliHelpBack: "back … 이전 곡 (play prev 와 같음)",
+    cliHelpRe: "re … 지금 곡을 처음부터 (재생 위치 0)",
+    cliRestartNone: "아직 재생하지 않았습니다 (먼저 play 로 고르세요).",
+    cliRestartDone: "{name} 을(를) 처음부터 재생합니다.",
+    /* ⌨ trk284 */
+    cliSpellPanelTitle: "📖 주문 사전(등록)",
+    cliSpellPanelHint: "자주 외우는 순서를 이름으로 기억해 둘 수 있습니다(예: night → skin terminal; volume 30). 여기서 추가하면 터미널에서 spell <이름> 만 입력하면 됩니다.",
+    cliSpellId: "이름(영문·숫자·- 로 24자까지)",
+    cliSpellBody: "외울 내용(; 로 구분)",
+    cliSpellAddBtn: "＋ 사전에 등록",
+    cliSpellDelBtn: "삭제",
+    cliSpellCount: "사전 {n} 개(직접 만든 것 {m} 개・최대 {max})",
+    cliSpellFull: "사전이 가득 찼습니다(최대 {max}개). 쓰지 않는 것을 지워 주세요.",
+    /* ⌨ trk285 */
+    cliPromptStyleLabel: "입력 프롬프트",
+    cliPromptLinux: "Linux 계열: <스킨명> ~ %",
+    cliPromptBash: "bash 계열: <스킨명>:~$",
+    cliPromptRoot: "root 계열: <스킨명>:~#",
+    cliPromptFish: "fish 계열: <스킨명> ~>",
+    cliPromptPs: "PowerShell 계열: PS <스킨명>>",
+    cliPromptPlain: "간단히: >",
+    cliPromptSkin: "스킨에 맡김(스킨의 cli)",
+    cliPromptPreview: "지금 보이는 모습: {text}",
+    cliPromptHint: "스킨 이름은 English 표기입니다(예: The Art of War ~ %). 터미널이 열려 있는 동안에는 화면 어디에 포커스가 있어도 입력이 터미널로 들어갑니다.",
     cliBellLabel: "오류 소리(삑) 내기",
     cliBellHint: "스킨이 \"내도 된다\"고 할 때만 울립니다. 여기서 끄면 어떤 스킨도 울리지 않습니다(터미널에서 bell off 라고 외쳐도 꺼집니다).",
     cliFeelHint: "Tab 자동완성 여부, 기록 길이, 커서 모양, 배경의 투명도는 스킨(cli 항목)이 정합니다.",
@@ -456,12 +676,16 @@
      入力 → 文字列 だけで動くので、tests/trk267-cli.test.mjs が vm で読みます。 */
 
   /* 使えるコマンド（補完と help の並び順もこの配列） */
-  const CLI_COMMANDS = ["help", "list", "play", "skin", "grimoire", "volume", "seek", "repeat", "shuffle", "spell", "cast",
+  const CLI_COMMANDS = ["help", "list", "play", "next", "back", "re", "skin", "grimoire", "volume", "seek", "repeat", "shuffle", "spell", "cast",
     "pwd", "ls", "cd", "cat", "grep", "history", "clear", "man", "echo", "bell", "quit", "exit"];
   /* ⌨ trk269：端末の定番の呼び名。trk! の言葉に橋渡しする（ls＝一覧、cd＝スキンを移る、man＝説明） */
   const CLI_ALIASES = { ls: "list", dir: "list", cd: "skin", man: "help" };
+  /* ⌨ trk286：`help` は**よく使う 5 つ**だけ。全部は `help all`（modern-web-guidance：
+     最初に読む量を減らし、要る人だけ深く） */
+  const CLI_HELP_SHORT = ["play", "next", "back", "list", "help"];
   const CLI_HELP = [
-    ["play", "cliHelpPlay"], ["list", "cliHelpList"], ["skin", "cliHelpSkin"], ["grimoire", "cliHelpGrimoire"],
+    ["play", "cliHelpPlay"], ["next", "cliHelpNext"], ["back", "cliHelpBack"], ["re", "cliHelpRe"],
+    ["list", "cliHelpList"], ["skin", "cliHelpSkin"], ["grimoire", "cliHelpGrimoire"],
     ["volume", "cliHelpVolume"], ["seek", "cliHelpSeek"], ["repeat", "cliHelpRepeat"], ["shuffle", "cliHelpShuffle"],
     ["spell", "cliHelpSpell"], ["cast", "cliHelpCast"], ["help", "cliHelpHelp"], ["quit", "cliHelpQuit"],
     ["pwd", "cliHelpPwd"], ["ls", "cliHelpLs"], ["cd", "cliHelpCd"], ["cat", "cliHelpCat"], ["grep", "cliHelpGrep"],
@@ -479,22 +703,69 @@
   const isCliCat = cats => Array.isArray(cats) && cats.some(c => CLI_CATS.includes(String(c).toLowerCase()));
 
   const SPELL_MAX = 24;
+  const SPELL_ID_MAX = 24;      /* ⌨ trk284：辞書の名前の長さ（入力欄の maxlength と揃える） */
   const SPELL_BODY_MAX = 200;
   const CLI_LIST_LIMIT = 40;
   const CAST_MAX = 12;
+
+  /* ---------- ⌨ trk284：入力の取りこぼしを防ぐ純粋な道具 ---------- */
+  /* 全角で打ってしまった呪文（ｐｌａｙ・ＰＬＡＹ）を、半角の小文字へ寄せる。NFKC は 1 文字→1 文字。 */
+  function normalizeCommand(text) {
+    const raw = String(text == null ? "" : text);
+    let s = raw;
+    try { s = raw.normalize("NFKC"); } catch (_) { s = raw; }
+    return s.trim().toLowerCase();
+  }
+  /* 変換中（IME）の Enter／Tab／矢印は、端末の操作に使わない。e.keyCode 229 は IME の目印。 */
+  function compositionBlocked(isComposing, keyCode) {
+    return isComposing === true || Number(keyCode) === 229;
+  }
+  /* Tab で補完してよいか：補完が有効・Shift でない・打っている文字がある。空ならフォーカスを動かす。 */
+  function tabShouldComplete(text, shiftKey, completionOn) {
+    if (shiftKey === true || completionOn === false) return false;
+    return String(text == null ? "" : text).trim() !== "";
+  }
+  /* ⌨ trk285：よく見る端末の合図（プロンプト）。<スキン名(English)> を頭に置きます。
+     linux＝`<name> ~ %`（macOS・zsh 風。既定）／bash＝`<name>:~$`／root＝`<name>:~#`／
+     fish＝`<name> ~>`／ps＝`PS <name>>`／plain＝`>`／skin＝スキスの --cli-prompt に任せる（空文字） */
+  const PROMPT_STYLES = ["linux", "bash", "root", "fish", "ps", "plain", "skin"];
+  function promptText(style, name) {
+    const id = PROMPT_STYLES.includes(style) ? style : "linux";
+    if (id === "skin") return "";
+    const who = String(name == null ? "" : name).trim() || "trk";
+    if (id === "bash") return who + ":~$ ";
+    if (id === "root") return who + ":~# ";
+    if (id === "fish") return who + " ~> ";
+    if (id === "ps") return "PS " + who + "> ";
+    if (id === "plain") return "> ";
+    return who + " ~ % ";
+  }
+
+  /* 辞書（呪文）の下書きを検査する。返す値：""＝よい／id／body／builtin／full */
+  function spellDraftProblem(id, body, opts) {
+    const o = opts || {};
+    const key = String(id == null ? "" : id).trim().toLowerCase();
+    if (!/^[a-z0-9][a-z0-9-]{0,23}$/.test(key)) return "id";
+    if (!String(body == null ? "" : body).trim()) return "body";
+    if (o.builtin === true) return "builtin";
+    if (Number(o.count) >= Number(o.max == null ? SPELL_MAX : o.max)) return "full";
+    return "";
+  }
 
   function parseLine(line) {
     const raw = String(line == null ? "" : line).replace(/\s+/g, " ").trim();
     if (!raw) return { cmd: "", args: [], rest: "", raw: "" };
     const sp = raw.indexOf(" ");
-    const cmd = (sp < 0 ? raw : raw.slice(0, sp)).toLowerCase();
+    const cmd = normalizeCommand(sp < 0 ? raw : raw.slice(0, sp));   /* trk284：全角の呪文も通す */
     const rest = sp < 0 ? "" : raw.slice(sp + 1).trim();
     return { cmd, args: rest ? rest.split(" ") : [], rest, raw };
   }
 
   /* mm:ss / h:mm:ss / 秒（数だけ）。読めなければ null。 */
   function parseClock(text) {
-    const s = String(text == null ? "" : text).trim();
+    let raw = String(text == null ? "" : text);
+    try { raw = raw.normalize("NFKC"); } catch (_) {}
+    const s = raw.trim();
     if (!s) return null;
     if (/^\d{1,6}$/.test(s)) return Number(s);
     const m = s.match(/^(\d{1,3}):([0-5]?\d)(?::([0-5]?\d))?$/);
@@ -510,7 +781,9 @@
   }
   /* 0〜100 に寄せる。数でなければ null */
   function clampPercent(value) {
-    const n = Number(value);
+    let v = value;
+    try { v = String(value == null ? "" : value).normalize("NFKC"); } catch (_) {}
+    const n = Number(v);
     if (!Number.isFinite(n)) return null;
     return Math.max(0, Math.min(100, Math.round(n)));
   }
@@ -545,10 +818,12 @@
   }
   /* ターミナルを開くときに当てるスキン。
      mode = auto（wizard を含むスキン → 無ければ terminal）／terminal／keep（何も当てない） */
-  function pickCliSkin(skins, mode) {
-    const list = Array.isArray(skins) ? skins.filter(s => s && typeof s.id === "string") : [];
+  function pickCliSkin(skins, mode, pick) {
+    /* ⌨ trk283：`locked`（ごほうび）は当てない・`pick` があればそれを優先（モードは keep が最優先） */
+    const list = Array.isArray(skins) ? skins.filter(s => s && typeof s.id === "string" && !s.locked) : [];
     const has = id => list.some(s => s.id === id);
     if (mode === "keep") return "";
+    if (pick && has(pick)) return pick;
     if (mode === "terminal") return has("terminal") ? "terminal" : "";
     /* trk270：端末向けの見た目（cli）を名乗るスキンを先に。無ければ名乗り（cat）だけのもの */
     const wiz = list.find(s => isCliCat(s.cats) && s.look === true) || list.find(s => isCliCat(s.cats));
@@ -564,18 +839,19 @@
     const push = (kind, text) => { if (text !== undefined && text !== null && text !== "") out.push({ kind, text: String(text) }); };
     const t = (key, vars) => (typeof deps.t === "function" ? deps.t(key, vars) : key);
     const q0 = parseLine(line);
-    if (!q0.cmd) return { out, quit: false, clear: false };
+    if (!q0.cmd) return { out, quit: false, clear: false, action: false };
     /* パイプ `|` は「続けて唱える」と同じ（cast の入れ子では見ない） */
     if (!ctx.depth && q0.raw.includes("|")) {
       const parts = splitSpells(q0.raw);
       if (parts.length > 1) {
-        let quit = false;
+        let quit = false, action = false;
         for (const part of parts) {
           const r = await execute(part, deps, { depth: 1 });
           for (const o of r.out) out.push(o);
+          if (r.action) action = true;
           if (r.quit) { quit = true; break; }
         }
-        return { out, quit, clear: false };
+        return { out, quit, clear: false, action };
       }
     }
     /* 定番の呼び名を trk! の言葉に読み替える（ls に言葉を添えたら絞り込み＝grep） */
@@ -587,16 +863,27 @@
     }
     let quit = false;
     let clear = false;
+    let action = false;   /* ⌨ trk283：何かをした（＝実行後に閉じてよい）コマンドか */
 
     if (q.cmd === "help") {
-      /* man <cmd> は 1 つだけ（trk269）。無ければ全部 */
+      /* man <cmd> は 1 つだけ・`help all` で全部（trk286）。ふつうは短い 5 つ＋案内 */
       const only = q.rest ? q.rest.split(" ")[0].toLowerCase() : "";
-      const picked = only ? CLI_HELP.filter(([word, key]) => word === only || key === only) : [];
-      if (only && !picked.length) {
+      const picked = only && only !== "all" ? CLI_HELP.filter(([word, key]) => word === only || key === only) : [];
+      if (only && only !== "all" && !picked.length) {
         push("err", t("cliUnknown", { cmd: only }));
+      } else if (only === "all") {
+        push("out", t("cliHelpTitle"));
+        for (const [, key] of CLI_HELP) push("out", "  " + t(key));
+      } else if (picked.length) {
+        push("out", t("cliHelpTitle"));
+        for (const [, key] of picked) push("out", "  " + t(key));
       } else {
         push("out", t("cliHelpTitle"));
-        for (const [, key] of (picked.length ? picked : CLI_HELP)) push("out", "  " + t(key));
+        for (const word of CLI_HELP_SHORT) {
+          const row = CLI_HELP.find(([w]) => w === word);
+          if (row) push("out", "  " + t(row[1]));
+        }
+        push("out", "  " + t("cliHelpAll", { n: CLI_HELP.length }));
       }
     } else if (q.cmd === "list") {
       const items = typeof deps.tracks === "function" ? deps.tracks() : [];
@@ -617,7 +904,7 @@
       if (!word) push("err", t("cliNeedIndex"));
       else if (special) {
         const r = (typeof deps.playSpecial === "function" ? await deps.playSpecial(special) : { ok: false }) || {};
-        if (r.ok) push("out", t("cliPlaying", { name: r.name || "" }));
+        if (r.ok) { push("out", t("cliPlaying", { name: r.name || "" })); action = true; }
         else if (r.reason === "empty") push("err", special === "fav" ? t("cliFavEmpty") : t("cliNoTracks"));
         else push("err", t("cliPlayFailed"));
       } else {
@@ -629,10 +916,23 @@
         else {
           const name = typeof deps.name === "function" ? deps.name(hit.item) : (hit.item.title || "");
           const r = (typeof deps.play === "function" ? await deps.play(hit.item) : { ok: false }) || {};
-          if (r.ok) push("out", t("cliPlaying", { name }));
+          if (r.ok) { push("out", t("cliPlaying", { name })); action = true; }
           else push("err", t("cliPlayFailed"));
         }
       }
+    } else if (q.cmd === "next" || q.cmd === "back") {
+      /* ⌨ trk283：play next／play prev の短い呼び名（最初から使えます） */
+      const kind = q.cmd === "back" ? "prev" : "next";
+      const r = (typeof deps.playSpecial === "function" ? await deps.playSpecial(kind) : { ok: false }) || {};
+      if (r.ok) { push("out", t("cliPlaying", { name: r.name || "" })); action = true; }
+      else if (r.reason === "empty") push("err", t("cliNoTracks"));
+      else push("err", t("cliPlayFailed"));
+    } else if (q.cmd === "re") {
+      /* ⌨ trk283：いまの曲を最初から（再生位置を 0 に） */
+      const r = (typeof deps.restart === "function" ? deps.restart() : { ok: false, reason: "none" }) || {};
+      if (r.ok) { push("out", t("cliRestartDone", { name: r.name || "" })); action = true; }
+      else if (r.reason === "beyond") push("err", t("cliSeekBeyond", { t: formatClock(r.max) }));
+      else push("err", t("cliRestartNone"));
     } else if (q.cmd === "skin") {
       const id = (q.args[0] || "").toLowerCase();
       if (!id) {
@@ -640,7 +940,7 @@
         push("out", t("cliSkinCurrent", { id: cur.skin || "shadow" }));
       } else {
         const r = (typeof deps.applySkin === "function" ? deps.applySkin(id) : { ok: false }) || {};
-        if (r.ok) push("out", t("cliSkinSet", { id }));
+        if (r.ok) { push("out", t("cliSkinSet", { id })); action = true; }
         else if (r.reason === "locked") push("err", t("cliSkinLocked"));
         else push("err", t("cliSkinUnknown"));
       }
@@ -663,7 +963,7 @@
       if (pct === null) push("err", t("cliVolumeNeed"));
       else {
         const r = (typeof deps.volume === "function" ? deps.volume(pct) : { ok: false }) || {};
-        if (r.ok) push("out", t("cliVolumeSet", { n: pct }));
+        if (r.ok) { push("out", t("cliVolumeSet", { n: pct })); action = true; }
         else push("err", t("cliInternalError"));
       }
     } else if (q.cmd === "seek") {
@@ -671,7 +971,7 @@
       if (sec === null) push("err", t("cliSeekNeed"));
       else {
         const r = (typeof deps.seek === "function" ? deps.seek(sec) : { ok: false, reason: "none" }) || {};
-        if (r.ok) push("out", t("cliSeekSet", { t: formatClock(sec) }));
+        if (r.ok) { push("out", t("cliSeekSet", { t: formatClock(sec) })); action = true; }
         else if (r.reason === "beyond") push("err", t("cliSeekBeyond", { t: formatClock(r.max) }));
         else push("err", t("cliSeekNoTrack"));
       }
@@ -680,7 +980,7 @@
       if (!["off", "one", "all"].includes(mode)) push("err", t("cliRepeatNeed"));
       else {
         const r = (typeof deps.repeat === "function" ? deps.repeat(mode) : { ok: false }) || {};
-        if (r.ok) push("out", t("cliRepeatSet", { mode }));
+        if (r.ok) { push("out", t("cliRepeatSet", { mode })); action = true; }
         else push("err", t("cliInternalError"));
       }
     } else if (q.cmd === "shuffle") {
@@ -690,7 +990,7 @@
       if (!on && !off) push("err", t("cliNeedOnOff"));
       else {
         const r = (typeof deps.shuffle === "function" ? deps.shuffle(on) : { ok: false }) || {};
-        if (r.ok) push("out", t("cliShuffleSet", { mode: on ? t("cliOn") : t("cliOff") }));
+        if (r.ok) { push("out", t("cliShuffleSet", { mode: on ? t("cliOn") : t("cliOff") })); action = true; }
         else push("err", t("cliInternalError"));
       }
     } else if (q.cmd === "spell") {
@@ -731,6 +1031,7 @@
           for (const part of parts) {
             const r = await execute(part, deps, { depth: (ctx.depth || 0) + 1, fromSpell: true });
             for (const o of r.out) out.push(o);
+            if (r.action) action = true;
           }
         }
       }
@@ -742,6 +1043,7 @@
         for (const part of parts) {
           const r = await execute(part, deps, { depth: 1 });
           for (const o of r.out) out.push(o);
+          if (r.action) action = true;
           if (r.quit) { quit = true; break; }
         }
       }
@@ -826,14 +1128,18 @@
     } else {
       push("err", t("cliUnknown", { cmd: q.cmd }));
     }
-    return { out, quit, clear };
+    return { out, quit, clear, action };
   }
 
   /* ==================== 純粋な計算（trk267）ここまで ==================== */
 
   /* ==================== 端末の見た目と配線（ここから下はブラウザー側） ==================== */
-  let overlay = null, dialog = null, logNode = null, inputNode = null;
-  const state = { built: false, open: false, history: [], hi: -1, swapSkin: "", userSkin: false, returnFocus: null };
+  let overlay = null, dialog = null, logNode = null, inputNode = null, typingBadge = null;
+  /* ⌨ trk284：辞書登録（呪文）の GUI の部品 */
+  let spellList = null, spellStatus = null, spellIdInput = null, spellBodyInput = null;
+  /* ⌨ trk285：入力の合図（プロンプト）の見出し */
+  let promptNode = null;
+  const state = { built: false, open: false, history: [], hi: -1, swapSkin: "", userSkin: false, returnFocus: null, composing: false, sheetSkin: "" };
 
   const t = (key, vars) => tr(key, vars);
 
@@ -945,6 +1251,13 @@
     try { core.video.currentTime = Math.max(0, sec); } catch (_) { return { ok: false, reason: "none" }; }
     return { ok: true };
   }
+  /* ⌨ trk283：`re` ＝いまの曲を最初から（鳴らしていなければ reason:"none"） */
+  function restartTrack() {
+    if (!core.currentSong) return { ok: false, reason: "none" };
+    const r = seekTo(0);
+    if (!r.ok) return { ok: false, reason: r.reason || "none", max: r.max };
+    return { ok: true, name: songName(core.currentSong) };
+  }
   function setRepeat(mode) {
     core.settings.mediaRepeat = ["off", "one", "all"].includes(mode) ? mode : "off";
     core.saveUserPrefs();
@@ -988,6 +1301,7 @@
     applySkin: applySkinCmd,
     volume: setVolume,
     seek: seekTo,
+    restart: restartTrack,
     repeat: setRepeat,
     shuffle: setShuffle,
     spells: allSpells,
@@ -1047,16 +1361,24 @@
   function ensureBuilt() {
     if (state.built) return true;
     if (!document.body) return false;
-    overlay = core.el("div", "instOverlay cliOverlay");
-    overlay.id = "cliMode";
-    overlay.hidden = true;
-    const backdrop = core.el("div", "instBackdrop");
-    backdrop.addEventListener("click", () => closeCli());
-
-    dialog = core.el("section", "instDialog cliDialog");
-    dialog.setAttribute("role", "dialog");
-    dialog.setAttribute("aria-modal", "true");
+    /* ⌨ trk286：自前のオーバーレイ（role="dialog"・Esc・フォーカスの戻し）をやめ、
+       ネイティブの <dialog> ＋ showModal() にします（modern-web-guidance：手で作り直さない）。
+       見た目は下から持ち上がるボトムシート（CSS のアニメーション）。 */
+    dialog = core.el("dialog", "cliDialog");
+    dialog.id = "cliMode";
     dialog.setAttribute("aria-labelledby", "cliTitle");
+    if (typeof HTMLDialogElement !== "undefined" && "closedBy" in HTMLDialogElement.prototype) dialog.setAttribute("closedby", "any");
+    overlay = dialog;
+    /* 背景クリックで閉じる（closedby="any" が無いブラウザーのための手当て） */
+    let pressOutside = false;
+    const outside = e => {
+      const r = dialog.getBoundingClientRect();
+      return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    };
+    dialog.addEventListener("pointerdown", e => { pressOutside = outside(e); });
+    dialog.addEventListener("pointerup", e => { if (pressOutside && outside(e)) closeCli(); pressOutside = false; });
+    /* 閉じたとき（Esc・背景・閉じるボタン・closeCli のどれでも）に 1 か所で片づける */
+    dialog.addEventListener("close", () => finishClose());
 
     const header = core.el("header", "instHeader cliHeader");
     const hwrap = core.el("div");
@@ -1077,10 +1399,19 @@
     logNode.dataset.i18nAria = "cliLogLabel";
     logNode.tabIndex = 0;
 
+    /* ⌨ trk283：「いま打てるか」のバッジ（設定で 出す／状態行だけ／打てないときだけ を選ぶ） */
+    typingBadge = core.el("div", "cliTypingBadge");
+    typingBadge.id = "cliTypingBadge";
+    typingBadge.hidden = true;
+    typingBadge.setAttribute("aria-live", "polite");
+
     const form = core.el("form", "cliForm");
     form.id = "cliForm";
-    const prompt = core.el("span", "cliPromptChar");   /* 記号は CSS（--cli-prompt）。スキンが変えられます */
-    prompt.setAttribute("aria-hidden", "true");
+    /* ⌨ trk285：合図は「<スキン名(English)> ~ %」のように文字で出す（空のときはスキンの --cli-prompt） */
+    promptNode = core.el("span", "cliPromptChar");
+    promptNode.id = "cliPromptChar";
+    promptNode.setAttribute("aria-hidden", "true");
+    const prompt = promptNode;
     inputNode = core.el("input", "cliInput");
     inputNode.id = "cliInput";
     inputNode.type = "text";
@@ -1097,19 +1428,150 @@
     const hint = labelled("p", "cliHint", "hint cliHintText");
     hint.id = "cliHint";
 
-    dialog.append(header, logNode, form, hint);
-    overlay.append(backdrop, dialog);
-    document.body.append(overlay);
+    /* ⌨ trk284：辞書登録（呪文）の GUI。端末のいちばん下に置く（整理したいときに見つけやすい） */
+    const spellBox = core.el("details", "cliSpellPanel");
+    spellBox.id = "cliSpellPanel";
+    const spellSum = labelled("summary", "cliSpellPanelTitle");
+    const spellHint = labelled("p", "cliSpellPanelHint", "hint");
+    spellList = core.el("ul", "cliSpellList");
+    spellList.id = "cliSpellList";
+    spellList.setAttribute("aria-label", tr("cliSpellPanelTitle"));
+    spellList.dataset.i18nAria = "cliSpellPanelTitle";
+    const spellAdd = core.el("div", "cliSpellAdd");
+    const idField = core.el("label", "field");
+    idField.append(labelled("span", "cliSpellId"));
+    spellIdInput = core.el("input", "cliSpellIdInput");
+    spellIdInput.id = "cliSpellIdInput";
+    spellIdInput.type = "text";
+    spellIdInput.maxLength = SPELL_ID_MAX;
+    spellIdInput.autocomplete = "off";
+    spellIdInput.setAttribute("autocapitalize", "off");
+    spellIdInput.setAttribute("spellcheck", "false");
+    spellIdInput.setAttribute("aria-label", tr("cliSpellId"));
+    spellIdInput.dataset.i18nAria = "cliSpellId";
+    idField.append(spellIdInput);
+    const bodyField = core.el("label", "field");
+    bodyField.append(labelled("span", "cliSpellBody"));
+    spellBodyInput = core.el("input", "cliSpellBodyInput");
+    spellBodyInput.id = "cliSpellBodyInput";
+    spellBodyInput.type = "text";
+    spellBodyInput.maxLength = SPELL_BODY_MAX;
+    spellBodyInput.autocomplete = "off";
+    spellBodyInput.setAttribute("autocapitalize", "off");
+    spellBodyInput.setAttribute("spellcheck", "false");
+    spellBodyInput.setAttribute("aria-label", tr("cliSpellBody"));
+    spellBodyInput.dataset.i18nAria = "cliSpellBody";
+    bodyField.append(spellBodyInput);
+    spellStatus = core.el("p", "hint status cliSpellStatus");
+    spellStatus.id = "cliSpellStatus";
+    spellStatus.setAttribute("role", "status");
+    spellStatus.setAttribute("aria-live", "polite");
+    const spellAddBtn = labelled("button", "cliSpellAddBtn", "instSmallBtn");
+    spellAddBtn.type = "button";
+    spellAddBtn.id = "cliSpellAddBtn";
+    spellAddBtn.addEventListener("click", () => addSpellFromGui());
+    /* Enter でも登録できる（form の入れ子は作らない＝端末の form を壊さない） */
+    for (const node of [spellIdInput, spellBodyInput]) {
+      node.addEventListener("keydown", e => {
+        if (compositionBlocked(e.isComposing, e.keyCode)) return;
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        addSpellFromGui();
+      });
+    }
+    spellAdd.append(idField, bodyField, spellAddBtn);
+    spellBox.append(spellSum, spellHint, spellList, spellAdd, spellStatus);
 
-    form.addEventListener("submit", e => { e.preventDefault(); void submit(); });
+    /* 上端のつまみ（見た目だけ・ドラッグは今後の課題） */
+    const handle = core.el("div", "cliSheetHandle");
+    handle.setAttribute("aria-hidden", "true");
+    dialog.append(handle, header, logNode, typingBadge, form, hint, spellBox);
+    document.body.append(dialog);
+
+    form.addEventListener("submit", e => { e.preventDefault(); if (state.composing) return; void submit(); });
+    /* ⌨ trk284：IME の変換中かどうかを持つ（変換中の Enter で、書きかけを唱えない） */
+    inputNode.addEventListener("compositionstart", () => { state.composing = true; });
+    inputNode.addEventListener("compositionend", () => { state.composing = false; });
     inputNode.addEventListener("keydown", onInputKey);
-    overlay.addEventListener("keydown", e => { if (e.key === "Escape") { e.preventDefault(); closeCli(); } });
+    /* ⌨ trk283：入力欄以外へフォーカスが逃げたら、打てる状態へ戻す（ボタン・選択は除く） */
+    overlay.addEventListener("focusin", e => {
+      if (!state.open) return;
+      const t = e.target;
+      if (!t || t === inputNode) return;
+      /* 出力を読み返す・辞書を書く・ボタンを押す、は邪魔しない（trk284） */
+      if (t.closest && t.closest("#cliLog, #cliSpellPanel")) return;
+      if (["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(t.tagName)) return;
+      focusInput();
+    });
+    /* 入力欄をタップ→フォーカスが戻ったら、バッジを更新する */
+    overlay.addEventListener("focusout", () => { if (state.open) setTimeout(() => showTyping(false), 0); });
+    /* Esc は <dialog> が閉じます（自前のハンドラは置きません） */
     state.built = true;
     return true;
   }
+  /* ---------- ⌨ trk284：辞書登録（呪文）の GUI ---------- */
+  function renderSpells() {
+    if (!spellList) return;
+    const spells = allSpells();
+    const ids = Object.keys(spells);
+    spellList.textContent = "";
+    for (const id of ids) {
+      const li = core.el("li", "cliSpellRow");
+      const name = core.el("code", "cliSpellName", id);
+      const body = core.el("span", "cliSpellText", String(spells[id]));
+      const builtin = Object.prototype.hasOwnProperty.call(BUILTIN_SPELLS, id);
+      const del = core.el("button", "miniBtn cliSpellDel", tr("cliSpellDelBtn"));
+      del.type = "button";
+      del.setAttribute("aria-label", tr("cliSpellDelBtn") + " " + id);
+      if (builtin) { del.disabled = true; del.title = tr("cliSpellBuiltin"); }
+      else del.addEventListener("click", () => {
+        const r = delSpell(id);
+        log(r.ok ? "out" : "err", tr(r.ok ? "cliSpellRemoved" : "cliSpellUnknown", { id }));
+        renderSpells();
+        focusInput();
+      });
+      li.append(name, body, del);
+      spellList.append(li);
+    }
+    if (spellStatus) {
+      const mine = ids.filter(id => !Object.prototype.hasOwnProperty.call(BUILTIN_SPELLS, id)).length;
+      spellStatus.textContent = tr("cliSpellCount", { n: ids.length, m: mine, max: SPELL_MAX });
+    }
+  }
+  function addSpellFromGui() {
+    const key = String(spellIdInput ? spellIdInput.value : "").trim().toLowerCase();
+    const body = String(spellBodyInput ? spellBodyInput.value : "").trim();
+    const builtin = Object.prototype.hasOwnProperty.call(BUILTIN_SPELLS, key);
+    const count = Object.keys(readSpells()).length;
+    const problem = spellDraftProblem(key, body, { builtin, count, max: SPELL_MAX });
+    const say = { id: "cliSpellBadId", body: "cliSpellBadBody", builtin: "cliSpellBuiltin", full: "cliSpellFull" }[problem] || "";
+    if (problem) {
+      log("err", tr(say || "cliInternalError", { max: SPELL_MAX }));
+      if (spellStatus) spellStatus.textContent = tr(say || "cliInternalError", { max: SPELL_MAX });
+      if (problem === "id" && spellIdInput) spellIdInput.focus();
+      return false;
+    }
+    const r = saveSpell(key, body);
+    if (!r.ok) {
+      const why = r.reason === "builtin" ? "cliSpellBuiltin" : r.reason === "full" ? "cliSpellFull" : "cliInternalError";
+      log("err", tr(why, { max: SPELL_MAX }));
+      if (spellStatus) spellStatus.textContent = tr(why, { max: SPELL_MAX });
+      return false;
+    }
+    log("out", tr("cliSpellAdded", { id: key }));
+    if (spellStatus) spellStatus.textContent = tr("cliSpellAdded", { id: key });
+    if (spellIdInput) spellIdInput.value = "";
+    if (spellBodyInput) spellBodyInput.value = "";
+    renderSpells();
+    if (spellIdInput) { try { spellIdInput.focus({ preventScroll: true }); } catch (_) {} }
+    return true;
+  }
   function onInputKey(e) {
+    /* ⌨ trk284：変換中（IME）は、Enter・Tab・矢印を端末の操作に使わない */
+    if (compositionBlocked(e.isComposing, e.keyCode)) return;
     if (e.key === "Tab") {
-      if (!completionOn()) return;   /* スキンが completion:"off" と言ったら、Tab は何もしない */
+      /* 補完がオフ・Shift+Tab・空のときは、フォーカスを動かす（Tab で閉じ込めない） */
+      if (!tabShouldComplete(inputNode.value, e.shiftKey, completionOn())) return;
       e.preventDefault();
       const done = completeCommand(inputNode.value);
       if (done !== inputNode.value) inputNode.value = done;
@@ -1132,7 +1594,7 @@
     return hits.length === 1 ? hits[0] + " " : text;
   }
   async function submit() {
-    if (!inputNode) return;
+    if (!inputNode || state.composing) return;
     const line = inputNode.value;
     inputNode.value = "";
     if (!line.trim()) return;
@@ -1144,12 +1606,133 @@
     if (res.clear && logNode) logNode.textContent = "";                 /* clear：先に消して、残すのは「消しました」だけ */
     for (const o of res.out) log(o.kind, o.text);
     if (res.out.some(o => o.kind === "err")) beep();                    /* エラーの音（スキンが名乗ったときだけ） */
-    if (res.quit) closeCli();
-    else focusInput();
+    if (res.quit) { closeCli(); return; }
+    /* ⌨ trk283：実行したら閉じる（既定）。1 行を見せてから戻り、同じ文をトーストでも出す */
+    if (res.action && core.settings.cliAutoClose === true) {   /* ⌨ trk286：既定は閉じない */
+      const last = res.out[res.out.length - 1];
+      const say = last && last.kind !== "err" ? last.text : "";
+      setTimeout(() => {
+        if (!state.open) return;
+        closeCli();
+        if (say) toastNote(say);
+      }, 520);
+      return;
+    }
+    focusInput();
+    showTyping(false);
+    renderSpells();   /* 呪文を唱えて増減したときも、辞書の GUI を合わせる */
   }
   function focusInput() {
     if (!inputNode) return;
     try { inputNode.focus({ preventScroll: true }); } catch (_) { try { inputNode.focus(); } catch (__) {} }
+  }
+
+  /* ---------- ⌨ trk283：文字が打てる状態かのチェック ---------- */
+  /* 入力欄が「使えて・見えていて・フォーカスされている」かを 1 つの形で返す（テストからも読める純関数寄り） */
+  function typableState() {
+    if (!state.open || !inputNode) return { ok: false, focused: false, why: "closed" };
+    const blocked = inputNode.disabled === true || inputNode.readOnly === true;
+    const visible = !!(inputNode.offsetParent || (inputNode.getClientRects && inputNode.getClientRects().length));
+    const focused = document.activeElement === inputNode;
+    const ok = !blocked && visible;
+    return { ok, focused, why: blocked ? "blocked" : !visible ? "hidden" : focused ? "" : "unfocused" };
+  }
+  /* 知らせ方：badge（既定・常時バッジ）／status（開いたときに 1 行）／quiet（打てないときだけ） */
+  const typingMode = () => (["badge", "status", "quiet"].includes(core.settings.cliTypingCheck) ? core.settings.cliTypingCheck : "badge");
+  function showTyping(announce) {
+    const st = typableState(), mode = typingMode();
+    if (typingBadge) {
+      typingBadge.hidden = !state.open || mode === "quiet";
+      typingBadge.textContent = tr(st.ok ? "cliTypable" : "cliNotTypable");
+      typingBadge.dataset.ok = st.ok ? "1" : "0";
+      typingBadge.title = st.ok ? "" : tr("cliNotTypableLog");
+    }
+    if (announce) {
+      if (st.ok && mode === "quiet") return st;          /* 静かにしてほしい人には黙る */
+      log(st.ok ? "out" : "err", tr(st.ok ? "cliTypableLog" : "cliNotTypableLog"));
+    }
+    return st;
+  }
+  /* フォーカスを当て直す（描画直後は入らないことがあるので、少しだけ試す） */
+  function ensureFocus(tries) {
+    focusInput();
+    const st = typableState();
+    const left = Number(tries) || 0;
+    if ((!st.ok || !st.focused) && left < 2) setTimeout(() => { if (state.open) ensureFocus(left + 1); }, 60);
+    return st;
+  }
+
+  /* ---------- ⌨ trk285：入力の合図（<スキン名(English)> ~ %） ---------- */
+  /* いまのスキンの English 名（label.en を優先。無ければ ja・id） */
+  function skinEnglishName(id) {
+    const all = (window.Trk.data && window.Trk.data.SKINS) || {};
+    const key = id || state.sheetSkin || core.settings.skin;
+    const def = all[key] || {};
+    const label = def.label || {};
+    return String(label.en || label.ja || key || "trk");
+  }
+  const promptStyle = () => (PROMPT_STYLES.includes(core.settings.cliPromptStyle) ? core.settings.cliPromptStyle : "linux");
+  const promptNow = () => promptText(promptStyle(), skinEnglishName());
+  /* 合図を出し直す（入力欄の読み上げ名にも入れる） */
+  function updatePrompt() {
+    const text = promptNow();
+    if (promptNode) {
+      promptNode.textContent = text;
+      promptNode.dataset.text = text ? "1" : "0";
+    }
+    if (inputNode) inputNode.setAttribute("aria-label", (text ? text.trim() + " … " : "") + tr("cliPromptLabel"));
+    return text;
+  }
+  /* ⚙ の「いまの見え方」を合わせる（スキン・言語・選んだ形が変わったとき） */
+  function syncPromptPreview() {
+    const sel = document.getElementById("cliPromptSel");
+    const preview = document.getElementById("cliPromptPreview");
+    if (sel) sel.value = promptStyle();
+    if (preview) {
+      const text = promptStyle() === "skin" ? String(skinCli().prompt || ">") : promptNow().trim();
+      preview.textContent = tr("cliPromptPreview", { text });
+    }
+  }
+
+  /* ⌨ trk283：開くときに当てるスキン（モード＝auto/terminal/keep、個別指定があれば優先） */
+  function chooseCliSkin() {
+    const mode = ["terminal", "keep"].includes(core.settings.cliSkin) ? core.settings.cliSkin : "auto";
+    const pick = core.settings.cliSkinPickOn === true ? core.settings.cliSkinPick : "";
+    return pickCliSkin(skinCatalog(), mode, pick);
+  }
+
+  /* ⌨ trk286：スキンを**端末の中だけ**に当てる。
+     背景（body / #app）の色は触らず、この <dialog> のサブツリーの CSS 変数だけ差し替えます。
+     なので開閉で後ろの曲リストがちらつきません（modern-web-guidance の design-token-reactivity の考え方）。 */
+  const SHEET_SIZES = ["half", "tall", "full"];
+  function applySheetSkin() {
+    if (!overlay) return "";
+    const all = (window.Trk.data && window.Trk.data.SKINS) || {};
+    const want = chooseCliSkin();
+    const id = want && all[want] ? want : (all[core.settings.skin] ? core.settings.skin : "");
+    state.sheetSkin = id;
+    overlay.removeAttribute("style");
+    if (!id) return "";
+    const ui = all[id].ui || {};
+    for (const [k, v] of Object.entries(ui)) {
+      if (typeof v === "string" && k.startsWith("--")) { try { overlay.style.setProperty(k, v); } catch (_) {} }
+    }
+    /* 小さい文字が読める色（data 側の計算をそのまま借りる） */
+    try {
+      const ink = window.Trk.data && window.Trk.data.accentInk && window.Trk.data.accentInk(ui);
+      if (ink) overlay.style.setProperty("--ui-accent-ink", ink);
+    } catch (_) { /* 計算できなければ既定のまま */ }
+    overlay.dataset.cliSkin = id;
+    return id;
+  }
+  /* 高さ（half / tall / full）とスキンをまとめて合わせる */
+  function syncSheet() {
+    if (!overlay) return "";
+    const size = SHEET_SIZES.includes(core.settings.cliSheetSize) ? core.settings.cliSheetSize : "tall";
+    overlay.dataset.size = size;
+    const sel = document.getElementById("cliSheetSize");
+    if (sel) sel.value = size;
+    return applySheetSkin();
   }
 
   function canOpen() {
@@ -1169,32 +1752,48 @@
     state.swapSkin = "";
     state.returnFocus = document.activeElement;
     if (logNode) logNode.textContent = "";
-    const mode = core.settings.cliSkin === "terminal" || core.settings.cliSkin === "keep" ? core.settings.cliSkin : "auto";
-    const want = pickCliSkin(skinCatalog(), mode);
-    if (want && want !== core.settings.skin) {
-      state.swapSkin = core.settings.skin;
-      core.applySkin(want, false);
-    }
+    /* ⌨ trk286：スキンは端末の中だけ・高さを合わせてから、下から持ち上げる */
+    const sheet = syncSheet();
     window.Trk.overlay.set("cli", true);
-    overlay.hidden = false;
     document.body.classList.add("cliOpen");
+    if (typeof overlay.showModal === "function") {
+      try { overlay.showModal(); } catch (_) { overlay.setAttribute("open", ""); }
+    } else {
+      overlay.setAttribute("open", "");
+    }
     log("out", tr("cliSubtitle"));
     const cur = deps.current();
     log("out", tr("cliSkinCurrent", { id: cur.skin }) + "  ·  " + tr("cliVolumeSet", { n: cur.volume }));
-    focusInput();
+    if (sheet) log("out", tr("cliSheetSkin", { id: sheet }));
+    /* ⌨ trk283：打てる状態かを検めてから、知らせる（設定で バッジ／状態行／静か を選ぶ） */
+    updatePrompt();   /* ⌨ trk285：当てたスキンの English 名で「<name> ~ %」を出す */
+    renderSpells();
+    ensureFocus(0);
+    showTyping(true);
     return true;
   }
+  /* 閉じる入口は 1 つ。実際の片づけは close イベントに集めます（Esc・背景・ボタン・closeCli のどれでも同じ） */
   function closeCli() {
     if (!state.open) return;
     state.open = false;
-    window.Trk.overlay.set("cli", false);
-    if (overlay) overlay.hidden = true;
+    if (overlay && overlay.open && typeof overlay.close === "function") {
+      try { overlay.close(); return; } catch (_) { /* 下の片づけへ */ }
+    }
+    overlay && overlay.removeAttribute("open");
+    finishClose();
+  }
+  function finishClose() {
+    state.open = false;
+    if (window.Trk && window.Trk.overlay && window.Trk.overlay.set) window.Trk.overlay.set("cli", false);
     document.body.classList.remove("cliOpen");
-    if (state.swapSkin && !state.userSkin) { try { core.applySkin(state.swapSkin, false); } catch (_) {} }
+    if (typingBadge) typingBadge.hidden = true;
     state.swapSkin = "";
+    /* フォーカスは <dialog> が元の場所へ戻します（手で戻さない） */
     const back = state.returnFocus;
     state.returnFocus = null;
-    if (back && back.isConnected && typeof back.focus === "function") { try { back.focus({ preventScroll: true }); } catch (_) {} }
+    if (back && back.isConnected && typeof back.focus === "function" && !document.activeElement?.closest?.("dialog")) {
+      try { back.focus({ preventScroll: true }); } catch (_) {}
+    }
   }
 
   /* ---------- ⚙ の入口と設定の配線 ---------- */
@@ -1225,6 +1824,81 @@
         core.saveUserPrefs();
       });
     }
+    const keyBtn = document.getElementById("cliKeyAssign");
+    if (keyBtn && !keyBtn.dataset.cliWired) {
+      keyBtn.dataset.cliWired = "1";
+      /* ⌨ trk286：もう一度押したら取り消し（待ちっぱなしにしない） */
+      keyBtn.addEventListener("click", () => {
+        cliKeyBinding = cliKeyBinding === null ? 0 : null;
+        syncCliKeyUI();
+      });
+    }
+    /* ⌨ trk286：ほかを触ったら割り当てをやめる（キーを吸い続けるのを防ぐ） */
+    if (!document.documentElement.dataset.cliKeyOutside) {
+      document.documentElement.dataset.cliKeyOutside = "1";
+      document.addEventListener("pointerdown", e => {
+        if (cliKeyBinding === null) return;
+        const t = e.target;
+        if (t && t.closest && t.closest("#cliKeyAssign")) return;
+        cliKeyBinding = null; syncCliKeyUI("");
+      }, true);
+    }
+    syncCliKeyUI();
+    const autoChk = document.getElementById("cliAutoCloseChk");
+    if (autoChk && !autoChk.dataset.cliWired) {
+      autoChk.dataset.cliWired = "1";
+      autoChk.checked = core.settings.cliAutoClose === true;   /* ⌨ trk286：既定は「閉じない」 */
+      autoChk.addEventListener("change", () => { core.settings.cliAutoClose = autoChk.checked; core.saveUserPrefs(); });
+    }
+    /* ⌨ trk286：板の高さを選ぶ（小さめ／ふつう／大きめ） */
+    const sheetSel = document.getElementById("cliSheetSize");
+    if (sheetSel && !sheetSel.dataset.cliWired) {
+      sheetSel.dataset.cliWired = "1";
+      sheetSel.value = SHEET_SIZES.includes(core.settings.cliSheetSize) ? core.settings.cliSheetSize : "tall";
+      sheetSel.addEventListener("change", () => {
+        core.settings.cliSheetSize = SHEET_SIZES.includes(sheetSel.value) ? sheetSel.value : "tall";
+        core.saveUserPrefs();
+        if (state.open) syncSheet();
+      });
+    }
+    const pickChk = document.getElementById("cliSkinPickChk");
+    const pickSel = document.getElementById("cliSkinPickSel");
+    const syncPick = () => {
+      if (pickSel) pickSel.disabled = core.settings.cliSkinPickOn !== true;
+      if (pickChk) pickChk.checked = core.settings.cliSkinPickOn === true;
+    };
+    if (pickSel && !pickSel.dataset.cliWired) {
+      pickSel.dataset.cliWired = "1";
+      fillSkinPick(pickSel);
+      pickSel.value = core.settings.cliSkinPick || "";
+      pickSel.addEventListener("change", () => { core.settings.cliSkinPick = pickSel.value; core.saveUserPrefs(); });
+    }
+    if (pickChk && !pickChk.dataset.cliWired) {
+      pickChk.dataset.cliWired = "1";
+      syncPick();
+      pickChk.addEventListener("change", () => { core.settings.cliSkinPickOn = pickChk.checked; syncPick(); core.saveUserPrefs(); });
+    }
+    const promptSel = document.getElementById("cliPromptSel");
+    if (promptSel && !promptSel.dataset.cliWired) {
+      promptSel.dataset.cliWired = "1";
+      syncPromptPreview();
+      promptSel.addEventListener("change", () => {
+        core.settings.cliPromptStyle = PROMPT_STYLES.includes(promptSel.value) ? promptSel.value : "linux";
+        core.saveUserPrefs();
+        updatePrompt();
+        syncPromptPreview();
+      });
+    }
+    const typingSel = document.getElementById("cliTypingSel");
+    if (typingSel && !typingSel.dataset.cliWired) {
+      typingSel.dataset.cliWired = "1";
+      typingSel.value = typingMode();
+      typingSel.addEventListener("change", () => {
+        core.settings.cliTypingCheck = ["badge", "status", "quiet"].includes(typingSel.value) ? typingSel.value : "badge";
+        core.saveUserPrefs();
+        if (state.open) showTyping(false);
+      });
+    }
     const skinSel = document.getElementById("cliSkinSel");
     if (skinSel && !skinSel.dataset.cliWired) {
       skinSel.dataset.cliWired = "1";
@@ -1235,6 +1909,25 @@
       });
     }
   }
+  /* 端末のスキンの選択肢（スキン名は、いまの言語のもの） */
+  function fillSkinPick(sel) {
+    const all = (window.Trk.data && window.Trk.data.SKINS) || {};
+    const lang = core.settings.language || "ja";
+    const labelOf = id => {
+      const def = all[id] || {};
+      return String((def.label && (def.label[lang] || def.label.ja || def.label.en)) || id);
+    };
+    sel.textContent = "";
+    const auto = core.el("option", "", tr("cliSkinPickAuto"));
+    auto.value = "";
+    sel.append(auto);
+    for (const id of Object.keys(all).sort((a, b) => labelOf(a).localeCompare(labelOf(b), lang) || a.localeCompare(b))) {
+      const o = core.el("option", "", labelOf(id) + (all[id] && all[id].locked ? " 🔒" : ""));
+      o.value = id;
+      if (all[id] && all[id].locked) o.disabled = true;
+      sel.append(o);
+    }
+  }
   function toastNote(text) {
     try {
       if (window.Trk.play && typeof window.Trk.play.showToast === "function") { window.Trk.play.showToast(text); return; }
@@ -1242,16 +1935,76 @@
     if (typeof window.showToast === "function") { try { window.showToast(text); } catch (_) {} }
   }
 
-  /* ---------- Ctrl+` / ⌘+` ---------- */
+  /* ---------- 呼び出しキー（Ctrl／⌘ + 選んだキー・同じキーで開閉） ---------- */
+  const cliKeyCode = () => (core.validCode(core.settings.cliKey) ? core.settings.cliKey : "Backquote");
+  let cliKeyBinding = null;
+  /* ⌨ trk286：割り当てに使えないキー。
+     ・修飾キーだけ（Ctrl／Shift／Alt／⌘・CapsLock など）＝押すと「Ctrl+Ctrl」になって呼び出せない
+     ・Esc ＝取り消しに使う／Tab ＝フォーカス移動を奪う */
+  const CLI_KEY_MODIFIERS = ["ControlLeft", "ControlRight", "ShiftLeft", "ShiftRight", "AltLeft", "AltRight",
+    "MetaLeft", "MetaRight", "OSLeft", "OSRight", "CapsLock", "NumLock", "ScrollLock", "Dead"];
+  const cliKeyUsable = code => !!code && code !== "Escape" && code !== "Tab" && !CLI_KEY_MODIFIERS.includes(code) && core.validCode(code);
+  /* ほかの操作と重なるキー（遊ぶキー・メニュー・プレイヤー・📚 の音量キー） */
+  function cliKeyUsed(code) {
+    const S = core.settings;
+    return [...(S.keys || []), ...(S.subKeys || []), ...(S.videoKeys || []),
+      S.menuKey, S.mediaExitKey, S.skinVolKeyL, S.skinVolKeyR, S.skinVolKeyU, S.skinVolKeyD].filter(Boolean).includes(code);
+  }
+  function syncCliKeyUI(message) {
+    const value = document.getElementById("cliKeyValue"), button = document.getElementById("cliKeyAssign");
+    const status = document.getElementById("cliKeyStatus");
+    const on = cliKeyBinding !== null;
+    if (value) value.textContent = "Ctrl／⌘ + " + core.formatKey(cliKeyCode());
+    if (button) { button.classList.toggle("listening", on); button.setAttribute("aria-pressed", String(on)); }
+    if (status) status.textContent = message !== undefined ? message : (on ? tr("cliKeyWaiting") : "");
+  }
+  /* 押されたキーを覚える。Esc は取り消し。使えないキーは受けない（待ちは続ける） */
+  function captureCliKey(code) {
+    if (cliKeyBinding === null) return false;
+    if (!code || code === "Escape") { cliKeyBinding = null; syncCliKeyUI(""); return false; }
+    if (!cliKeyUsable(code)) { syncCliKeyUI(tr("cliKeyBadKey")); return false; }
+    if (cliKeyUsed(code)) { toastNote(tr("cliKeyTaken")); syncCliKeyUI(tr("cliKeyTaken")); return false; }
+    core.settings.cliKey = code;
+    cliKeyBinding = null;
+    core.saveUserPrefs();
+    syncCliKeyUI(tr("cliKeySaved", { key: core.formatKey(code) }));
+    return true;
+  }
+
   addEventListener("keydown", e => {
-    if (e.key !== "`" && e.code !== "Backquote") return;
-    if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return;
-    if (e.defaultPrevented) return;
+    /* 割り当て中は、押されたキーをそのまま受け取る（Esc は取り消し） */
+    if (cliKeyBinding !== null) {
+      e.preventDefault(); e.stopPropagation();
+      if (!e.repeat) captureCliKey(core.keyCodeOf(e));
+      return;
+    }
+    if (e.defaultPrevented || e.altKey || e.shiftKey) return;
+    if (!(e.ctrlKey || e.metaKey)) return;
+    if ((core.keyCodeOf(e) || "") !== cliKeyCode()) return;
     const tag = (e.target && e.target.tagName || "").toLowerCase();
     if (!state.open && (tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable))) return;
     e.preventDefault();
+    /* ⌨ trk283：同じキーで開いて閉じる（トグル） */
     if (state.open) closeCli();
     else if (!openCli()) toastNote(tr("cliOnlyTitle"));
+  }, true);
+
+  /* ⌨ trk285：開いている間は、画面のどこにフォーカスがあっても入力を奪う（1 文字目も落とさない） */
+  addEventListener("keydown", e => {
+    if (!state.open || !inputNode) return;
+    if (cliKeyBinding !== null || e.defaultPrevented) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (compositionBlocked(e.isComposing, e.keyCode)) return;
+    const t = e.target;
+    if (t === inputNode) return;
+    if (t && t.closest && t.closest("#cliForm, #cliSpellPanel")) return;   /* 端末の入力欄・辞書は邪魔しない */
+    if (t && ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName)) return;
+    if (typeof e.key === "string" && e.key.length === 1) {
+      inputNode.value += e.key;
+      try { inputNode.setSelectionRange(inputNode.value.length, inputNode.value.length); } catch (_) {}
+      e.preventDefault();
+    }
+    focusInput();
   }, true);
 
   /* 言語を変えたら、端末の中の文言も入れ替える */
@@ -1259,7 +2012,18 @@
     if (!state.built || !overlay) return;
     overlay.querySelectorAll("[data-i18n]").forEach(n => { n.textContent = tr(n.dataset.i18n); });
     overlay.querySelectorAll("[data-i18n-aria]").forEach(n => n.setAttribute("aria-label", tr(n.dataset.i18nAria)));
+    renderSpells();   /* ⌨ trk284：辞書の「削除」など、GUI が作る文言も入れ替える */
+    updatePrompt();   /* ⌨ trk285：合図の読み上げ名も入れ替える */
+    syncPromptPreview();
   });
+  /* ⌨ trk285：スキンが変わったら合図も変える（スキン名を出しているため） */
+  core.on("skin", () => {
+    /* ⌨ trk286：端末の中のスキンも追いかける（このあと updatePrompt で合図の名も変わる） */
+    if (state.open) syncSheet(); else state.sheetSkin = "";
+    if (state.open || promptNode) updatePrompt();
+    syncPromptPreview();
+  });
+
   /* 選曲画面を離れたら閉じる（ゲーム・書斎・プレイヤーへ行ったとき） */
   core.on("phase", p => { if (p !== "title" && state.open) closeCli(); });
 
@@ -1279,6 +2043,18 @@
     pickTrack,
     splitSpells,
     pickCliSkin,
+    chooseCliSkin,
+    sheetSize: () => (SHEET_SIZES.includes(core.settings.cliSheetSize) ? core.settings.cliSheetSize : "tall"),
+    spellDraftProblem,
+    promptText,
+    PROMPT_STYLES,
+    skinEnglishName,
+    normalizeCommand,
+    compositionBlocked,
+    tabShouldComplete,
+    typableState,
+    typingMode,
+    cliKeyCode,
     historyCap,
     completionOn
   });
