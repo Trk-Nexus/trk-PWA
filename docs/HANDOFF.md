@@ -832,6 +832,18 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
 
 ## 7. 最近の変更
 
+- **⌨ trk269：端末の定番コマンドと Wizard のスキン 12 種（2026-11-03）**：記録＝[`VIEWER-TRK269-2026-11-03.md`](VIEWER-TRK269-2026-11-03.md)、洗い出し＝[`PLAN-TRK269-2026-11-03.md`](PLAN-TRK269-2026-11-03.md)、Skin 側へ返す文書＝[`SKIN-RETURN-TRK269-2026-11-03.md`](SKIN-RETURN-TRK269-2026-11-03.md)。元は Skin 側から Drive で届いた 4 ファイル（`CLI-定番機能とWizardスキン案.md`・`check-cli-skin.mjs`・`skins.json`・`HANDOFF.md`）。
+  - **伝達事項 4 つをそのまま反映**：§4-1 の `cli` 拡張 5 つ（`cursor`／`opacity`／`history`／`completion`／`bell`）・§4-2 のトリガー（`wizard`／`cli`／`console`）・§4-3 のコントラスト（4.5:1・エラー 3:1）・§4-4 の検査ツール（v2 に）。
+  - **コマンドは「別名＋新規」（U2）**：`ls`／`dir`＝`list`、`cd`＝`skin`、`man`＝`help`（`man <cmd>` は 1 つだけ）。新しく `pwd`・`cat`（`cat spell <id>` も）・`grep`・`history`・`clear`・`echo`・`bell on/off`。`|` は `;` と同じ区切り。`execute` は `{out, quit, clear}` を返し、`clear` は**先にログを消して**「消しました」だけ残す。
+  - **`cli` の 5 つ（U3）**：`cursor`（block/underline/bar）・`opacity`（0.5〜1）・`history`（10〜200）・`completion`（tab/off）・`bell`（true のみ）。`opacity` は**地を `::before` に移して**掛けるので**文字は薄くならない**。`bell` は**既定オフ**で、スキンが名乗り設定がオンのときだけ `AudioContext` で短い音を作る（音のファイルは増やさない）。`caret-shape` は未対応ブラウザーでは無視。
+  - **Wizard のスキン 12 種（U1）**：`tools/import-skin-catalog.mjs`（新規）で目録から生成 → **`js/skins-wizard.js`**（手で直さない・同じ目録なら同じバイト列・`--check` あり）。`colors`→`ui`／`game` は `buildCustomSkin` と同じ割合、届かない色は `fitInk` で合格点まで寄せる、`font` の**二重エスケープを戻す**、`cli` は `sanitizeCliLook` に委譲。`index.html` は `js/characters/miku.js` の直後に読み、`js/core.js` の `SKIN_CATS` に `wizard` を 1 語（棚の見出しは `catWizard`・4 言語）。**スキンは 61 種**（＋ミク 4＝65）。
+  - **入れなかった 12 種**：`muted`／入力欄が 1.01〜3.33:1（`wizard-void` は `text` も 1.00）。**`cli` の有無とちょうど一致**していた。色を直してもらえば `--cli-only` を外して 1 コマンドで入る。目録の `font` 二重エスケープ 167 種・余計な鍵 `"cli.font"` 3 種も返し文書でお願いした。
+  - **設定画面**：⚙ に「エラーの音（ピン）を鳴らす」（`settings.cliBell`・既定オン）＋「そう決まっていること」の説明 2 行（補完・履歴・カーソルの形・地の透け方はスキンが決める）。
+  - **道具 v2**：`tools/check-cli-skin.mjs` が**目録も受ける**（CLI を名乗るスキンだけ判定・他は `notes`）。道の文字（`/` `\` `` ` `` `~` `:` `..` `C:`）を `id`／`cli.font`／`cli.prompt` で断り、5 つの操作感も見る。**終了コードは 0／1（要修正・全部）／2（読めない）**＝先方版の「1＝名なし」と意味が違うので返し文書に明記。
+  - 見張り：`tests/trk269-cli-standard.test.mjs` **23 件**。jsdom で **18 項目 0 NG**（履歴の上限・Tab 補完 off・ビープ・`bell off`・`clear`・言語・設定のチェック）。`npm run check` **1524 pass / 0 fail**。cache は **`trk-v2026.11.03-trk269`**。
+  - **新しい保存キー 0**（`settings.cli*` の中だけ・`cliBell` を 1 つ追加）。`TRK_PWA_REF` は **`6f60e234fca63cf47a2cba4bbcd954ee3850dacd`**。
+  - **`/trk/` に当てる版は保留**のまま（Skin 側の応答後）。
+
 - **⌨ trk268：CLI 用スキンの受け口（2026-11-03）**：記録＝[`VIEWER-TRK268-2026-11-03.md`](VIEWER-TRK268-2026-11-03.md)、洗い出し＝[`PLAN-TRK268-2026-11-03.md`](PLAN-TRK268-2026-11-03.md)、先方へ返した文書＝[`SKIN-RETURN-TRK267-2026-11-03.md`](SKIN-RETURN-TRK267-2026-11-03.md) §9。**返事を待たずに、値でも `.stpack` でも入る形を先に用意**した回です（trk267 の続き）。
   - **2 つの渡し方**：(a) 値を `js/data.js` に 1 枚入れる (b) `.stpack` の `skin` に同じ値を入れる。`sanitizeSkinDef` が `cat`・`cli` を残し、`buildCustomSkin` が `ui` に `--cli-*` を混ぜるので、**パックは入れた時点で `auto` が拾う**（棚の見え方は `custom` のまま＝`skinCatList` は触らない）。
   - **名乗り**：`cat` に **`wizard`（第一候補）・`cli`・`console`** のどれか。`pickCliSkin`・`skinCatalog`・`grimoire` の絞り込みが同じ別名を見ます（`CLI_CATS`・`isCliCat`）。
