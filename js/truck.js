@@ -15,6 +15,11 @@ Object.assign(TEXT.ja, {
   swayPower:"揺れの強さ", swayReduced:"OSの「視差効果を減らす」がオンのため、揺れと跳ねは止めています。",
   swayModeHint:"🚚トラックと🪐ORBITは既定で揺れます（それぞれのモードの設定で止められます）。ほかのモードは揺れません。❓謎設定の「全ゲームモードで揺れをオンにする」がいちばん優先されます。",
   swayTruck:"🚚 トラックモードでレーンを揺らす（オフ＝揺れを止める）",
+  swayRoadLabel:"🛣 道の種類（トラック）",
+  swayRoadAuto:"おまかせ（80% は高速道路）", swayRoadHighway:"高速道路（揺れない）",
+  swayRoadMountain:"山道（ゆるく蛇行）", swayRoadUp:"坂道（のぼる）", swayRoadDown:"下り坂（くだる）",
+  swayRoadCoast:"海岸沿いのカーブ（斜めから）",
+  swayRoadHint:"曲ごとに道を引きます。8 割は高速道路なので、ふだんは静かです。固定すると毎回その道になります。酔いやすいときは「高速道路」に固定してください。",
   truckCtlTitle:"🚚 トラックモードの操作",
   truckPresetLayout:"レイアウトに合わせる", truckPresetUD:"↑／↓ に固定", truckPresetLR:"←／→ に固定",
   truckLane0:"レーン1（上／左）", truckLane1:"レーン2（下／右）", truckToggle:"切り替えキー（任意）",
@@ -34,6 +39,11 @@ Object.assign(TEXT.en, {
   swayPower:"Sway strength", swayReduced:"Sway and bounce are off because your system's “reduce motion” setting is on.",
   swayModeHint:"🚚 Truck and 🪐 ORBIT sway by default (each mode can turn it off). Other modes stay still. The ❓ mystery option “Sway in every game mode” wins over both.",
   swayTruck:"🚚 Sway the lane in Truck mode (off = keep it still)",
+  swayRoadLabel:"🛣 Scenery (Truck)",
+  swayRoadAuto:"Surprise me (80% motorway)", swayRoadHighway:"Motorway (still)",
+  swayRoadMountain:"Mountain road (gentle winding)", swayRoadUp:"Uphill (climbing)", swayRoadDown:"Downhill (descending)",
+  swayRoadCoast:"Coastal curve (from the side)",
+  swayRoadHint:"Each run draws a road. Eight times out of ten it is a motorway, so it usually stays still. Pick one to keep it fixed; choose Motorway when you feel motion sick.",
   truckCtlTitle:"🚚 Truck mode controls",
   truckPresetLayout:"Follow layout", truckPresetUD:"Fixed ↑ / ↓", truckPresetLR:"Fixed ← / →",
   truckLane0:"Lane 1 (top / left)", truckLane1:"Lane 2 (bottom / right)", truckToggle:"Toggle key (optional)",
@@ -53,6 +63,11 @@ Object.assign(TEXT.zh, {
   swayPower:"摇摆强度", swayReduced:"系统已开启“减弱动态效果”，摇摆和弹跳已关闭。",
   swayModeHint:"🚚卡车与🪐ORBIT 默认摇摆（可在各自模式设置中关闭）。其他模式不摇摆。❓谜之设定中的“所有游戏模式都摇摆”优先级最高。",
   swayTruck:"🚚 卡车模式下摇摆车道（关闭＝不摇）",
+  swayRoadLabel:"🛣 道路类型（卡车）",
+  swayRoadAuto:"随机（80% 为高速公路）", swayRoadHighway:"高速公路（不摇）",
+  swayRoadMountain:"山路（缓慢蜿蜒）", swayRoadUp:"上坡（向上）", swayRoadDown:"下坡（向下）",
+  swayRoadCoast:"海岸弯道（从斜侧）",
+  swayRoadHint:"每局抽取一种道路。八成是高速公路，平时很安静。选定后会固定为那条路。容易晕时请选「高速公路」。",
   truckCtlTitle:"🚚 卡车模式操作",
   truckPresetLayout:"跟随布局", truckPresetUD:"固定 ↑／↓", truckPresetLR:"固定 ←／→",
   truckLane0:"车道1（上／左）", truckLane1:"车道2（下／右）", truckToggle:"切换键（可选）",
@@ -72,6 +87,11 @@ Object.assign(TEXT.ko, {
   swayPower:"흔들림 강도", swayReduced:"시스템의 '동작 줄이기'가 켜져 있어 흔들림과 튀기기를 껐습니다.",
   swayModeHint:"🚚트럭과 🪐ORBIT는 기본적으로 흔들립니다(각 모드 설정에서 끌 수 있음). 다른 모드는 흔들리지 않습니다. ❓ 수수께끼 설정의 '모든 게임 모드에서 흔들기'가 가장 우선합니다.",
   swayTruck:"🚚 트럭 모드에서 레인 흔들기 (끄면 흔들리지 않음)",
+  swayRoadLabel:"🛣 도로 종류 (트럭)",
+  swayRoadAuto:"맡김 (80% 는 고속도로)", swayRoadHighway:"고속도로 (흔들리지 않음)",
+  swayRoadMountain:"산길 (완만한 곡선)", swayRoadUp:"오르막 (올라감)", swayRoadDown:"내리막 (내려감)",
+  swayRoadCoast:"해안 도로 커브 (비스듬히)",
+  swayRoadHint:"곡마다 도로를 뽑습니다. 8할은 고속도로라 평소에는 조용합니다. 고정하면 매번 그 길이 됩니다. 어지러울 때는 '고속도로'로 고정하세요.",
   truckCtlTitle:"🚚 트럭 모드 조작",
   truckPresetLayout:"레이아웃에 맞추기", truckPresetUD:"↑／↓ 고정", truckPresetLR:"←／→ 고정",
   truckLane0:"레인 1 (위／왼쪽)", truckLane1:"레인 2 (아래／오른쪽)", truckToggle:"전환 키 (선택)",
@@ -93,12 +113,19 @@ core.settings.swayPower = core.num(core.prefs.swayPower, .2, 2, 1.1);
 /* 🌀 揺れるモード：既定は 🚚TRUCK と 🪐ORBIT だけ。それぞれのモードで止められます。
    （🪐ORBIT のチェックボックスは modes.js が作ります）
    ❓謎設定の swayAllModes は「揺らさない」設定より優先して、全モードで揺らします。 */
-core.settings.swayTruck = core.prefs.swayTruck === true;      /* trk280：揺れは既定オフ（酔いにくく） */
-/* ⚖ trk281：一度だけ、保存済みの「オン」も含めて全員オフへ寄せます（酔い対策を優先）。
-   以後は本人の設定（⚙ の「トラックモードでレーンを揺らす」）で、いつでもオンに戻せます。
+/* 🛣 trk282：TRUCK の揺れは「道の種類」で決めます。既定は「おまかせ」＝抽選で
+   80% は高速道路（揺れない）、5% ずつで 山道／坂道／下り坂／海岸沿いのカーブ。
+   固定すると毎回同じ道になります（ご相談：ランダムな振り方を既定にしたい）。 */
+const ROAD_IDS = ["auto", "highway", "mountain", "up", "down", "coast"];
+/* 抽選の重み（合計 100）。純粋関数から読むので、外から変えません。 */
+const ROAD_WEIGHTS = [["mountain", 5], ["up", 5], ["down", 5], ["coast", 5], ["highway", 80]];
+core.settings.swayRoad = core.pick(core.prefs.swayRoad, ROAD_IDS, "auto");
+core.settings.swayTruck = core.prefs.swayTruck !== false;      /* trk282：既定オン（道が 80% 静止なので酔いにくい） */
+/* ⚖ trk281／trk282：一度だけ、**すでに使っている人**のTRUCK を静かな道（高速道路）へ寄せます。
+   保存が空の人（初めての人）は「おまかせ」から始めます。
    印 swayTruckOff1 は settings の中。工場出荷でも戻さないので、二度と掛かりません。 */
 if (core.settings.swayTruckOff1 !== 1) {
-  core.settings.swayTruck = false;
+  if (Object.keys(core.prefs || {}).length) core.settings.swayRoad = "highway";
   core.settings.swayTruckOff1 = 1;
   try { core.saveUserPrefs(); } catch (_) {}
 }
@@ -130,6 +157,32 @@ function truckKeysLabel(pos) {   // プレイ中のキー案内（render.js か�
 const TRUCK_ROW = 42;   // 横スクロールで、ドン／カッの段を上下にずらす量
 const truckState = { lane:0, vis:0, last:0, dash:-1e9 };
 function resetTruck() { truckState.lane = 0; truckState.vis = core.laneCol(0); truckState.last = performance.now(); truckState.dash = -1e9; }
+
+/* ---------- 🛣 道（trk282）：曲ごとの揺れの作り ---------- */
+let roadPick = "highway";
+/* 抽選（0〜1 の乱数 → 道の id）。重みは ROAD_WEIGHTS。純粋関数（テストから同じものを動かす）。 */
+function pickRoad(rand) {
+  const x = (typeof rand === "number" && isFinite(rand)) ? Math.max(0, Math.min(1, rand)) : 0;
+  let r = x * 100;
+  for (const [id, w] of ROAD_WEIGHTS) { if (r < w) return id; r -= w; }
+  return "highway";
+}
+/* 曲の頭で 1 回だけ引く（⚙ で固定しているときは引いても使わない） */
+function resetRoad() { roadPick = pickRoad(Math.random()); return roadPick; }
+/* いまの道（固定していれば その道、おまかせなら この曲で引いた道） */
+function currentRoad() {
+  const v = core.settings.swayRoad;
+  return (v && v !== "auto") ? v : roadPick;
+}
+/* 道ごとの傾き（度）。p は performance.now() 相当のミリ秒。時間だけで決まる純粋関数。 */
+function roadAngle(road, p) {
+  const t = (Number(p) || 0) / 1000;
+  if (road === "mountain") return Math.sin(t * 1.6) * 1.5 + Math.sin(t * 3.7 + 1.1) * 0.5;  /* ゆるく蛇行 */
+  if (road === "up") return -1.8 + Math.sin(t * 0.9) * 0.3;                                  /* のぼり坂 */
+  if (road === "down") return 1.8 + Math.sin(t * 0.9) * 0.3;                                 /* くだり坂 */
+  if (road === "coast") return 0.9 + Math.sin(t * 1.1) * 0.9;                                /* 片側へ寄るカーブ */
+  return 0;                                                                                  /* 高速道路は揺れない */
+}
 function steerTruck(lane) {
   const changed = lane !== truckState.lane;
   truckState.lane = lane;
@@ -263,7 +316,12 @@ function swayModeOn(mode) {
 function laneTilt(now) {
   if (reduceMotion.matches || !swayModeOn()) return 0;
   const D = Math.PI / 180, k = core.settings.swayPower * core.gameplayFxMultiplier(), p = performance.now();
-  let a = 0;
+  /* 🛣 trk282：トラックは「道」が土台。高速道路のときは、ビート揺れも含めて止めます
+     （「揺れない道」と言いながら揺れると、酔い対策の意味が無くなるため）。 */
+  const truck = (core.settings.playMode || "") === "truck";
+  const road = truck ? currentRoad() : "";
+  if (truck && road === "highway") return 0;
+  let a = truck ? roadAngle(road, p) * D * k : 0;
   if (core.settings.swayBeat && core.chartMeta.bpm) a += Math.sin(Math.PI * (now - core.chartMeta.offset) / (60000 / core.chartMeta.bpm)) * 1.4 * D * k;
   if (core.settings.swayHit) {
     const dk = t => Math.max(0, 1 - (p - t) / 260);
@@ -335,6 +393,17 @@ core.$("truckBounce").checked = core.settings.truckBounce;
 core.$("swayBeat").checked = core.settings.swayBeat;
 core.$("swayHit").checked = core.settings.swayHit;
 core.$("swayTruck").checked = core.settings.swayTruck;
+/* 🛣 trk282：道の種類（おまかせ／高速道路／山道／坂道／下り坂／海岸沿い） */
+const roadSel = core.$("swayRoad");
+if (roadSel) {
+  roadSel.value = core.settings.swayRoad;
+  roadSel.addEventListener("change", e => {
+    const v = e.target.value;
+    core.settings.swayRoad = ROAD_IDS.includes(v) ? v : "auto";
+    if (core.settings.swayRoad === "auto") resetRoad();
+    core.saveUserPrefs();
+  });
+}
 showTruckVals();
 core.$("laneTint").addEventListener("input", e => { core.settings.laneTint = Number(e.target.value); showTruckVals(); core.saveUserPrefs(); });
 core.$("swayPower").addEventListener("input", e => { core.settings.swayPower = Number(e.target.value); showTruckVals(); core.saveUserPrefs(); });
@@ -353,6 +422,9 @@ window.drawTruck = drawTruck;
 window.isTruck = isTruck;
 window.lanePivot = lanePivot;
 window.laneTilt = laneTilt;
+/* 🛣 trk282：道（テストと game.js から使う） */
+window.resetRoad = resetRoad; window.currentRoad = currentRoad;
+window.pickRoad = pickRoad; window.roadAngle = roadAngle;
 window.reduceMotion = reduceMotion;
 window.resetTruck = resetTruck;
 window.steerTruck = steerTruck;

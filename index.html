@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk281">
+<meta name="trk-build" content="trk282">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -889,6 +889,19 @@
 
             <h3 data-i18n="swayTitle"></h3>
             <div class="hint" data-i18n="swayModeHint"></div>
+            <!-- 🛣 trk282：TRUCK の揺れは「道の種類」で決める（おまかせ＝80% は高速道路） -->
+            <label class="field">
+              <span data-i18n="swayRoadLabel"></span>
+              <select id="swayRoad">
+                <option value="auto" data-i18n="swayRoadAuto"></option>
+                <option value="highway" data-i18n="swayRoadHighway"></option>
+                <option value="mountain" data-i18n="swayRoadMountain"></option>
+                <option value="up" data-i18n="swayRoadUp"></option>
+                <option value="down" data-i18n="swayRoadDown"></option>
+                <option value="coast" data-i18n="swayRoadCoast"></option>
+              </select>
+            </label>
+            <div class="hint" data-i18n="swayRoadHint"></div>
             <label class="check"><input id="swayBeat" type="checkbox"><span data-i18n="swayBeat"></span></label>
             <label class="check"><input id="swayHit" type="checkbox"><span data-i18n="swayHit"></span></label>
             <div class="inline">

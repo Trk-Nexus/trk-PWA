@@ -2784,18 +2784,21 @@ if (!read("js/main.js").includes("guideEggKind") ||
     truck.includes('if (m === "truck") return settings.swayTruck !== false;') &&
     truck.includes('if (m === "orbit") return settings.swayOrbit !== false;') &&
     truck.includes("if (reduceMotion.matches || !swayModeOn()) return 0;") &&
-    /* ⚖ trk280：TRUCK の揺れは既定オフ（酔いにくく）。オンにした人だけ揺れる */
-    truck.includes('settings.swayTruck = prefs.swayTruck === true;') &&
+    /* 🛣 trk282：TRUCK の揺れは既定オン。ただし道は「おまかせ」＝8 割は高速道路（静止） */
+    truck.includes('settings.swayTruck = prefs.swayTruck !== false;') &&
+    truck.includes('settings.swayRoad = pick(prefs.swayRoad, ROAD_IDS, "auto");') &&
+    truck.includes('const ROAD_WEIGHTS = [["mountain", 5], ["up", 5], ["down", 5], ["coast", 5], ["highway", 80]];') &&
     truck.includes('settings.swayOrbit = prefs.swayOrbit !== false;') &&
     truck.includes("settings.swayAllModes = prefs.swayAllModes === true;");
   const uiOk = html.includes('id="swayTruck"') && html.includes('id="swayAllModes"') &&
+    html.includes('id="swayRoad"') && html.includes('<option value="coast"') &&
     modes.includes('makeCheck("swayOrbit", "swayOrbit", "swayOrbit")') &&
     main.includes('["swayAllModes", "swayAllModes"]') &&
     ["ja", "en", "zh", "ko"].every(l => options.includes(`swayAllModes:"`)) &&
     (options.match(/swayAllModes:"/g) || []).length >= 4;
   if (!swayOk) fail("lane sway gating (TRUCK / ORBIT by default, mystery override) is broken");
   else if (!uiOk) fail("lane sway options (TRUCK / ORBIT checkboxes + ❓ mystery switch) are missing");
-  else ok("lane sway: TRUCK is off by default (trk280) and ORBIT is on, each with its own switch; ❓ mystery switch overrides all modes");
+  else ok("lane sway: TRUCK draws a road per run (trk282; 80% motorway = still) and ORBIT is on, each with its own switch; ❓ mystery switch overrides all modes");
 }
 
 // ✨ Frame interpolation (js/frame-interp.js): opt-in motion-compensated

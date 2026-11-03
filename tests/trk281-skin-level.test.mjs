@@ -144,9 +144,11 @@ test("画面：5 つ目のボタンと、core.js の SET_LEVELS がそろって�
 });
 
 /* ==================== 揺れは全員オフへ（一回限り） ==================== */
-test("TRUCK の揺れ：一回だけ全員オフへ寄せ、印を登録簿に載せる", () => {
+test("TRUCK の揺れ：一回だけ静かな道へ寄せ、印を登録簿に載せる", () => {
   assert.match(truckSrc, /core\.settings\.swayTruckOff1 !== 1/, "一回限りの印を見る");
-  assert.match(truckSrc, /core\.settings\.swayTruck = false;/, "保存済みのオンもオフへ");
+  /* 🛣 trk282：オフに固定するのではなく「高速道路（揺れない道）」へ寄せます（あとから本人が選べる） */
+  assert.match(truckSrc, /core\.settings\.swayRoad = "highway";/, "保存済みの人も静かな道へ");
+  assert.match(truckSrc, /if \(Object\.keys\(core\.prefs \|\| \{\}\)\.length\)/, "保存が空の人は「おまかせ」のまま");
   assert.match(truckSrc, /core\.settings\.swayTruckOff1 = 1;/, "印を立てる（二度と掛からない）");
   assert.match(coreSrc, /swayTruckOff1: prefs\.swayTruckOff1 === 1 \? 1 : 0/, "印は settings の中");
   /* 登録簿：名前・種類・削除予定日・場所がそろっている */

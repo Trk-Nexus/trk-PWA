@@ -71,8 +71,9 @@ test("曲の長さで数字が動かない（傾斜を廃止）", () => {
   assert.doesNotMatch(modes, /MANUAL_LIFE_RULES|ORBIT_LIFE_RULES/, "モード別の表は残さない");
 });
 
-test("TRUCK のレーンの揺れは既定オフ（設定は残す）", () => {
-  assert.match(truck, /core\.settings\.swayTruck = core\.prefs\.swayTruck === true;/, "既定オフ（オンにした人だけ揺れる）");
+test("TRUCK のレーンの揺れは既定オン＋道の抽選（trk282 で置き換え）", () => {
+  /* ⚖ trk280 では既定オフにしましたが、🛣 trk282 で「おまかせ（80% 高速道路）」が既定になりました */
+  assert.match(truck, /core\.settings\.swayTruck = core\.prefs\.swayTruck !== false;/, "既定オン（道が 8 割は静止）");
   assert.match(truck, /if \(m === "truck"\) return core\.settings\.swayTruck !== false;/, "オンなら揺れる");
   assert.match(truck, /core\.settings\.swayBeat = core\.prefs\.swayBeat !== false;/, "ビート揺れの設定はそのまま");
   assert.match(truck, /core\.settings\.swayHit = core\.prefs\.swayHit !== false;/);
