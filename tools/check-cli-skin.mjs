@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // SPDX-License-Identifier: GPL-3.0-or-later
-/* ⌨ CLI 用スキンの受け入れ検査（trk268 → trk269 v2）
+/* ⌨ CLI 用スキンの受け入れ検査（trk268 → trk269 v2 → trk270 v2.1 → trk271 v3）
 
    なぜ要るか：
    CLI（⌨ ターミナル）用のスキンは、倉庫（trk-Avatar-Library）側が値を決めて渡してくれます。
@@ -8,19 +8,20 @@
    buildCustomSkin・sanitizeCliLook）で、こちらが受け取る前に確かめられる道具です。
 
    使い方：
-     node tools/check-cli-skin.mjs <スキンの JSON> [--json]
-       ── 渡せる形は 3 つ ──
+     node tools/check-cli-skin.mjs <目録> [--json] [--catalog]
+       ── 渡せる形は 4 つ（trk271 で ④ を追加）──
        ① スキン 1 枚     { "id": "wizard-cli", "cat": ["wizard"], "colors": {...}, "cli": {...} }
        ② パックの目録    { "skin": { ...①... } }        （.stpack の pack.json）
        ③ 倉庫の目録      { "format": "trk-avatar-library-skins", "skins": [ ...①... ] }
+       ④ 生成物の .js    `const SKINS_WIZARD = [ ...①... ]`（ESM の export も可）
+       `--catalog` を付けると「目録まるごと」として扱います（③④ は自動でも目録と見なします）。
    終了コード：0＝受け取れる／1＝直すところがある／2＝読めない（JSON でない・形が違う）
-     ⚠ v2 で意味をそろえました：**1 は「直すところがある」全部**（名前なし・色・コントラスト・cli）です。
+     ⚠ 1 は「直すところがある」**全部**です（名前なし・色・コントラスト・cli）。
        どの種類かは `--json` の `reason`（name／color／contrast／cli）で分かります。
 
-   v2 で足したこと：
-     ・目録を渡したときは **CLI を名乗るスキンだけ**を判定し、それ以外は `notes` に回す（雑音を消す）
-     ・道の文字（`/` `\` `` ` `` `~` `:` `..` `C:`）を **id・cli.font・cli.prompt** で断る
-     ・cli の 5 つ（cursor／opacity／history／completion／bell）も見る
+   モジュールとしても使えます（trk271・CI や他の道具から）：
+     import { validateSkin, checkList, loadCatalog } from "./tools/check-cli-skin.mjs";
+     const { ok, problems } = checkList(loadCatalog("catalog/skins.json").list, { fromCatalog: true });
 
    ⚠ 外へは取りに行きません。読むのは渡されたファイルだけです。
    ⚠ これは「決まりごと」ではありません。**助言の道具**です（こちらは値が違っても受け取れます）。 */
@@ -28,11 +29,13 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { loadCatalogFile } from "./lib/skin-catalog.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TOOL = "check-cli-skin";
-const VERSION = 2;
+const VERSION = 3;
 const CLI_CATS = ["wizard", "cli", "console"];
+const REASON_ORDER = ["name", "color", "contrast", "cli"];
 
 /* アプリの data.js を、画面なしの偽物で読む（計算はアプリと同じものを使う） */
 function loadData() {
@@ -46,44 +49,13 @@ function loadData() {
   vm.runInContext(fs.readFileSync(path.join(ROOT, "js/data.js"), "utf8"), sandbox, { filename: "js/data.js" });
   return sandbox.window.Trk.data;
 }
-
-const args = process.argv.slice(2);
-const wantJson = args.includes("--json");
-const file = args.find(a => !a.startsWith("--"));
-if (!file) {
-  console.error("使い方：node tools/check-cli-skin.mjs <スキンの JSON> [--json]");
-  process.exit(2);
-}
-
-let raw;
-try { raw = JSON.parse(fs.readFileSync(path.resolve(file), "utf8")); }
-catch (e) {
-  console.error("読めませんでした：" + (e && e.message ? e.message : String(e)));
-  process.exit(2);
-}
-
 const D = loadData();
+
 const has = (o, k) => !!o && Object.prototype.hasOwnProperty.call(o, k);
 const catOf = skin => (Array.isArray(skin.cats) ? skin.cats : Array.isArray(skin.cat) ? skin.cat : []);
 const isCli = skin => catOf(skin).some(c => CLI_CATS.includes(String(c).toLowerCase()));
 /* 道の文字（スキンから受け取らない約束。CLI の入力と同じ関所） */
 const PATHY = /[/\\`~:]|\.\.|^[A-Za-z]:/;
-
-/* 形をそろえて「検査するスキンの一覧」にする */
-let list = [], fromCatalog = false;
-if (Array.isArray(raw.skins)) {
-  list = raw.skins.map(s => ({ ...s, _from: "skins[]" }));
-  fromCatalog = true;
-} else if (raw.skin && typeof raw.skin === "object") list = [{ ...raw.skin, _from: "skin" }];
-else if (raw.colors && typeof raw.colors === "object") list = [{ ...raw, _from: "root" }];
-else {
-  console.error("形が違います①スキン 1 枚／②{\"skin\":…}／③{\"skins\":[…]} のどれかでください");
-  process.exit(2);
-}
-if (!list.length) {
-  console.error("検査するスキンがありません");
-  process.exit(2);
-}
 
 /* 色の比（WCAG） */
 const ratio = (a, b) => {
@@ -99,19 +71,23 @@ const NEED = ["bg", "panel", "text", "accent", "gold"];
 const COLOR_OK = v => typeof v === "string" && (D.HEX.test(v) || /^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(?:,\s*(?:0|1|0?\.\d{1,3})\s*)?\)$/i.test(v.trim()));
 const opaque = v => typeof v === "string" && D.HEX.test(v) ? v : "";
 
-const problems = [];
-const notes = [];
-const report = [];
+/* 目録を読む（JSON・1 枚・生成物の .js のどれでも）。読めなければ例外 */
+export function loadCatalog(file) {
+  const got = loadCatalogFile(path.resolve(file));
+  if (got.error) throw new Error(got.error);
+  return got;
+}
 
-for (const skin of list) {
-  const id = String(skin.id || skin.name || "(id なし)");
+/* 1 枚を調べる。返す形：{ id, ok, reason, good, bad, skip } */
+export function validateSkin(skin, opts = {}) {
+  const id = String(skin && (skin.id || skin.name) || "(id なし)");
   const where = id;
   const bad = [];
   const good = [];
   const kinds = new Set();
 
-  /* v2：目録まるごとを渡されたときは、名乗らないスキンを飛ばす（雑音を消す） */
-  if (fromCatalog && !isCli(skin)) { notes.push(`${where}：CLI を名乗っていないので飛ばしました（cat に wizard／cli／console が無い）`); continue; }
+  /* 目録まるごとを渡されたときは、名乗らないスキンを飛ばす（雑音を消す） */
+  if (opts.fromCatalog && !isCli(skin)) return { id, where, ok: true, skip: true, reason: "skip", good, bad, kinds };
 
   /* 1. 名乗り */
   if (isCli(skin)) good.push("cat に CLI の名乗り（" + catOf(skin).join("・") + "）");
@@ -157,13 +133,13 @@ for (const skin of list) {
         ["エラー行（game.miss）／入力欄", miss, field, 3, "contrast"],
       ];
       for (const [name, fg, bg, need, kind] of rows) {
-        if (!opaque(fg) || !opaque(bg)) { notes.push(`${where}：${name} は半透明なので測りませんでした`); continue; }
+        if (!opaque(fg) || !opaque(bg)) continue;   /* 半透明は測らない（メモに回す） */
         const r = ratio(fg, bg);
         if (r >= need) good.push(`${name} ${fmt(r)}:1`);
         else { bad.push(`${name} ${fmt(r)}:1（${need}:1 以上に）`); kinds.add(kind); }
       }
 
-      /* 4. 端末だけの見た目（任意・v2 で 5 つ追加） */
+      /* 4. 端末だけの見た目（任意・5 つ） */
       const want = skin.cli && typeof skin.cli === "object" ? skin.cli : null;
       const got = D.sanitizeCliLook(skin.cli);
       if (want) {
@@ -177,36 +153,85 @@ for (const skin of list) {
           if (typeof want[key] === "string" && PATHY.test(want[key])) { bad.push(`cli.${key} に道の文字（/ \\ \` ~ : .. C:）は使えません`); kinds.add("cli"); }
         }
         if (want.caret != null && !/^(currentColor|#[0-9a-f]{3}|#[0-9a-f]{6})$/i.test(String(want.caret))) { bad.push("cli.caret は #rgb／#rrggbb／currentColor だけです"); kinds.add("cli"); }
-      } else notes.push(`${where}：cli はありません（色と書体だけでも着られます）`);
+      }
       if (skin.cat && !Array.isArray(skin.cat) && !Array.isArray(skin.cats)) { bad.push("cat は配列で書いてください（例：[\"wizard\"]）"); kinds.add("name"); }
     }
   }
 
-  /* v2：理由は 1 語で（name → color → contrast → cli の順に重いほうを採る） */
-  const order = ["name", "color", "contrast", "cli"];
-  const reason = order.find(k => kinds.has(k)) || "ok";
-  problems.push(...bad.map(b => `${where}：${b}`));
-  report.push({ id, where, ok: bad.length === 0, reason, good, bad });
+  /* 理由は 1 語で（name → color → contrast → cli の順に重いほうを採る） */
+  const reason = REASON_ORDER.find(k => kinds.has(k)) || "ok";
+  return { id, where, ok: bad.length === 0, skip: false, reason, good, bad, kinds };
 }
 
-const ok = problems.length === 0;
-if (wantJson) {
-  const reasons = report.filter(r => !r.ok).map(r => r.reason);
-  const reason = order_reason(reasons);
-  console.log(JSON.stringify({ tool: TOOL, version: VERSION, ok, reason, problems, notes, skins: report }, null, 2));
-} else {
-  console.log(`⌨ CLI 用スキンの検査（${TOOL} v${VERSION}）— ${path.basename(file)}`);
-  for (const r of report) {
-    console.log(`\n[${r.ok ? "OK" : "NG"}] ${r.where}`);
-    for (const g of r.good) console.log("  ✓ " + g);
-    for (const b of r.bad) console.log("  ✗ " + b);
+/* trk271：`validateSkin` の結果から理由を 1 語に（CI から使いやすいように） */
+export function reasonFromErrors(result) {
+  const kinds = result && result.kinds instanceof Set ? result.kinds : null;
+  if (kinds) return REASON_ORDER.find(k => kinds.has(k)) || "ok";
+  const text = String((result && (result.error || result.message)) || "");
+  if (/cat に wizard|id に道|cat は配列/.test(text)) return "name";
+  if (/colors が足りません|組み立てられません/.test(text)) return "color";
+  if (/:1（/.test(text)) return "contrast";
+  if (/cli\./.test(text)) return "cli";
+  return "ok";
+}
+
+/* 一覧をまとめて調べる */
+export function checkList(list, opts = {}) {
+  const problems = [];
+  const notes = [];
+  const skins = [];
+  for (const skin of list) {
+    const r = validateSkin(skin, opts);
+    if (r.skip) { notes.push(`${r.where}：CLI を名乗っていないので飛ばしました（cat に wizard／cli／console が無い）`); continue; }
+    /* 5. 外部への参照（オフライン前提なので知らせるだけ） */
+    let external = false;
+    try { external = /https?:\/\//.test(JSON.stringify(skin)); } catch (_) {}
+    if (external) notes.push(`${r.where}：外部 URL（http/https）が入っています（オフライン前提なのでおすすめしません）`);
+    if (!skin.cli || typeof skin.cli !== "object") notes.push(`${r.where}：cli はありません（色と書体だけでも着られます）`);
+    problems.push(...r.bad.map(b => `${r.where}：${b}`));
+    skins.push({ id: r.id, where: r.where, ok: r.ok, reason: r.reason, good: r.good, bad: r.bad });
   }
-  if (notes.length) { console.log("\nメモ："); for (const n of notes) console.log(" ・" + n); }
-  console.log(ok ? "\n受け取れます（この値で本体の data.js に入れられます）" : `\n直すところ：${problems.length} 件`);
+  const failed = skins.filter(s => !s.ok).map(s => s.reason);
+  const reason = REASON_ORDER.find(k => failed.includes(k)) || "ok";
+  return { ok: problems.length === 0, reason, problems, notes, skins };
 }
-process.exit(ok ? 0 : 1);
 
-function order_reason(reasons) {
-  const order = ["name", "color", "contrast", "cli"];
-  return order.find(k => reasons.includes(k)) || "ok";
+/* 画面（人が読む形）と終了コード */
+function main(argv) {
+  const wantJson = argv.includes("--json");
+  const forceCatalog = argv.includes("--catalog");
+  const file = argv.find(a => !a.startsWith("--"));
+  if (!file) {
+    console.error("使い方：node tools/check-cli-skin.mjs <目録> [--json] [--catalog]");
+    return 2;
+  }
+  let loaded;
+  try { loaded = loadCatalog(file); }
+  catch (e) { console.error(e.message); return 2; }
+  const list = loaded.list.filter(Boolean);
+  if (!list.length) { console.error("検査するスキンがありません"); return 2; }
+  /* ①1 枚 ②パック は「1 枚だけ」を見る。③目録 ④.js と `--catalog` は「名乗るものだけ」を見る */
+  const fromCatalog = forceCatalog || loaded.shape === "catalog" || loaded.shape === "js" || loaded.shape === "array";
+  const res = checkList(list, { fromCatalog });
+
+  if (wantJson) {
+    console.log(JSON.stringify({ tool: TOOL, version: VERSION, shape: loaded.shape, ...res }, null, 2));
+  } else {
+    console.log(`⌨ CLI 用スキンの検査（${TOOL} v${VERSION}）— ${path.basename(file)}（${loaded.shape}）`);
+    for (const r of res.skins) {
+      console.log(`\n[${r.ok ? "OK" : "NG"}] ${r.where}`);
+      for (const g of r.good) console.log("  ✓ " + g);
+      for (const b of r.bad) console.log("  ✗ " + b);
+    }
+    if (res.notes.length) { console.log("\nメモ："); for (const n of res.notes) console.log(" ・" + n); }
+    console.log(res.ok ? "\n受け取れます（この値で本体の data.js に入れられます）" : `\n直すところ：${res.problems.length} 件`);
+  }
+  return res.ok ? 0 : 1;
 }
+
+/* 直接実行したときだけ動く（import したときは副作用なし） */
+const isMain = (() => {
+  try { return process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url); }
+  catch (_) { return false; }
+})();
+if (isMain) process.exit(main(process.argv.slice(2)));
