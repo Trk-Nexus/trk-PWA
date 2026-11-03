@@ -94,6 +94,14 @@ core.settings.swayPower = core.num(core.prefs.swayPower, .2, 2, 1.1);
    （🪐ORBIT のチェックボックスは modes.js が作ります）
    ❓謎設定の swayAllModes は「揺らさない」設定より優先して、全モードで揺らします。 */
 core.settings.swayTruck = core.prefs.swayTruck === true;      /* trk280：揺れは既定オフ（酔いにくく） */
+/* ⚖ trk281：一度だけ、保存済みの「オン」も含めて全員オフへ寄せます（酔い対策を優先）。
+   以後は本人の設定（⚙ の「トラックモードでレーンを揺らす」）で、いつでもオンに戻せます。
+   印 swayTruckOff1 は settings の中。工場出荷でも戻さないので、二度と掛かりません。 */
+if (core.settings.swayTruckOff1 !== 1) {
+  core.settings.swayTruck = false;
+  core.settings.swayTruckOff1 = 1;
+  try { core.saveUserPrefs(); } catch (_) {}
+}
 core.settings.swayOrbit = core.prefs.swayOrbit !== false;
 core.settings.swayAllModes = core.prefs.swayAllModes === true;
 const TRUCK_PRESETS = { ud:["ArrowUp", "ArrowDown"], lr:["ArrowLeft", "ArrowRight"] };

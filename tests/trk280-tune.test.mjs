@@ -79,7 +79,8 @@ test("TRUCK のレーンの揺れは既定オフ（設定は残す）", () => {
 });
 
 test("既定の棚からウィザードを外した（巻で選べば見える）", () => {
-  assert.match(core, /if \(defaultVol && !inUse && skinCatList\(s\)\.includes\("wizard"\)\) continue;/);
+  /* ⚖ trk281：5 つ目の段（ウィザード）だけは、既定の棚に戻します */
+  assert.match(core, /if \(defaultVol && !inUse && o\.level !== "wizard" && skinCatList\(s\)\.includes\("wizard"\)\) continue;/);
   assert.match(core, /if \(!g \|\| g\.id === "other"\) continue;/, "既定＝定番（other）だけ");
   assert.equal((i18n.match(/skinVolDefault:"定番"/g) || []).length, 1, "巻の名前も「定番」");
   for (const key of ["skinVolDefault", "skinVolUnknown"]) {

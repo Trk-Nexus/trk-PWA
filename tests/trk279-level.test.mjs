@@ -2,7 +2,7 @@
 /* ⚖ trk279：設定の「段」（見せる量）を、値は変えずに切り替える
 
    見張ること：
-   ・段は 4 つ（シンプル／スタンダード／プロ／マスター）で、既定はスタンダード
+   ・段は 5 つ（シンプル／スタンダード／プロ／マスター／ウィザード。5 つ目は trk281）で、既定はスタンダード
    ・**隠すのは上の段の行だけ**。触った行（data-changed）はどの段でも出る
    ・パネルは「中の行が全部隠れるとき」だけ隠す（🎨 はスキンが残るので消えない）
    ・段で変わるのは見え方だけ（settings に触るのは setLevel と setTouched の 2 つ）
@@ -35,8 +35,8 @@ const api = (() => {
   return sandbox.api;
 })();
 
-test("段は 4 つ・既定はスタンダード", () => {
-  assert.deepEqual(Array.from(api.LEVELS), ["simple", "standard", "pro", "master"]);
+test("段は 5 つ・既定はスタンダード", () => {
+  assert.deepEqual(Array.from(api.LEVELS), ["simple", "standard", "pro", "master", "wizard"]);
   assert.deepEqual(
     [...core.match(/const SET_LEVELS = \[([^\]]*)\]/)[1].matchAll(/"([^"]+)"/g)].map(m => m[1]),
     Array.from(api.LEVELS),
@@ -50,6 +50,7 @@ test("段は 4 つ・既定はスタンダード", () => {
 test("隠すのは上の段の行だけ。触った行は隠さない", () => {
   assert.equal(api.levelRank("simple"), 1);
   assert.equal(api.levelRank("master"), 4);
+  assert.equal(api.levelRank("wizard"), 5, "ウィザードはいちばん上（trk281）");
   assert.equal(api.levelRank("なにか"), 2, "知らない値はスタンダード扱い");
   assert.equal(api.tierHidden(1, 1, false), false, "シンプルでも段 1 は出る");
   assert.equal(api.tierHidden(2, 1, false), true, "シンプルでは段 2 を隠す");
@@ -81,7 +82,8 @@ test("次の段（いちばん上なら null）", () => {
   assert.equal(api.nextLevel("simple"), "standard");
   assert.equal(api.nextLevel("standard"), "pro");
   assert.equal(api.nextLevel("pro"), "master");
-  assert.equal(api.nextLevel("master"), null);
+  assert.equal(api.nextLevel("master"), "wizard", "マスターの次はウィザード（trk281）");
+  assert.equal(api.nextLevel("wizard"), null);
 });
 
 test("19 枚のパネルに、段の割り当てが漏れていない", () => {
@@ -110,7 +112,7 @@ test("探しているあいだは段を無視する（見つからない、を�
 
 test("段のボタンと CSS の規則がそろっている", () => {
   const values = [...html.matchAll(/data-set-level-btn="([^"]+)"/g)].map(m => m[1]);
-  assert.deepEqual(values, Array.from(api.LEVELS), "4 つのボタンが段の並びどおり");
+  assert.deepEqual(values, Array.from(api.LEVELS), "5 つのボタンが段の並びどおり");
   assert.match(html, /id="setLevelStatus"[^>]*aria-live="polite"/, "切り替えを読み上げる");
   assert.match(html, /id="setLevelMore"/, "次の段への道がある");
   assert.match(html, /<script src="js\/settings-level.js"><\/script>/, "読み込んでいる");
@@ -122,9 +124,10 @@ test("段のボタンと CSS の規則がそろっている", () => {
 });
 
 test("文言は 4 言語そろっている", () => {
-  for (const key of ["setLevelTitle", "setLevelSimple", "setLevelStandard", "setLevelPro", "setLevelMaster", "setLevelHint", "setLevelHidden", "setLevelPanelNote", "setLevelMore", "setLevelDone"]) {
+  for (const key of ["setLevelTitle", "setLevelSimple", "setLevelStandard", "setLevelPro", "setLevelMaster", "setLevelHint", "setLevelHidden", "setLevelPanelNote", "setLevelMore", "setLevelDone", "setLevelWizard"]) {
     assert.equal((i18n.match(new RegExp(`\\b${key}:`, "g")) || []).length, 4, `${key} は 4 言語`);
   }
   assert.match(i18n, /setLevelHidden:"この段では \{n\} 項目を隠しています。"/, "数え方を言葉で伝える");
   assert.match(i18n, /setLevelSimple:"シンプル"/, "段の名前（日本語）");
+  assert.match(i18n, /setLevelWizard:"ウィザード"/, "5 つ目の名前（日本語）");
 });

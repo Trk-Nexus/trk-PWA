@@ -52,12 +52,17 @@ const plain = x => JSON.parse(JSON.stringify(x));
 const ids = arr => plain(arr).map(pair => (Array.isArray(pair) ? pair[0] : pair));
 
 const catListSrc = extractFn(coreSrc, "const skinCatList = s =>").replace(/;$/, "");
+/* ⚖ trk281：段ごとのスキンのカテゴリ（表と、可否を返す純粋関数） */
+const levelSrc = coreSrc.slice(coreSrc.indexOf("const SKIN_LEVEL_CATS = {"),
+  coreSrc.indexOf("\n};", coreSrc.indexOf("const SKIN_LEVEL_CATS = {")) + 3);
 const idRe = coreSrc.match(/const SKIN_ID_RE = .*;/)[0];
 const filters = coreSrc.match(/const SKIN_MANAGE_FILTERS = .*;/)[0];
 const api = runIn(
   [catListSrc + ";", idRe, filters,
    extractFn(coreSrc, "function cleanSkinIdList("), extractFn(coreSrc, "function cleanSkinMap("),
    extractFn(coreSrc, "function skinSearchText("), extractFn(coreSrc, "function skinMatchesQuery("),
+   levelSrc,
+   extractFn(coreSrc, "function skinLevelAllows("),
    extractFn(coreSrc, "function skinShelfEntries("), extractFn(coreSrc, "function skinCanHide("),
    extractFn(coreSrc, "function skinManageRows("), extractFn(coreSrc, "function skinBulkPlan(")].join("\n") +
   "\nthis.api = { skinMatchesQuery, skinShelfEntries, skinCanHide, skinManageRows, skinBulkPlan, SKIN_MANAGE_FILTERS };",

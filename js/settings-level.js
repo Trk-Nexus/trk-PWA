@@ -8,6 +8,8 @@
      2 standard スタンダード（既定）… いつもの人向け
      3 pro      プロ       … 作り込む人向け
      4 master   マスター   … 触る人を選ぶもの（CLI・アドオン・緊急復旧・開発用）
+     5 wizard   ウィザード … いちばん上。スキンの「wizard」も、ここでだけ棚に出ます
+                               （初見の驚きを残すため、名前に出さず、選んだ人だけが見る）
 
    決めたこと（変えない）：
 
@@ -26,8 +28,8 @@
   if (!core || !pane) return;
 
   /* ---------- 段の名前と順番（core.js の SET_LEVELS と同じ並び） ---------- */
-  const LEVELS = ["simple", "standard", "pro", "master"];
-  const RANK = Object.freeze({ simple: 1, standard: 2, pro: 3, master: 4 });
+  const LEVELS = ["simple", "standard", "pro", "master", "wizard"];
+  const RANK = Object.freeze({ simple: 1, standard: 2, pro: 3, master: 4, wizard: 5 });
 
   /* ---------- パネルごとの既定の段（id か summary の data-i18n で引く） ---------- */
   const PANEL_TIER = {

@@ -266,9 +266,10 @@ const TRK_ENUM_VALUES = {
   chartGen: ["1", "2", "3", "4"], // 🎼 1・2は旧方式、3はAタイプ（従来）、4はBタイプ（既定。遊びの文法。js/chart-gen.js）
   mediaKeepLimit: ["1g", "5g", "unlimited"] // 🎵 保存棚の上限（ブラウザー側の容量上限は別に適用）
 };
-/* ⚖ trk279：⚙ の「段」。**見せる量**を選ぶだけで、値は変えません（js/settings-level.js が読みます）。
-   1＝シンプル／2＝スタンダード（既定）／3＝プロ／4＝マスター。 */
-const SET_LEVELS = ["simple", "standard", "pro", "master"];
+/* ⚖ trk279・trk281：⚙ の「段」。**見せる量**を選ぶだけで、値は変えません（js/settings-level.js が読みます）。
+   1＝シンプル／2＝スタンダード（既定）／3＝プロ／4＝マスター／5＝ウィザード
+   （ウィザードは一番上。スキンの「wizard」もここでだけ棚に出ます）. */
+const SET_LEVELS = ["simple", "standard", "pro", "master", "wizard"];
 
 /* 🧭 チュートリアルのスタンプを読み込む（trk140）。既知の8つだけを残し、重複を除く。旧「曲を選ぶ」song は play へ引き継ぐ。 */
 function tutorialStampsFrom(raw) {
@@ -577,7 +578,10 @@ const settings = {
   setLevel: pick(prefs.setLevel, SET_LEVELS, "standard"),
   /* ⚖ trk279：自分で動かしたことのある設定の名前。段で隠れる行でも、
      一度でも触ったものは必ず出します（「設定したのに消えた」を作らない）。 */
-  setTouched: cleanSkinIdList(prefs.setTouched, 160)
+  setTouched: cleanSkinIdList(prefs.setTouched, 160),
+  /* ⚖ trk281：TRUCK の揺れを全員オフへ寄せる「一回限りの印」（docs/MIGRATIONS.md）。
+     1 になったら二度と掛かりません（工場出荷でも戻しません）。 */
+  swayTruckOff1: prefs.swayTruckOff1 === 1 ? 1 : 0
 };
 /* 🖥 trk223（2026-10-31 レビュー⑤）：同じオリジンで2つの trk! を公開できる（/trk/ と /trk-PWA/）。
    localStorage はオリジンで共有なので、片方（古い版）が保存すると、その版が知らない設定
@@ -1415,6 +1419,27 @@ function skinVolTitle(g) {
   if (key) { const t = tr(key); if (t && t !== key) return t; }
   return g.title || g.id || "";
 }
+/* ⚖ trk281：段ごとに、既定の棚へ出すスキンのカテゴリ（ご相談 2026-11-03）。
+   ・シンプル／スタンダード＝定番・書体・ダーク・ライト・グラデ（ミクの 4 種は「定番」に入っています）
+   ・プロ＝＋遊び心
+   ・マスター＝＋みやすさ・生活
+   ・ウィザード＝＋ウィザード（初見の驚きは、この段で。wizard の巻も既定の棚に戻ります）
+   巻を選んだとき・ALL のときは掛けません（選んだものは全部見せる）。
+   ウィザードの段だけは、既定の棚に wizard の巻も戻ります（trk280 で外した「定番＋ウィザード」）。 */
+const SKIN_LEVEL_CATS = {
+  simple:   ["basic", "type", "dark", "light", "grad"],
+  standard: ["basic", "type", "dark", "light", "grad"],
+  pro:      ["basic", "type", "dark", "light", "grad", "fun"],
+  master:   ["basic", "type", "dark", "light", "grad", "fun", "access", "life"],
+  wizard:   ["basic", "type", "dark", "light", "grad", "fun", "access", "life", "wizard"],
+};
+/* その段で、そのスキンを既定の棚に出してよいか。純粋関数。 */
+function skinLevelAllows(cats, level) {
+  const allowed = SKIN_LEVEL_CATS[level] || SKIN_LEVEL_CATS.standard;
+  const list = Array.isArray(cats) && cats.length ? cats : ["basic"];
+  return list.some(c => allowed.includes(c));
+}
+
 /* 絞り込み（カテゴリ・⭐・🕒・🚫・巻・検索）と並べ替えを、1か所で決める */
 function skinShelfEntries(skins, opt) {
   const o = opt || {}, cat = o.cat || "all", only = o.only || "";
@@ -1443,6 +1468,8 @@ function skinShelfEntries(skins, opt) {
     outside = new Set();
     for (const g of volumes) {
       if (!g || g.id === "other") continue;
+      /* ⚖ trk281：ウィザードの段では、wizard の巻を既定の棚に戻す（5 段目だけの特権） */
+      if (o.level === "wizard" && g.id === "wizard") continue;
       for (const id of Array.isArray(g.ids) ? g.ids : []) outside.add(id);
     }
   }
@@ -1460,7 +1487,9 @@ function skinShelfEntries(skins, opt) {
   if (s.holdback && !inUse && vol !== "all" && !(volSet && volSet.has(id))) continue;
     /* ⚖ trk280：既定の棚にはウィザードを出さない（巻の目録が読めないときも同じ。
        目録が無いと巻で切れないので、カテゴリで外します）。 */
-    if (defaultVol && !inUse && skinCatList(s).includes("wizard")) continue;
+    if (defaultVol && !inUse && o.level !== "wizard" && skinCatList(s).includes("wizard")) continue;
+    /* ⚖ trk281：既定の棚は、段（シンプル〜ウィザード）でカテゴリを絞る */
+    if (defaultVol && !inUse && !skinLevelAllows(skinCatList(s), o.level)) continue;
     /* 隠したスキンは「🚫 隠した」を見ているときだけ出す。
        ⚠ trk241：**いま使っているスキンだけは、隠しても棚に残す**（消えたように見えると、
           当たっているのに「効かない」と誤解されるため。印は 🚫 で出す）。 */
@@ -1470,6 +1499,11 @@ function skinShelfEntries(skins, opt) {
     else if (hidden.has(id) && id !== o.current) continue;
     if (!skinMatchesQuery(id, s, o.query)) continue;
     out.push([id, s]);
+  }
+  /* ⚖ trk281：⭐ を付けたスキンは棚の先頭へ（隠しません。並びだけ）。
+     並べ方を選んでいるときは、その並びを尊重して動かしません。 */
+  if ((!o.sort || o.sort === "default") && fav.size) {
+    out.sort((a, b) => (fav.has(b[0]) ? 1 : 0) - (fav.has(a[0]) ? 1 : 0));
   }
   if (o.sort === "name") out.sort(byName);
   else if (o.sort === "used") out.sort((a, b) => (use[b[0]] || 0) - (use[a[0]] || 0) || byName(a, b));
@@ -1855,7 +1889,7 @@ function setSkinVol(vol) {
    「（115／291）」と言いながら実際は 114 枚だった、を同じ数え方で揃えます。 */
 function skinVolCount(skins, volumes, vol) {
   return skinShelfEntries(skins, {
-    vol, volumes, locale: lang, fav: [], hidden: [], use: {}, last: {},
+    vol, volumes, locale: lang, fav: [], hidden: [], use: {}, last: {}, level: settings.setLevel,
   }).length;
 }
 function buildSkinVolControls(volumes, skins) {
@@ -1954,7 +1988,7 @@ function buildSkinGrid() {
   const list = skinShelfEntries(skins, {
     cat, only, query: skinQuery, sort: settings.skinSort, locale: lang, current: settings.skin,
     fav: settings.skinFav, hidden: settings.skinHidden, use: settings.skinUse, last: settings.skinLast,
-    vol, volumes
+    vol, volumes, level: settings.setLevel
   });
   const total = Object.keys(skins).length;
   skinShownCount = list.length;
