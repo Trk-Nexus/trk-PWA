@@ -74,7 +74,9 @@ test("⚙ に「入力の合図」と「いまの見え方」がある", () => {
   assert.match(html, /id="cliPromptPreview"/, "いまの見え方を出す");
   assert.match(cli, /preview\.textContent = tr\("cliPromptPreview", \{ text \}\);/);
   /* スキン・言語が変わったら、見え方も作り直す */
-  assert.match(cli, /core\.on\("skin", \(\) => \{ if \(state\.open \|\| promptNode\) updatePrompt\(\); syncPromptPreview\(\); \}\)/);
+  assert.match(cli, /core\.on\("skin", \(\) => \{/);
+  assert.match(cli, /if \(state\.open\) syncSheet\(\); else state\.sheetSkin = "";/, "⌨ trk286：板に当て直す");
+  assert.match(cli, /if \(state\.open \|\| promptNode\) updatePrompt\(\);/, "見え方も作り直す");
   assert.match(cli, /updatePrompt\(\);   \/\* ⌨ trk285：当てたスキンの English 名で「<name> ~ %」を出す \*\//);
 });
 

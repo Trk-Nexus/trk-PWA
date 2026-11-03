@@ -38,11 +38,18 @@
     cliSkinKeep: "いまのスキンのまま",
     cliSkinHint: "ここで当てたスキンは、ターミナルを開いている間だけです。閉じると元のスキンに戻ります（ターミナルで skin を唱えたときは、そのスキンが残ります）。",
     /* ⌨ trk283：呼び出しキー・実行後に閉じる・スキンの個別指定・入力できるかの知らせ */
-    cliKeyLabel: "呼び出しキー（Ctrl／⌘ + このキー）",
-    cliKeyHint: "同じキーで開いて閉じます。Esc でも閉じられます。割り当て中は Esc で取り消します。",
+    cliKeyLabel: "🪄 Terminal Key Setting（Ctrl／⌘ ＋ このキー）",
+    cliKeyHint: "呪文を呼ぶ鍵です。同じキーで開いて閉じます（Esc でも閉じられます）。割り当て中は Esc で取り消します。",
+    cliHelpAll: "help all … 全部の呪文（{n} 本）を出す",
+    cliSheetSizeLabel: "ターミナルの高さ",
+    cliSheetHalf: "小さめ（画面の半分）",
+    cliSheetTall: "ふつう（7 割）",
+    cliSheetFull: "大きめ（ほぼ全画面）",
+    cliSheetHint: "下から持ち上がる板（ボトムシート）です。中だけにスキンを当てるので、後ろの曲リストの色は変わりません。",
+    cliSheetSkin: "このターミナルの見た目：{id}（後ろの画面はそのまま）",
     cliKeyTaken: "そのキーは、ほかの操作（遊ぶキー・メニュー・プレイヤー）で使っています。",
-    cliAutoClose: "実行したらターミナルを閉じる（1 行だけ見せて戻る）",
-    cliAutoCloseHint: "オフにすると、唱えたあとも開いたままになります。",
+    cliAutoClose: "唱えたら閉じる（既定はオフ：開いたまま何度でも）",
+    cliAutoCloseHint: "オフのままなら、当てたあとも板は開いたまま。続けて唱えられます（Esc・同じキーで閉じます）。",
     cliSkinPickChk: "端末のスキンを自分で選ぶ",
     cliSkinPickLabel: "端末のスキン",
     cliSkinPickAuto: "（上の「ターミナルの見た目」に任せる）",
@@ -191,11 +198,18 @@
     cliSkinKeep: "Keep the current skin",
     cliSkinHint: "The skin here lasts only while the terminal is open; it goes back when you close it (a skin you cast inside stays).",
     /* ⌨ trk283：key · auto-close · a terminal skin of your own · the typing note */
-    cliKeyLabel: "Open/close key (Ctrl / ⌘ + this key)",
-    cliKeyHint: "The same key opens and closes it. Esc also closes it. While assigning, Esc cancels.",
+    cliKeyLabel: "🪄 Terminal Key Setting (Ctrl / ⌘ + this key)",
+    cliKeyHint: "The key that calls the spells. The same key opens and closes it (Esc also closes). While assigning, Esc cancels.",
+    cliHelpAll: "help all … list every spell ({n})",
+    cliSheetSizeLabel: "Terminal height",
+    cliSheetHalf: "Small (half the screen)",
+    cliSheetTall: "Normal (70%)",
+    cliSheetFull: "Large (nearly full)",
+    cliSheetHint: "A bottom sheet that rises from below. The skin is applied to the sheet only, so the song list behind keeps its colours.",
+    cliSheetSkin: "This terminal looks like: {id} (the page behind is unchanged)",
     cliKeyTaken: "That key is already used for playing, the menu or the player.",
-    cliAutoClose: "Close the terminal after running a command (show one line, then back)",
-    cliAutoCloseHint: "Turn this off to keep the terminal open after a spell.",
+    cliAutoClose: "Close after casting (off by default: it stays open)",
+    cliAutoCloseHint: "While off, the sheet stays open after a spell so you can keep casting (Esc or the same key closes it).",
     cliSkinPickChk: "Pick the terminal skin myself",
     cliSkinPickLabel: "Terminal skin",
     cliSkinPickAuto: "(leave it to “Terminal look” above)",
@@ -344,11 +358,18 @@
     cliSkinKeep: "保持当前皮肤",
     cliSkinHint: "这里应用的皮肤只在终端打开期间有效，关闭后恢复原皮肤（在终端里用 skin 指定的皮肤会保留）。",
     /* ⌨ trk283 */
-    cliKeyLabel: "开关按键（Ctrl／⌘ + 此键）",
-    cliKeyHint: "同一个键开关终端。Esc 也能关闭。分配时按 Esc 取消。",
+    cliKeyLabel: "🪄 Terminal Key Setting（Ctrl／⌘ ＋ 此键）",
+    cliKeyHint: "呼唤咒文的键。同一个键开关终端（Esc 也能关闭）。分配时按 Esc 取消。",
+    cliHelpAll: "help all … 列出全部咒文（{n} 条）",
+    cliSheetSizeLabel: "终端高度",
+    cliSheetHalf: "小（屏幕一半）",
+    cliSheetTall: "普通（七成）",
+    cliSheetFull: "大（几乎全屏）",
+    cliSheetHint: "从下方升起的面板（底部抽屉）。皮肤只作用于其中，后面的曲目列表颜色不变。",
+    cliSheetSkin: "此终端的观感：{id}（后面的画面不变）",
     cliKeyTaken: "该键已用于游玩按键、菜单或播放器。",
-    cliAutoClose: "执行后关闭终端（只显示一行就返回）",
-    cliAutoCloseHint: "关闭此项后，施法后仍保持打开。",
+    cliAutoClose: "施法后关闭（默认关闭：保持打开）",
+    cliAutoCloseHint: "保持关闭时，施法后面板不会收起，可以继续施法（Esc 或同一按键关闭）。",
     cliSkinPickChk: "自己选择终端皮肤",
     cliSkinPickLabel: "终端皮肤",
     cliSkinPickAuto: "（交给上面的“终端外观”）",
@@ -497,11 +518,18 @@
     cliSkinKeep: "지금 스킨 그대로",
     cliSkinHint: "여기서 적용한 스킨은 터미널을 여는 동안만입니다. 닫으면 원래 스킨으로 돌아갑니다(터미널에서 skin 을 외친 경우는 그 스킨이 남습니다).",
     /* ⌨ trk283 */
-    cliKeyLabel: "열기/닫기 키 (Ctrl／⌘ + 이 키)",
-    cliKeyHint: "같은 키로 열고 닫습니다. Esc 로도 닫힙니다. 지정 중에는 Esc 로 취소합니다.",
+    cliKeyLabel: "🪄 Terminal Key Setting (Ctrl／⌘ ＋ 이 키)",
+    cliKeyHint: "주문을 부르는 열쇠입니다. 같은 키로 열고 닫습니다(Esc 로도 닫힘). 지정 중에는 Esc 로 취소합니다.",
+    cliHelpAll: "help all … 모든 주문({n}개) 보기",
+    cliSheetSizeLabel: "터미널 높이",
+    cliSheetHalf: "작게(화면 절반)",
+    cliSheetTall: "보통(70%)",
+    cliSheetFull: "크게(거의 전체)",
+    cliSheetHint: "아래에서 올라오는 시트입니다. 스킨은 시트 안에만 적용되어 뒤의 곡 목록 색은 그대로입니다.",
+    cliSheetSkin: "이 터미널의 모습: {id} (뒤 화면은 그대로)",
     cliKeyTaken: "그 키는 이미 플레이 키·메뉴·플레이어에서 쓰고 있습니다.",
-    cliAutoClose: "실행하면 터미널을 닫기 (한 줄만 보여 주고 돌아가기)",
-    cliAutoCloseHint: "끄면 주문을 외친 뒤에도 열린 채로 남습니다.",
+    cliAutoClose: "주문을 외치면 닫기 (기본은 꺼짐: 계속 열어 둠)",
+    cliAutoCloseHint: "꺼 두면 주문 뒤에도 시트가 열린 채로 남아 계속 외울 수 있습니다 (Esc 또는 같은 키로 닫기).",
     cliSkinPickChk: "터미널 스킨을 직접 고르기",
     cliSkinPickLabel: "터미널 스킨",
     cliSkinPickAuto: "(위의 '터미널 모양'에 맡김)",
@@ -640,6 +668,9 @@
     "pwd", "ls", "cd", "cat", "grep", "history", "clear", "man", "echo", "bell", "quit", "exit"];
   /* ⌨ trk269：端末の定番の呼び名。trk! の言葉に橋渡しする（ls＝一覧、cd＝スキンを移る、man＝説明） */
   const CLI_ALIASES = { ls: "list", dir: "list", cd: "skin", man: "help" };
+  /* ⌨ trk286：`help` は**よく使う 5 つ**だけ。全部は `help all`（modern-web-guidance：
+     最初に読む量を減らし、要る人だけ深く） */
+  const CLI_HELP_SHORT = ["play", "next", "back", "list", "help"];
   const CLI_HELP = [
     ["play", "cliHelpPlay"], ["next", "cliHelpNext"], ["back", "cliHelpBack"], ["re", "cliHelpRe"],
     ["list", "cliHelpList"], ["skin", "cliHelpSkin"], ["grimoire", "cliHelpGrimoire"],
@@ -823,14 +854,24 @@
     let action = false;   /* ⌨ trk283：何かをした（＝実行後に閉じてよい）コマンドか */
 
     if (q.cmd === "help") {
-      /* man <cmd> は 1 つだけ（trk269）。無ければ全部 */
+      /* man <cmd> は 1 つだけ・`help all` で全部（trk286）。ふつうは短い 5 つ＋案内 */
       const only = q.rest ? q.rest.split(" ")[0].toLowerCase() : "";
-      const picked = only ? CLI_HELP.filter(([word, key]) => word === only || key === only) : [];
-      if (only && !picked.length) {
+      const picked = only && only !== "all" ? CLI_HELP.filter(([word, key]) => word === only || key === only) : [];
+      if (only && only !== "all" && !picked.length) {
         push("err", t("cliUnknown", { cmd: only }));
+      } else if (only === "all") {
+        push("out", t("cliHelpTitle"));
+        for (const [, key] of CLI_HELP) push("out", "  " + t(key));
+      } else if (picked.length) {
+        push("out", t("cliHelpTitle"));
+        for (const [, key] of picked) push("out", "  " + t(key));
       } else {
         push("out", t("cliHelpTitle"));
-        for (const [, key] of (picked.length ? picked : CLI_HELP)) push("out", "  " + t(key));
+        for (const word of CLI_HELP_SHORT) {
+          const row = CLI_HELP.find(([w]) => w === word);
+          if (row) push("out", "  " + t(row[1]));
+        }
+        push("out", "  " + t("cliHelpAll", { n: CLI_HELP.length }));
       }
     } else if (q.cmd === "list") {
       const items = typeof deps.tracks === "function" ? deps.tracks() : [];
@@ -1086,7 +1127,7 @@
   let spellList = null, spellStatus = null, spellIdInput = null, spellBodyInput = null;
   /* ⌨ trk285：入力の合図（プロンプト）の見出し */
   let promptNode = null;
-  const state = { built: false, open: false, history: [], hi: -1, swapSkin: "", userSkin: false, returnFocus: null, composing: false };
+  const state = { built: false, open: false, history: [], hi: -1, swapSkin: "", userSkin: false, returnFocus: null, composing: false, sheetSkin: "" };
 
   const t = (key, vars) => tr(key, vars);
 
@@ -1308,16 +1349,24 @@
   function ensureBuilt() {
     if (state.built) return true;
     if (!document.body) return false;
-    overlay = core.el("div", "instOverlay cliOverlay");
-    overlay.id = "cliMode";
-    overlay.hidden = true;
-    const backdrop = core.el("div", "instBackdrop");
-    backdrop.addEventListener("click", () => closeCli());
-
-    dialog = core.el("section", "instDialog cliDialog");
-    dialog.setAttribute("role", "dialog");
-    dialog.setAttribute("aria-modal", "true");
+    /* ⌨ trk286：自前のオーバーレイ（role="dialog"・Esc・フォーカスの戻し）をやめ、
+       ネイティブの <dialog> ＋ showModal() にします（modern-web-guidance：手で作り直さない）。
+       見た目は下から持ち上がるボトムシート（CSS のアニメーション）。 */
+    dialog = core.el("dialog", "cliDialog");
+    dialog.id = "cliMode";
     dialog.setAttribute("aria-labelledby", "cliTitle");
+    if (typeof HTMLDialogElement !== "undefined" && "closedBy" in HTMLDialogElement.prototype) dialog.setAttribute("closedby", "any");
+    overlay = dialog;
+    /* 背景クリックで閉じる（closedby="any" が無いブラウザーのための手当て） */
+    let pressOutside = false;
+    const outside = e => {
+      const r = dialog.getBoundingClientRect();
+      return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    };
+    dialog.addEventListener("pointerdown", e => { pressOutside = outside(e); });
+    dialog.addEventListener("pointerup", e => { if (pressOutside && outside(e)) closeCli(); pressOutside = false; });
+    /* 閉じたとき（Esc・背景・閉じるボタン・closeCli のどれでも）に 1 か所で片づける */
+    dialog.addEventListener("close", () => finishClose());
 
     const header = core.el("header", "instHeader cliHeader");
     const hwrap = core.el("div");
@@ -1421,9 +1470,11 @@
     spellAdd.append(idField, bodyField, spellAddBtn);
     spellBox.append(spellSum, spellHint, spellList, spellAdd, spellStatus);
 
-    dialog.append(header, logNode, typingBadge, form, hint, spellBox);
-    overlay.append(backdrop, dialog);
-    document.body.append(overlay);
+    /* 上端のつまみ（見た目だけ・ドラッグは今後の課題） */
+    const handle = core.el("div", "cliSheetHandle");
+    handle.setAttribute("aria-hidden", "true");
+    dialog.append(handle, header, logNode, typingBadge, form, hint, spellBox);
+    document.body.append(dialog);
 
     form.addEventListener("submit", e => { e.preventDefault(); if (state.composing) return; void submit(); });
     /* ⌨ trk284：IME の変換中かどうかを持つ（変換中の Enter で、書きかけを唱えない） */
@@ -1442,7 +1493,7 @@
     });
     /* 入力欄をタップ→フォーカスが戻ったら、バッジを更新する */
     overlay.addEventListener("focusout", () => { if (state.open) setTimeout(() => showTyping(false), 0); });
-    overlay.addEventListener("keydown", e => { if (e.key === "Escape") { e.preventDefault(); closeCli(); } });
+    /* Esc は <dialog> が閉じます（自前のハンドラは置きません） */
     state.built = true;
     return true;
   }
@@ -1545,7 +1596,7 @@
     if (res.out.some(o => o.kind === "err")) beep();                    /* エラーの音（スキンが名乗ったときだけ） */
     if (res.quit) { closeCli(); return; }
     /* ⌨ trk283：実行したら閉じる（既定）。1 行を見せてから戻り、同じ文をトーストでも出す */
-    if (res.action && core.settings.cliAutoClose !== false) {
+    if (res.action && core.settings.cliAutoClose === true) {   /* ⌨ trk286：既定は閉じない */
       const last = res.out[res.out.length - 1];
       const say = last && last.kind !== "err" ? last.text : "";
       setTimeout(() => {
@@ -1603,7 +1654,7 @@
   /* いまのスキンの English 名（label.en を優先。無ければ ja・id） */
   function skinEnglishName(id) {
     const all = (window.Trk.data && window.Trk.data.SKINS) || {};
-    const key = id || core.settings.skin;
+    const key = id || state.sheetSkin || core.settings.skin;
     const def = all[key] || {};
     const label = def.label || {};
     return String(label.en || label.ja || key || "trk");
@@ -1638,6 +1689,40 @@
     return pickCliSkin(skinCatalog(), mode, pick);
   }
 
+  /* ⌨ trk286：スキンを**端末の中だけ**に当てる。
+     背景（body / #app）の色は触らず、この <dialog> のサブツリーの CSS 変数だけ差し替えます。
+     なので開閉で後ろの曲リストがちらつきません（modern-web-guidance の design-token-reactivity の考え方）。 */
+  const SHEET_SIZES = ["half", "tall", "full"];
+  function applySheetSkin() {
+    if (!overlay) return "";
+    const all = (window.Trk.data && window.Trk.data.SKINS) || {};
+    const want = chooseCliSkin();
+    const id = want && all[want] ? want : (all[core.settings.skin] ? core.settings.skin : "");
+    state.sheetSkin = id;
+    overlay.removeAttribute("style");
+    if (!id) return "";
+    const ui = all[id].ui || {};
+    for (const [k, v] of Object.entries(ui)) {
+      if (typeof v === "string" && k.startsWith("--")) { try { overlay.style.setProperty(k, v); } catch (_) {} }
+    }
+    /* 小さい文字が読める色（data 側の計算をそのまま借りる） */
+    try {
+      const ink = window.Trk.data && window.Trk.data.accentInk && window.Trk.data.accentInk(ui);
+      if (ink) overlay.style.setProperty("--ui-accent-ink", ink);
+    } catch (_) { /* 計算できなければ既定のまま */ }
+    overlay.dataset.cliSkin = id;
+    return id;
+  }
+  /* 高さ（half / tall / full）とスキンをまとめて合わせる */
+  function syncSheet() {
+    if (!overlay) return "";
+    const size = SHEET_SIZES.includes(core.settings.cliSheetSize) ? core.settings.cliSheetSize : "tall";
+    overlay.dataset.size = size;
+    const sel = document.getElementById("cliSheetSize");
+    if (sel) sel.value = size;
+    return applySheetSkin();
+  }
+
   function canOpen() {
     if (core.phase !== "title") return false;
     const ov = window.Trk.overlay;
@@ -1655,21 +1740,19 @@
     state.swapSkin = "";
     state.returnFocus = document.activeElement;
     if (logNode) logNode.textContent = "";
-    /* ⌨ trk283：スキンを当てる。当てた（当てられなかった）ことを状態行に出す */
-    const want = chooseCliSkin();
-    const before = core.settings.skin;
-    if (want && want !== before) {
-      state.swapSkin = before;
-      try { core.applySkin(want, false); } catch (_) { /* 当たらなければ、下の行で知らせる */ }
-      const got = core.settings.skin === want;
-      log(got ? "out" : "err", tr(got ? "cliSkinApplied" : "cliSkinAppliedFail", { id: want }));
-    }
+    /* ⌨ trk286：スキンは端末の中だけ・高さを合わせてから、下から持ち上げる */
+    const sheet = syncSheet();
     window.Trk.overlay.set("cli", true);
-    overlay.hidden = false;
     document.body.classList.add("cliOpen");
+    if (typeof overlay.showModal === "function") {
+      try { overlay.showModal(); } catch (_) { overlay.setAttribute("open", ""); }
+    } else {
+      overlay.setAttribute("open", "");
+    }
     log("out", tr("cliSubtitle"));
     const cur = deps.current();
     log("out", tr("cliSkinCurrent", { id: cur.skin }) + "  ·  " + tr("cliVolumeSet", { n: cur.volume }));
+    if (sheet) log("out", tr("cliSheetSkin", { id: sheet }));
     /* ⌨ trk283：打てる状態かを検めてから、知らせる（設定で バッジ／状態行／静か を選ぶ） */
     updatePrompt();   /* ⌨ trk285：当てたスキンの English 名で「<name> ~ %」を出す */
     renderSpells();
@@ -1677,18 +1760,28 @@
     showTyping(true);
     return true;
   }
+  /* 閉じる入口は 1 つ。実際の片づけは close イベントに集めます（Esc・背景・ボタン・closeCli のどれでも同じ） */
   function closeCli() {
     if (!state.open) return;
     state.open = false;
-    window.Trk.overlay.set("cli", false);
-    if (overlay) overlay.hidden = true;
+    if (overlay && overlay.open && typeof overlay.close === "function") {
+      try { overlay.close(); return; } catch (_) { /* 下の片づけへ */ }
+    }
+    overlay && overlay.removeAttribute("open");
+    finishClose();
+  }
+  function finishClose() {
+    state.open = false;
+    if (window.Trk && window.Trk.overlay && window.Trk.overlay.set) window.Trk.overlay.set("cli", false);
     document.body.classList.remove("cliOpen");
     if (typingBadge) typingBadge.hidden = true;
-    if (state.swapSkin && !state.userSkin) { try { core.applySkin(state.swapSkin, false); } catch (_) {} }
     state.swapSkin = "";
+    /* フォーカスは <dialog> が元の場所へ戻します（手で戻さない） */
     const back = state.returnFocus;
     state.returnFocus = null;
-    if (back && back.isConnected && typeof back.focus === "function") { try { back.focus({ preventScroll: true }); } catch (_) {} }
+    if (back && back.isConnected && typeof back.focus === "function" && !document.activeElement?.closest?.("dialog")) {
+      try { back.focus({ preventScroll: true }); } catch (_) {}
+    }
   }
 
   /* ---------- ⚙ の入口と設定の配線 ---------- */
@@ -1728,8 +1821,19 @@
     const autoChk = document.getElementById("cliAutoCloseChk");
     if (autoChk && !autoChk.dataset.cliWired) {
       autoChk.dataset.cliWired = "1";
-      autoChk.checked = core.settings.cliAutoClose !== false;
+      autoChk.checked = core.settings.cliAutoClose === true;   /* ⌨ trk286：既定は「閉じない」 */
       autoChk.addEventListener("change", () => { core.settings.cliAutoClose = autoChk.checked; core.saveUserPrefs(); });
+    }
+    /* ⌨ trk286：板の高さを選ぶ（小さめ／ふつう／大きめ） */
+    const sheetSel = document.getElementById("cliSheetSize");
+    if (sheetSel && !sheetSel.dataset.cliWired) {
+      sheetSel.dataset.cliWired = "1";
+      sheetSel.value = SHEET_SIZES.includes(core.settings.cliSheetSize) ? core.settings.cliSheetSize : "tall";
+      sheetSel.addEventListener("change", () => {
+        core.settings.cliSheetSize = SHEET_SIZES.includes(sheetSel.value) ? sheetSel.value : "tall";
+        core.saveUserPrefs();
+        if (state.open) syncSheet();
+      });
     }
     const pickChk = document.getElementById("cliSkinPickChk");
     const pickSel = document.getElementById("cliSkinPickSel");
@@ -1868,7 +1972,12 @@
     syncPromptPreview();
   });
   /* ⌨ trk285：スキンが変わったら合図も変える（スキン名を出しているため） */
-  core.on("skin", () => { if (state.open || promptNode) updatePrompt(); syncPromptPreview(); });
+  core.on("skin", () => {
+    /* ⌨ trk286：端末の中のスキンも追いかける（このあと updatePrompt で合図の名も変わる） */
+    if (state.open) syncSheet(); else state.sheetSkin = "";
+    if (state.open || promptNode) updatePrompt();
+    syncPromptPreview();
+  });
 
   /* 選曲画面を離れたら閉じる（ゲーム・書斎・プレイヤーへ行ったとき） */
   core.on("phase", p => { if (p !== "title" && state.open) closeCli(); });
@@ -1890,6 +1999,7 @@
     splitSpells,
     pickCliSkin,
     chooseCliSkin,
+    sheetSize: () => (SHEET_SIZES.includes(core.settings.cliSheetSize) ? core.settings.cliSheetSize : "tall"),
     spellDraftProblem,
     promptText,
     PROMPT_STYLES,

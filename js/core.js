@@ -552,7 +552,10 @@ const settings = {
   /* ⌨ trk283：呼び出しキー（同じキーで開閉・Ctrl/⌘ と一緒に押す）・実行後に閉じる・
      入力できるかの見せ方（既定は常時バッジ）・端末のスキンを個別に選ぶか。 */
   cliKey: validCode(prefs.cliKey) ? prefs.cliKey : "Backquote",
-  cliAutoClose: prefs.cliAutoClose !== false,
+  /* ⌨ trk286：実行後に閉じるのは**既定オフ**（1 回呼んで唱えて、そのまま何度も唱えられるように） */
+  cliAutoClose: prefs.cliAutoClose === true,
+  /* ⌨ trk286：ボトムシートの高さ（half＝52%／tall＝70%（既定）／full＝92%） */
+  cliSheetSize: pick(prefs.cliSheetSize, ["half", "tall", "full"], "tall"),
   cliTypingCheck: pick(prefs.cliTypingCheck, ["badge", "status", "quiet"], "badge"),
   /* ⌨ trk285：入力の合図（プロンプト）の形。既定は Linux 系の「<スキン名(English)> ~ %」 */
   cliPromptStyle: pick(prefs.cliPromptStyle, ["linux", "bash", "root", "fish", "ps", "plain", "skin"], "linux"),
@@ -869,7 +872,7 @@ function resetAllPrefs() {
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
   /* ⌨ trk267：ターミナルの行き先（プレイヤー）・見た目（自動）・覚えた呪文（無し）も工場出荷状態へ */
-  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Backquote"; settings.cliAutoClose = true; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = ""; settings.cliPromptStyle = "linux";
+  settings.cliPlay = "media"; settings.cliSkin = "auto"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Backquote"; settings.cliAutoClose = false; settings.cliSheetSize = "tall"; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = ""; settings.cliPromptStyle = "linux";
   /* ⚖ trk279：⚙ の段（スタンダード）と「触った設定」も工場出荷状態へ */
   settings.setLevel = "standard"; settings.setTouched = [];
 }

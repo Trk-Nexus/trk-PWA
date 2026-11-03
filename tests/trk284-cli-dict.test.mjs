@@ -136,7 +136,7 @@ test("端末のいちばん下に辞書の GUI がある（form を入れ子に�
   for (const id of ["cliSpellPanel", "cliSpellList", "cliSpellIdInput", "cliSpellBodyInput", "cliSpellAddBtn", "cliSpellStatus"]) {
     assert.match(cli, new RegExp(`"${id}"`), `${id} を作る`);
   }
-  assert.match(cli, /dialog\.append\(header, logNode, typingBadge, form, hint, spellBox\)/, "端末の最後に足す");
+  assert.match(cli, /dialog\.append\(handle, header, logNode, typingBadge, form, hint, spellBox\)/, "端末の最後に足す");
   assert.match(cli, /core\.el\("details", "cliSpellPanel"\)/, "折りたためる（読みたい人だけ開く）");
   assert.doesNotMatch(cli, /core\.el\("form"[^)]*cliSpell/, "form を入れ子にしない");
   assert.match(cli, /node\.addEventListener\("keydown", e => \{\n\s+if \(compositionBlocked\(e\.isComposing, e\.keyCode\)\) return;/, "GUI の Enter も変換中は無視");

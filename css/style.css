@@ -2299,12 +2299,40 @@ body.trk-typo-on .hint,body.trk-typo-on .brand p{font-family:var(--trk-typo-body
      --cli-caret  カーソルの色（#rgb／#rrggbb／currentColor。既定は文字色）
      --cli-scan   走査線の濃さ（0〜0.6。既定 0＝なし） */
 .cliOverlay{background:rgba(2,4,10,.72)}
+/* ⌨ trk286：ターミナルは**下から持ち上がるボトムシート**（ネイティブ <dialog> ＋ showModal）。
+   出し入れは @starting-style ＋ transition-behavior: allow-discrete ＋ overlay で作ります
+   （modern-web-guidance の animate-to-from-top-layer）。高さは設定で 52%／70%／92%。 */
+dialog.cliDialog{position:fixed;inset:auto 0 0 0;margin:0 auto;width:min(900px,100%);max-width:100%;
+  height:70dvh;max-height:calc(100dvh - 8px);padding:0 0 env(safe-area-inset-bottom,0px);
+  border:1px solid var(--ui-border);border-bottom:none;border-radius:18px 18px 0 0;background:transparent;
+  color:var(--ui-text);display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:0 -18px 60px rgba(0,0,0,.55);
+  transform:translateY(0);opacity:1;
+  transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .24s ease-out,display .3s,overlay .3s;
+  transition-behavior:allow-discrete}
+dialog.cliDialog[data-size="half"]{height:52dvh}
+dialog.cliDialog[data-size="tall"]{height:70dvh}
+dialog.cliDialog[data-size="full"]{height:92dvh}
+dialog.cliDialog:not([open]){display:none;transform:translateY(100%);opacity:0}
+@starting-style{dialog.cliDialog[open]{transform:translateY(100%);opacity:0}}
+dialog.cliDialog::backdrop{background:rgba(2,4,10,0);transition:background-color .3s ease-out,display .3s,overlay .3s;transition-behavior:allow-discrete}
+dialog.cliDialog[open]::backdrop{background:rgba(2,4,10,.62)}
+@starting-style{dialog.cliDialog[open]::backdrop{background:rgba(2,4,10,0)}}
+dialog.cliDialog:modal{overscroll-behavior:contain}
+@media (prefers-reduced-motion:reduce){dialog.cliDialog,dialog.cliDialog::backdrop{transition:none}}
+/* 地（::before）と走査線（::after）の上に、中身を必ず載せる */
+dialog.cliDialog::before,dialog.cliDialog::after{z-index:0}
+dialog.cliDialog>*{position:relative;z-index:1}
+/* 開いているあいだ、後ろの画面は動かさない（モーダルの作法） */
+body:has(dialog.cliDialog[open]){overflow:hidden;overscroll-behavior:none}
+/* 上端のつまみ（見た目だけ） */
+.cliSheetHandle{flex:0 0 auto;align-self:center;width:44px;height:4px;margin:7px 0 2px;border-radius:999px;background:var(--ui-muted);opacity:.55}
 .cliDialog{width:min(860px,100%);border-color:var(--ui-border);background:transparent;color:var(--ui-text);font-family:var(--cli-font,ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace);position:relative;overflow:hidden}
 /* 地は ::before に置く（--cli-opacity で透けさせても、文字は薄くならない） */
 .cliDialog::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(155deg,var(--ui-panel),var(--ui-bg) 62%);opacity:var(--cli-opacity,1)}
 .cliDialog::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:var(--cli-scan,0);background:repeating-linear-gradient(to bottom,rgba(255,255,255,.55) 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
 .cliDialog .instHeader{border-bottom-color:var(--ui-border)}
-.cliLog{flex:1 1 auto;min-height:clamp(180px,42vh,420px);max-height:56vh;overflow-y:auto;padding:10px 14px;background:var(--ui-field);border-bottom:1px solid var(--ui-border);overscroll-behavior:contain}
+.cliLog{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;padding:10px 14px;background:var(--ui-field);border-bottom:1px solid var(--ui-border);overscroll-behavior:contain}
 .cliLog:focus-visible{outline:2px solid var(--ui-accent-ink,var(--ui-accent));outline-offset:-2px}
 .cliLine{white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.55}
 .cliLine.cliIn{color:var(--ui-accent-ink,var(--ui-accent))}

@@ -122,9 +122,9 @@ test("何かをするコマンドだけ action が立つ（読むだけのコマ
   assert.equal(empty.res.action, false);
 });
 
-test("閉じるかどうかは設定（cliAutoClose）で決まり、既定は オン", () => {
-  assert.match(core, /cliAutoClose: prefs\.cliAutoClose !== false/, "既定オン（オフにした人だけ開いたまま）");
-  assert.match(cli, /if \(res\.action && core\.settings\.cliAutoClose !== false\)/, "action のときだけ閉じる");
+test("閉じるかどうかは設定（cliAutoClose）で決まり、既定は オフ（⌨ trk286）", () => {
+  assert.match(core, /cliAutoClose: prefs\.cliAutoClose === true/, "既定オフ（自分で入れた人だけ閉じる）");
+  assert.match(cli, /if \(res\.action && core\.settings\.cliAutoClose === true\)/, "action のときだけ閉じる");
   assert.match(cli, /toastNote\(say\)/, "閉じたあと、同じ 1 行をトーストで出す");
   assert.match(html, /id="cliAutoCloseChk"/, "⚙ に切り替えがある");
   assert.match(html, /data-i18n="cliAutoClose"/);
@@ -145,7 +145,9 @@ test("呼び出しキーは Ctrl／⌘ + 選んだキー（既定 `）で、同�
   assert.match(html, /id="cliKeyAssign"/, "⚙ に割り当てボタン");
   assert.match(html, /id="cliKeyValue"/, "いまのキーを出す");
   /* Esc では閉じる操作も残す（端末の中のキー） */
-  assert.match(cli, /overlay\.addEventListener\("keydown", e => \{ if \(e\.key === "Escape"\)/);
+  /* ⌨ trk286：Esc は <dialog> が閉じるので、自前のハンドラは置かない */
+  assert.doesNotMatch(cli, /if \(e\.key === "Escape"\) \{ e\.preventDefault\(\); closeCli\(\); \}/);
+  assert.match(cli, /dialog\.addEventListener\("close", \(\) => finishClose\(\)\)/);
 });
 
 /* ==================== 入力できるかのチェック ==================== */
@@ -183,8 +185,10 @@ test("開いたときのスキン：当てたことを出す・locked は当て�
   /* 画面側：当てた（当てられない）ことを状態行に出す */
   assert.match(cli, /function chooseCliSkin\(\)/);
   assert.match(cli, /core\.settings\.cliSkinPickOn === true \? core\.settings\.cliSkinPick : ""/);
-  assert.match(cli, /const got = core\.settings\.skin === want;/, "当たったかを見る");
-  assert.match(cli, /tr\(got \? "cliSkinApplied" : "cliSkinAppliedFail", \{ id: want \}\)/, "当てた／当てられないを出す");
+  /* ⌨ trk286：スキンは端末の中だけに当てる（背景は変えない） */
+  assert.match(cli, /function applySheetSkin\(\)/);
+  assert.match(cli, /overlay\.style\.setProperty\(k, v\)/, "板の CSS 変数だけ差し替える");
+  assert.match(cli, /tr\("cliSheetSkin", \{ id: sheet \}\)/, "当てたスキンを状態行に出す");
   assert.match(html, /id="cliSkinPickChk"/, "個別に選ぶチェック");
   assert.match(html, /id="cliSkinPickSel"/, "スキンの選択");
   assert.match(cli, /function fillSkinPick\(sel\)/, "スキン名を並べる");
