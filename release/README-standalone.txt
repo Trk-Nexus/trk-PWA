@@ -1,4 +1,4 @@
-trk! — 手渡し用ビルド（trk272＝スキン 77 種・🧙 Wizard 24 種・⌨ 端末（trk CLI）入り。実機の記録はこの箱の 1 枚にまとめてあります）
+trk! — 手渡し用ビルド（trk273＝スキン 77 種・🧙 Wizard 24 種・⌨ 端末（trk CLI）入り。実機の記録はこの箱の 1 枚にまとめてあります）
 ================================================================
 
 レビューと実機確認のために、そのまま動かせる形にしたZIPです。
@@ -38,30 +38,39 @@ git が追跡しているファイルだけを集めます）。
 
     見る順番の 1 枚（このZIPにも入っています）:
         docs/DEVICE-CHECK-TRK265-271-2026-11-03.md
-      … trk265〜trk271 の「まだ実機で見ていないこと」を 1 枚にまとめた記入式の表です。
+      … trk265〜trk272 の「まだ実機で見ていないこと」を 1 枚にまとめた記入式の表です。
         日付・端末・結果を書き込んで返してください（必須は 8 件だけです）。
 
 
-■ この版で入っているもの（trk255〜trk272 の要点）
+■ この版で入っているもの（trk255〜trk273 の要点）
 
-    trk255  アプリの更新の知らせ（あとで／眠らせる）と、更新の取りこぼし対策
-    trk259  書斎（📚）— 端末の中の曲を読む・探す・試聴する
-    trk260  起動の直し（最初の画面が出ないことがあった）
-    trk261  ❓謎設定の整理（初期値・3種・音まわり・1回だけ）
-    trk262  字幕の自動生成まわり（both／four／pos_size／doc）
-    trk263  動画の小窓（PiP）の詰め（manual_only／keep_volume／hide_notice）
-    trk264  動画キーの説明と、押せない理由の見える化
-    trk265  小窓の終了の直し（M1）・理由の 1 行・ホーム画面アプリの扱い
-    trk266  Firefox の「非対応」表示・連打の重複・説明文に Dock
-    trk267  ⌨ ターミナル（trk CLI）— 10 のコマンド＋repeat/shuffle・Ctrl+`
-    trk268  CLI 用スキンの受け口（cat に wizard/cli/console・cli の見た目）
-    trk269  端末の定番（pwd/cat/grep/history/clear/echo/bell/man・別名 ls/cd/dir）と
-            操作感 5 つ（cursor/opacity/history/completion/bell）・検査の道具
-    trk270  🧙 Wizard のスキンを **24 種**に（棚の「🧙 Wizard」）
-    trk271  目録・生成物（.js）・検査の道具 v3 を受ける（スキンの値は変えていません）
-    trk272  この README と実機の 1 枚・UX 改修の許諾のお願い（アプリ本体は変えていません）
+    （この一覧は docs/HANDOFF.md §7 の見出しから作る: node tools/readme-versions.mjs --write）
 
-    スキンは **77 種**（本体 49＋ミク 4＋Wizard 24）。うち ⌨ を名乗るのは **12 種**です。
+    trk255  小粒の仕上げ（判断項目 U1〜U7）
+    trk256  小粒のセット A／配布物 B
+    trk257  r10 を受けての洗い出しと、実機・上流の手順書
+    trk258  r10 の受け皿（R3・R4・R5・2026-11-02）
+    trk259  レビュー（trk-Nexus-review-trk258-2026-11-02）の推奨 3 点を手当て
+    trk260  開いた直後が「枠だけ・文字なし・ボタンが効かない」を修正
+    trk261  シンセの鍵盤を 25／49／61／88 鍵に、MIDI キーボードに対応
+    trk262  映像の操作パネルの出かたと、字幕の置き場所・大きさ
+    trk263  画中画をメディアプレーヤーの外でも残す・画中画の間は映像を隠す
+    trk264  Safari でも画中画を使えるようにする
+    trk265  trk264 レビューの手当て
+    trk266  trk265 レビューの小さな推奨
+    trk267  trk CLI（Wizard のターミナル）— Skin 側の設計書 v0.1 のフェーズ C
+    trk268  CLI 用スキンの受け口
+    trk269  端末の定番コマンドと Wizard のスキン 12 種
+    trk270  Skin 側の返事を受けて Wizard を 24 種に
+    trk271  Skin 側から届いた 3 ファイル（目録・生成物・検査の道具）を受ける
+    trk272  README を今の姿に・実機の項目を 1 枚に・/trk/ の許諾の文面
+    trk273  レビュー（M1〜M3・R1〜R3）を反映して、送る前の文面を整える
+
+    スキンは 77 種（本体 49＋ミク 4＋Wizard 24）。うち ⌨ を名乗るのは 12 種です。
+
+    ※ この束は**開発版**です。安定版 `/trk/` はいま **trk219**（`trk-v2026.10.29-trk219`）で止まっています。
+      そこから先の trk220〜trk273（書体の 14 組・画中画まわり・端末 ⌨・Wizard 24 種 など）は、
+      `/trk/` にはまだ入っていません（入れ替えはリポジトリの持ち主の判断待ちです）。
 
 
 ■ 何を見てほしいか
@@ -69,26 +78,26 @@ git が追跡しているファイルだけを集めます）。
     まず `docs/DEVICE-CHECK-TRK265-271-2026-11-03.md` の §2（必須 8 件）を見てください。
     要点だけ書くと:
 
-      ・▶ で動画の曲 → 📌（画中画）。**1 回目で出たか／2 回目で出たか**を書いてください
+      ・▶ で動画の曲 → 📌（画中画）。1 回目で出たか／2 回目で出たかを書いてください
       ・小窓を出した状態で、案内の「📌 画中画を終了」→ 小窓が閉じ、ボタンが戻ること
-      ・ホーム画面のアプリでは 📌 が押せない。**ボタンの下に理由の 1 行**が見えること
-      ・⚙ →「⌨ ターミナル」→ 開く。`help` → `play 2` → `skin wizard-void` → 閉じる
-      ・スキンの棚に「🧙 Wizard」が **24 枚**並び、`wizard-hermetic`（明るい紙）で文字が読めること
+      ・ホーム画面のアプリでは 📌 が押せない。ボタンの下に理由の 1 行が見えること
+      ・⚙ →「⌨ ターミナル」→ 開く。help → play 2 → skin wizard-void → 閉じる
+      ・スキンの棚に「🧙 Wizard」が 24 枚並び、wizard-hermetic（明るい紙）で文字が読めること
       ・端末でわざと打ち間違えて、⚙ の「エラーの音」を外すと鳴らなくなること
       ・スマホ幅で端末を開いても、入力欄と合図の記号が崩れないこと
 
-    見つけた点は、**端末・OS・ブラウザ・拡大率・スキン名**を添えて教えてください。
+    見つけた点は、端末・OS・ブラウザ・拡大率・スキン名を添えて教えてください。
 
 
 ■ 入っていないもの（開発用）
 
     tests/  tools/  .github/  package.json  capacitor.config.ts など、
-    それと開発者向けの文書（HANDOFF 類・MIGRATIONS・PLAN/VIEWER/SKIN-RETURN 類）。
+    それと開発者向けの文書（HANDOFF 類・MIGRATIONS・PLAN/VIEWER/SKIN-RETURN/LETTER 類）。
 
     実機で見てくださる人向けの文書は、あえて入れています:
     docs/DEVICE-CHECK-TRK265-271-2026-11-03.md（この版の記入式 1 枚）／
     docs/VIEWER-TRK267-2026-11-03.md（端末の見どころ C-1〜C-8）／
-    docs/VIEWER-TRK270-2026-11-03.md（Wizard 24 種の見どころ F-1〜F-5）／
+    docs/VIEWER-TRK270-2026-11-03.md（Wizard 24 種の見どころ F-1〜F-6）／
     docs/REVIEW-REQUEST-TRK223-2026-10-31.md（見る順番と期待）／
     docs/LIBRARY-UX-PLAN-2026-11-01.md（倉庫まわりの開発案と、この版で入れたこと）／
     docs/LIBRARY-TRK230-2026-10-31.md（倉庫の目録から入れる）／
@@ -120,16 +129,17 @@ git が追跡しているファイルだけを集めます）。
 
 ■ 確かめたこと・確かめていないこと
 
-    npm run check               1548 pass / 0 fail（trk272 時点）
+    npm run check               （この束を作った時点の記録）
     node tools/check-repo.mjs   0 failure / 0 warning
     node tools/check-cli-skin.mjs <目録>   … 受け取る前の検査（助言の道具）
-    node tools/import-skin-catalog.mjs --check … スキンの生成物が目録どおりか
+    node tools/import-skin-catalog.mjs <目録.json> --check … スキンの生成物が目録どおりか
+    node tools/readme-versions.mjs --check     … この一覧が HANDOFF と合っているか
 
     実ブラウザ・実機での見た目と操作感は未確認です
     （作業環境にブラウザも端末もないため）。
     `docs/DEVICE-CHECK-TRK265-271-2026-11-03.md` に書き込んで返してください。
 
-    ※ このZIPには tests/ と tools/ を入れていないので、上の 2 つの道具は
+    ※ このZIPには tests/ と tools/ を入れていないので、上の道具は
       リポジトリ（https://github.com/Trk-Nexus/trk-PWA）で実行してください。
 
 

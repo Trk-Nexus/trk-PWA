@@ -268,7 +268,16 @@ for (const s of list) {
 }
 chosen.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
-if (!chosen.length) { console.error("取り込むスキンがありません"); process.exit(2); }
+if (!chosen.length) {
+  /* 目録に 1 枚も無い／このカテゴリが無い／色が無い（`ui` だけの生成物を渡した等）を言い分ける */
+  const inCat = list.filter(s => s && D.sanitizeSkinCats(s.cat).includes(wantCat));
+  const withColors = inCat.filter(s => s.colors && typeof s.colors === "object");
+  if (!list.length) console.error("目録にスキンが 1 枚もありません");
+  else if (!inCat.length) console.error(`取り込むスキンがありません（${list.length} 枚の中に cat「${wantCat}」を持つスキンがありません）`);
+  else if (!withColors.length) console.error(`取り込むスキンがありません（cat「${wantCat}」の ${inCat.length} 枚が colors を持っていません＝ui/game だけの生成物は取り込めません。目録（catalog/skins.json）を渡してください）`);
+  else console.error("取り込むスキンがありません（id の形か色の値を見てください）");
+  process.exit(2);
+}
 
 /* ---------- 書き出す（同じ目録なら同じバイト列） ---------- */
 const q = v => JSON.stringify(v);
