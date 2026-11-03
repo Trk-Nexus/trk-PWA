@@ -143,7 +143,7 @@ test("呼び出しキーは Ctrl／⌘ + 選んだキー（既定 Ctrl+.）で�
   /* ⌨ trk286：Esc は取り消し・修飾キーだけや Tab は受けない・ほかの操作と重なるキーも受けない */
   assert.match(cli, /if \(!code \|\| code === "Escape"\) \{ cliKeyBinding = null; syncCliKeyUI\(""\); return false; \}/);
   assert.match(cli, /const cliKeyUsable = code => !!code && code !== "Escape" && code !== "Tab"/);
-  assert.match(cli, /if \(cliKeyReserved\(code\)\) \{ toastNote\(tr\("cliKeyReserved"\)\); syncCliKeyUI\(tr\("cliKeyReserved"\)\); return false; \}/, "予約キーは拒む（trk288）");
+  assert.match(cli, /if \(cliKeyReserved\(code, cliMod\(\), shift === true\)\) \{ toastNote\(tr\("cliKeyReserved"\)\); syncCliKeyUI\(tr\("cliKeyReserved"\)\); return false; \}/, "予約キーは拒む（trk288）");
   assert.match(cli, /core\.settings\.cliKey = code;/, "覚えたら設定に入れる");
   assert.match(cli, /core\.saveUserPrefs\(\);/, "保存する");
   assert.match(html, /id="cliKeyAssign"/, "⚙ に割り当てボタン");

@@ -164,7 +164,7 @@ describe("trk286：呼び出しキーの割り当てが、ちゃんと決まる"
 
   test("ほかの操作と重なるキーも登録できる（予約キーだけ拒む・trk288）", () => {
     assert.doesNotMatch(cli, /function cliKeyUsed\(code\)/, "重なりの拒否は外した（trk288・C3）");
-    assert.match(cli, /if \(cliKeyReserved\(code\)\) \{ toastNote\(tr\("cliKeyReserved"\)\)/, "予約キーは拒む（cliKeyReserved）");
+    assert.match(cli, /if \(cliKeyReserved\(code, cliMod\(\), shift === true\)\) \{ toastNote\(tr\("cliKeyReserved"\)\)/, "予約キーは拒む（cliKeyReserved）");
   });
 
   test("待ちっぱなしにしない（押し直し・ほかを触る・Esc で取り消し）", () => {

@@ -86,9 +86,11 @@
      Shift を足しても同じ（Ctrl+Shift+T などもブラウザーの動き）。遊ぶキーとの重なりは、この関数では問いません。 */
   const CLI_RESERVED_CODES = ["KeyD", "KeyE", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyL", "KeyN", "KeyO", "KeyP", "KeyQ",
     "KeyR", "KeyS", "KeyT", "KeyU", "KeyW", "Minus", "Equal", "NumpadAdd", "NumpadSubtract", "Tab", "Escape"];
-  function cliKeyReserved(code) {
+  /* Ctrl（⌘）＋K は、ブラウザーの検索（アドレスバーの検索）を残すため予約。Shift 付きと Alt 付きは登録できる */
+  function cliKeyReserved(code, mod, shift) {
     const c = String(code == null ? "" : code);
     if (CLI_RESERVED_CODES.includes(c)) return true;
+    if (c === "KeyK" && mod !== "alt" && shift !== true) return true;
     if (/^(Digit|Numpad)\d$/.test(c)) return true;
     if (/^F\d{1,2}$/.test(c)) return true;
     return false;

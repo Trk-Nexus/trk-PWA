@@ -1624,7 +1624,7 @@
     if (cliKeyBinding === null) return false;
     if (!code || code === "Escape") { cliKeyBinding = null; syncCliKeyUI(""); return false; }
     if (!cliKeyUsable(code)) { syncCliKeyUI(tr("cliKeyBadKey")); return false; }
-    if (cliKeyReserved(code)) { toastNote(tr("cliKeyReserved")); syncCliKeyUI(tr("cliKeyReserved")); return false; }
+    if (cliKeyReserved(code, cliMod(), shift === true)) { toastNote(tr("cliKeyReserved")); syncCliKeyUI(tr("cliKeyReserved")); return false; }
     core.settings.cliKey = code;
     core.settings.cliShift = shift === true;   /* ⌨ trk288：Shift を押して決めたときは、Shift 付きで呼ぶ */
     cliKeyBinding = null;

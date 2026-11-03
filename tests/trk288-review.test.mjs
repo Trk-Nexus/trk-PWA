@@ -134,13 +134,18 @@ describe("trk288：呼び出しキーの予約（C3）", () => {
       assert.equal(P.cliKeyReserved(code), true, `${code} は予約`);
     }
   });
-  test("遊びに使える・ブラウザーが取らないキーは通す（K・. などの既定の候補）", () => {
-    for (const code of ["KeyK", "KeyA", "KeyM", "Period", "Slash", "Backquote", "Space", "Semicolon", "Comma", "BracketLeft"]) {
-      assert.equal(P.cliKeyReserved(code), false, `${code} は登録できる`);
+  test("遊びに使える・ブラウザーが取らないキーは通す（. などの既定の候補）", () => {
+    for (const code of ["KeyA", "KeyM", "Period", "Slash", "Backquote", "Space", "Semicolon", "Comma", "BracketLeft"]) {
+      assert.equal(P.cliKeyReserved(code, "ctrlOrMeta", false), false, `${code} は登録できる`);
     }
   });
+  test("Ctrl（⌘）＋K はブラウザーの検索に残す（予約）。Shift 付きと Alt 付きは登録できる", () => {
+    for (const mod of ["ctrlOrMeta", "ctrl", "meta"]) assert.equal(P.cliKeyReserved("KeyK", mod, false), true, `${mod}+K は予約`);
+    assert.equal(P.cliKeyReserved("KeyK", "ctrlOrMeta", true), false, "Ctrl+Shift+K は登録できる");
+    assert.equal(P.cliKeyReserved("KeyK", "alt", false), false, "Alt+K は登録できる");
+  });
   test("割り当ての中で、予約キーは拒み・重なりは拒まない・Shift は覚える", () => {
-    assert.match(cli, /if \(cliKeyReserved\(code\)\) \{ toastNote/, "予約キーを拒む");
+    assert.match(cli, /if \(cliKeyReserved\(code, cliMod\(\), shift === true\)\) \{ toastNote/, "予約キーを拒む");
     assert.doesNotMatch(cli, /if \(cliKeyUsed\(code\)\)/, "遊ぶキーとの重なりでは拒まない");
     assert.match(cli, /core\.settings\.cliShift = shift === true;/, "Shift の有無を覚える");
     assert.match(cli, /captureCliKey\(core\.keyCodeOf\(e\), e\.shiftKey === true\)/);
