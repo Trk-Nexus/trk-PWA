@@ -9,7 +9,11 @@
    ＝ 手で写さない（写し間違いが出ない）・同じ目録からは同じバイト列（`--check` で見張れる）。
 
    使い方：
-     node tools/import-skin-catalog.mjs <目録.json> [--cat=wizard] [--cli-only] [--out=js/skins-wizard.js] [--check]
+     node tools/import-skin-catalog.mjs <目録> [--cat=wizard] [--cli-only] [--out=js/skins-wizard.js] [--check]
+       <目録> は 3 つの形のどれでも（trk271）：
+         ① catalog/skins.json（{ "skins": [...] }）
+         ② スキン 1 枚の JSON
+         ③ ジェネレーターの出力（.js・`const SKINS_WIZARD = [...]`／ESM の export も可）
        --cat      このカテゴリを持つスキンだけ（既定は wizard）
        --cli-only `cli` を持つ（＝端末で着られる）スキンだけ
        --out      書き出す先（既定 js/skins-wizard.js）
@@ -30,10 +34,11 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { loadCatalogFile } from "./lib/skin-catalog.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TOOL = "import-skin-catalog";
-const VERSION = 2;
+const VERSION = 3;
 
 const args = process.argv.slice(2);
 const file = args.find(a => !a.startsWith("--"));
@@ -65,12 +70,10 @@ function loadData() {
 }
 const D = loadData();
 
-/* ---------- 目録を読む ---------- */
-let catalog;
-try { catalog = JSON.parse(fs.readFileSync(path.resolve(file), "utf8")); }
-catch (e) { console.error("読めませんでした：" + (e && e.message)); process.exit(2); }
-const list = Array.isArray(catalog) ? catalog : Array.isArray(catalog.skins) ? catalog.skins : null;
-if (!list) { console.error("目録の形が違います（skins の配列がありません）"); process.exit(2); }
+/* ---------- 目録を読む（JSON・1 枚・生成物の .js のどれでも） ---------- */
+const loaded = loadCatalogFile(path.resolve(file));
+if (loaded.error) { console.error(loaded.error); process.exit(2); }
+const list = loaded.list;
 
 /* ---------- 安全な値だけ通す ---------- */
 const ID_RE = /^[a-z][a-z0-9-]{1,31}$/;
