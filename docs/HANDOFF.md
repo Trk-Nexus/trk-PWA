@@ -843,6 +843,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
   - **既存 24 種は 22 種そのまま**。変えたのは 2 種だけで、どちらも**元データが読めなかった**もの＝`wizard-hermetic` の舞台（3.19:1 → 合格）と `wizard-void` の文字（黒地に黒 1.00:1 → 白）。
   - **棚**：`core.settings.skinShelfVol`（**新しい保存キーは増やしていない**）。既定は「定番＋ウィザード」115 種、`<select id="skinVol">` と `popover` の 📚 パネルで巻を選ぶ。`SKIN_VOLUMES`（13 巻・291 種を重複なく）は生成物に同梱。
   - **画面の手当て（U4-A の 4 つ）**：G-1 `popover`（モーダルにしない・効かないブラウザでは隠す）／G-2 `@starting-style`＋`transition-behavior: allow-discrete`／G-3 `aria-live` の読み上げ（`#skinVolStatus`）／G-4 `content-visibility: auto`＋`contain-intrinsic-size`（棚の 1 か所だけ）。
+  - **返事と実機の 1 枚**：`docs/SKIN-RETURN-TRK274-2026-11-03.md`（受け取った目録の sha256・相談 6 つへのお返事・決めた 4 つ・寄せた数＝Wizard 38 種／巻別 161 種）と `docs/VIEWER-TRK274-2026-11-03.md`（実機で見てほしい 7 つ・画面の手当て 4 つ）。`TRK_PWA_REF` は `672ee4774dc4ae72b377b8412eed9ce654e69103`（trk274 のコード）。**`/trk/` は trk219 のまま**・LETTER-TRK273 の A〜D は保留。
   - **検める道具（E-6）**：`tools/check-skin-contrast.mjs` を新設し `npm run check` に追加（生成物の `.js` を**実行せず**読み、文字 4.5:1・エラー 3:1・小さなアクセントの入れ子まで見る）。`npm run check` **1578 pass / 0 fail**・`check-repo` 0 failure / 0 warning・cache は `trk-v2026.11.03-trk274`。
 
 - **📄 trk273：レビュー（M1〜M3・R1〜R3）を反映して、送る前の文面を整える（2026-11-03）**：記録＝[`VIEWER-TRK273-2026-11-03.md`](VIEWER-TRK273-2026-11-03.md)、洗い出し＝[`PLAN-TRK273-2026-11-03.md`](PLAN-TRK273-2026-11-03.md)、Skin 側へ送る文面＝[`LETTER-TRK273-2026-11-03.md`](LETTER-TRK273-2026-11-03.md)。**アプリ本体（`js/*`・`css/*`）は 0 バイト**＝道具・文書・README の回。trk272 のレビュー（M1〜M3・R1〜R3）への手当て。
