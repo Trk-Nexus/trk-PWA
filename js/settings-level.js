@@ -161,7 +161,9 @@
 
     /* 「この段では n 項目を隠しています」＋ 次の段への道 */
     if (statusEl) {
-      statusEl.textContent = !wholeView && plan.count ? tr("setLevelHidden", { n: plan.count }) : "";
+      statusEl.textContent = !wholeView && plan.count
+        ? tr("setLevelHidden", { n: plan.count }) + (plan.panels.length ? tr("setLevelPanelNote", { n: plan.panels.length }) : "")
+        : "";
     }
     const next = wholeView ? null : nextLevel(level);
     if (moreBtn) {

@@ -122,7 +122,7 @@ test("段のボタンと CSS の規則がそろっている", () => {
 });
 
 test("文言は 4 言語そろっている", () => {
-  for (const key of ["setLevelTitle", "setLevelSimple", "setLevelStandard", "setLevelPro", "setLevelMaster", "setLevelHint", "setLevelHidden", "setLevelMore", "setLevelDone"]) {
+  for (const key of ["setLevelTitle", "setLevelSimple", "setLevelStandard", "setLevelPro", "setLevelMaster", "setLevelHint", "setLevelHidden", "setLevelPanelNote", "setLevelMore", "setLevelDone"]) {
     assert.equal((i18n.match(new RegExp(`\\b${key}:`, "g")) || []).length, 4, `${key} は 4 言語`);
   }
   assert.match(i18n, /setLevelHidden:"この段では \{n\} 項目を隠しています。"/, "数え方を言葉で伝える");
