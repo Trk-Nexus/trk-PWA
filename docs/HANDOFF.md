@@ -852,6 +852,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
   - 見張り：`tests/trk270-wizard24.test.mjs` **13 件**。jsdom（本物の 77 種で端末を操作）**14 項目 0 NG**。`npm run check` **1537 pass / 0 fail**。cache は **`trk-v2026.11.03-trk270`**。
   - **新しい保存キー 0**。`TRK_PWA_REF` は **`c36029ac07acc21f50b518a604052b5405437874`**。
   - **`/trk/` に当てる版は保留**のまま（Skin 側の応答後）。
+  - **配布（2026-11-03）**：Drive の `trk-PWA-trk271-届いた3ファイルを受ける-2026-11-03`（`18lvHvIZAeykDRmPiHa8tLf5fyJdwpIvv`）に 6 本＝`trk-standalone-2026-11-03-trk271.zip`（350 ファイル・7,636,653 B・sha256 `0576fbdca28494fff5d4e4dcd85d6c4b35a49143b69423daa5b5bd9bdb469108`）・`SHA256SUMS-trk271-2026-11-03.txt`・`VIEWER-TRK271-2026-11-03.md`・`PLAN-TRK271-2026-11-03.md`・`SKIN-RETURN-TRK271-2026-11-03.md`・`00-まず読む.txt`。**ZIP を展開して中身も確認**（`trk-build=trk271`・`CACHE="trk-v2026.11.03-trk271"`・`trk-files/js/skins-wizard.js` に 24 種）。Drive の `sha256Checksum` も一致。
 
 - **⌨ trk269：端末の定番コマンドと Wizard のスキン 12 種（2026-11-03）**：記録＝[`VIEWER-TRK269-2026-11-03.md`](VIEWER-TRK269-2026-11-03.md)、洗い出し＝[`PLAN-TRK269-2026-11-03.md`](PLAN-TRK269-2026-11-03.md)、Skin 側へ返す文書＝[`SKIN-RETURN-TRK269-2026-11-03.md`](SKIN-RETURN-TRK269-2026-11-03.md)。元は Skin 側から Drive で届いた 4 ファイル（`CLI-定番機能とWizardスキン案.md`・`check-cli-skin.mjs`・`skins.json`・`HANDOFF.md`）。
   - **伝達事項 4 つをそのまま反映**：§4-1 の `cli` 拡張 5 つ（`cursor`／`opacity`／`history`／`completion`／`bell`）・§4-2 のトリガー（`wizard`／`cli`／`console`）・§4-3 のコントラスト（4.5:1・エラー 3:1）・§4-4 の検査ツール（v2 に）。
