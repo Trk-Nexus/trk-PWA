@@ -177,7 +177,7 @@ describe("trk286：呼び出しキーの割り当てが、ちゃんと決まる"
   test("決まったこと・駄目だったことを、その場に出す（読み上げつき）", () => {
     assert.match(html, /id="cliKeyStatus" aria-live="polite"/);
     assert.match(cli, /button\.setAttribute\("aria-pressed", String\(on\)\)/);
-    assert.match(cli, /syncCliKeyUI\(tr\("cliKeySaved", \{ key: core\.formatKey\(code\) \}\)\)/);
+    assert.match(cli, /syncCliKeyUI\(tr\("cliKeySaved", \{ mod: modShort\(\), key: core\.formatKey\(code\) \}\)\)/);
     for (const key of ["cliKeyWaiting", "cliKeyBadKey", "cliKeySaved"]) {
       assert.equal((cli.match(new RegExp(`\\b${key}:`, "g")) || []).length, 4, `${key} は 4 言語`);
     }

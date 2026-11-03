@@ -134,7 +134,8 @@ test("閉じるかどうかは設定（cliAutoClose）で決まり、既定は �
 test("呼び出しキーは Ctrl／⌘ + 選んだキー（既定 `）で、同じキーで開閉", () => {
   assert.match(core, /cliKey: validCode\(prefs\.cliKey\) \? prefs\.cliKey : "Backquote"/, "既定は `");
   assert.match(cli, /const cliKeyCode = \(\) => \(core\.validCode\(core\.settings\.cliKey\) \? core\.settings\.cliKey : "Backquote"\)/);
-  assert.match(cli, /if \(!\(e\.ctrlKey \|\| e\.metaKey\)\) return;/, "Ctrl／⌘ と一緒に押す");
+  /* ⌨ trk287：修飾キーは選べる（既定は Ctrl か ⌘／Win） */
+  assert.match(cli, /if \(!cliModPressed\(e\)\) return;/, "選んだ修飾キーと一緒に押す");
   assert.match(cli, /if \(state\.open\) closeCli\(\);/, "開いていれば閉じる（トグル）");
   /* 割り当て：押されたキーを覚える・Esc は取り消し・遊ぶキーと重なるキーは受けない */
   assert.match(cli, /function captureCliKey\(code\)/);
