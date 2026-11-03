@@ -419,6 +419,7 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 /* ⌨ trk276：📚 のキー操作（入切・読み方向・4 つのアサイン） */
 #skinVolKeyBox{margin-top:12px;border-top:1px solid var(--ui-border);padding-top:8px}
 .volSeg{margin-top:8px}
+.volLabel{margin:10px 0 0;font-weight:700}
 .volSeg button{font-size:13px;padding:8px 10px}
 .volKeyPad{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .volKey{min-width:82px;padding:7px 10px;border-radius:10px;border:1px solid var(--ui-border);font-weight:700}

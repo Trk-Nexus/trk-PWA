@@ -291,6 +291,8 @@ const settings = {
      新しい保存キーは作らず、settings の中に入れます（工場出荷で既定に戻ります） */
   skinVolNav: prefs.skinVolNav === "off" ? "off" : "on",
   skinVolDir: prefs.skinVolDir === "col" ? "col" : "row",
+  /* 端まで行ったとき：端で止まる（既定）／反対側へ回り込む */
+  skinVolWrap: prefs.skinVolWrap === "on" ? "on" : "off",
   ...volKeyBoot(prefs),
   skinFav: cleanSkinIdList(prefs.skinFav),
   skinHidden: cleanSkinIdList(prefs.skinHidden),
@@ -828,7 +830,7 @@ function resetAllPrefs() {
   settings.skin = "shadow"; settings.layout = "classic";
   /* 🧺 trk229：棚の整理（お気に入り・隠した・回数・日時・並び・絞り込み）も工場出荷状態へ */
   settings.skinShelfOnly = ""; settings.skinSort = "default"; settings.skinShelfVol = ""; settings.skinFav = []; settings.skinHidden = [];
-  settings.skinVolNav = "on"; settings.skinVolDir = "row"; Object.assign(settings, volKeyBoot(null));
+  settings.skinVolNav = "on"; settings.skinVolDir = "row"; settings.skinVolWrap = "off"; Object.assign(settings, volKeyBoot(null));
   settings.skinUse = {}; settings.skinLast = {};
   /* 🖥 trk221/222：画面の形（自動）・下の再生バー（つねに表示）・拡大率（100%）も工場出荷状態へ戻す */
   settings.uiMode = "auto"; settings.playerBar = "on";
@@ -1581,32 +1583,43 @@ function volLayout(rects) {
   for (let ci = 0; ci < cols; ci++) for (const row of rows) if (row.items[ci] !== undefined) byCol.push(row.items[ci]);
   return { rows, cols, pos, byRow, byCol };
 }
-/* move: left／right／up／down。返り値は移動先の index（無ければ -1＝端で止まる） */
-function volMove(rects, i, move, mode) {
+/* move: left／right／up／down。返り値は移動先の index（無ければ -1）。
+   wrap=true なら、端の次は**反対側の端**へ（「端から反対側へ回り込む」） */
+function volMove(rects, i, move, mode, wrap) {
   const n = Array.isArray(rects) ? rects.length : 0;
   if (!n) return -1;
   if (!(i >= 0 && i < n)) return 0;
   const L = volLayout(rects), p = L.pos[i];
   if (!p) return -1;
+  const lastRow = L.rows.length - 1, lastCol = L.cols - 1;
+  /* 同じ行の ci 列目（その行が短ければ、いちばん右の札に寄せる） */
   const at = (ri, ci) => {
     const row = L.rows[ri];
-    if (!row || ci < 0 || !row.items.length) return -1;
-    return row.items[Math.min(ci, row.items.length - 1)];
+    if (!row || !row.items.length || L.cols === 0) return -1;
+    return row.items[Math.min(Math.max(ci, 0), row.items.length - 1)];
   };
   const seq = mode === "col" ? L.byCol : L.byRow;
-  const step = d => { const k = seq.indexOf(i); return k < 0 ? -1 : (seq[k + d] === undefined ? -1 : seq[k + d]); };
-  if (mode === "col") {
-    if (move === "up") return step(-1);
-    if (move === "down") return step(1);
-    if (move === "left") return at(p.ri, p.ci - 1);
-    if (move === "right") return at(p.ri, p.ci + 1);
-  } else {
-    if (move === "left") return step(-1);
-    if (move === "right") return step(1);
-    if (move === "up") return at(p.ri - 1, p.ci);
-    if (move === "down") return at(p.ri + 1, p.ci);
+  const k = seq.indexOf(i);
+  /* 読み順（横書き＝← →、縦書き＝↑ ↓） */
+  if ((mode === "col" && (move === "up" || move === "down")) || (mode !== "col" && (move === "left" || move === "right"))) {
+    const d = (move === "right" || move === "down") ? 1 : -1;
+    if (k < 0) return -1;
+    const to = k + d;
+    if (to >= 0 && to < seq.length) return seq[to];
+    if (!wrap) return -1;
+    return d > 0 ? seq[0] : seq[seq.length - 1];
   }
-  return -1;
+  /* 直交（横書き＝↑ ↓、縦書き＝← →） */
+  if (mode === "col") {
+    const to = p.ci + (move === "left" ? -1 : 1);
+    if (to >= 0 && to <= lastCol) return at(p.ri, to);
+    if (!wrap) return -1;
+    return at(p.ri, move === "left" ? lastCol : 0);
+  }
+  const to = p.ri + (move === "up" ? -1 : 1);
+  if (to >= 0 && to <= lastRow) return at(to, p.ci);
+  if (!wrap) return -1;
+  return at(move === "up" ? lastRow : 0, p.ci);
 }
 /* 押されたキー → 4 方向のどれか（アサインを見る） */
 function volMoveOf(code) {
@@ -1632,6 +1645,10 @@ function renderSkinVolKeys() {
   });
   document.querySelectorAll("[data-voldir]").forEach(b => {
     const sel = b.dataset.voldir === settings.skinVolDir;
+    b.classList.toggle("selected", sel); b.setAttribute("aria-pressed", String(sel));
+  });
+  document.querySelectorAll("[data-volwrap]").forEach(b => {
+    const sel = b.dataset.volwrap === settings.skinVolWrap;
     b.classList.toggle("selected", sel); b.setAttribute("aria-pressed", String(sel));
   });
   for (const k of ["L", "R", "U", "D"]) {
@@ -1665,6 +1682,10 @@ function setSkinVolDir(dir) {
   settings.skinVolDir = dir === "col" ? "col" : "row";
   saveUserPrefs(); renderSkinVolKeys();
 }
+function setSkinVolWrap(on) {
+  settings.skinVolWrap = on ? "on" : "off";
+  saveUserPrefs(); renderSkinVolKeys();
+}
 function wireSkinVolKeys() {
   if (skinVolKeysWired) return;
   const list = $("skinVolList");
@@ -1681,7 +1702,7 @@ function wireSkinVolKeys() {
     if (!move) return;
     const cards = skinVolCards();
     const from = cards.indexOf(document.activeElement);
-    const to = volMove(cards.map(c => { const r = c.getBoundingClientRect(); return { top: r.top, left: r.left }; }), from, move, settings.skinVolDir);
+    const to = volMove(cards.map(c => { const r = c.getBoundingClientRect(); return { top: r.top, left: r.left }; }), from, move, settings.skinVolDir, settings.skinVolWrap === "on");
     if (to < 0) { e.preventDefault(); return; }   /* 端で止まる */
     e.preventDefault();
     cards.forEach((c, i) => { c.tabIndex = i === to ? 0 : -1; });
@@ -1696,6 +1717,7 @@ function wireSkinVolKeys() {
   /* 入切・読み方向 */
   document.querySelectorAll("[data-volnav]").forEach(b => b.addEventListener("click", () => setSkinVolNav(b.dataset.volnav !== "off")));
   document.querySelectorAll("[data-voldir]").forEach(b => b.addEventListener("click", () => setSkinVolDir(b.dataset.voldir)));
+  document.querySelectorAll("[data-volwrap]").forEach(b => b.addEventListener("click", () => setSkinVolWrap(b.dataset.volwrap === "on")));
   /* 4 方向のアサイン：押したら「キーを押してください」で待つ */
   document.querySelectorAll("[data-volkey]").forEach(b => b.addEventListener("click", () => {
     volKeyListening = volKeyListening === b.dataset.volkey ? "" : b.dataset.volkey;

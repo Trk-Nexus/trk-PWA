@@ -86,7 +86,7 @@ test("縦書き：↓ が「次」、列の端は次の列の先頭へ（縦読�
   assert.equal(move(0, "up"), -1, "端では止まる");
   assert.equal(move(4, "left"), 3, "← は同じ行の前の列");
   assert.equal(move(4, "right"), 5, "→ は同じ行の次の列");
-  assert.equal(move(5, "right"), 5, "端では止まる（同じ所）");
+  assert.equal(move(5, "right"), -1, "端では止まる（動かない）");
 });
 
 test("フォーカスが無い・空のときも壊れない", () => {
@@ -154,7 +154,7 @@ test("読み方向の切替と入切のボタンが配線されている", () =>
 
 /* ==================== 画面 ==================== */
 test("📚 のパネルに、キーの入口（入切・読み方向・4 つ）がある", () => {
-  const box = html.slice(html.indexOf('id="skinVolKeyBox"'), html.indexOf('id="skinVolKeyBox"') + 1400);
+  const box = html.slice(html.indexOf('id="skinVolKeyBox"'), html.indexOf('id="skinVolKeyBox"') + 2400);
   assert.match(box, /data-volnav="on"/);
   assert.match(box, /data-volnav="off"/);
   assert.match(box, /data-voldir="row"/);
@@ -166,7 +166,8 @@ test("📚 のパネルに、キーの入口（入切・読み方向・4 つ）�
 });
 
 test("4 言語のキーがそろう（11 キー×4）", () => {
-  for (const k of ["skinVolKeysTitle", "skinVolKeysOn", "skinVolKeysOff", "skinVolDirRowLabel", "skinVolDirColLabel",
+  for (const k of ["skinVolKeysTitle", "skinVolKeysOn", "skinVolKeysOff", "skinVolDirTitle", "skinVolDirRowLabel", "skinVolDirColLabel",
+    "skinVolWrapTitle", "skinVolWrapStop", "skinVolWrapLoop",
     "skinVolKeysHint", "skinVolKeysListening", "skinVolKeyLeft", "skinVolKeyRight", "skinVolKeyUp", "skinVolKeyDown"]) {
     assert.equal((i18n.match(new RegExp("\\b" + k + ":", "g")) || []).length, 4, `${k} は 4 言語`);
   }
