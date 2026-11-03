@@ -11,9 +11,10 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { ROOT } from "./helpers/browser-data.mjs";
+import { cliSource } from "./helpers/cli-src.mjs";
 
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
-const src = read("js/cli.js");
+const src = cliSource();
 
 const START = "/* ==================== 純粋な計算（trk267）";
 const END = "/* ==================== 純粋な計算（trk267）ここまで";
@@ -271,7 +272,7 @@ describe("trk267：呪文（spell）と cast", () => {
     await run("spell add night skin terminal; volume 30", deps);
     deepEq(deps.calls, [["save", "night", "skin terminal; volume 30"]]);
     deepEq(keys((await run("spell add")).res), ["cliSpellUsage"]);
-    deepEq(keys((await run("spell add わるい名前 volume 1")).res), ["cliSpellBadId"]);
+    deepEq(keys((await run("spell add -わるい volume 1")).res), ["cliSpellBadId"]);   /* trk288：日本語の名前は可。先頭の - は不可 */
     deepEq(keys((await run("spell add ok! volume 1")).res), ["cliSpellBadId"]);
   });
 

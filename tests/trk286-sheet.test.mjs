@@ -14,9 +14,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { ROOT } from "./helpers/browser-data.mjs";
+import { cliSource } from "./helpers/cli-src.mjs";
 
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
-const cli = read("js/cli.js");
+const cli = cliSource();
 const core = read("js/core.js");
 const html = read("index.html");
 const css = read("css/style.css");
@@ -161,23 +162,22 @@ describe("trk286：呼び出しキーの割り当てが、ちゃんと決まる"
     assert.match(cli, /if \(!code \|\| code === "Escape"\) \{ cliKeyBinding = null; syncCliKeyUI\(""\); return false; \}/);
   });
 
-  test("ほかの操作と重なるキーは受けない（📚 の音量キーも見る）", () => {
-    assert.match(cli, /function cliKeyUsed\(code\) \{/);
-    assert.match(cli, /S\.skinVolKeyL, S\.skinVolKeyR, S\.skinVolKeyU, S\.skinVolKeyD/);
-    assert.match(cli, /if \(cliKeyUsed\(code\)\) \{ toastNote\(tr\("cliKeyTaken"\)\); syncCliKeyUI\(tr\("cliKeyTaken"\)\); return false; \}/);
+  test("ほかの操作と重なるキーも登録できる（予約キーだけ拒む・trk288）", () => {
+    assert.doesNotMatch(cli, /function cliKeyUsed\(code\)/, "重なりの拒否は外した（trk288・C3）");
+    assert.match(cli, /if \(cliKeyReserved\(code\)\) \{ toastNote\(tr\("cliKeyReserved"\)\)/, "予約キーは拒む（cliKeyReserved）");
   });
 
   test("待ちっぱなしにしない（押し直し・ほかを触る・Esc で取り消し）", () => {
     assert.match(cli, /cliKeyBinding = cliKeyBinding === null \? 0 : null;/, "ボタンをもう一度押したら取り消し");
     assert.match(cli, /document\.addEventListener\("pointerdown", e => \{/, "外を触ったら取り消し");
     assert.match(cli, /if \(t && t\.closest && t\.closest\("#cliKeyAssign"\)\) return;/);
-    assert.match(cli, /if \(cliKeyBinding !== null\) \{\n      e\.preventDefault\(\); e\.stopPropagation\(\);\n      if \(!e\.repeat\) captureCliKey\(core\.keyCodeOf\(e\)\);/);
+    assert.match(cli, /if \(cliKeyBinding !== null\) \{\n      e\.preventDefault\(\); e\.stopPropagation\(\);\n      if \(!e\.repeat\) captureCliKey\(core\.keyCodeOf\(e\), e\.shiftKey === true\);/);
   });
 
   test("決まったこと・駄目だったことを、その場に出す（読み上げつき）", () => {
     assert.match(html, /id="cliKeyStatus" aria-live="polite"/);
     assert.match(cli, /button\.setAttribute\("aria-pressed", String\(on\)\)/);
-    assert.match(cli, /syncCliKeyUI\(tr\("cliKeySaved", \{ mod: modShort\(\), key: core\.formatKey\(code\) \}\)\)/);
+    assert.match(cli, /syncCliKeyUI\(tr\("cliKeySaved", \{ mod: modLabel\(\), key: core\.formatKey\(code\) \}\)\)/);
     for (const key of ["cliKeyWaiting", "cliKeyBadKey", "cliKeySaved"]) {
       assert.equal((cli.match(new RegExp(`\\b${key}:`, "g")) || []).length, 4, `${key} は 4 言語`);
     }

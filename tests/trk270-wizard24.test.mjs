@@ -11,9 +11,10 @@ import path from "node:path";
 import vm from "node:vm";
 import { execFileSync } from "node:child_process";
 import { ROOT } from "./helpers/browser-data.mjs";
+import { cliSource } from "./helpers/cli-src.mjs";
 
 const wizardSrc = fs.readFileSync(path.join(ROOT, "js/skins-wizard.js"), "utf8");
-const cliSrc = fs.readFileSync(path.join(ROOT, "js/cli.js"), "utf8");
+const cliSrc = cliSource();
 
 /* ---------- 画面なしで data.js ＋ 生成物を読む ---------- */
 function loadWorld() {

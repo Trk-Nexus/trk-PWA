@@ -153,6 +153,9 @@ function truckKeysLabel(pos) {   // プレイ中のキー案内（render.js か�
   return list.filter(Boolean).map(core.formatKey).join("/");
 }
 
+/* ⌨ trk288：起動時の例外の直し。catch.js は別ファイルなので、この道の定数は truck.js から公開する（catch.js の一覧に直接書くと ReferenceError で Trk.modes が空になっていた） */
+window.Trk.modes = Object.assign(window.Trk.modes || {}, { ROAD_IDS, ROAD_WEIGHTS });
+
 /* ---------- トラックの状態 ---------- */
 const TRUCK_ROW = 42;   // 横スクロールで、ドン／カッの段を上下にずらす量
 const truckState = { lane:0, vis:0, last:0, dash:-1e9 };

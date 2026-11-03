@@ -14,9 +14,10 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { ROOT } from "./helpers/browser-data.mjs";
+import { cliSource } from "./helpers/cli-src.mjs";
 
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
-const cli = read("js/cli.js");
+const cli = cliSource();
 const core = read("js/core.js");
 const html = read("index.html");
 const css = read("css/style.css");
@@ -131,18 +132,18 @@ test("閉じるかどうかは設定（cliAutoClose）で決まり、既定は �
 });
 
 /* ==================== 呼び出しキー ==================== */
-test("呼び出しキーは Ctrl／⌘ + 選んだキー（既定 `）で、同じキーで開閉", () => {
-  assert.match(core, /cliKey: validCode\(prefs\.cliKey\) \? prefs\.cliKey : "Backquote"/, "既定は `");
-  assert.match(cli, /const cliKeyCode = \(\) => \(core\.validCode\(core\.settings\.cliKey\) \? core\.settings\.cliKey : "Backquote"\)/);
+test("呼び出しキーは Ctrl／⌘ + 選んだキー（既定 Ctrl+.）で、同じキーで開閉", () => {
+  assert.match(core, /cliKey: validCode\(prefs\.cliKey\) \? prefs\.cliKey : "Period"/, "既定は Period（Ctrl+.）／trk288 で Backquote から変更");
+  assert.match(cli, /const cliKeyCode = \(\) => \(core\.validCode\(core\.settings\.cliKey\) \? core\.settings\.cliKey : "Period"\)/);
   /* ⌨ trk287：修飾キーは選べる（既定は Ctrl か ⌘／Win） */
   assert.match(cli, /if \(!cliModPressed\(e\)\) return;/, "選んだ修飾キーと一緒に押す");
   assert.match(cli, /if \(state\.open\) closeCli\(\);/, "開いていれば閉じる（トグル）");
   /* 割り当て：押されたキーを覚える・Esc は取り消し・遊ぶキーと重なるキーは受けない */
-  assert.match(cli, /function captureCliKey\(code\)/);
+  assert.match(cli, /function captureCliKey\(code, shift\)/);
   /* ⌨ trk286：Esc は取り消し・修飾キーだけや Tab は受けない・ほかの操作と重なるキーも受けない */
   assert.match(cli, /if \(!code \|\| code === "Escape"\) \{ cliKeyBinding = null; syncCliKeyUI\(""\); return false; \}/);
   assert.match(cli, /const cliKeyUsable = code => !!code && code !== "Escape" && code !== "Tab"/);
-  assert.match(cli, /if \(cliKeyUsed\(code\)\) \{ toastNote\(tr\("cliKeyTaken"\)\); syncCliKeyUI\(tr\("cliKeyTaken"\)\); return false; \}/);
+  assert.match(cli, /if \(cliKeyReserved\(code\)\) \{ toastNote\(tr\("cliKeyReserved"\)\); syncCliKeyUI\(tr\("cliKeyReserved"\)\); return false; \}/, "予約キーは拒む（trk288）");
   assert.match(cli, /core\.settings\.cliKey = code;/, "覚えたら設定に入れる");
   assert.match(cli, /core\.saveUserPrefs\(\);/, "保存する");
   assert.match(html, /id="cliKeyAssign"/, "⚙ に割り当てボタン");
