@@ -1435,11 +1435,14 @@ function skinShelfEntries(skins, opt) {
     const g = volumes.find(x => x && x.id === vol);
     if (g && Array.isArray(g.ids)) volSet = new Set(g.ids);
   }
-  if (!acrossVolumes && !volSet && vol !== "all") {
-    /* "" （既定）と、知らない巻名（古い保存・目録が減ったとき）は同じ扱い＝定番＋ウィザード */
+  const defaultVol = !acrossVolumes && !volSet && vol !== "all";   /* "" と知らない巻名＝既定の棚 */
+  if (defaultVol) {
+    /* "" （既定）と、知らない巻名（古い保存・目録が減ったとき）は同じ扱い＝**定番だけ**。
+       ⚖ trk280：ご相談「ウィザードは定番＋ウィザードから外す（初見の驚きを残す）」により、
+       wizard も既定の棚から外しました（📚 の巻で wizard を選んだとき・ALL では見えます）。 */
     outside = new Set();
     for (const g of volumes) {
-      if (!g || g.id === "wizard" || g.id === "other") continue;
+      if (!g || g.id === "other") continue;
       for (const id of Array.isArray(g.ids) ? g.ids : []) outside.add(id);
     }
   }
@@ -1455,6 +1458,9 @@ function skinShelfEntries(skins, opt) {
     /* 差し戻し（目録へお返し中）は、**明示的にその巻を選んだとき**と ALL だけ（Q2）。
      知らない巻名・巻の目録が読めないときは「選んでいない」扱いで外します。 */
   if (s.holdback && !inUse && vol !== "all" && !(volSet && volSet.has(id))) continue;
+    /* ⚖ trk280：既定の棚にはウィザードを出さない（巻の目録が読めないときも同じ。
+       目録が無いと巻で切れないので、カテゴリで外します）。 */
+    if (defaultVol && !inUse && skinCatList(s).includes("wizard")) continue;
     /* 隠したスキンは「🚫 隠した」を見ているときだけ出す。
        ⚠ trk241：**いま使っているスキンだけは、隠しても棚に残す**（消えたように見えると、
           当たっているのに「効かない」と誤解されるため。印は 🚫 で出す）。 */
@@ -1887,7 +1893,8 @@ function buildSkinVolControls(volumes, skins) {
     add("", tr("skinVolDefault"), skinVolCount(skins, volumes, ""));
     add("all", tr("skinVolAll"), skinVolCount(skins, volumes, "all"));
     for (const g of volumes) {
-      /* 定番とウィザードは既定と重なるので、区切りを 1 行入れてから並べる（レビュー R7） */
+      /* 最後の 2 巻（定番・ウィザード）は仲間なので、区切りを 1 行入れてから並べる（レビュー R7）。
+         ⚖ trk280：既定の棚は「定番」だけになりました（wizard はここで選んだときだけ）。 */
       if (g.id === "wizard") {
         const sep = el("p", "hint skinVolSep");
         sep.textContent = tr("skinVolGroupClassic");

@@ -2784,7 +2784,8 @@ if (!read("js/main.js").includes("guideEggKind") ||
     truck.includes('if (m === "truck") return settings.swayTruck !== false;') &&
     truck.includes('if (m === "orbit") return settings.swayOrbit !== false;') &&
     truck.includes("if (reduceMotion.matches || !swayModeOn()) return 0;") &&
-    truck.includes('settings.swayTruck = prefs.swayTruck !== false;') &&
+    /* ⚖ trk280：TRUCK の揺れは既定オフ（酔いにくく）。オンにした人だけ揺れる */
+    truck.includes('settings.swayTruck = prefs.swayTruck === true;') &&
     truck.includes('settings.swayOrbit = prefs.swayOrbit !== false;') &&
     truck.includes("settings.swayAllModes = prefs.swayAllModes === true;");
   const uiOk = html.includes('id="swayTruck"') && html.includes('id="swayAllModes"') &&
@@ -2794,7 +2795,7 @@ if (!read("js/main.js").includes("guideEggKind") ||
     (options.match(/swayAllModes:"/g) || []).length >= 4;
   if (!swayOk) fail("lane sway gating (TRUCK / ORBIT by default, mystery override) is broken");
   else if (!uiOk) fail("lane sway options (TRUCK / ORBIT checkboxes + ❓ mystery switch) are missing");
-  else ok("lane sway defaults to TRUCK / ORBIT with per-mode off switches; ❓ mystery switch overrides all modes");
+  else ok("lane sway: TRUCK is off by default (trk280) and ORBIT is on, each with its own switch; ❓ mystery switch overrides all modes");
 }
 
 // ✨ Frame interpolation (js/frame-interp.js): opt-in motion-compensated

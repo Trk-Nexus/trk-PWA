@@ -93,7 +93,7 @@ core.settings.swayPower = core.num(core.prefs.swayPower, .2, 2, 1.1);
 /* 🌀 揺れるモード：既定は 🚚TRUCK と 🪐ORBIT だけ。それぞれのモードで止められます。
    （🪐ORBIT のチェックボックスは modes.js が作ります）
    ❓謎設定の swayAllModes は「揺らさない」設定より優先して、全モードで揺らします。 */
-core.settings.swayTruck = core.prefs.swayTruck !== false;
+core.settings.swayTruck = core.prefs.swayTruck === true;      /* trk280：揺れは既定オフ（酔いにくく） */
 core.settings.swayOrbit = core.prefs.swayOrbit !== false;
 core.settings.swayAllModes = core.prefs.swayAllModes === true;
 const TRUCK_PRESETS = { ud:["ArrowUp", "ArrowDown"], lr:["ArrowLeft", "ArrowRight"] };
