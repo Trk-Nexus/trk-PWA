@@ -843,6 +843,7 @@ Windows の「サウンド」などで**音の出力先（スピーカー／ヘ�
   - 見張り：`tests/trk269-cli-standard.test.mjs` **23 件**。jsdom で **18 項目 0 NG**（履歴の上限・Tab 補完 off・ビープ・`bell off`・`clear`・言語・設定のチェック）。`npm run check` **1524 pass / 0 fail**。cache は **`trk-v2026.11.03-trk269`**。
   - **新しい保存キー 0**（`settings.cli*` の中だけ・`cliBell` を 1 つ追加）。`TRK_PWA_REF` は **`6f60e234fca63cf47a2cba4bbcd954ee3850dacd`**。
   - **`/trk/` に当てる版は保留**のまま（Skin 側の応答後）。
+  - **配布（2026-11-03）**：Drive の `trk-PWA-trk269-端末の定番とWizardのスキン-2026-11-03`（`1eAfroK58tbRC6aoAv32-vonIz-AqFNT-`）に 6 本＝`trk-standalone-2026-11-03-trk269.zip`（344 ファイル・7,612,753 B・sha256 `9132ba57…23db1b39`）・`SHA256SUMS-trk269-2026-11-03.txt`・`VIEWER-TRK269-2026-11-03.md`・`PLAN-TRK269-2026-11-03.md`・`SKIN-RETURN-TRK269-2026-11-03.md`・`00-まず読む.txt`。**ZIP を展開して中身も確認**（`trk-build=trk269`・`CACHE="trk-v2026.11.03-trk269"`・`trk-files/js/cli.js` 1282 行・`js/skins-wizard.js` 157 行・展開先の `js/cli.js` で jsdom 18 項目 0 NG）。
 
 - **⌨ trk268：CLI 用スキンの受け口（2026-11-03）**：記録＝[`VIEWER-TRK268-2026-11-03.md`](VIEWER-TRK268-2026-11-03.md)、洗い出し＝[`PLAN-TRK268-2026-11-03.md`](PLAN-TRK268-2026-11-03.md)、先方へ返した文書＝[`SKIN-RETURN-TRK267-2026-11-03.md`](SKIN-RETURN-TRK267-2026-11-03.md) §9。**返事を待たずに、値でも `.stpack` でも入る形を先に用意**した回です（trk267 の続き）。
   - **2 つの渡し方**：(a) 値を `js/data.js` に 1 枚入れる (b) `.stpack` の `skin` に同じ値を入れる。`sanitizeSkinDef` が `cat`・`cli` を残し、`buildCustomSkin` が `ui` に `--cli-*` を混ぜるので、**パックは入れた時点で `auto` が拾う**（棚の見え方は `custom` のまま＝`skinCatList` は触らない）。
