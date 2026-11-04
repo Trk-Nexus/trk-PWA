@@ -43,6 +43,7 @@
     cliKeyWaiting: "キーを押してください（Esc で取り消し）。修飾キーだけでは決まりません。",
     cliKeyBadKey: "そのキーだけでは決められません。文字・数字・矢印・ファンクションキーなどにしてください。",
     cliKeyReserved: "そのキーは、ブラウザーや OS が先に使うため登録できません（例：W・T・N・R・L・F・P・S・Tab・数字・F キー）。",
+    cliModReserved: "その組み合わせは、ブラウザーや OS が先に使うため選べません。呼び出しキーを変えるか、別の修飾キーを選んでください。",
     cliBellSkinOff: "このスキンは音を出しません（スキンが「鳴らす」と言っているときだけ鳴ります）。",
     cliInsertLabel: "入力欄の文字の入れ方",
     cliInsertNative: "ブラウザーに任せる（既定）",
@@ -218,6 +219,7 @@
     cliKeyWaiting: "Press a key (Esc to cancel). A modifier alone will not do.",
     cliKeyBadKey: "That key alone cannot be used. Pick a letter, number, arrow or function key.",
     cliKeyReserved: "Browsers and the OS use that key first, so it can't be assigned (for example W T N R L F P S, Tab, digits, F-keys).",
+    cliModReserved: "That combination is used first by the browser or OS, so it can't be selected. Change the call key or pick another modifier.",
     cliBellSkinOff: "This skin doesn't beep (it beeps only when the skin allows it).",
     cliInsertLabel: "How typed letters are entered",
     cliInsertNative: "Let the browser insert (default)",
@@ -393,6 +395,7 @@
     cliKeyWaiting: "请按键（Esc 取消）。只按修饰键不能确定。",
     cliKeyBadKey: "仅凭这个键无法确定。请用字母、数字、方向键或功能键。",
     cliKeyReserved: "该键会被浏览器或系统先使用，无法设定（如 W T N R L F P S、Tab、数字、F 键）。",
+    cliModReserved: "该组合会先被浏览器或系统使用，无法选择。请更换呼出键或修饰键。",
     cliBellSkinOff: "此皮肤不会发出声音（只有皮肤允许时才会响）。",
     cliInsertLabel: "输入框中文字的录入方式",
     cliInsertNative: "交给浏览器（默认）",
@@ -568,6 +571,7 @@
     cliKeyWaiting: "키를 눌러 주세요(Esc 로 취소). 수정 키만으로는 정해지지 않습니다.",
     cliKeyBadKey: "그 키만으로는 정할 수 없습니다. 문자·숫자·방향키·기능키 등을 눌러 주세요.",
     cliKeyReserved: "브라우저·OS 가 먼저 쓰는 키라 정할 수 없습니다(예: W T N R L F P S, Tab, 숫자, F키).",
+    cliModReserved: "그 조합은 브라우저·OS 가 먼저 쓰므로 고를 수 없습니다. 호출 키를 바꾸거나 다른 수정 키를 고르세요.",
     cliBellSkinOff: "이 스킨은 소리를 내지 않습니다(스킨이 허용할 때만 울립니다).",
     cliInsertLabel: "입력 문자 넣는 방식",
     cliInsertNative: "브라우저에 맡김(기본)",
@@ -970,7 +974,7 @@
     dialog.addEventListener("pointerup", e => { if (pressOutside && outside(e)) closeCli(); pressOutside = false; });
     /* 閉じたとき（Esc・背景・閉じるボタン・closeCli のどれでも）に 1 か所で片づける */
     dialog.addEventListener("close", () => finishClose());
-    /* ⌨ trk290（C2）：見える範囲の変化（キーボード・ピンチ・回転）に合わせる */
+    /* ⌨ trk288（C2）：見える範囲の変化（キーボード・ピンチ・回転）に合わせる */
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", fitToViewport);
       window.visualViewport.addEventListener("scroll", fitToViewport);
@@ -1301,7 +1305,7 @@
      背景（body / #app）の色は触らず、この <dialog> のサブツリーの CSS 変数だけ差し替えます。
      なので開閉で後ろの曲リストがちらつきません（modern-web-guidance の design-token-reactivity の考え方）。 */
   const SHEET_SIZES = ["half", "tall", "full"];
-  /* ⌨ trk290（C2）：ソフトウェアキーボードが出て「見える範囲」が縮んだら、板もその中に収める。
+  /* ⌨ trk288（C2）：ソフトウェアキーボードが出て「見える範囲」が縮んだら、板もその中に収める。
      dvh は iOS のキーボードでは縮まないので、visualViewport の高さと位置で上限と底を決める。 */
   function fitToViewport() {
     if (!overlay) return;
@@ -1447,7 +1451,15 @@
       modSel.dataset.cliWired = "1";
       modSel.value = cliMod();
       modSel.addEventListener("change", () => {
-        core.settings.cliMod = CLI_MODS.includes(modSel.value) ? modSel.value : "ctrlOrMeta";
+        const next = CLI_MODS.includes(modSel.value) ? modSel.value : "ctrlOrMeta";
+        /* ⌨ trk289（N3）：修飾キーを変えて、予約のキーになるなら受けない（元に戻す） */
+        if (cliKeyReserved(cliKeyCode(), next, core.settings.cliShift === true)) {
+          modSel.value = cliMod();
+          toastNote(tr("cliModReserved"));
+          syncCliKeyUI(tr("cliModReserved"));
+          return;
+        }
+        core.settings.cliMod = next;
         core.saveUserPrefs();
         syncCliKeyUI();
       });
@@ -1657,7 +1669,7 @@
      preventDefault した文字（報告のあった p・: など）が落ちることがありました。
      いまは**入力欄にフォーカスがあっても、文字はこちらで入れる**（＝どこで止められても落ちない）。
      端末の外の操作（P＝一時停止・/＝設定の検索・`＝リトライ）には渡しません。 */
-  /* ⌨ trk289（C1）：キーボードで押せる部品（この上の Space・Enter は、押す働きに譲る） */
+  /* ⌨ trk288（C1）：キーボードで押せる部品（この上の Space・Enter は、押す働きに譲る） */
   const CLI_CONTROL_SEL = "button, summary, select, a, [role=button]";
   const isTypeable = e => typeof e.key === "string" && e.key.length === 1 &&
     !e.ctrlKey && !e.metaKey && !e.altKey;
@@ -1668,7 +1680,7 @@
     if (t && t.closest && t.closest("#cliSpellPanel")) return;   /* 辞書の入力欄は邪魔しない */
     const inside = !!(t && t.closest && t.closest("#cliMode"));
     if (!inside && t && (["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName) || t.isContentEditable)) return;
-    /* ⌨ trk289（C1）：ボタン・選択・リンクの上では、キーは本来の働きに任せる（Space で押す・Enter で押す）。
+    /* ⌨ trk288（C1）：ボタン・選択・リンクの上では、キーは本来の働きに任せる（Space で押す・Enter で押す）。
        以前は Space や Enter を入力欄へ送ってしまい、✕ や「唱える」をキーボードで押せませんでした。 */
     if (t && t.closest && t.closest(CLI_CONTROL_SEL)) return;
     if (isTypeable(e)) {

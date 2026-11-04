@@ -86,11 +86,19 @@
      Shift を足しても同じ（Ctrl+Shift+T などもブラウザーの動き）。遊ぶキーとの重なりは、この関数では問いません。 */
   const CLI_RESERVED_CODES = ["KeyD", "KeyE", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyL", "KeyN", "KeyO", "KeyP", "KeyQ",
     "KeyR", "KeyS", "KeyT", "KeyU", "KeyW", "Minus", "Equal", "NumpadAdd", "NumpadSubtract", "Tab", "Escape"];
-  /* Ctrl（⌘）＋K は、ブラウザーの検索（アドレスバーの検索）を残すため予約。Shift 付きと Alt 付きは登録できる */
+  /* ⌨ trk289（N2）：Ctrl（⌘）と組むと、ブラウザーの編集・開発者ツールになるキー。
+     Ctrl＋K は検索（ユーザーの判断）。Ctrl＋A・C・V・X・Z・Y は、Shift を足しても予約（やり直し Ctrl＋Shift＋Z も）。
+     Ctrl＋Shift＋I・C・J は開発者ツール。Ctrl＋Shift＋K は登録できる（ユーザーの判断・Firefox ではコンソール）。
+     Alt と組む場合は、これらは予約しない（ブラウザーの編集に当たらない）。 */
+  const CLI_RESERVED_WITH_CTRL = ["KeyK", "KeyA", "KeyC", "KeyV", "KeyX", "KeyZ", "KeyY"];
+  const CLI_RESERVED_WITH_CTRL_SHIFT = ["KeyI", "KeyC", "KeyJ"];
   function cliKeyReserved(code, mod, shift) {
     const c = String(code == null ? "" : code);
     if (CLI_RESERVED_CODES.includes(c)) return true;
-    if (c === "KeyK" && mod !== "alt" && shift !== true) return true;
+    const ctrlish = mod !== "alt";   /* 既定（mod を渡さない）は Ctrl／⌘ と見る */
+    if (ctrlish && shift !== true && CLI_RESERVED_WITH_CTRL.includes(c)) return true;
+    if (ctrlish && shift === true && CLI_RESERVED_WITH_CTRL_SHIFT.includes(c)) return true;
+    if (ctrlish && shift === true && CLI_RESERVED_WITH_CTRL.includes(c) && c !== "KeyK") return true;
     if (/^(Digit|Numpad)\d$/.test(c)) return true;
     if (/^F\d{1,2}$/.test(c)) return true;
     return false;

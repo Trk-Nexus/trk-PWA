@@ -135,7 +135,7 @@ describe("trk288：呼び出しキーの予約（C3）", () => {
     }
   });
   test("遊びに使える・ブラウザーが取らないキーは通す（. などの既定の候補）", () => {
-    for (const code of ["KeyA", "KeyM", "Period", "Slash", "Backquote", "Space", "Semicolon", "Comma", "BracketLeft"]) {
+    for (const code of ["KeyB", "KeyM", "Period", "Slash", "Backquote", "Space", "Semicolon", "Comma", "BracketLeft"]) {
       assert.equal(P.cliKeyReserved(code, "ctrlOrMeta", false), false, `${code} は登録できる`);
     }
   });

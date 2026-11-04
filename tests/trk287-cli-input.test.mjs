@@ -94,7 +94,8 @@ describe("trk287：修飾キーを選べる（Win／⌘ = Super）", () => {
     assert.match(core, /cliMod: pick\(prefs\.cliMod, \["ctrlOrMeta", "meta", "ctrl", "alt"\], "ctrlOrMeta"\)/);
     assert.match(core, /settings\.cliMod = "ctrlOrMeta";/, "工場出荷でも戻す");
     assert.match(src, /const CLI_MODS = \["ctrlOrMeta", "meta", "ctrl", "alt"\];/);
-    assert.match(src, /core\.settings\.cliMod = CLI_MODS\.includes\(modSel\.value\) \? modSel\.value : "ctrlOrMeta";/);
+    assert.match(src, /const next = CLI_MODS\.includes\(modSel\.value\) \? modSel\.value : "ctrlOrMeta";/);
+    assert.match(src, /core\.settings\.cliMod = next;/, "予約になる組み合わせは受けない（trk289・N3）");
     assert.match(src, /core\.saveUserPrefs\(\);\n        syncCliKeyUI\(\);/, "選ぶと保存して表示も合わせる");
   });
 
