@@ -41,3 +41,15 @@ jobs:
         env:
           TZ: Asia/Tokyo
         run: node tools/run-tests.mjs
+      - name: Browser smoke (trk289)
+        # 実ブラウザーで起動・譜面・画面の押下を見る（tools/smoke-browser.mjs --compare）。
+        # 基準（tests/fixtures/smoke-baseline.json）と比べ、新しいエラー・未解決の名前・譜面の差で失敗する。
+        # ランナーの Google Chrome を使う。puppeteer-core は package.json に入れず、この手順だけで入れる（--no-save）。
+        env:
+          SMOKE_CHROME: /usr/bin/google-chrome
+          SMOKE_CHROME_ARGS: '["--no-sandbox"]'
+          SMOKE_PUPPETEER: puppeteer-core
+        run: |
+          test -x "$SMOKE_CHROME" || { echo "Chrome が見つかりません: $SMOKE_CHROME"; exit 1; }
+          npm install --no-save puppeteer-core@23.11.1
+          node tools/smoke-browser.mjs --compare

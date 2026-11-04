@@ -2366,7 +2366,7 @@ body:has(dialog.cliDialog[open]){overflow:hidden;overscroll-behavior:none}
 .cliInput:focus-visible{outline:2px solid var(--ui-accent-ink,var(--ui-accent));outline-offset:1px}
 .cliRunBtn{flex:none}
 .cliHintText{margin:0;padding:8px 14px 12px;color:var(--ui-muted);font-size:11px;line-height:1.5}
-/* ⌨ trk290（C2）：入力欄・ボタンは必ず板の中に残す。縮むのは出力（ログ）だけ。
+/* ⌨ trk288（C2）：入力欄・ボタンは必ず板の中に残す。縮むのは出力（ログ）だけ。
    キーボードが出て板が低くなったときも、入力欄が画面の外へ押し出されないように。 */
 dialog.cliDialog>*{flex:none}
 dialog.cliDialog>.cliLog{flex:1 1 0;min-height:72px}
@@ -2381,4 +2381,12 @@ dialog.cliDialog>.cliSpellPanel{flex:0 1 auto;min-height:0}
   .cliInput{flex:1 1 100%;order:2}
   .cliRunBtn{flex:1 1 auto;order:3}
   .cliPromptChar{order:1}
+}
+/* ⌨ trk289（R-b）：幅 560px 以下の出力の最小（上の 96px〜）は、背の低い画面では入力欄を押し出す。
+   この規則は 560px 以下の規則より後ろに置く（同じ強さなので、後ろが勝つ）。 */
+@media (max-height:520px){
+  dialog.cliDialog>.cliLog{min-height:48px}
+  /* 52dvh だと、背の低い画面では見出し（約84px）と入力の行（約115px）が入らず、入力欄が板の外へ出る。
+     この画面の高さでは「半分」を 80dvh にして、中身を収める（tall・full は変えない） */
+  dialog.cliDialog[data-size="half"]{height:80dvh}
 }

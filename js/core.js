@@ -143,11 +143,20 @@ function cleanSkinMap(v, max = 400) {
 /* ⌨ trk267：ターミナルで覚えた呪文（マクロ）の掃除。
    名前は英小文字・数字・- の 24 文字まで、中身は 200 文字まで・24 本まで。
    壊れた値は落とす（読むときに js/cli.js も同じ形に寄せます）。 */
+/* ⌨ trk289（N1）：辞書の名前の規則。cli-pure.js の SPELL_ID_RE・spellIdKey と同じ（tests が両方を見比べる）。
+   core.js は cli-pure.js より先に読まれるので、ここにも置く。古い規則（英数字だけ）だと、日本語の名前が読み込みで消える。 */
+const CLI_SPELL_ID_RE = /^[\p{L}\p{N}][\p{L}\p{N}-]{0,23}$/u;
+function cliSpellKey(id) {
+  let s = String(id == null ? "" : id);
+  try { s = s.normalize("NFKC"); } catch (_) { /* 古い環境では、そのまま */ }
+  return s.trim().toLowerCase();
+}
 function cleanCliSpells(v) {
   const out = {};
   if (!v || typeof v !== "object" || Array.isArray(v)) return out;
-  for (const [id, body] of Object.entries(v)) {
-    if (!/^[a-z0-9][a-z0-9-]{0,23}$/.test(id)) continue;
+  for (const [id0, body] of Object.entries(v)) {
+    const id = cliSpellKey(id0);
+    if (!CLI_SPELL_ID_RE.test(id)) continue;
     if (typeof body !== "string") continue;
     const text = body.trim().slice(0, 200);
     if (!text) continue;
@@ -553,7 +562,10 @@ const settings = {
   /* ⌨ trk283：呼び出しキー（同じキーで開閉・Ctrl/⌘ と一緒に押す）・実行後に閉じる・
      入力できるかの見せ方（既定は常時バッジ）・端末のスキンを個別に選ぶか。 */
   /* ⌨ trk288（Q1）：呼び出しキーの既定は Ctrl+.（Period）。Backquote は JIS で IME に取られやすいため */
-  cliKey: validCode(prefs.cliKey) ? prefs.cliKey : "Period",
+  /* ⌨ trk289（R-a）：一回限りの移行。trk288 までに保存された Backquote（JIS で Ctrl+` が押せないことがある）は、
+     この印が無いときだけ Period にする。印は次の保存で残るので、以後に本人が Backquote を選べばそのまま残る。 */
+  cliKey: (validCode(prefs.cliKey) && !(prefs.cliKey === "Backquote" && prefs.cliKeyPeriod1 !== true)) ? prefs.cliKey : "Period",
+  cliKeyPeriod1: true,
   /* ⌨ trk288（C3）：呼び出しに Shift を一緒に押すか（Ctrl+Shift+K などを登録したとき） */
   cliShift: prefs.cliShift === true,
   /* ⌨ trk288（R2）：入力欄の文字の入れ方。native＝ブラウザーの挿入に任せる（既定）／exec＝execCommand（元に戻す履歴に残る） */

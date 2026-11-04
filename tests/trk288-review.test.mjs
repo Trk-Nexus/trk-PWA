@@ -135,7 +135,7 @@ describe("trk288：呼び出しキーの予約（C3）", () => {
     }
   });
   test("遊びに使える・ブラウザーが取らないキーは通す（. などの既定の候補）", () => {
-    for (const code of ["KeyA", "KeyM", "Period", "Slash", "Backquote", "Space", "Semicolon", "Comma", "BracketLeft"]) {
+    for (const code of ["KeyB", "KeyM", "Period", "Slash", "Backquote", "Space", "Semicolon", "Comma", "BracketLeft"]) {
       assert.equal(P.cliKeyReserved(code, "ctrlOrMeta", false), false, `${code} は登録できる`);
     }
   });
@@ -155,7 +155,7 @@ describe("trk288：呼び出しキーの予約（C3）", () => {
     assert.match(cli, /const modLabel = \(\) => modShort\(\) \+ \(core\.settings\.cliShift === true \? " \+ Shift" : ""\);/);
   });
   test("既定の呼び出しキーは Period（Ctrl+.）。保存のない人だけ変わる", () => {
-    assert.match(core, /cliKey: validCode\(prefs\.cliKey\) \? prefs\.cliKey : "Period"/);
+    assert.match(core, /cliKey: \(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : "Period"/, "保存の Backquote は一度だけ Period（trk289・R-a）");
     assert.match(core, /cliShift: prefs\.cliShift === true,/);
     assert.match(cli, /core\.validCode\(core\.settings\.cliKey\) \? core\.settings\.cliKey : "Period"/);
   });
