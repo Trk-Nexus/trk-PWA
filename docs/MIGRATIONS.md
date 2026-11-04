@@ -17,6 +17,7 @@
 | `trkEndfieldTidy2` | 一回限りの印 | trk129 | 2027-01-14 | 同上 | js/library.js `trkEndfieldShelfRestoreOnce` |
 | `swayTruckOff1` | 一回限りの印 | trk281 | 2027-04-30 | 期限後、作業者が削除を提案し、利用者の確認を得てから消す（TRUCK の揺れを静かな道へ寄せた印＝保存がある人だけ `swayRoad="highway"`。trk282 で「オフ」から「道」へ。以後は本人の設定で選べる） | js/truck.js `swayTruckOff1`、js/core.js |
 | `trkFixedNotice` | 一回限りの印 | trk218 | 2027-02-28 | 期限後、作業者が削除を提案し、利用者の確認を得てから消す（trk のリストが曲画面の「プレイリストに入れる」に出ない既定へ変わったことを、1回だけ案内する） | js/library.js `trkFixedNoticeOnce`、js/core.js |
+| `cliKeyPeriod1` | 一回限りの印 | trk289 | 2027-02-28 | 期限後、作業者が削除を提案し、利用者の確認を得てから消す（trk288 までに保存された呼び出しキー Backquote を、1 回だけ Period にする。印が無い保存だけが対象） | js/core.js |
 | `ENDFIELD_FIRSTORDER_OLD_NAMES` | 旧名の表（毎回照合） | trk129 | 2027-01-14 | 同上（旧既定名は、更新で一度直れば不要になる） | js/library.js |
 | `BA_MIKA_LEGACY_PL` | 旧名の表（毎回照合） | trk159 | 2027-01-14 | 同上（trk157〜158の旧3リストを「聖園ミカ」1つへ統合） | js/library.js |
 | `trkRemoved` | 保存データ（消さない） | — | なし | 利用者が消したリストを覚える。移行ではない | js/core.js、js/library.js |

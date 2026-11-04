@@ -562,7 +562,10 @@ const settings = {
   /* ⌨ trk283：呼び出しキー（同じキーで開閉・Ctrl/⌘ と一緒に押す）・実行後に閉じる・
      入力できるかの見せ方（既定は常時バッジ）・端末のスキンを個別に選ぶか。 */
   /* ⌨ trk288（Q1）：呼び出しキーの既定は Ctrl+.（Period）。Backquote は JIS で IME に取られやすいため */
-  cliKey: validCode(prefs.cliKey) ? prefs.cliKey : "Period",
+  /* ⌨ trk289（R-a）：一回限りの移行。trk288 までに保存された Backquote（JIS で Ctrl+` が押せないことがある）は、
+     この印が無いときだけ Period にする。印は次の保存で残るので、以後に本人が Backquote を選べばそのまま残る。 */
+  cliKey: (validCode(prefs.cliKey) && !(prefs.cliKey === "Backquote" && prefs.cliKeyPeriod1 !== true)) ? prefs.cliKey : "Period",
+  cliKeyPeriod1: true,
   /* ⌨ trk288（C3）：呼び出しに Shift を一緒に押すか（Ctrl+Shift+K などを登録したとき） */
   cliShift: prefs.cliShift === true,
   /* ⌨ trk288（R2）：入力欄の文字の入れ方。native＝ブラウザーの挿入に任せる（既定）／exec＝execCommand（元に戻す履歴に残る） */

@@ -128,3 +128,14 @@ describe("trk289：R-c 注記の版番号を揃える", () => {
     assert.match(cli, /trk288（C2）/);
   });
 });
+
+describe("trk289：R-a 保存済みの Backquote を一度だけ Period にする", () => {
+  test("印（cliKeyPeriod1）が無い保存の Backquote だけを移す。印の後の Backquote は残す", () => {
+    assert.match(core, /cliKey: \(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : "Period",/);
+    assert.match(core, /cliKeyPeriod1: true,/, "印を立てる（次の保存で残る）");
+  });
+  test("一回限りの印として登録簿に載っている（docs/MIGRATIONS.md）", () => {
+    const reg = read("docs/MIGRATIONS.md");
+    assert.match(reg, /\| `cliKeyPeriod1` \| 一回限りの印 \| trk289 \| 2027-02-28 \|/);
+  });
+});

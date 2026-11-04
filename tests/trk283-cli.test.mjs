@@ -133,7 +133,7 @@ test("閉じるかどうかは設定（cliAutoClose）で決まり、既定は �
 
 /* ==================== 呼び出しキー ==================== */
 test("呼び出しキーは Ctrl／⌘ + 選んだキー（既定 Ctrl+.）で、同じキーで開閉", () => {
-  assert.match(core, /cliKey: validCode\(prefs\.cliKey\) \? prefs\.cliKey : "Period"/, "既定は Period（Ctrl+.）／trk288 で Backquote から変更");
+  assert.match(core, /cliKey: \(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : "Period"/, "既定は Period（Ctrl+.）／trk288 で Backquote から変更／trk289 で一度だけ移行");
   assert.match(cli, /const cliKeyCode = \(\) => \(core\.validCode\(core\.settings\.cliKey\) \? core\.settings\.cliKey : "Period"\)/);
   /* ⌨ trk287：修飾キーは選べる（既定は Ctrl か ⌘／Win） */
   assert.match(cli, /if \(!cliModPressed\(e\)\) return;/, "選んだ修飾キーと一緒に押す");

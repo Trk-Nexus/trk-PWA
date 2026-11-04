@@ -4,7 +4,7 @@
 **この節だけ読めば、何が直り、何が直っていないかが分かります。**
 
 - 版：`trk289`（`index.html` の `trk-build`・`sw.js` の cache `trk-v2026.11.04-trk289`）。前の版は trk288。
-- 検査：`npm run check` **1760 pass / 0 fail**（exit 0）。新しい見張りは `tests/trk289-review.test.mjs`（N1〜N3・R-b・R-c）。
+- 検査：`npm run check` **1762 pass / 0 fail**（exit 0）。新しい見張りは `tests/trk289-review.test.mjs`（N1〜N3・R-a・R-b・R-c）。
 - **確かめた範囲**：Chromium 131（npm の配布物から取得・ヘッドレス）で、次を実測した。
   - 起動時のページエラー 0 件。
   - N1：日本語の辞書の名前（「朝」）と「Ｎight」が、再読み込みの後も残る。
@@ -41,13 +41,12 @@
 
 ## 推奨
 
-### R-a 既存の人の呼び出しキー（**未対応・判断待ち**）
+### R-a 既存の人の呼び出しキー（直した：一度だけ Period に移行）
 
-- 事実：保存には毎回 `cliKey` が入るので、trk287 以前に設定を一度でも保存した人は、`Backquote` のまま残る。返事の「保存の無い人だけ変わる」は、実際には「新しい人だけ」に近い。JIS で Backquote が押せない問題は、既存の人には残る。
-- 選択肢（ユーザーに聞く・§判断）：
-  1. 一度だけ移行する：`cliKey === "Backquote"` かつ自分で割り当てた印が無ければ Period にし、トーストで知らせる。
-  2. 移行はしない。⚙ に「Ctrl+` が押せないときは Ctrl+. に」の案内だけを出す。
-- **いまは変えていません。**
+- **判断**（ユーザー）：まだ配布していないので、一度だけ Period に移行する。
+- **直し**：保存済みの `cliKey` が `Backquote` で、印 `cliKeyPeriod1` が無い保存だけ、読み込みで `Period` にする。印は次の保存で残るので、以後に本人が Backquote を選べばそのまま残る。登録簿（`docs/MIGRATIONS.md`）に「一回限りの印」として 1 行足した（削除予定日 2027-02-28）。
+- **確認**：実ブラウザーで、印なしの Backquote → Period、印ありの Backquote → Backquote（残る）、何も保存なし → Period。
+- **まだ入れていないこと**：移行したことを知らせるトースト。⚙ のキー表示で Ctrl+. と分かる。必要なら次に足す。
 
 ### R-b 背の低い画面の出力の最小（直した）
 
@@ -65,10 +64,12 @@
 
 - Firefox では Ctrl+Shift+K が Web コンソールに使われる。Ctrl+Shift+K を登録できる判断は変えていない。Firefox で実機確認する項目を §7 に足した。
 
-### R-e ブラウザーの smoke を CI に入れる（**未対応・方針を確認したい**）
+### R-e ブラウザーの smoke を CI に入れる（直した）
 
-- 事実：`tools/smoke-browser.mjs` は既にあり（`SMOKE_CHROME`・`SMOKE_PUPPETEER` で動く）、`npm run check` には入れていない（ブラウザーが要るため）。CI（`.github/workflows/check.yml`）に入れるには、ワークフローの変更と、基準（`tests/fixtures/smoke-baseline.json`）の扱いを決める必要がある。
-- 今回は CI は変えていない。方針を決めてから入れる（§判断）。
+- **判断**（ユーザー）：入れる。
+- **直し**：`.github/workflows/check.yml` の末尾に「Browser smoke (trk289)」を足した。ランナーの Google Chrome（`/usr/bin/google-chrome`）を使い、`puppeteer-core@23.11.1` は `npm install --no-save` で入れる（package.json は変えない）。`node tools/smoke-browser.mjs --compare` で、基準（`tests/fixtures/smoke-baseline.json`）と比べる。新しいエラー・未解決の名前・譜面の差で失敗する。
+- **確認**：この環境（Chromium 131）では `--compare` が終了コード 0。報告だけの「window の名前の増減 18 件」は、trk288 で道の名前を公開したことによる（意図した変化）。
+- **注意**：GitHub の Actions で実際に通るかは、この PR の CI の結果で確かめる。ランナーの Chrome の版が変わると、基準との差が出ることがある。
 
 ---
 
@@ -89,9 +90,12 @@
 - `js/cli.js`：修飾キーの変更で予約を見る・案内（N3）。C1・C2 の注記の版番号（R-c）。
 - `css/style.css`：背の低い画面の出力の最小・「半分」の高さ（R-b）。C1・C2 の注記（R-c）。
 - `index.html`・`sw.js`：版を trk289 に。`docs/HANDOFF.md`：cache の行。
+- `js/core.js`（R-a）：保存の Backquote を一度だけ Period に（印 `cliKeyPeriod1`）。`docs/MIGRATIONS.md`：その印を登録簿に 1 行。
+- `.github/workflows/check.yml`（R-e）：Browser smoke のステップを末尾に足した。
 - `tests/trk289-review.test.mjs`（新規）。`tests/trk287-cli-input.test.mjs`・`tests/trk288-review.test.mjs`：古い形を固定していた箇所を新しい仕様に合わせた。
 
-## 判断してほしいこと（まとめ）
+## 判断の結果（ユーザー）
 
-- **R-a**：既存の人の呼び出しキー（Backquote のまま）を、一度だけ Period に移行するか。
-- **R-e**：CI に実ブラウザーの smoke を入れるか（ワークフローの変更と基準ファイルの扱いを含む）。
+- **R-a**：一度だけ Period に移行する（→ 直した）。
+- **R-e**：CI に smoke を入れる（→ 直した）。
+- **マージ**：PR #93 をマージし、この返事文書を Drive に上げる。
