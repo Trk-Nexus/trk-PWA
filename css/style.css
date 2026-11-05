@@ -2371,7 +2371,7 @@ body:has(dialog.cliDialog[open]){overflow:hidden;overscroll-behavior:none}
 dialog.cliDialog>*{flex:none}
 dialog.cliDialog>.cliLog{flex:1 1 0;min-height:72px}
 dialog.cliDialog>.cliSpellPanel{flex:0 1 auto;min-height:0}
-@media (max-height:520px){
+@media (max-height:600px){
   dialog.cliDialog>.cliTypingBadge,dialog.cliDialog>.cliHintText,dialog.cliDialog>.cliSheetHandle{display:none}
   dialog.cliDialog>.cliSpellPanel{max-height:22vh}
 }
@@ -2382,11 +2382,14 @@ dialog.cliDialog>.cliSpellPanel{flex:0 1 auto;min-height:0}
   .cliRunBtn{flex:1 1 auto;order:3}
   .cliPromptChar{order:1}
 }
-/* ⌨ trk289（R-b）：幅 560px 以下の出力の最小（上の 96px〜）は、背の低い画面では入力欄を押し出す。
+/* ⌨ trk289（R-b）・trk290（推奨4・5）：幅 560px 以下の出力の最小（上の 96px〜）は、背の低い画面では入力欄を押し出す。
+   境は 600px（320×568 の iPhone SE 第 1 世代で、半分の入力欄が切れていた）。
    この規則は 560px 以下の規則より後ろに置く（同じ強さなので、後ろが勝つ）。 */
-@media (max-height:520px){
+@media (max-height:600px){
   dialog.cliDialog>.cliLog{min-height:48px}
   /* 52dvh だと、背の低い画面では見出し（約84px）と入力の行（約115px）が入らず、入力欄が板の外へ出る。
      この画面の高さでは「半分」を 80dvh にして、中身を収める（tall・full は変えない） */
   dialog.cliDialog[data-size="half"]{height:80dvh}
+  /* 低い画面では「tall」を「半分」より低くしない（390×500 で半分の方が高かった） */
+  dialog.cliDialog[data-size="tall"]{height:88dvh}
 }

@@ -1750,6 +1750,9 @@
   /* 選曲画面を離れたら閉じる（ゲーム・書斎・プレイヤーへ行ったとき） */
   core.on("phase", p => { if (p !== "title" && state.open) closeCli(); });
 
+  /* ⌨ trk290（推奨1）：保存済みの呼び出しキーが、いまの修飾キーでは予約になっているとき（trk288 までに試した保存）は、
+     貼り付けなどを奪わないよう Period に戻す。未配布なので、影響は試した人だけ。 */
+  if (cliKeyReserved(cliKeyCode(), cliMod(), core.settings.cliShift === true)) { core.settings.cliKey = "Period"; core.saveUserPrefs(); }
   wireSettings();
   if (!state.built && document.readyState === "loading") addEventListener("DOMContentLoaded", wireSettings, { once: true });
 
