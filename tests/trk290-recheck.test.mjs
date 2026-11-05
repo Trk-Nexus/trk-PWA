@@ -19,11 +19,11 @@ vm.createContext(sandbox);
 vm.runInContext(pureSrc, sandbox, { filename: "js/cli-pure.js" });
 const P = sandbox.window.Trk.cliPure;
 
-describe("trk290：推奨 1 保存済みの予約キーを起動時に Period に戻す", () => {
-  test("起動時に予約なら Period にして保存する（wireSettings より前）", () => {
-    const at = cli.indexOf('core.settings.cliKey = "Period"; core.saveUserPrefs(); }');
+describe("trk290：推奨 1 保存済みの予約キーを起動時にオフへ戻す（trk291 で Period から変更）", () => {
+  test("起動時に予約ならオフにして保存する（wireSettings より前）", () => {
+    const at = cli.indexOf('core.settings.cliKey = ""; core.saveUserPrefs(); }');
     assert.ok(at > 0, "起動時の見張りがある");
-    assert.match(cli, /if \(cliKeyReserved\(cliKeyCode\(\), cliMod\(\), core\.settings\.cliShift === true\)\) \{ core\.settings\.cliKey = "Period"/);
+    assert.match(cli, /if \(cliKeyCode\(\) && cliKeyReserved\(cliKeyCode\(\), cliMod\(\), core\.settings\.cliShift === true\)\) \{ core\.settings\.cliKey = ""/);
     assert.ok(at < cli.indexOf("  wireSettings();\n"), "配線より前");
   });
   test("貼り付けの Ctrl＋V（保存の KeyV）は予約、Alt＋V は登録できる", () => {

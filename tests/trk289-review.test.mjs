@@ -129,9 +129,9 @@ describe("trk289：R-c 注記の版番号を揃える", () => {
   });
 });
 
-describe("trk289：R-a 保存済みの Backquote を一度だけ Period にする", () => {
+describe("trk289：R-a 保存済みの Backquote は印が無いときオフ（trk291 で Period から変更）", () => {
   test("印（cliKeyPeriod1）が無い保存の Backquote だけを移す。印の後の Backquote は残す", () => {
-    assert.match(core, /cliKey: \(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : "Period",/);
+    assert.match(core, /cliKey: prefs\.cliKey === "" \? "" : \(\(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : ""\),/);
     assert.match(core, /cliKeyPeriod1: true,/, "印を立てる（次の保存で残る）");
   });
   test("一回限りの印として登録簿に載っている（docs/MIGRATIONS.md）", () => {

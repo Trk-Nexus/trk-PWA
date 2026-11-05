@@ -564,7 +564,8 @@ const settings = {
   /* ⌨ trk288（Q1）：呼び出しキーの既定は Ctrl+.（Period）。Backquote は JIS で IME に取られやすいため */
   /* ⌨ trk289（R-a）：一回限りの移行。trk288 までに保存された Backquote（JIS で Ctrl+` が押せないことがある）は、
      この印が無いときだけ Period にする。印は次の保存で残るので、以後に本人が Backquote を選べばそのまま残る。 */
-  cliKey: (validCode(prefs.cliKey) && !(prefs.cliKey === "Backquote" && prefs.cliKeyPeriod1 !== true)) ? prefs.cliKey : "Period",
+  /* ⌨ trk290（推奨 1・Q1 の再決定）：既定はオフ（""）。使う人が ⚙ で決める。 */
+  cliKey: prefs.cliKey === "" ? "" : ((validCode(prefs.cliKey) && !(prefs.cliKey === "Backquote" && prefs.cliKeyPeriod1 !== true)) ? prefs.cliKey : ""),
   cliKeyPeriod1: true,
   /* ⌨ trk288（C3）：呼び出しに Shift を一緒に押すか（Ctrl+Shift+K などを登録したとき） */
   cliShift: prefs.cliShift === true,
@@ -893,7 +894,7 @@ function resetAllPrefs() {
   /* ❓ trk227：リピートの段（単曲のみ）と、シャッフルの範囲（いまの一覧）も既定へ */
   settings.playerBarRepeatOneOnly = false; settings.playerBarShuffleInList = false;
   /* ⌨ trk267：ターミナルの行き先（プレイヤー）・見た目（自動）・覚えた呪文（無し）も工場出荷状態へ */
-  settings.cliPlay = "media"; settings.cliSkin = "keep"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = "Period"; settings.cliShift = false; settings.cliInsert = "native"; settings.cliMod = "ctrlOrMeta"; settings.cliAutoClose = false; settings.cliSheetSize = "tall"; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = ""; settings.cliPromptStyle = "linux";
+  settings.cliPlay = "media"; settings.cliSkin = "keep"; settings.cliSpells = {}; settings.cliBell = true; settings.cliKey = ""; settings.cliShift = false; settings.cliInsert = "native"; settings.cliMod = "ctrlOrMeta"; settings.cliAutoClose = false; settings.cliSheetSize = "tall"; settings.cliTypingCheck = "badge"; settings.cliSkinPickOn = false; settings.cliSkinPick = ""; settings.cliPromptStyle = "linux";
   /* ⚖ trk279：⚙ の段（スタンダード）と「触った設定」も工場出荷状態へ */
   settings.setLevel = "standard"; settings.setTouched = [];
 }

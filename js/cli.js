@@ -40,7 +40,9 @@
     /* ⌨ trk283：呼び出しキー・実行後に閉じる・スキンの個別指定・入力できるかの知らせ */
     cliKeyLabel: "🪄 Terminal Key Setting（Ctrl／⌘ ＋ このキー）",
     cliKeyHint: "呪文を呼ぶ鍵です。同じキーで開いて閉じます（Esc でも閉じられます）。割り当て中は Esc で取り消します。",
-    cliKeyWaiting: "キーを押してください（Esc で取り消し）。修飾キーだけでは決まりません。",
+    cliKeyWaiting: "キーを押してください（Esc で取り消し・Backspace でオフ）。修飾キーだけでは決まりません。",
+    cliKeyOff: "オフ（呼び出しキーなし）",
+    cliKeyOffSaved: "呼び出しキーをオフにしました。⌨ ボタンからは開けます。",
     cliKeyBadKey: "そのキーだけでは決められません。文字・数字・矢印・ファンクションキーなどにしてください。",
     cliKeyReserved: "そのキーは、ブラウザーや OS が先に使うため登録できません（例：W・T・N・R・L・F・P・S・Tab・数字・F キー）。",
     cliModReserved: "その組み合わせは、ブラウザーや OS が先に使うため選べません。呼び出しキーを変えるか、別の修飾キーを選んでください。",
@@ -216,7 +218,9 @@
     /* ⌨ trk283：key · auto-close · a terminal skin of your own · the typing note */
     cliKeyLabel: "🪄 Terminal Key Setting (Ctrl / ⌘ + this key)",
     cliKeyHint: "The key that calls the spells. The same key opens and closes it (Esc also closes). While assigning, Esc cancels.",
-    cliKeyWaiting: "Press a key (Esc to cancel). A modifier alone will not do.",
+    cliKeyWaiting: "Press a key (Esc to cancel, Backspace for off). A modifier alone will not do.",
+    cliKeyOff: "Off (no call key)",
+    cliKeyOffSaved: "The call key is off. You can still open it with the ⌨ button.",
     cliKeyBadKey: "That key alone cannot be used. Pick a letter, number, arrow or function key.",
     cliKeyReserved: "Browsers and the OS use that key first, so it can't be assigned (for example W T N R L F P S, Tab, digits, F-keys).",
     cliModReserved: "That combination is used first by the browser or OS, so it can't be selected. Change the call key or pick another modifier.",
@@ -392,7 +396,9 @@
     /* ⌨ trk283 */
     cliKeyLabel: "🪄 Terminal Key Setting（Ctrl／⌘ ＋ 此键）",
     cliKeyHint: "呼唤咒文的键。同一个键开关终端（Esc 也能关闭）。分配时按 Esc 取消。",
-    cliKeyWaiting: "请按键（Esc 取消）。只按修饰键不能确定。",
+    cliKeyWaiting: "请按键（Esc 取消，Backspace 关闭）。只按修饰键不能确定。",
+    cliKeyOff: "关闭（无呼叫键）",
+    cliKeyOffSaved: "已关闭呼叫键。仍可用 ⌨ 按钮打开。",
     cliKeyBadKey: "仅凭这个键无法确定。请用字母、数字、方向键或功能键。",
     cliKeyReserved: "该键会被浏览器或系统先使用，无法设定（如 W T N R L F P S、Tab、数字、F 键）。",
     cliModReserved: "该组合会先被浏览器或系统使用，无法选择。请更换呼出键或修饰键。",
@@ -568,7 +574,9 @@
     /* ⌨ trk283 */
     cliKeyLabel: "🪄 Terminal Key Setting (Ctrl／⌘ ＋ 이 키)",
     cliKeyHint: "주문을 부르는 열쇠입니다. 같은 키로 열고 닫습니다(Esc 로도 닫힘). 지정 중에는 Esc 로 취소합니다.",
-    cliKeyWaiting: "키를 눌러 주세요(Esc 로 취소). 수정 키만으로는 정해지지 않습니다.",
+    cliKeyWaiting: "키를 눌러 주세요(Esc 로 취소, Backspace 로 끔). 수정 키만으로는 정해지지 않습니다.",
+    cliKeyOff: "끔(호출 키 없음)",
+    cliKeyOffSaved: "호출 키를 껐습니다. ⌨ 버튼으로는 열 수 있습니다.",
     cliKeyBadKey: "그 키만으로는 정할 수 없습니다. 문자·숫자·방향키·기능키 등을 눌러 주세요.",
     cliKeyReserved: "브라우저·OS 가 먼저 쓰는 키라 정할 수 없습니다(예: W T N R L F P S, Tab, 숫자, F키).",
     cliModReserved: "그 조합은 브라우저·OS 가 먼저 쓰므로 고를 수 없습니다. 호출 키를 바꾸거나 다른 수정 키를 고르세요.",
@@ -1594,7 +1602,7 @@
 
   /* ---------- 呼び出しキー（Ctrl／⌘ + 選んだキー・同じキーで開閉） ---------- */
   /* ⌨ trk288（Q1）：既定は Backquote（JIS では半角／全角で IME に取られる）→ Period（Ctrl+.）へ */
-  const cliKeyCode = () => (core.validCode(core.settings.cliKey) ? core.settings.cliKey : "Period");
+  const cliKeyCode = () => (core.validCode(core.settings.cliKey) ? core.settings.cliKey : "");   /* trk290："" ＝オフ（既定） */
   /* ⌨ trk287：一緒に押す修飾キー。既定は Ctrl か ⌘／Win のどちらでも。
      "meta"＝Win／⌘（Super）だけ／"ctrl"＝Ctrl だけ／"alt"＝Alt だけ */
   const CLI_MODS = ["ctrlOrMeta", "meta", "ctrl", "alt"];
@@ -1627,7 +1635,7 @@
     const on = cliKeyBinding !== null;
     const modSel = document.getElementById("cliModSel");
     if (modSel) modSel.value = cliMod();
-    if (value) value.textContent = modLabel() + " + " + core.formatKey(cliKeyCode());
+    if (value) value.textContent = cliKeyCode() ? modLabel() + " + " + core.formatKey(cliKeyCode()) : tr("cliKeyOff");
     if (button) { button.classList.toggle("listening", on); button.setAttribute("aria-pressed", String(on)); }
     if (status) status.textContent = message !== undefined ? message : (on ? tr("cliKeyWaiting") : "");
   }
@@ -1635,6 +1643,13 @@
   function captureCliKey(code, shift) {
     if (cliKeyBinding === null) return false;
     if (!code || code === "Escape") { cliKeyBinding = null; syncCliKeyUI(""); return false; }
+    if (code === "Backspace" || code === "Delete") {   /* trk290：Backspace・Delete で呼び出しキーをオフ */
+      core.settings.cliKey = "";
+      cliKeyBinding = null;
+      core.saveUserPrefs();
+      syncCliKeyUI(tr("cliKeyOffSaved"));
+      return true;
+    }
     if (!cliKeyUsable(code)) { syncCliKeyUI(tr("cliKeyBadKey")); return false; }
     if (cliKeyReserved(code, cliMod(), shift === true)) { toastNote(tr("cliKeyReserved")); syncCliKeyUI(tr("cliKeyReserved")); return false; }
     core.settings.cliKey = code;
@@ -1653,6 +1668,7 @@
       return;
     }
     if (e.defaultPrevented) return;
+    if (!cliKeyCode()) return;   /* trk290：オフのときは何もしない */
     if (!cliModPressed(e)) return;
     if ((e.shiftKey === true) !== (core.settings.cliShift === true)) return;   /* ⌨ trk288：Shift は登録どおりに */
     if ((core.keyCodeOf(e) || "") !== cliKeyCode()) return;
@@ -1752,7 +1768,7 @@
 
   /* ⌨ trk290（推奨1）：保存済みの呼び出しキーが、いまの修飾キーでは予約になっているとき（trk288 までに試した保存）は、
      貼り付けなどを奪わないよう Period に戻す。未配布なので、影響は試した人だけ。 */
-  if (cliKeyReserved(cliKeyCode(), cliMod(), core.settings.cliShift === true)) { core.settings.cliKey = "Period"; core.saveUserPrefs(); }
+  if (cliKeyCode() && cliKeyReserved(cliKeyCode(), cliMod(), core.settings.cliShift === true)) { core.settings.cliKey = ""; core.saveUserPrefs(); }
   wireSettings();
   if (!state.built && document.readyState === "loading") addEventListener("DOMContentLoaded", wireSettings, { once: true });
 
