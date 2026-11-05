@@ -92,11 +92,8 @@ describe("game UI contrast across the skin catalogue", () => {
          手で作った内蔵スキンには、明るい所と暗い所をまたぐ地（graduation など）があり、
          1 つの文字色では全停止点を満たせないため、これまでどおり不透明 1 色のときだけ見る。
          （内蔵の 53 種は `npm run check` の他の検査と実機で見ています） */
-      if (builtinIds.has(id)) {
-        if (/^#[0-9a-f]{6}$/i.test(ui["--ui-bg"] || "")) backgrounds.push(ui["--ui-bg"]);
-      } else {
-        backgrounds.push(...stopsOf(ui["--ui-bg"]));
-      }
+      /* trk292（案 A）：地（--ui-bg）は飾りの面。文字は地の上に置かない（tests/bg-decor.test.mjs で守る）。
+         だから地はここでは見ない。読む面（パネル・入力欄・ボタン）だけで確かめる。 */
       for (const bg of backgrounds) {
         assert.ok(contrast(muted, bg) >= 4.5,
           `${id}: muted ${muted} on ${bg} is ${contrast(muted, bg).toFixed(2)}:1`);
@@ -178,11 +175,13 @@ describe("game UI contrast across the skin catalogue", () => {
     }
   });
 
-  test("差し戻しの 18 種は、目録の色のまま名乗っていて、既定の棚には並ばない（trk275）", () => {
+  test("差し戻しの 3 種は、目録の色のまま名乗っていて、既定の棚には並ばない（trk275・trk292・trk293）", () => {
     const hb = Object.entries(SKINS).filter(([, s]) => s.holdback).map(([id]) => id).sort();
-    assert.equal(hb.length, 18, "Wizard 1＋巻別 17");
+    assert.equal(hb.length, 3, "trk293：目録 8f1e（配色 4 種の修正）で、差し戻しは巻別の 3 種（orichalcum・gold-chip・house-edge）。Wizard は 0");
     /* 生成物の SKIN_HOLDBACK と同じ顔ぶれ（手で足したり消したりしていない） */
-    for (const rel of ["js/skins-wizard.js", "js/skins-volumes.js"]) {
+    /* trk292：Wizard は差し戻し 0 件なので、生成物に SKIN_HOLDBACK の行は無い */
+    assert.ok(!/SKIN_HOLDBACK/.test(fs.readFileSync(path.join(ROOT, "js/skins-wizard.js"), "utf8")), "Wizard の生成物に差し戻しの行は無い");
+    for (const rel of ["js/skins-volumes.js"]) {
       const src = fs.readFileSync(path.join(ROOT, rel), "utf8");
       const m = /SKIN_HOLDBACK = \[([^\]]*)\]/.exec(src);
       assert.ok(m, `${rel}: SKIN_HOLDBACK`);
@@ -190,7 +189,7 @@ describe("game UI contrast across the skin catalogue", () => {
         assert.ok(hb.includes(id), `${id} は holdback の印がある`);
       }
     }
-    assert.ok(hb.includes("wizard-hermetic"));
-    assert.equal(READABLE.length, 291 - 18);
+    assert.ok(!hb.includes("wizard-hermetic"), "trk292：wizard-hermetic は舞台を寄せて合格（差し戻しから戻る）");
+    assert.equal(READABLE.length, 291 - 3);
   });
 });

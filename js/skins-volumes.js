@@ -2,7 +2,7 @@
 /* 📚 巻別のスキン（trk274・Skin 側の目録から生成）
 
    出どころ：trk-Avatar-Library の `catalog/skins.json`（巻の目録は `skin-volumes/volumes.json`）
-   目録の sha256：8299b6045a0ef4986b672ce76b9cfa7e34e9065d791732bf642b777ce3162e46（この写しがどの目録から作られたかの印）
+   目録の sha256：8f1e9fa713c1b2c62567fba074f1c3cf245eac4e02d94f6aa515c74b683727e7（この写しがどの目録から作られたかの印）
    作り方：node tools/import-skin-catalog.mjs <目録.json> --cat= --exclude-cat=wizard --only-new --volumes=<volumes.json> --kind=volumes --out=js/skins-volumes.js
    ・手で直さないでください（次の取り込みで消えます）。直すときは目録側（Skin 側）で。
    ・このファイルは data.js の後・core.js の前に読みます（起動時のスキン復元より先に要るため）。
@@ -70,11 +70,10 @@
     type:{"title":"\"Trajan Pro\",serif","weight":"400","lh":"1.65","titleWeight":"600","titleSpace":".04em","mark":"あア漢 Aa 12"},
     label:{"ja":"古銅","en":"Ancient Bronze","zh":"古铜","ko":"고대 청동"},
     desc:{"ja":"緑青の古銅、歴史と時の重みを纏う","en":"Verdigris ancient bronze, wearing history and time","zh":"铜绿古铜，披着历史与时间的重量","ko":"녹청 고대 청동, 역사와 시간의 무게를 두른"},
-    ui:{"--ui-bg":"#5c4033","--ui-panel":"rgba(139,69,19,0.96)","--ui-soft":"rgba(245,222,179,0.05)","--ui-text":"#f5deb3","--ui-muted":"#a0522d","--ui-border":"rgba(160,82,45,.24)","--ui-button":"#8b4513","--ui-button-hover":"#995928","--ui-field":"#f5deb3","--ui-accent":"#d4af37","--ui-on-accent":"#5c4033","--ui-gold":"#ffe082","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(212,175,55,0.14)"},
-    game:{"don":"#d4af37","ka":"#b8860b","stage":"#8b4513","lane":"rgba(139,69,19,0.6)","track":"rgba(245,222,179,0.24)","ink":"#f5deb3","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(139,69,19,0.95)","perfect":"#ffe082","good":"#f5deb3","miss":"#b09779","glow":false},
+    ui:{"--ui-bg":"#5c4033","--ui-panel":"rgba(132,66,18,0.96)","--ui-soft":"rgba(245,222,179,0.05)","--ui-text":"#f5deb3","--ui-muted":"#e6dacd","--ui-border":"rgba(160,82,45,.24)","--ui-button":"#8b4513","--ui-button-hover":"#92501e","--ui-field":"#3b2a20","--ui-accent":"#d4af37","--ui-on-accent":"#583c2f","--ui-gold":"#ffe082","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(212,175,55,0.14)"},
+    game:{"don":"#d4af37","ka":"#b8860b","stage":"#8b4513","lane":"rgba(132,66,18,0.6)","track":"rgba(245,222,179,0.24)","ink":"#f5deb3","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(132,66,18,0.95)","perfect":"#ffe082","good":"#f5deb3","miss":"#b09779","glow":false},
     shapes:["circle","circle"],
-    video:"sepia(.5) contrast(1.15) brightness(.9)",
-    holdback:true
+    video:"sepia(.5) contrast(1.15) brightness(.9)"
   };
   S["art-deco"] = {
     cat:["grad","fun","light"],
@@ -234,7 +233,7 @@
     type:{"title":"\"Didot\",serif","weight":"300","lh":"1.65","titleWeight":"800","titleSpace":".02em","mark":"あア漢 Aa 12"},
     label:{"ja":"シャンパン","en":"Champagne","zh":"香槟","ko":"샴페인"},
     desc:{"ja":"泡立ち、祝勝の軽やかな金","en":"Bubbling, light and celebratory gold","zh":"气泡，庆祝的轻快金色","ko":"거품, 승리 축하의 가벼운 금"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#d4c0a8,#bca586)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(74,55,40,0.05)","--ui-text":"#4a3728","--ui-muted":"#3f3a34","--ui-border":"rgba(140,158,172,.20)","--ui-button":"#e8dec7","--ui-button-hover":"#d3c8b2","--ui-field":"#fffef5","--ui-accent":"#d4af37","--ui-on-accent":"#4a3728","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(212,175,55,0.14)"},
+    ui:{"--ui-bg":"linear-gradient(180deg,#d4c0a8,#b8a080)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(74,55,40,0.05)","--ui-text":"#4a3728","--ui-muted":"#5b534b","--ui-border":"rgba(140,158,172,.20)","--ui-button":"#e8dec7","--ui-button-hover":"#d3c8b2","--ui-field":"#fffef5","--ui-accent":"#d4af37","--ui-on-accent":"#4a3728","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(212,175,55,0.14)"},
     game:{"don":"#d4af37","ka":"#8c9eac","stage":"linear-gradient(180deg,#f5e6d3,#d4c0a8)","lane":"rgba(255,255,255,0.82)","track":"rgba(74,55,40,0.24)","ink":"#4a3728","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffe082","good":"#4a3728","miss":"#887562","glow":false},
     shapes:["circle","circle"],
     video:"sepia(.2) saturate(1.05) brightness(1.03)"
@@ -245,7 +244,7 @@
     type:{"title":"\"Playfair Display\",serif","weight":"400","lh":"1.7","titleWeight":"700","titleSpace":".03em","mark":"あア漢 Aa 12"},
     label:{"ja":"シャンパンゴールド","en":"Champagne Gold","zh":"香槟金","ko":"샴페인 골드"},
     desc:{"ja":"シャンパンの祝勝、軽やかで贅沢な金","en":"Champagne celebration, light and luxurious gold","zh":"香槟庆祝，轻快奢华的金","ko":"샴페인 승리 축하, 가볍고 호화로운 금"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#d4c0a8,#bca586)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(74,55,40,0.05)","--ui-text":"#4a3728","--ui-muted":"#3f3a34","--ui-border":"rgba(140,158,172,.20)","--ui-button":"#e8dec7","--ui-button-hover":"#d3c8b2","--ui-field":"#fffef5","--ui-accent":"#d4af37","--ui-on-accent":"#4a3728","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(212,175,55,0.14)"},
+    ui:{"--ui-bg":"linear-gradient(180deg,#d4c0a8,#b8a080)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(74,55,40,0.05)","--ui-text":"#4a3728","--ui-muted":"#5b534b","--ui-border":"rgba(140,158,172,.20)","--ui-button":"#e8dec7","--ui-button-hover":"#d3c8b2","--ui-field":"#fffef5","--ui-accent":"#d4af37","--ui-on-accent":"#4a3728","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(212,175,55,0.14)"},
     game:{"don":"#d4af37","ka":"#8c9eac","stage":"linear-gradient(180deg,#f5e6d3,#d4c0a8)","lane":"rgba(255,255,255,0.82)","track":"rgba(74,55,40,0.24)","ink":"#4a3728","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffe082","good":"#4a3728","miss":"#887562","glow":false},
     shapes:["circle","circle"],
     video:"sepia(.2) saturate(1.05) brightness(1.03)"
@@ -263,11 +262,10 @@
     cat:["light","grad"],
     label:{"ja":"ショコラ","en":"Chocolate","zh":"巧克力","ko":"초콜릿"},
     desc:{"ja":"濃厚なチョコレート、大人っぽい茶色","en":"Rich chocolate, adult brown","zh":"浓郁巧克力，成人色调的棕色","ko":"진한 초콜릿, 어른스러운 갈색"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#d7ccc8,#bcaaa4)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(239,235,233,0.05)","--ui-text":"#efebe9","--ui-muted":"#a1887f","--ui-border":"rgba(141,110,99,.24)","--ui-button":"#bcaaa4","--ui-button-hover":"#c3b2ad","--ui-field":"#ffffff","--ui-accent":"#8d6e63","--ui-on-accent":"#efebe9","--ui-gold":"#ffe0b2","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(141,110,99,0.14)"},
-    game:{"don":"#ffab91","ka":"#bcaaa4","stage":"linear-gradient(180deg,#8d6e63,#4e342e)","lane":"rgba(255,255,255,0.82)","track":"rgba(239,235,233,0.24)","ink":"#efebe9","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffe0b2","good":"#efebe9","miss":"#e4ddda","glow":false},
+    ui:{"--ui-bg":"linear-gradient(180deg,#d7ccc8,#bcaaa4)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(37,19,15,0.05)","--ui-text":"#25130f","--ui-muted":"#432d26","--ui-border":"rgba(141,110,99,.24)","--ui-button":"#bcaaa4","--ui-button-hover":"#a89691","--ui-field":"#ffffff","--ui-accent":"#8d6e63","--ui-on-accent":"#ffffff","--ui-gold":"#ffe0b2","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(141,110,99,0.14)"},
+    game:{"don":"#ffab91","ka":"#bcaaa4","stage":"linear-gradient(180deg,#8d6e63,#4e342e)","lane":"rgba(255,255,255,0.82)","track":"rgba(37,19,15,0.24)","ink":"#ffffff","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffe0b2","good":"#ffffff","miss":"#756662","glow":false},
     shapes:["circle","circle"],
-    video:"sepia(.3) saturate(1.05) brightness(.95)",
-    holdback:true
+    video:"sepia(.3) saturate(1.05) brightness(.95)"
   };
   S["chrome-steel"] = {
     cat:["dark","fun","access"],
@@ -284,11 +282,10 @@
     cat:["grad","fun","light"],
     label:{"ja":"シトリン","en":"Citrine","zh":"黄水晶","ko":"시트린"},
     desc:{"ja":"鮮やかな黄色の宝石、富と繁栄の黄","en":"Vivid yellow jewel, wealth and prosperity in yellow","zh":"鲜艳黄色宝石，富与繁荣的黄","ko":"선명한 노란색 보석, 부와 번영의 노랑"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#b7950b,#6b5605)","--ui-panel":"rgba(241,196,15,0.96)","--ui-soft":"rgba(45,52,54,0.05)","--ui-text":"#2d3436","--ui-muted":"#8b854a","--ui-border":"rgba(225,112,85,.30)","--ui-button":"#fdcb6e","--ui-button-hover":"#e2b767","--ui-field":"#ffeaa7","--ui-accent":"#e17055","--ui-on-accent":"#2d3436","--ui-gold":"#ffeaa7","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(225,112,85,0.14)"},
-    game:{"don":"#e17055","ka":"#00b894","stage":"linear-gradient(180deg,#f1c40f,#b7950b)","lane":"rgba(241,196,15,0.6)","track":"rgba(45,52,54,0.24)","ink":"#2d3436","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(241,196,15,0.95)","perfect":"#ffeaa7","good":"#2d3436","miss":"#6b6023","glow":false},
+    ui:{"--ui-bg":"linear-gradient(180deg,#b7950b,#6b5605)","--ui-panel":"rgba(241,196,15,0.96)","--ui-soft":"rgba(45,52,54,0.05)","--ui-text":"#2d3436","--ui-muted":"#4c4929","--ui-border":"rgba(225,112,85,.30)","--ui-button":"#fdcb6e","--ui-button-hover":"#e2b767","--ui-field":"#ffeaa7","--ui-accent":"#e17055","--ui-on-accent":"#000000","--ui-gold":"#ffeaa7","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(225,112,85,0.14)"},
+    game:{"don":"#e17055","ka":"#00b894","stage":"linear-gradient(180deg,#f1c40f,#bb9a17)","lane":"rgba(241,196,15,0.6)","track":"rgba(45,52,54,0.24)","ink":"#2d3436","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(241,196,15,0.95)","perfect":"#ffeaa7","good":"#2d3436","miss":"#6b6023","glow":false},
     shapes:["circle","circle"],
-    video:"sepia(.15) saturate(1.25) brightness(1.1) contrast(1.05)",
-    holdback:true
+    video:"sepia(.15) saturate(1.25) brightness(1.1) contrast(1.05)"
   };
   S["clock-tower"] = {
     cat:["dark","basic"],
@@ -347,11 +344,10 @@
     cat:["light","grad"],
     label:{"ja":"クレームブリュレ","en":"Creme Brulee","zh":"焦糖布丁","ko":"크렘 브륄레"},
     desc:{"ja":"カラメルの表面、ゴールドの輝き","en":"Caramel surface, golden shine","zh":"焦糖表面，金色光泽","ko":"캐러멜 표면, 골드 빛깔"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#ffecb3,#ffe082)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(230,81,0,0.05)","--ui-text":"#e65100","--ui-muted":"#ff6f00","--ui-border":"rgba(230,81,0,.24)","--ui-button":"#ffecb3","--ui-button-hover":"#fcd89c","--ui-field":"#ffffff","--ui-accent":"#ffa000","--ui-on-accent":"#fff9c4","--ui-gold":"#ffd54f","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,160,0,0.14)"},
-    game:{"don":"#ffd54f","ka":"#ffe082","stage":"linear-gradient(180deg,#ffe082,#ffb74d)","lane":"rgba(255,255,255,0.82)","track":"rgba(230,81,0,0.24)","ink":"#e65100","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffd54f","good":"#e65100","miss":"#f19751","glow":false},
+    ui:{"--ui-bg":"linear-gradient(180deg,#ffecb3,#ffe082)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(74,31,0,0.05)","--ui-text":"#4a1f00","--ui-muted":"#804000","--ui-border":"rgba(230,81,0,.24)","--ui-button":"#ffecb3","--ui-button-hover":"#e7d19c","--ui-field":"#ffffff","--ui-accent":"#ffa000","--ui-on-accent":"#3d2500","--ui-gold":"#ffd54f","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,160,0,0.14)"},
+    game:{"don":"#ffd54f","ka":"#ffe082","stage":"linear-gradient(180deg,#ffe082,#ffb74d)","lane":"rgba(255,255,255,0.82)","track":"rgba(74,31,0,0.24)","ink":"#743000","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffd54f","good":"#743000","miss":"#9b7b51","glow":false},
     shapes:["circle","circle"],
-    video:"sepia(.15) saturate(1.1) brightness(1.02)",
-    holdback:true
+    video:"sepia(.15) saturate(1.1) brightness(1.02)"
   };
   S["crepe"] = {
     cat:["light","fun"],
@@ -366,7 +362,7 @@
     cat:["light","grad","life"],
     label:{"ja":"クロワッサン","en":"Croissant","zh":"可颂","ko":"크루아상"},
     desc:{"ja":"朝のカフェ、バターの香るゴールド","en":"Morning cafe, buttery gold","zh":"早 morning 咖啡厅，黄油香的金色","ko":"아침 카페, 버터 향의 골드"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#ffecb3,#ffe3ba)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(191,54,12,0.05)","--ui-text":"#bf360c","--ui-muted":"#a74c00","--ui-border":"rgba(251,140,0,.22)","--ui-button":"#ffecb3","--ui-button-hover":"#fce5ac","--ui-field":"#ffffff","--ui-accent":"#fb8c00","--ui-on-accent":"#000000","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(251,140,0,0.14)"},
+    ui:{"--ui-bg":"linear-gradient(180deg,#ffecb3,#ffe0b2)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(191,54,12,0.05)","--ui-text":"#bf360c","--ui-muted":"#a74c00","--ui-border":"rgba(251,140,0,.22)","--ui-button":"#ffecb3","--ui-button-hover":"#fce5ac","--ui-field":"#ffffff","--ui-accent":"#fb8c00","--ui-on-accent":"#000000","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(251,140,0,0.14)"},
     game:{"don":"#ffcc80","ka":"#ffe0b2","stage":"linear-gradient(180deg,#ffe595,#ffe3b9)","lane":"rgba(255,255,255,0.82)","track":"rgba(191,54,12,0.24)","ink":"#bf360c","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffe082","good":"#bf360c","miss":"#d18153","glow":false},
     shapes:["circle","circle"],
     video:"sepia(.15) saturate(1.1) brightness(1.04)"
@@ -430,7 +426,7 @@
     type:{"title":"\"Trajan Pro\",serif","weight":"400","lh":"1.6","titleWeight":"600","titleSpace":".04em","mark":"あア漢 Aa 12"},
     label:{"ja":"砂漠モスク","en":"Desert Mosque","zh":"沙漠清真寺","ko":"사막 모스크"},
     desc:{"ja":"砂色とミナレット、砂漠の聖域","en":"Sand color and minaret, desert sanctuary","zh":"沙色和宣礼塔，沙漠圣域","ko":"모래색과 미나레트, 사막 성역"},
-    ui:{"--ui-bg":"#deb887","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(74,55,40,0.05)","--ui-text":"#4a3728","--ui-muted":"#674320","--ui-border":"rgba(205,133,63,.24)","--ui-button":"#e8dec7","--ui-button-hover":"#d3c8b2","--ui-field":"#fffef5","--ui-accent":"#d4af37","--ui-on-accent":"#4a3728","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(212,175,55,0.14)"},
+    ui:{"--ui-bg":"#deb887","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(74,55,40,0.05)","--ui-text":"#4a3728","--ui-muted":"#714923","--ui-border":"rgba(205,133,63,.24)","--ui-button":"#e8dec7","--ui-button-hover":"#d3c8b2","--ui-field":"#fffef5","--ui-accent":"#d4af37","--ui-on-accent":"#4a3728","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(212,175,55,0.14)"},
     game:{"don":"#d4af37","ka":"#8c9eac","stage":"#f4a460","lane":"rgba(255,255,255,0.82)","track":"rgba(74,55,40,0.24)","ink":"#4a3728","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffe082","good":"#4a3728","miss":"#8d7153","glow":false},
     shapes:["circle","diamond"],
     video:"sepia(.25) saturate(1.1) brightness(1.02)"
@@ -481,7 +477,7 @@
     cat:["fun","grad"],
     label:{"ja":"ドーナツ","en":"Donut","zh":"甜甜圈","ko":"도넛"},
     desc:{"ja":"カラフルな glazed ドーナツ、遊び心たっぷり","en":"Colorful glazed donut, full of playfulness","zh":"彩色糖霜甜甜圈，充满童心","ko":"컬러풀한 글레이즈 도넛, 재미가득"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#ff79a8,#fd79a8)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(45,52,54,0.05)","--ui-text":"#2d3436","--ui-muted":"#35393b","--ui-border":"rgba(253,121,168,.24)","--ui-button":"#ffc8dd","--ui-button-hover":"#e4b5c7","--ui-field":"#ffffff","--ui-accent":"#fd79a8","--ui-on-accent":"#2d3436","--ui-gold":"#ffeaa7","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(253,121,168,0.14)"},
+    ui:{"--ui-bg":"linear-gradient(180deg,#ff79a8,#fd79a8)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(45,52,54,0.05)","--ui-text":"#2d3436","--ui-muted":"#474c4e","--ui-border":"rgba(253,121,168,.24)","--ui-button":"#ffc8dd","--ui-button-hover":"#e4b5c7","--ui-field":"#ffffff","--ui-accent":"#fd79a8","--ui-on-accent":"#2d3436","--ui-gold":"#ffeaa7","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(253,121,168,0.14)"},
     game:{"don":"#fd79a8","ka":"#a29bfe","stage":"linear-gradient(180deg,#ff9ce0,#ff6b9d)","lane":"rgba(255,255,255,0.82)","track":"rgba(45,52,54,0.24)","ink":"#2d3436","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffeaa7","good":"#2d3436","miss":"#8c5369","glow":false},
     shapes:["circle","circle"],
     video:"saturate(1.2) brightness(1.05)"
@@ -521,11 +517,10 @@
     type:{"title":"\"Orbitron\",sans-serif","weight":"700","lh":"1.2","titleWeight":"900","titleSpace":"-.05em","titleTransform":"uppercase","mark":"ENERGY"},
     label:{"ja":"エナジードリンク","en":"Energy Drink","zh":"能量饮料","ko":"에너지 드링크"},
     desc:{"ja":"蛍光色、覚醒とアドレナリン","en":"Fluorescent color, awakening and adrenaline","zh":"荧光色，觉醒与肾上腺素","ko":"형광색, 각성과 아드레날린"},
-    ui:{"--ui-bg":"#1a1a1a","--ui-panel":"rgba(57,255,20,0.96)","--ui-soft":"rgba(0,0,0,0.05)","--ui-text":"#000000","--ui-muted":"#00ff00","--ui-border":"rgba(0,255,255,.30)","--ui-button":"#2ecc40","--ui-button-hover":"#28b138","--ui-field":"#39ff14","--ui-accent":"#ff00ff","--ui-on-accent":"#000000","--ui-gold":"#ffff00","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(255,0,255,0.14)"},
+    ui:{"--ui-bg":"#1a1a1a","--ui-panel":"rgba(57,255,20,0.96)","--ui-soft":"rgba(0,0,0,0.05)","--ui-text":"#000000","--ui-muted":"#003300","--ui-border":"rgba(0,255,255,.30)","--ui-button":"#2ecc40","--ui-button-hover":"#28b138","--ui-field":"#39ff14","--ui-accent":"#ff00ff","--ui-on-accent":"#000000","--ui-gold":"#ffff00","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(255,0,255,0.14)"},
     game:{"don":"#ff00ff","ka":"#00ffff","stage":"#39ff14","lane":"rgba(57,255,20,0.6)","track":"rgba(0,0,0,0.24)","ink":"#000000","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(57,255,20,0.95)","perfect":"#ffff00","good":"#000000","miss":"#0c0c0c","glow":false},
     shapes:["square","square"],
-    video:"saturate(1.7) brightness(.8) contrast(1.4)",
-    holdback:true
+    video:"saturate(1.7) brightness(.8) contrast(1.4)"
   };
   S["espresso"] = {
     cat:["dark","grad"],
@@ -659,11 +654,10 @@
     type:{"title":"\"Playfair Display\",serif","weight":"400","lh":"1.7","titleWeight":"700","titleSpace":".03em","mark":"あア漢 Aa 12"},
     label:{"ja":"王家の黄金","en":"Royal Gold","zh":"王室黄金","ko":"왕실의 금"},
     desc:{"ja":"豪華で気高い黄金、王冠と王座の輝き","en":"Luxurious and noble gold, crown and throne shining","zh":"豪华高贵的黄金，王冠和王座的光芒","ko":"호화롭고 기품 있는 금, 왕관과 왕좌의 빛"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#b8860b,#6b4a0b)","--ui-panel":"rgba(255,215,0,0.96)","--ui-soft":"rgba(26,26,26,0.05)","--ui-text":"#1a1a1a","--ui-muted":"#8a6d3b","--ui-border":"rgba(212,175,55,.32)","--ui-button":"#ffe082","--ui-button-hover":"#e1c674","--ui-field":"#fffdf0","--ui-accent":"#d4af37","--ui-on-accent":"#1a1a1a","--ui-gold":"#ffe082","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(212,175,55,0.14)"},
+    ui:{"--ui-bg":"linear-gradient(180deg,#b8860b,#6b4a0b)","--ui-panel":"rgba(255,215,0,0.96)","--ui-soft":"rgba(26,26,26,0.05)","--ui-text":"#1a1a1a","--ui-muted":"#614c29","--ui-border":"rgba(212,175,55,.32)","--ui-button":"#ffe082","--ui-button-hover":"#e1c674","--ui-field":"#fffdf0","--ui-accent":"#d4af37","--ui-on-accent":"#1a1a1a","--ui-gold":"#ffe082","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(212,175,55,0.14)"},
     game:{"don":"#d4af37","ka":"#ffd700","stage":"linear-gradient(180deg,#ffd700,#b8860b)","lane":"rgba(255,215,0,0.6)","track":"rgba(26,26,26,0.24)","ink":"#1a1a1a","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(255,215,0,0.95)","perfect":"#ffe082","good":"#1a1a1a","miss":"#614b13","glow":false},
     shapes:["circle","diamond"],
-    video:"sepia(.15) saturate(1.3) brightness(1.08) contrast(1.1)",
-    holdback:true
+    video:"sepia(.15) saturate(1.3) brightness(1.08) contrast(1.1)"
   };
   S["gold-chip"] = {
     cat:["grad","light"],
@@ -724,7 +718,7 @@
     type:{"title":"\"Didot\",serif","weight":"300","lh":"1.6","titleWeight":"800","titleSpace":".02em","mark":"あア漢 Aa 12"},
     label:{"ja":"ハイローラー","en":"High Roller","zh":"大赌客","ko":"하이 롤러"},
     desc:{"ja":"大金持ちのギャンブラー、シャンパンと黄金","en":"Wealthy gambler, champagne and gold","zh":"富豪赌客，香槟和黄金","ko":"부유한 도박꾼, 샴페인과 금"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#d4af37,#bc8c17)","--ui-panel":"rgba(245,245,220,0.96)","--ui-soft":"rgba(44,44,44,0.05)","--ui-text":"#2c2c2c","--ui-muted":"#292929","--ui-border":"rgba(212,175,55,.30)","--ui-button":"#ffe082","--ui-button-hover":"#e4c977","--ui-field":"#ffffff","--ui-accent":"#ff6b6b","--ui-on-accent":"#2c2c2c","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,107,107,0.14)"},
+    ui:{"--ui-bg":"linear-gradient(180deg,#d4af37,#b8860b)","--ui-panel":"rgba(245,245,220,0.96)","--ui-soft":"rgba(44,44,44,0.05)","--ui-text":"#2c2c2c","--ui-muted":"#535353","--ui-border":"rgba(212,175,55,.30)","--ui-button":"#ffe082","--ui-button-hover":"#e4c977","--ui-field":"#ffffff","--ui-accent":"#ff6b6b","--ui-on-accent":"#2c2c2c","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,107,107,0.14)"},
     game:{"don":"#ff6b6b","ka":"#4ecdc4","stage":"linear-gradient(180deg,#f5f5dc,#d4af37)","lane":"rgba(245,245,220,0.82)","track":"rgba(44,44,44,0.24)","ink":"#2c2c2c","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(245,245,220,0.95)","perfect":"#ffe082","good":"#2c2c2c","miss":"#786731","glow":false},
     shapes:["circle","circle"],
     video:"sepia(.15) saturate(1.2) brightness(1.05)"
@@ -733,8 +727,8 @@
     cat:["type","light"],
     font:"\"Hiragino Kaku Gothic ProN\",\"Hiragino Sans\",sans-serif",
     type:{"title":"\"Hiragino Kaku Gothic ProN\",sans-serif","weight":"400","lh":"1.6","titleWeight":"600","titleSpace":".01em","mark":"あア漢 Aa 12"},
-    label:{"ja":"ヒラギノ角ゴ","en":"Hiragino Kaku Gothic","zh":"椿圆角ゴシック","ko":"히라기노 각 고딕"},
-    desc:{"ja":"macOS の定番、丸みを帯びた上品な角ゴシック","en":"macOS standard, rounded elegant gothic","zh":"macOS 标准，圆润优雅的角ゴシック","ko":"macOS 표준, 둥글고 우아한 각 고딕"},
+    label:{"ja":"ヒラギノ角ゴ","en":"Hiragino Kaku Gothic","zh":"Hiragino 角黑体","ko":"히라기노 각 고딕"},
+    desc:{"ja":"macOS の定番、丸みを帯びた上品な角ゴシック","en":"macOS standard, rounded elegant gothic","zh":"macOS 常用的圆润优雅的角黑体","ko":"macOS 표준, 둥글고 우아한 각 고딕"},
     ui:{"--ui-bg":"#ffffff","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(44,62,80,0.05)","--ui-text":"#2c3e50","--ui-muted":"#535b5c","--ui-border":"rgba(44,62,80,.12)","--ui-button":"#ecf0f1","--ui-button-hover":"#d3d9dc","--ui-field":"#ffffff","--ui-accent":"#2980b9","--ui-on-accent":"#000000","--ui-gold":"#f1c40f","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(41,128,185,0.14)"},
     game:{"don":"#c0392b","ka":"#2980b9","stage":"#fbfcfc","lane":"rgba(255,255,255,0.82)","track":"rgba(44,62,80,0.24)","ink":"#2c3e50","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#f1c40f","good":"#2c3e50","miss":"#8b959f","glow":false},
     shapes:["circle","circle"],
@@ -746,11 +740,10 @@
     type:{"title":"\"Comic Sans MS\",cursive","weight":"400","lh":"1.6","titleWeight":"600","titleSpace":".04em","mark":"あア漢 Aa 12"},
     label:{"ja":"ホットココア","en":"Hot Cocoa","zh":"热可可","ko":"핫 코코아"},
     desc:{"ja":"温かい茶色、マシュマロの柔らかさ","en":"Warm brown, marshmallow softness","zh":"温暖的棕色，棉花糖的柔软","ko":"따뜻한 갈색, 마쉬멜로우의 부드러움"},
-    ui:{"--ui-bg":"#d7ccc8","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(255,243,224,0.05)","--ui-text":"#fff3e0","--ui-muted":"#8d6e63","--ui-border":"rgba(141,110,99,.24)","--ui-button":"#bcaaa4","--ui-button-hover":"#c5b3ac","--ui-field":"#ffffff","--ui-accent":"#795548","--ui-on-accent":"#fff3e0","--ui-gold":"#ffe0b2","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(121,85,72,0.14)"},
-    game:{"don":"#ffcc80","ka":"#bcaaa4","stage":"#795548","lane":"rgba(255,255,255,0.82)","track":"rgba(255,243,224,0.24)","ink":"#fff3e0","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffe0b2","good":"#fff3e0","miss":"#ede1d5","glow":false},
+    ui:{"--ui-bg":"#d7ccc8","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(40,23,17,0.05)","--ui-text":"#281711","--ui-muted":"#432d26","--ui-border":"rgba(141,110,99,.24)","--ui-button":"#bcaaa4","--ui-button-hover":"#a99791","--ui-field":"#ffffff","--ui-accent":"#795548","--ui-on-accent":"#fff3e0","--ui-gold":"#ffe0b2","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(121,85,72,0.14)"},
+    game:{"don":"#ffcc80","ka":"#bcaaa4","stage":"#795548","lane":"rgba(255,255,255,0.82)","track":"rgba(40,23,17,0.24)","ink":"#fff3e0","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffe0b2","good":"#fff3e0","miss":"#776863","glow":false},
     shapes:["circle","circle"],
-    video:"sepia(.25) contrast(1.05) brightness(.98)",
-    holdback:true
+    video:"sepia(.25) contrast(1.05) brightness(.98)"
   };
   S["house-edge"] = {
     cat:["dark","access"],
@@ -762,7 +755,9 @@
     game:{"don":"#ff0040","ka":"#999999","stage":"#1a1a1a","lane":"rgba(10,10,10,0.6)","track":"rgba(102,102,102,0.24)","ink":"#666666","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(10,10,10,0.95)","perfect":"#999999","good":"#666666","miss":"#3d3d3d","glow":false},
     shapes:["square","square"],
     video:"grayscale(.8) contrast(1.3) brightness(.7)",
-    holdback:true
+    holdback:true,
+    readability:"intentional-low",
+    readabilityReason:{"ja":"暗く読みづらい演出を意図しています。","en":"Low contrast is intentional for this dark theme.","zh":"此暗色主题有意降低可读性。","ko":"어두운 연출을 위해 가독성을 의도적으로 낮췄습니다."}
   };
   S["ice-hotel"] = {
     cat:["light","grad","access"],
@@ -779,7 +774,7 @@
     cat:["light","type"],
     font:"\"Hiragino Mincho ProN\",\"Yu Mincho\",\"YuMincho\",\"Noto Serif JP\",\"Noto Serif CJK JP\",\"Noto Serif SC\",\"Noto Serif KR\",serif",
     type:{"weight":"400","lh":"1.75","titleWeight":"600","titleSpace":".1em","mark":"あア漢 Aa 12"},
-    label:{"ja":"墨流し","en":"Ink Wash Flow","zh":"墨流し","ko":"먹 흘림"},
+    label:{"ja":"墨流し","en":"Ink Wash Flow","zh":"墨流纹","ko":"먹 흘림"},
     desc:{"ja":"和紙に墨の濃淡、朱の判子だけの差し色","en":"Ink wash on washi paper, with only a red seal as accent","zh":"宣纸上的墨色浓淡，仅以朱印点缀","ko":"한지 위의 먹 농담, 주인 한 점만 더한 색"},
     ui:{"--ui-bg":"#f3efe6","--ui-panel":"rgba(251,248,241,0.96)","--ui-soft":"rgba(27,27,27,0.05)","--ui-text":"#1b1b1b","--ui-muted":"#56534c","--ui-border":"rgba(27,27,27,.25)","--ui-button":"#e7e1d3","--ui-button-hover":"#ccc7bb","--ui-field":"#ffffff","--ui-accent":"#b3261e","--ui-on-accent":"#ffffff","--ui-gold":"#8f3500","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(179,38,30,0.14)"},
     game:{"don":"#1d1d1d","ka":"#7d7a72","stage":"#f3efe6","lane":"rgba(251,248,241,0.82)","track":"rgba(27,27,27,0.24)","ink":"#1b1b1b","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(251,248,241,0.95)","perfect":"#8f3500","good":"#1b1b1b","miss":"#7c7a76","glow":false},
@@ -813,11 +808,10 @@
     type:{"title":"\"Orbitron\",sans-serif","weight":"700","lh":"1.25","titleWeight":"900","titleSpace":"-.04em","titleTransform":"uppercase","mark":"7 7 7"},
     label:{"ja":"ジャックポット777","en":"Jackpot 777","zh":"头奖777","ko":"잭팟 777"},
     desc:{"ja":"スロットの大当たり、777の歓喜と黄金の輝き","en":"Slot machine jackpot, 777 joy and golden shine","zh":"老虎机大奖，777的狂喜和金色光芒","ko":"슬롯 머신 잭팟, 777의 환희와 황금빛"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#b8860b,#6b4a0b)","--ui-panel":"rgba(255,215,0,0.96)","--ui-soft":"rgba(26,26,26,0.05)","--ui-text":"#1a1a1a","--ui-muted":"#8a6d3b","--ui-border":"rgba(255,107,107,.32)","--ui-button":"#ffe082","--ui-button-hover":"#e1c674","--ui-field":"#fffdf0","--ui-accent":"#ff6b6b","--ui-on-accent":"#1a1a1a","--ui-gold":"#ffe082","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(255,107,107,0.14)"},
+    ui:{"--ui-bg":"linear-gradient(180deg,#b8860b,#6b4a0b)","--ui-panel":"rgba(255,215,0,0.96)","--ui-soft":"rgba(26,26,26,0.05)","--ui-text":"#1a1a1a","--ui-muted":"#614c29","--ui-border":"rgba(255,107,107,.32)","--ui-button":"#ffe082","--ui-button-hover":"#e1c674","--ui-field":"#fffdf0","--ui-accent":"#ff6b6b","--ui-on-accent":"#1a1a1a","--ui-gold":"#ffe082","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(255,107,107,0.14)"},
     game:{"don":"#ff6b6b","ka":"#4ecdc4","stage":"linear-gradient(180deg,#ffd700,#b8860b)","lane":"rgba(255,215,0,0.6)","track":"rgba(26,26,26,0.24)","ink":"#1a1a1a","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(255,215,0,0.95)","perfect":"#ffe082","good":"#1a1a1a","miss":"#614b13","glow":false},
     shapes:["circle","diamond"],
-    video:"sepia(.1) saturate(1.4) brightness(1.08) contrast(1.15)",
-    holdback:true
+    video:"sepia(.1) saturate(1.4) brightness(1.08) contrast(1.15)"
   };
   S["jade"] = {
     cat:["light","grad"],
@@ -918,7 +912,7 @@
     type:{"title":"\"Inter\",sans-serif","weight":"400","lh":"1.5","titleWeight":"600","titleSpace":".01em","mark":"あア漢 Aa 12"},
     label:{"ja":"月面","en":"Lunar Surface","zh":"月面","ko":"달 표면"},
     desc:{"ja":"クレーターだらけの灰色、静寂の月","en":"Crater-filled gray, silent moon","zh":"陨石坑遍布的灰色，寂静的月球","ko":"분화구 투성이의 회색, 고요한 달"},
-    ui:{"--ui-bg":"#bdc3c7","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(44,62,80,0.05)","--ui-text":"#2c3e50","--ui-muted":"#434a4b","--ui-border":"rgba(128,128,128,.20)","--ui-button":"#ecf0f1","--ui-button-hover":"#d3d9dc","--ui-field":"#ffffff","--ui-accent":"#7f8c8d","--ui-on-accent":"#000000","--ui-gold":"#f1c40f","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(127,140,141,0.14)"},
+    ui:{"--ui-bg":"#bdc3c7","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(44,62,80,0.05)","--ui-text":"#2c3e50","--ui-muted":"#525b5b","--ui-border":"rgba(128,128,128,.20)","--ui-button":"#ecf0f1","--ui-button-hover":"#d3d9dc","--ui-field":"#ffffff","--ui-accent":"#7f8c8d","--ui-on-accent":"#000000","--ui-gold":"#f1c40f","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(127,140,141,0.14)"},
     game:{"don":"#95a5a6","ka":"#7f8c8d","stage":"#d3d3d3","lane":"rgba(255,255,255,0.82)","track":"rgba(44,62,80,0.24)","ink":"#2c3e50","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#f1c40f","good":"#2c3e50","miss":"#6d7a86","glow":false},
     shapes:["square","square"],
     video:"grayscale(.1) contrast(1.1) brightness(1.05)"
@@ -927,7 +921,7 @@
     cat:["light","fun","grad"],
     label:{"ja":"マカロン","en":"Macaron","zh":"马卡龙","ko":"마카롱"},
     desc:{"ja":"パステルカラーのフランス菓子、かわいらしい色合い","en":"Pastel French confectionery, cute colors","zh":"淡色法国点心，可爱色调","ko":"파스텔 컬러 프랑스 과자, 귀여운 색감"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#e1bee7,#ce93d8)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(74,20,140,0.05)","--ui-text":"#4a148c","--ui-muted":"#651972","--ui-border":"rgba(171,71,188,.22)","--ui-button":"#e1bee7","--ui-button-hover":"#cda8db","--ui-field":"#ffffff","--ui-accent":"#ab47bc","--ui-on-accent":"#ffffff","--ui-gold":"#f3e5f5","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(171,71,188,0.14)"},
+    ui:{"--ui-bg":"linear-gradient(180deg,#e1bee7,#ce93d8)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(74,20,140,0.05)","--ui-text":"#4a148c","--ui-muted":"#751d84","--ui-border":"rgba(171,71,188,.22)","--ui-button":"#e1bee7","--ui-button-hover":"#cda8db","--ui-field":"#ffffff","--ui-accent":"#ab47bc","--ui-on-accent":"#ffffff","--ui-gold":"#f3e5f5","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(171,71,188,0.14)"},
     game:{"don":"#ce93d8","ka":"#b39ddb","stage":"linear-gradient(180deg,#f3e5f5,#e1bee7)","lane":"rgba(255,255,255,0.82)","track":"rgba(74,20,140,0.24)","ink":"#4a148c","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#f3e5f5","good":"#4a148c","miss":"#8e61b5","glow":false},
     shapes:["circle","circle"],
     video:"saturate(1.1) brightness(1.05)"
@@ -978,11 +972,10 @@
     cat:["life","fun"],
     label:{"ja":"メロンパン","en":"Melon Pan","zh":"瓜面包","ko":"멜론빵"},
     desc:{"ja":"日本の菓子パン、クッキー生地のグリッド","en":"Japanese sweet bread, cookie dough grid","zh":"日本甜面包，饼干面团网格","ko":"일본 과자빵, 쿠키 반죽 그리드"},
-    ui:{"--ui-bg":"#ffe082","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(245,127,23,0.05)","--ui-text":"#f57f17","--ui-muted":"#ff6f00","--ui-border":"rgba(245,127,23,.22)","--ui-button":"#ffecb3","--ui-button-hover":"#fede9f","--ui-field":"#ffffff","--ui-accent":"#ffa000","--ui-on-accent":"#fff9c4","--ui-gold":"#ffd54f","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,160,0,0.14)"},
-    game:{"don":"#ffcc80","ka":"#ffe0b2","stage":"#fff9c4","lane":"rgba(255,255,255,0.82)","track":"rgba(245,127,23,0.24)","ink":"#f57f17","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffd54f","good":"#f57f17","miss":"#faab47","glow":false},
+    ui:{"--ui-bg":"#ffe082","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(74,38,5,0.05)","--ui-text":"#4a2605","--ui-muted":"#814516","--ui-border":"rgba(245,127,23,.22)","--ui-button":"#ffecb3","--ui-button-hover":"#e7d29c","--ui-field":"#ffffff","--ui-accent":"#ffa000","--ui-on-accent":"#3d2500","--ui-gold":"#ffd54f","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,160,0,0.14)"},
+    game:{"don":"#ffcc80","ka":"#ffe0b2","stage":"#fff9c4","lane":"rgba(255,255,255,0.82)","track":"rgba(74,38,5,0.24)","ink":"#753a08","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffd54f","good":"#753a08","miss":"#9b7a3d","glow":false},
     shapes:["square","square"],
-    video:"sepia(.1) saturate(1.1) brightness(1.02)",
-    holdback:true
+    video:"sepia(.1) saturate(1.1) brightness(1.02)"
   };
   S["mercury-core"] = {
     cat:["dark","access"],
@@ -1032,11 +1025,10 @@
     type:{"title":"\"Garamond\",serif","weight":"300","lh":"1.75","titleWeight":"600","titleSpace":".04em","mark":"あア漢 Aa 12"},
     label:{"ja":"ミスリル","en":"Mithril","zh":"秘银","ko":"미스릴"},
     desc:{"ja":"ファンタジーの軽銀、妖精と王族が愛した金属","en":"Fantasy light-silver, metal loved by fairies and royalty","zh":"奇幻的轻银，精灵和王族喜爱的金属","ko":"판타지의 경은, 요정과 왕족이 사랑한 금속"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#7f8fa6,#5d6d7e)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(44,62,80,0.05)","--ui-text":"#2c3e50","--ui-muted":"#7f8c8d","--ui-border":"rgba(52,152,219,.22)","--ui-button":"#d5dbdb","--ui-button-hover":"#bfc7c9","--ui-field":"#ffffff","--ui-accent":"#3498db","--ui-on-accent":"#ffffff","--ui-gold":"#d4e6f1","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(52,152,219,0.14)"},
-    game:{"don":"#aed6f1","ka":"#3498db","stage":"linear-gradient(180deg,#d4e6f1,#7f8fa6)","lane":"rgba(255,255,255,0.6)","track":"rgba(44,62,80,0.24)","ink":"#2c3e50","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#d4e6f1","good":"#2c3e50","miss":"#516277","glow":false},
+    ui:{"--ui-bg":"linear-gradient(180deg,#7f8fa6,#5d6d7e)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(44,62,80,0.05)","--ui-text":"#2c3e50","--ui-muted":"#4c5455","--ui-border":"rgba(52,152,219,.22)","--ui-button":"#d5dbdb","--ui-button-hover":"#bfc7c9","--ui-field":"#ffffff","--ui-accent":"#3498db","--ui-on-accent":"#000000","--ui-gold":"#d4e6f1","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(52,152,219,0.14)"},
+    game:{"don":"#aed6f1","ka":"#3498db","stage":"linear-gradient(180deg,#d4e6f1,#9fabbc)","lane":"rgba(255,255,255,0.6)","track":"rgba(44,62,80,0.24)","ink":"#2c3e50","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#d4e6f1","good":"#2c3e50","miss":"#516277","glow":false},
     shapes:["circle","circle"],
-    video:"saturate(1.1) brightness(1.05) contrast(1.02)",
-    holdback:true
+    video:"saturate(1.1) brightness(1.05) contrast(1.02)"
   };
   S["mochi"] = {
     cat:["light","life"],
@@ -1160,7 +1152,7 @@
     font:"\"Noto Sans JP\",\"Noto Sans CJK JP\",sans-serif",
     type:{"title":"\"Noto Sans JP\",sans-serif","weight":"400","lh":"1.7","titleWeight":"700","titleSpace":".02em","mark":"あア漢 Aa 12"},
     label:{"ja":"ノトサンスJP","en":"Noto Sans JP","zh":"思源黑体 JP","ko":"노토 산스 JP"},
-    desc:{"ja":"日本語ウェブの定番、バランスの取れた角ゴシック","en":"Japanese web standard, balanced gothic","zh":"日语网页标准，均衡的角ゴシック","ko":"일본어 웹 표준, 균형 잡힌 고딕"},
+    desc:{"ja":"日本語ウェブの定番、バランスの取れた角ゴシック","en":"Japanese web standard, balanced gothic","zh":"日语网页常用的均衡黑体","ko":"일본어 웹 표준, 균형 잡힌 고딕"},
     ui:{"--ui-bg":"#ffffff","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(26,26,26,0.05)","--ui-text":"#1a1a1a","--ui-muted":"#585858","--ui-border":"rgba(26,26,26,.12)","--ui-button":"#eeeeee","--ui-button-hover":"#d2d2d2","--ui-field":"#ffffff","--ui-accent":"#1976d2","--ui-on-accent":"#ffffff","--ui-gold":"#ffa000","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(25,118,210,0.14)"},
     game:{"don":"#d32f2f","ka":"#1976d2","stage":"#fafafa","lane":"rgba(255,255,255,0.82)","track":"rgba(26,26,26,0.24)","ink":"#1a1a1a","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffa000","good":"#1a1a1a","miss":"#818181","glow":false},
     shapes:["square","square"],
@@ -1230,7 +1222,7 @@
     cat:["grad","fun","light"],
     font:"\"Trajan Pro\",\"Papyrus\",fantasy",
     type:{"title":"\"Trajan Pro\",fantasy","weight":"400","lh":"1.6","titleWeight":"600","titleSpace":".05em","titleTransform":"uppercase","mark":"あア漢 Aa 12"},
-    label:{"ja":"オリハルコン","en":"Orichalcum","zh":"奥尔哈尔库姆","ko":"오리HAL콘"},
+    label:{"ja":"オリハルコン","en":"Orichalcum","zh":"山铜","ko":"오리하르콘"},
     desc:{"ja":"古代ギリシャの神聖金属、山吹色の輝き","en":"Ancient Greek sacred metal, golden-yellow shine","zh":"古希腊神圣金属，山吹色光泽","ko":"고대 그리스의 신성한 금속, 산죽색 광채"},
     ui:{"--ui-bg":"linear-gradient(180deg,#8b4513,#4a2505)","--ui-panel":"rgba(218,165,32,0.96)","--ui-soft":"rgba(255,253,240,0.05)","--ui-text":"#fffdf0","--ui-muted":"#b8860b","--ui-border":"rgba(255,215,0,.30)","--ui-button":"#daa520","--ui-button-hover":"#dfb03b","--ui-field":"#fffdf0","--ui-accent":"#ffd700","--ui-on-accent":"#4a2505","--ui-gold":"#ffe082","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(255,215,0,0.14)"},
     game:{"don":"#ffd700","ka":"#b8860b","stage":"linear-gradient(180deg,#daa520,#8b4513)","lane":"rgba(218,165,32,0.6)","track":"rgba(255,253,240,0.24)","ink":"#fffdf0","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(218,165,32,0.95)","perfect":"#ffe082","good":"#fffdf0","miss":"#cbaa8d","glow":false},
@@ -1253,11 +1245,10 @@
     cat:["light","life"],
     label:{"ja":"パンケーキ","en":"Pancake","zh":"松饼","ko":"팬케이크"},
     desc:{"ja":"朝食のパンケーキ、バターのイエロー","en":"Breakfast pancake, buttery yellow","zh":"早餐松饼，黄油黄色","ko":"아침 팬케이크, 버터 노란색"},
-    ui:{"--ui-bg":"#fff59d","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(245,127,23,0.05)","--ui-text":"#f57f17","--ui-muted":"#ff6f00","--ui-border":"rgba(245,127,23,.22)","--ui-button":"#ffe082","--ui-button-hover":"#fed374","--ui-field":"#ffffff","--ui-accent":"#ffa000","--ui-on-accent":"#fff9c4","--ui-gold":"#ffeb3b","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,160,0,0.14)"},
-    game:{"don":"#ffd54f","ka":"#ffe082","stage":"#fff176","lane":"rgba(255,255,255,0.82)","track":"rgba(245,127,23,0.24)","ink":"#f57f17","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffeb3b","good":"#f57f17","miss":"#fab453","glow":false},
+    ui:{"--ui-bg":"#fff59d","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(71,40,16,0.05)","--ui-text":"#472810","--ui-muted":"#7b4720","--ui-border":"rgba(245,127,23,.22)","--ui-button":"#ffe082","--ui-button-hover":"#e7c873","--ui-field":"#ffffff","--ui-accent":"#ffa000","--ui-on-accent":"#3d2500","--ui-gold":"#ffeb3b","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,160,0,0.14)"},
+    game:{"don":"#ffd54f","ka":"#ffe082","stage":"#fff176","lane":"rgba(255,255,255,0.82)","track":"rgba(71,40,16,0.24)","ink":"#704019","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffeb3b","good":"#704019","miss":"#9a844f","glow":false},
     shapes:["circle","circle"],
-    video:"brightness(1.05) saturate(1.05)",
-    holdback:true
+    video:"brightness(1.05) saturate(1.05)"
   };
   S["paperMoon"] = {
     cat:["light","grad"],
@@ -1411,11 +1402,10 @@
     type:{"title":"\"Caveat\",cursive","weight":"400","lh":"1.5","titleWeight":"600","titleSpace":".02em","mark":"あア漢 Aa 12"},
     label:{"ja":"水銀","en":"Quicksilver","zh":"水银","ko":"수은"},
     desc:{"ja":"流動する銀、液体金属のような変幻自在な質感","en":"Flowing silver, liquid metal ever-changing texture","zh":"流动的银，液态金属般的变幻莫测质感","ko":"흐르는 은, 액체 금속 같은 변화무쌍한 질감"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#7f8c8d,#5d6d7e)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(44,62,80,0.05)","--ui-text":"#2c3e50","--ui-muted":"#95a5a6","--ui-border":"rgba(52,152,219,.24)","--ui-button":"#ecf0f1","--ui-button-hover":"#d3d9dc","--ui-field":"#ffffff","--ui-accent":"#3498db","--ui-on-accent":"#ffffff","--ui-gold":"#bdc3c7","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(52,152,219,0.14)"},
-    game:{"don":"#3498db","ka":"#e74c3c","stage":"linear-gradient(180deg,#bdc3c7,#7f8c8d)","lane":"rgba(255,255,255,0.6)","track":"rgba(44,62,80,0.24)","ink":"#2c3e50","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#bdc3c7","good":"#2c3e50","miss":"#51616b","glow":false},
+    ui:{"--ui-bg":"linear-gradient(180deg,#7f8c8d,#5d6d7e)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(44,62,80,0.05)","--ui-text":"#2c3e50","--ui-muted":"#525b5b","--ui-border":"rgba(52,152,219,.24)","--ui-button":"#ecf0f1","--ui-button-hover":"#d3d9dc","--ui-field":"#ffffff","--ui-accent":"#3498db","--ui-on-accent":"#000000","--ui-gold":"#bdc3c7","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(52,152,219,0.14)"},
+    game:{"don":"#3498db","ka":"#e74c3c","stage":"linear-gradient(180deg,#bdc3c7,#9fa9aa)","lane":"rgba(255,255,255,0.6)","track":"rgba(44,62,80,0.24)","ink":"#2c3e50","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#bdc3c7","good":"#2c3e50","miss":"#51616b","glow":false},
     shapes:["circle","circle"],
-    video:"saturate(1.15) contrast(1.08) brightness(1.04)",
-    holdback:true
+    video:"saturate(1.15) contrast(1.08) brightness(1.04)"
   };
   S["raleway"] = {
     cat:["type","light"],
@@ -1443,7 +1433,7 @@
     cat:["type","dark","fun"],
     font:"\"Rockwell\",\"Courier New\",monospace",
     type:{"title":"\"Rockwell\",serif","weight":"700","lh":"1.45","titleWeight":"800","titleSpace":"-.02em","mark":"あア漢 Aa 12"},
-    label:{"ja":"ロックウェル","en":"Rockwell","zh":"ロックウェル","ko":"록웰"},
+    label:{"ja":"ロックウェル","en":"Rockwell","zh":"罗克韦尔","ko":"록웰"},
     desc:{"ja":"スラブセリフ、力強く重厚な書体","en":"Slab serif, powerful and substantial","zh":"方体衬线体，有力且厚重","ko":"슬래브 세리프, 강력하고 중후한 서체"},
     ui:{"--ui-bg":"#2d3748","--ui-panel":"rgba(45,55,72,0.96)","--ui-soft":"rgba(250,250,250,0.05)","--ui-text":"#fafafa","--ui-muted":"#b8c2d0","--ui-border":"rgba(255,255,255,.18)","--ui-button":"#2d3748","--ui-button-hover":"#48505f","--ui-field":"#1a202c","--ui-accent":"#fc8181","--ui-on-accent":"#1a202c","--ui-gold":"#f6e05e","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(252,129,129,0.14)"},
     game:{"don":"#fc8181","ka":"#63b3ed","stage":"#1a202c","lane":"rgba(45,55,72,0.6)","track":"rgba(250,250,250,0.24)","ink":"#fafafa","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(45,55,72,0.95)","perfect":"#f6e05e","good":"#fafafa","miss":"#9ea2aa","glow":false},
@@ -1591,7 +1581,7 @@
     cat:["light","fun","grad"],
     label:{"ja":"ストロベリーケーキ","en":"Strawberry Cake","zh":"草莓蛋糕","ko":"딸기 케이크"},
     desc:{"ja":"苺のショートケーキ、甘くて華やかなピンク","en":"Strawberry shortcake, sweet and gorgeous pink","zh":"草莓蛋糕，甜美华丽的粉色","ko":"딸기 쇼트케이크, 달콤하고 화려한 핑크"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#f8bbd0,#f59ab9)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(136,14,79,0.05)","--ui-text":"#880e4f","--ui-muted":"#8a1046","--ui-border":"rgba(236,64,122,.24)","--ui-button":"#f8bbd0","--ui-button-hover":"#e9a5bf","--ui-field":"#ffffff","--ui-accent":"#ec407a","--ui-on-accent":"#000000","--ui-gold":"#ffcdd2","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(236,64,122,0.14)"},
+    ui:{"--ui-bg":"linear-gradient(180deg,#f8bbd0,#f48fb1)","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(136,14,79,0.05)","--ui-text":"#880e4f","--ui-muted":"#8a1046","--ui-border":"rgba(236,64,122,.24)","--ui-button":"#f8bbd0","--ui-button-hover":"#e9a5bf","--ui-field":"#ffffff","--ui-accent":"#ec407a","--ui-on-accent":"#000000","--ui-gold":"#ffcdd2","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(236,64,122,0.14)"},
     game:{"don":"#ec407a","ka":"#f48fb1","stage":"linear-gradient(180deg,#fce4ec,#f8bbd0)","lane":"rgba(255,255,255,0.82)","track":"rgba(136,14,79,0.24)","ink":"#880e4f","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffcdd2","good":"#880e4f","miss":"#ba5c89","glow":false},
     shapes:["circle","circle"],
     video:"sepia(.1) saturate(1.15) brightness(1.03)"
@@ -1631,8 +1621,8 @@
     cat:["life","fun"],
     label:{"ja":"たい焼き","en":"Taiyaki","zh":"鱼形烤饼","ko":"타이야키"},
     desc:{"ja":"和菓子のたい焼き、焦げ茶色の温かさ","en":"Japanese taiyaki, warm burnt brown","zh":"日式太阳烧，温暖焦茶色","ko":"일본 붕어빵, 따뜻한 구운 갈색"},
-    ui:{"--ui-bg":"#cd4014","--ui-panel":"rgba(195,61,19,0.96)","--ui-soft":"rgba(255,255,255,0.05)","--ui-text":"#ffffff","--ui-muted":"#ffffff","--ui-border":"rgba(230,81,0,.22)","--ui-button":"#cf4317","--ui-button-hover":"#d0471c","--ui-field":"#bf360c","--ui-accent":"#ffab91","--ui-on-accent":"#3e2723","--ui-gold":"#ffccbc","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(255,171,145,0.14)"},
-    game:{"don":"#ffab91","ka":"#d7ccc8","stage":"#bf360c","lane":"rgba(195,61,19,0.6)","track":"rgba(255,255,255,0.24)","ink":"#ffebee","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(195,61,19,0.95)","perfect":"#ffccbc","good":"#ffebee","miss":"#241a17","glow":false},
+    ui:{"--ui-bg":"#d84315","--ui-panel":"rgba(185,58,18,0.96)","--ui-soft":"rgba(255,255,255,0.05)","--ui-text":"#ffffff","--ui-muted":"#ffffff","--ui-border":"rgba(230,81,0,.22)","--ui-button":"#cf4317","--ui-button-hover":"#d0471c","--ui-field":"#bf360c","--ui-accent":"#ffab91","--ui-on-accent":"#3e2723","--ui-gold":"#ffccbc","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(255,171,145,0.14)"},
+    game:{"don":"#ffab91","ka":"#d7ccc8","stage":"#bf360c","lane":"rgba(185,58,18,0.6)","track":"rgba(255,255,255,0.24)","ink":"#ffebee","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(185,58,18,0.95)","perfect":"#ffccbc","good":"#ffebee","miss":"#241a17","glow":false},
     shapes:["circle","square"],
     video:"sepia(.4) contrast(1.1) brightness(.9)"
   };
@@ -1640,7 +1630,7 @@
     cat:["fun","grad"],
     label:{"ja":"タルト","en":"Tart","zh":"塔","ko":"타르트"},
     desc:{"ja":"フルーツタルト、色とりどりのフルーツ","en":"Fruit tart, colorful fruits","zh":"水果塔，色彩缤纷水果","ko":"과일 타르트, 색색깔 과일"},
-    ui:{"--ui-bg":"#ffe2d9","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(191,54,12,0.05)","--ui-text":"#bf360c","--ui-muted":"#be2a2a","--ui-border":"rgba(191,54,12,.22)","--ui-button":"#ffe2df","--ui-button-hover":"#ffe2df","--ui-field":"#ffffff","--ui-accent":"#ff5252","--ui-on-accent":"#000000","--ui-gold":"#ffd54f","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,82,82,0.14)"},
+    ui:{"--ui-bg":"#ffab91","--ui-panel":"rgba(255,255,255,0.96)","--ui-soft":"rgba(191,54,12,0.05)","--ui-text":"#bf360c","--ui-muted":"#be2a2a","--ui-border":"rgba(191,54,12,.22)","--ui-button":"#ffe2df","--ui-button-hover":"#ffe2df","--ui-field":"#ffffff","--ui-accent":"#ff5252","--ui-on-accent":"#000000","--ui-gold":"#ffd54f","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(255,82,82,0.14)"},
     game:{"don":"#ff5252","ka":"#aed581","stage":"#ffe2df","lane":"rgba(255,255,255,0.82)","track":"rgba(191,54,12,0.24)","ink":"#bf360c","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,255,0.95)","perfect":"#ffd54f","good":"#bf360c","miss":"#dc6b48","glow":false},
     shapes:["circle","circle"],
     video:"saturate(1.25) brightness(1.03)"
@@ -1651,11 +1641,10 @@
     type:{"title":"\"Futura\",sans-serif","weight":"700","lh":"1.2","titleWeight":"900","titleSpace":"-.04em","titleTransform":"uppercase","mark":"TEQUILA"},
     label:{"ja":"テキーラサンライズ","en":"Tequila Sunrise","zh":"龙舌兰日出","ko":"테킬라 선라이즈"},
     desc:{"ja":"夕焼けグラデーション、オレンジと赤","en":"Sunset gradient, orange and red","zh":"日落渐变，橙色和红色","ko":"노을 그라데이션, 오렌지와 빨강"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#45b7d1,#4ecdc4)","--ui-panel":"rgba(69,183,209,0.96)","--ui-soft":"rgba(255,255,255,0.05)","--ui-text":"#ffffff","--ui-muted":"#ff9ff3","--ui-border":"rgba(254,202,87,.30)","--ui-button":"#4ecdc4","--ui-button-hover":"#65d4cc","--ui-field":"#ff6b6b","--ui-accent":"#feca57","--ui-on-accent":"#ffffff","--ui-gold":"#ffeaa7","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(254,202,87,0.14)"},
-    game:{"don":"#ff9ff3","ka":"#feca57","stage":"linear-gradient(180deg,#ff6b6b,#4ecdc4,#45b7d1)","lane":"rgba(69,183,209,0.82)","track":"rgba(255,255,255,0.24)","ink":"#ffffff","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(69,183,209,0.95)","perfect":"#ffeaa7","good":"#ffffff","miss":"#abdfea","glow":false},
+    ui:{"--ui-bg":"linear-gradient(180deg,#45b7d1,#4ecdc4)","--ui-panel":"rgba(69,183,209,0.96)","--ui-soft":"rgba(30,42,58,0.05)","--ui-text":"#1e2a3a","--ui-muted":"#55144c","--ui-border":"rgba(254,202,87,.30)","--ui-button":"#4ecdc4","--ui-button-hover":"#48b8b2","--ui-field":"#ff6b6b","--ui-accent":"#feca57","--ui-on-accent":"#1e2a3a","--ui-gold":"#ffeaa7","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(254,202,87,0.14)"},
+    game:{"don":"#ff9ff3","ka":"#feca57","stage":"linear-gradient(180deg,#ff6b6b,#4ecdc4,#45b7d1)","lane":"rgba(69,183,209,0.82)","track":"rgba(30,42,58,0.24)","ink":"#1e2a3a","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(69,183,209,0.95)","perfect":"#ffeaa7","good":"#1e2a3a","miss":"#244f5f","glow":false},
     shapes:["circle","circle"],
-    video:"saturate(1.3) brightness(1.02) contrast(1.1)",
-    holdback:true
+    video:"saturate(1.3) brightness(1.02) contrast(1.1)"
   };
   S["titanium"] = {
     cat:["dark","access","basic"],
@@ -1683,11 +1672,10 @@
     cat:["grad","light","fun"],
     label:{"ja":"トパーズ","en":"Topaz","zh":"黄玉","ko":"토파즈"},
     desc:{"ja":"黄金色の宝石、友情と誠実の黄","en":"Golden yellow jewel, friendship and sincerity in yellow","zh":"金黄色宝石，友情与真诚的黄","ko":"금빛 보석, 우정과 성실의 노랑"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#b8860b,#6b4a0b)","--ui-panel":"rgba(255,193,7,0.96)","--ui-soft":"rgba(62,39,35,0.05)","--ui-text":"#3e2723","--ui-muted":"#8d6e63","--ui-border":"rgba(255,107,87,.30)","--ui-button":"#ffe082","--ui-button-hover":"#e6c876","--ui-field":"#fff9c4","--ui-accent":"#ff6b6b","--ui-on-accent":"#3e2723","--ui-gold":"#fff176","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(255,107,107,0.14)"},
-    game:{"don":"#ff6b6b","ka":"#4ecdc4","stage":"linear-gradient(180deg,#ffc107,#b8860b)","lane":"rgba(255,193,7,0.6)","track":"rgba(62,39,35,0.24)","ink":"#3e2723","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(255,193,7,0.95)","perfect":"#fff176","good":"#3e2723","miss":"#755218","glow":false},
+    ui:{"--ui-bg":"linear-gradient(180deg,#b8860b,#6b4a0b)","--ui-panel":"rgba(255,193,7,0.96)","--ui-soft":"rgba(62,39,35,0.05)","--ui-text":"#3e2723","--ui-muted":"#634d45","--ui-border":"rgba(255,107,87,.30)","--ui-button":"#ffe082","--ui-button-hover":"#e6c876","--ui-field":"#fff9c4","--ui-accent":"#ff6b6b","--ui-on-accent":"#3e2723","--ui-gold":"#fff176","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(255,107,107,0.14)"},
+    game:{"don":"#ff6b6b","ka":"#4ecdc4","stage":"linear-gradient(180deg,#ffc107,#bc8c17)","lane":"rgba(255,193,7,0.6)","track":"rgba(62,39,35,0.24)","ink":"#3e2723","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(255,193,7,0.95)","perfect":"#fff176","good":"#3e2723","miss":"#755218","glow":false},
     shapes:["circle","circle"],
-    video:"sepia(.2) saturate(1.15) brightness(1.05)",
-    holdback:true
+    video:"sepia(.2) saturate(1.15) brightness(1.05)"
   };
   S["tree-house"] = {
     cat:["life","grad"],
@@ -1770,7 +1758,7 @@
     type:{"title":"\"Garamond\",serif","weight":"400","lh":"1.65","titleWeight":"600","titleSpace":".04em","mark":"あア漢 Aa 12"},
     label:{"ja":"金星雲","en":"Venus Clouds","zh":"金星云","ko":"금성 구름"},
     desc:{"ja":"有毒な黄色い雲、金星の厚い大気","en":"Toxic yellow clouds, thick Venus atmosphere","zh":"有毒的黄色云，金星厚大气层","ko":"독성이 있는 노란 구름, 금성의 두꺼운 대기"},
-    ui:{"--ui-bg":"linear-gradient(180deg,#ffff00,#ffa500)","--ui-panel":"rgba(255,255,0,0.96)","--ui-soft":"rgba(74,55,40,0.05)","--ui-text":"#4a3728","--ui-muted":"#4d4640","--ui-border":"rgba(212,175,55,.20)","--ui-button":"#e8dec7","--ui-button-hover":"#d3c8b2","--ui-field":"#fffef5","--ui-accent":"#d4af37","--ui-on-accent":"#4a3728","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(212,175,55,0.14)"},
+    ui:{"--ui-bg":"linear-gradient(180deg,#ffff00,#ffa500)","--ui-panel":"rgba(255,255,0,0.96)","--ui-soft":"rgba(74,55,40,0.05)","--ui-text":"#4a3728","--ui-muted":"#5b534b","--ui-border":"rgba(212,175,55,.20)","--ui-button":"#e8dec7","--ui-button-hover":"#d3c8b2","--ui-field":"#fffef5","--ui-accent":"#d4af37","--ui-on-accent":"#4a3728","--ui-gold":"#ffe082","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(212,175,55,0.14)"},
     game:{"don":"#d4af37","ka":"#8c9eac","stage":"linear-gradient(180deg,#ffd700,#ffa500,#ffff00)","lane":"rgba(255,255,0,0.82)","track":"rgba(74,55,40,0.24)","ink":"#4a3728","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(255,255,0,0.95)","perfect":"#ffe082","good":"#4a3728","miss":"#9b9116","glow":false},
     shapes:["circle","circle"],
     video:"sepia(.3) saturate(1.2) brightness(1.02)"
@@ -1875,7 +1863,7 @@
   /* ⚠ 差し戻し（目録へお返しした色のもの）：寄せると別のテーマになるので、
      **色は目録のまま**内蔵し、既定の棚から外しています（ALL と その巻では見えます）。
      直すのは目録側です（`tools/check-skin-contrast` もこの一覧を読みます）。 */
-  if (D) D.SKIN_HOLDBACK = ["ancient-bronze","chocolate","citrine","creme-brulee","energy-drink","gold","gold-chip","hot-cocoa","house-edge","jackpot-777","melon-pan","mithril","orichalcum","pancake","quicksilver","tequila-sunrise","topaz"];
+  if (D) D.SKIN_HOLDBACK = ["gold-chip","house-edge","orichalcum"];
   /* 📚 巻の目録（13 巻）。`ids` は**この目録に居る ID の全部**（既に本体が持っているものも含む）。
      ＝ 棚で巻を選ぶと、その巻の全員が出る（新顔も定番も同じ扱い）。 */
   if (D) D.SKIN_VOLUMES = [

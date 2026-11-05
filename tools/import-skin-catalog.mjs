@@ -311,6 +311,11 @@ function applyExtras(skin, s) {
   const video = cleanFilter(s.video);
   if (video) skin.video = video;
   if (s.locked === true) skin.locked = true;
+  /* trk293：意図した低コントラストの宣言（合格証でも免除でもない・差し戻しの判定は変えない） */
+  if (s.readability === "intentional-low") {
+    const why = pickLang(s.readabilityReason);
+    if (why) { skin.readability = "intentional-low"; skin.readabilityReason = why; }
+  }
   const cli = D.sanitizeCliLook(s.cli);
   if (cli) skin.cli = cli;
 }
@@ -340,6 +345,10 @@ function convert(s) {
   let panel = panel0, field = field0, button = button0;
   let bgStops = bgStops0.slice();
   const textMoved = [];
+  /* 地（--ui-bg）は文字を直接置かない「飾りの面」（.screen の背景。文字はカード＝パネルの上）。
+     文字・うすい文字の合格は、読む面（パネル・入力欄・ボタン・hover）で取る。地は動かさない。
+     ⌨ ターミナルの入力欄と板は、地ではなく入力欄・パネルを使う（css/style.css）。 */
+  const textSurfaces = () => [panel, field, button];
   for (let pass = 0; pass < 2; pass++) {
     const wasInk = inkText;
     /* 文字はまず**読む面（パネル・入力欄）**で届かせる。ボタン・地は背景なので、あとで動かす */
@@ -348,19 +357,17 @@ function convert(s) {
     panel = pushBg(panel, inkText, 4.5, surfEnd);
     field = pushBg(field, inkText, 4.5, surfEnd);
     button = pushBg(button, inkText, 4.5, surfEnd);
-    bgStops = bgStops.map(stop => pushBg(stop, inkText, 4.5, surfEnd));
   }
   /* 仕上げ：ボタン・地が端まで行っても届かないときだけ、文字をもう一度寄せる */
   {
     const wasInk = inkText;
-    inkText = pushInk(inkText, [panel, field, button, ...bgStops], 4.5, inkEnd);
+    inkText = pushInk(inkText, textSurfaces(), 4.5, inkEnd);
     if (inkText !== wasInk) {
       if (!textMoved.length) textMoved.push(text0 + " → " + inkText);
       panel = pushBg(panel, inkText, 4.5, surfEnd);
       field = pushBg(field, inkText, 4.5, surfEnd);
       button = pushBg(button, inkText, 4.5, surfEnd);
-      bgStops = bgStops.map(stop => pushBg(stop, inkText, 4.5, surfEnd));
-    }
+      }
   }
   const buttonFace = button;
   /* ホバーは「少し明るく」だが、届かなくなるときは混ぜる量を減らす */
@@ -371,11 +378,11 @@ function convert(s) {
     if (ratio(inkText, cand) >= 4.5) break;
   }
   /* うすい文字も、本文と同じ向きのまま合格点まで（目録の値が合格ならそのまま） */
-  const mutedFit = pushInk(muted0, [buttonFace, hover, field, ...bgStops, panel], 4.5, inkEnd);
+  const mutedFit = pushInk(muted0, [buttonFace, hover, field, panel], 4.5, inkEnd);
   /* trk275：寄せた結果、うすい文字が**本文と同じ色**になると階層が消える（レビュー Q2 の 38 種）。
      そのときは中間に置き直す（本文と面のあいだ）。 */
   const oppositeEnd = inkEnd === "#ffffff" ? "#000000" : "#ffffff";
-  const muted = separateMuted(mutedFit, inkText, [buttonFace, hover, field, ...bgStops, panel], oppositeEnd);
+  const muted = separateMuted(mutedFit, inkText, [buttonFace, hover, field, panel], oppositeEnd);
   const bgMoved = bgStops.some((stop, i) => stop !== bgStops0[i]);
   const bgCss = bgGrad ? gradientCss({ angle: bgGrad.angle, colors: bgStops }) : bgStops[0];
   const dark = bgStops.reduce((sum, h) => sum + D.luminance(h), 0) / bgStops.length < 0.35;
@@ -754,6 +761,12 @@ for (const { id, skin } of chosen) {
   if (skin.cli) lines.push("    cli:" + q(skin.cli) + ",");
   if (skin.locked) lines.push("    locked:true,");
   if (skin.holdback) lines.push("    holdback:true,");
+  /* trk293：目録の「意図した低コントラスト」の宣言（house-edge など）。合格証でも免除でもない。
+     差し戻しの判定（上の holdback）には関わらず、理由の文だけを画面に出す。 */
+  if (skin.readability === "intentional-low" && skin.readabilityReason) {
+    lines.push("    readability:" + q("intentional-low") + ",");
+    lines.push("    readabilityReason:" + q(skin.readabilityReason) + ",");
+  }
   /* 最後の 1 つは末尾のカンマを外す（読みやすさのためだけ） */
   const last = lines[lines.length - 1];
   lines[lines.length - 1] = last.replace(/,$/, "");
