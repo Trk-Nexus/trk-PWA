@@ -118,13 +118,13 @@ test("目録から作ったファイルは、手で直さない・どこから�
 });
 
 /* ==================== 既存 24 種を壊していない ==================== */
-test("Wizard 24 種は、22 種がそのまま・2 種だけ読みにくさを直した", () => {
+test("Wizard 24 種は、値が変わってよいのは 2 種だけ（trk292：hermetic は舞台だけ寄せて合格）", () => {
   /* trk270 で入れた 24 種のうち、値が変わってよいのはこの 2 種だけ（どちらも元データが読めない組） */
   /* ・wizard-hermetic：舞台 #b8860b の上に文字 #fffdf0（3.19:1）。
      trk275（レビュー Q2）で**寄せ幅の上限**を入れたため、この 1 種は寄せずに
      **目録の色のまま**（舞台 #b8860b）＋差し戻し（既定の棚から外す）になりました。 */
-  assert.equal(S["wizard-hermetic"].game.stage, "#b8860b");
-  assert.equal(S["wizard-hermetic"].holdback, true, "寄せずに差し戻す");
+  assert.equal(S["wizard-hermetic"].game.stage, "#936b09", "trk292：舞台だけ合格点まで寄せた（地は飾りの面）");
+  assert.ok(!S["wizard-hermetic"].holdback, "trk292：差し戻しから戻った");
   /* ・wizard-void：舞台 #000000 の上に文字 #000000（1.00:1）→ 文字を #ffffff に */
   assert.equal(S["wizard-void"].game.ink, "#ffffff");
   /* それ以外の 22 種は trk270 の値のまま（代表 4 種） */
@@ -166,7 +166,7 @@ test("棚の既定は「定番」だけ（wizard も段の 5 つ目でだけ。t
   /* 段を上げると、出る数も上がる（マスター＝other の全部、ウィザード＝＋wizard の巻） */
   assert.equal(shelfIds({ volumes, level: "master" }).length, 53);
   const top = shelfIds({ volumes, level: "wizard" });
-  assert.equal(top.length, 114, "ウィザードの段だけ 定番＋ウィザード（差し戻しの 1 種を除く）");
+  assert.equal(top.length, 115, "ウィザードの段だけ 定番＋ウィザード（trk292：差し戻し 0）");
   assert.ok(top.includes("wizard-cli"), "ウィザードの段では出る");
 });
 
@@ -181,12 +181,12 @@ test("巻を選ぶと、その巻だけが出る", () => {
 });
 
 test("「すべての巻」で 291 種。知らない巻の名前は既定に戻る", () => {
-  assert.equal(shelfIds({ volumes, vol: "all" }).length, 291);
+  assert.equal(shelfIds({ volumes, vol: "all" }).length, 291);   /* 差し戻しは「全部」では見える */
   assert.equal(shelfIds({ volumes, vol: "vol-99", level: "standard" }).length, 44, "知らない巻名は既定扱い（スタンダード）");
   /* 巻の目録が無い（古い版のキャッシュ）ときも壊れない。
-     差し戻しの 18 種は既定の棚に出さないので、そのぶん減る（trk275） */
-  assert.equal(shelfIds({ volumes: [], level: "wizard" }).length, 273, "目録が無いときもウィザードの段なら wizard も出る");
-  assert.equal(shelfIds({ volumes: [], level: "standard" }).length, 202, "スタンダードは段のカテゴリで絞る（trk281）");
+     差し戻しの 7 種は既定の棚に出さないので、そのぶん減る（trk275・trk292） */
+  assert.equal(shelfIds({ volumes: [], level: "wizard" }).length, 284, "目録が無いときもウィザードの段なら wizard も出る");
+  assert.equal(shelfIds({ volumes: [], level: "standard" }).length, 211, "スタンダードは段のカテゴリで絞る（trk281。trk292：差し戻しから 9 種が戻った）");
 });
 
 test("巻の絞り込みは、カテゴリ・⭐・検索と重ねられる", () => {
@@ -222,10 +222,11 @@ test("検索は巻をまたぐ（M2-c）：既定の棚で「ruby」が見つか
 });
 
 /* ==================== trk275：差し戻し（Q2） ==================== */
-test("差し戻しの 18 種は、生成物が自分で名乗り・既定の棚に出ない", () => {
+test("差し戻しの 7 種は、生成物が自分で名乗り・既定の棚に出ない（trk292）", () => {
   const hb = ids.filter(id => S[id].holdback);
-  assert.equal(hb.length, 18, "18 種（Wizard 1＋巻別 17）");
-  for (const [name, src] of [["js/skins-wizard.js", wizardSrc], ["js/skins-volumes.js", volumeSrc]]) {
+  assert.equal(hb.length, 7, "7 種（巻別。Wizard は 0）");
+  assert.ok(!/SKIN_HOLDBACK/.test(wizardSrc), "trk292：Wizard の生成物に差し戻しは無い");
+  for (const [name, src] of [["js/skins-volumes.js", volumeSrc]]) {
     const m = /SKIN_HOLDBACK = \[([^\]]*)\]/.exec(src);
     assert.ok(m, `${name}：SKIN_HOLDBACK を書いている`);
     for (const id of [...m[1].matchAll(/"([^"]+)"/g)].map(x => x[1])) {
@@ -328,7 +329,7 @@ test("検める道具：読めない組は、ちゃんと落とす（見張り�
   assert.equal(r.code, 1);
   const json = JSON.parse(r.stdout);
   assert.equal(json.ok, false);
-  assert.ok(json.problems.some(p => /本文.*地/.test(p.label)), "文字と地の組を名指しする");
+  assert.ok(json.problems.some(p => /本文.*パネル/.test(p.label)), "文字と読む面（パネル）の組を名指しする（地は飾りの面＝bg-decor.test）");
   assert.ok(json.problems.some(p => p.reason === "contrast"));
 });
 

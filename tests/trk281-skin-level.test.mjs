@@ -93,13 +93,13 @@ test("段の表：5 つの段と、段ごとのカテゴリがご相談どおり
 });
 
 /* ==================== 既定の棚の枚数 ==================== */
-test("既定の棚：段が上がるほど増える（44 → 53 → 114）", () => {
+test("既定の棚：段が上がるほど増える（44 → 53 → 115）", () => {
   const n = lv => shelf({ level: lv });
   assert.equal(n("simple").length, 44);
   assert.equal(n("standard").length, 44, "スタンダード（既定）");
   assert.equal(n("pro").length, 44, "遊び心は定番の巻には居ない（巻を選べば出る）");
   assert.equal(n("master").length, 53, "みやすさ・生活が加わる");
-  assert.equal(n("wizard").length, 114, "ウィザードで 定番＋wizard の巻（差し戻しの 1 種を除く）");
+  assert.equal(n("wizard").length, 115, "ウィザードで 定番＋wizard の巻（trk292：差し戻し 0）");
   /* ウィザードは 5 つ目の段でだけ出る */
   assert.equal(n("standard").some(id => (S[id].cat || []).includes("wizard")), false);
   assert.ok(n("wizard").includes("wizard-cli"));

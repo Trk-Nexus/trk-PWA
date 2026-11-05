@@ -183,7 +183,8 @@ function checkSkin(skin) {
       message: `${label}: ${fg} on ${bg} is ${Number.isFinite(r) ? round(r).toFixed(2) : "?"}:1 (needs ${floor}:1)`,
     });
   };
-  for (const [key, name] of [["--ui-bg", "地"], ["--ui-panel", "パネル"], ["--ui-field", "入力欄"], ["--ui-button", "ボタン"], ["--ui-button-hover", "ボタン（hover）"]]) {
+  /* 地（--ui-bg）は飾りの面：文字を直接置かない（.screen の上はカード）。tests/bg-decor.test.mjs で守る */
+  for (const [key, name] of [["--ui-panel", "パネル"], ["--ui-field", "入力欄"], ["--ui-button", "ボタン"], ["--ui-button-hover", "ボタン（hover）"]]) {
     for (const bg of stopsOf(ui[key])) {
       need(`本文／${name}`, ui["--ui-text"], bg, 4.5);
       need(`うすい文字／${name}`, ui["--ui-muted"], bg, 4.5);

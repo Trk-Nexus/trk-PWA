@@ -94,7 +94,8 @@ test("24 種すべてが、文字 4.5:1・エラー行 3:1 を満たす", () => 
      （舞台 #b8860b に文字 #fffdf0＝3.19:1）のままだと 4.5:1 に届かないため、
      色を動かさず**差し戻し**（`holdback:true`・既定の棚から外す）になりました。
      ここでは棚に並ぶ 23 種を見て、hermetic は差し戻しであることを別に確かめます。 */
-  assert.deepEqual(WIZ.filter(id => D.SKINS[id].holdback), ["wizard-hermetic"]);
+  /* trk292：案 A（地は飾りの面）で、wizard-hermetic も合格して棚に戻った。差し戻しの Wizard は 0 */
+  assert.deepEqual(WIZ.filter(id => D.SKINS[id].holdback), []);
   for (const id of WIZ.filter(id => !D.SKINS[id].holdback)) {
     const ui = D.SKINS[id].ui, game = D.SKINS[id].game;
     const need = [
@@ -104,7 +105,6 @@ test("24 種すべてが、文字 4.5:1・エラー行 3:1 を満たす", () => 
       ["muted/field", ui["--ui-muted"], ui["--ui-field"], 4.5],
       ["muted/button", ui["--ui-muted"], ui["--ui-button"], 4.5],
       ["muted/hover", ui["--ui-muted"], ui["--ui-button-hover"], 4.5],
-      ["muted/bg", ui["--ui-muted"], ui["--ui-bg"], 4.5],
       ["onAccent/accent", ui["--ui-on-accent"], ui["--ui-accent"], 4.5],
       ["miss/field", game.miss, ui["--ui-field"], 3],
     ];
