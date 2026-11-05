@@ -2067,6 +2067,8 @@ function buildSkinGrid() {
     const spec = skinSpecNode(s); if (spec) b.append(spec);
     b.append(el("small", "", (s.desc && (s.desc[lang] || s.desc.en)) || ""));
     if (s.holdback) b.append(el("small", "skinHoldback", tr("skinHoldbackNote")));
+    /* trk293：目録の「意図した低コントラスト」の理由（宣言があるスキンだけ）。合格証ではなく、差し戻しの判定は変えない */
+    if (s.readability === "intentional-low" && s.readabilityReason) b.append(el("small", "skinHoldback", s.readabilityReason[lang] || s.readabilityReason.en || ""));
     b.classList.toggle("selected", id === settings.skin); b.setAttribute("aria-pressed", id === settings.skin);
     b.addEventListener("click", () => applySkin(id));
     const quick = el("div", "skinQuick");

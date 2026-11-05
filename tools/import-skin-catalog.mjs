@@ -311,6 +311,11 @@ function applyExtras(skin, s) {
   const video = cleanFilter(s.video);
   if (video) skin.video = video;
   if (s.locked === true) skin.locked = true;
+  /* trk293：意図した低コントラストの宣言（合格証でも免除でもない・差し戻しの判定は変えない） */
+  if (s.readability === "intentional-low") {
+    const why = pickLang(s.readabilityReason);
+    if (why) { skin.readability = "intentional-low"; skin.readabilityReason = why; }
+  }
   const cli = D.sanitizeCliLook(s.cli);
   if (cli) skin.cli = cli;
 }
@@ -756,6 +761,12 @@ for (const { id, skin } of chosen) {
   if (skin.cli) lines.push("    cli:" + q(skin.cli) + ",");
   if (skin.locked) lines.push("    locked:true,");
   if (skin.holdback) lines.push("    holdback:true,");
+  /* trk293：目録の「意図した低コントラスト」の宣言（house-edge など）。合格証でも免除でもない。
+     差し戻しの判定（上の holdback）には関わらず、理由の文だけを画面に出す。 */
+  if (skin.readability === "intentional-low" && skin.readabilityReason) {
+    lines.push("    readability:" + q("intentional-low") + ",");
+    lines.push("    readabilityReason:" + q(skin.readabilityReason) + ",");
+  }
   /* 最後の 1 つは末尾のカンマを外す（読みやすさのためだけ） */
   const last = lines[lines.length - 1];
   lines[lines.length - 1] = last.replace(/,$/, "");

@@ -175,9 +175,9 @@ describe("game UI contrast across the skin catalogue", () => {
     }
   });
 
-  test("差し戻しの 7 種は、目録の色のまま名乗っていて、既定の棚には並ばない（trk275・trk292）", () => {
+  test("差し戻しの 3 種は、目録の色のまま名乗っていて、既定の棚には並ばない（trk275・trk292・trk293）", () => {
     const hb = Object.entries(SKINS).filter(([, s]) => s.holdback).map(([id]) => id).sort();
-    assert.equal(hb.length, 7, "trk292：案 A（地は飾りの面）で 8 種が戻り、Wizard は 0・巻別 7");
+    assert.equal(hb.length, 3, "trk293：目録 8f1e（配色 4 種の修正）で、差し戻しは巻別の 3 種（orichalcum・gold-chip・house-edge）。Wizard は 0");
     /* 生成物の SKIN_HOLDBACK と同じ顔ぶれ（手で足したり消したりしていない） */
     /* trk292：Wizard は差し戻し 0 件なので、生成物に SKIN_HOLDBACK の行は無い */
     assert.ok(!/SKIN_HOLDBACK/.test(fs.readFileSync(path.join(ROOT, "js/skins-wizard.js"), "utf8")), "Wizard の生成物に差し戻しの行は無い");
@@ -190,6 +190,6 @@ describe("game UI contrast across the skin catalogue", () => {
       }
     }
     assert.ok(!hb.includes("wizard-hermetic"), "trk292：wizard-hermetic は舞台を寄せて合格（差し戻しから戻る）");
-    assert.equal(READABLE.length, 291 - 7);
+    assert.equal(READABLE.length, 291 - 3);
   });
 });

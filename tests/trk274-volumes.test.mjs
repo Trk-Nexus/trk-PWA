@@ -184,9 +184,9 @@ test("「すべての巻」で 291 種。知らない巻の名前は既定に戻
   assert.equal(shelfIds({ volumes, vol: "all" }).length, 291);   /* 差し戻しは「全部」では見える */
   assert.equal(shelfIds({ volumes, vol: "vol-99", level: "standard" }).length, 44, "知らない巻名は既定扱い（スタンダード）");
   /* 巻の目録が無い（古い版のキャッシュ）ときも壊れない。
-     差し戻しの 7 種は既定の棚に出さないので、そのぶん減る（trk275・trk292） */
-  assert.equal(shelfIds({ volumes: [], level: "wizard" }).length, 284, "目録が無いときもウィザードの段なら wizard も出る");
-  assert.equal(shelfIds({ volumes: [], level: "standard" }).length, 211, "スタンダードは段のカテゴリで絞る（trk281。trk292：差し戻しから 9 種が戻った）");
+     差し戻しの 3 種は既定の棚に出さないので、そのぶん減る（trk275・trk292・trk293） */
+  assert.equal(shelfIds({ volumes: [], level: "wizard" }).length, 288, "目録が無いときもウィザードの段なら wizard も出る");
+  assert.equal(shelfIds({ volumes: [], level: "standard" }).length, 215, "スタンダードは段のカテゴリで絞る（trk281。trk292：差し戻しから 9 種が戻った。trk293：配色修正の 4 種が戻って 215）");
 });
 
 test("巻の絞り込みは、カテゴリ・⭐・検索と重ねられる", () => {
@@ -222,9 +222,9 @@ test("検索は巻をまたぐ（M2-c）：既定の棚で「ruby」が見つか
 });
 
 /* ==================== trk275：差し戻し（Q2） ==================== */
-test("差し戻しの 7 種は、生成物が自分で名乗り・既定の棚に出ない（trk292）", () => {
+test("差し戻しの 3 種は、生成物が自分で名乗り・既定の棚に出ない（trk292・trk293）", () => {
   const hb = ids.filter(id => S[id].holdback);
-  assert.equal(hb.length, 7, "7 種（巻別。Wizard は 0）");
+  assert.equal(hb.length, 3, "3 種（巻別。Wizard は 0）");
   assert.ok(!/SKIN_HOLDBACK/.test(wizardSrc), "trk292：Wizard の生成物に差し戻しは無い");
   for (const [name, src] of [["js/skins-volumes.js", volumeSrc]]) {
     const m = /SKIN_HOLDBACK = \[([^\]]*)\]/.exec(src);

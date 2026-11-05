@@ -2,7 +2,7 @@
 /* 🧙 ウィザードのスキン（trk269・trk270・trk274・Skin 側の目録から生成）
 
    出どころ：trk-Avatar-Library の `catalog/skins.json`（wizard カテゴリ）
-   目録の sha256：6e064f0b18e422cb245c30c5f74750b55088b828e45986bd6ddfa768350b2a76（この写しがどの目録から作られたかの印）
+   目録の sha256：8f1e9fa713c1b2c62567fba074f1c3cf245eac4e02d94f6aa515c74b683727e7（この写しがどの目録から作られたかの印）
    作り方：node tools/import-skin-catalog.mjs <目録.json> --cat=wizard --out=js/skins-wizard.js
    ・手で直さないでください（次の取り込みで消えます）。直すときは目録側（Skin 側）で。
    ・このファイルは data.js の後・core.js の前に読みます（起動時のスキン復元より先に要るため）。
@@ -29,7 +29,7 @@
     font:"\"Caslon\",\"Garamond\",serif",
     type:{"title":"\"Caslon\",serif","weight":"400","lh":"1.6","titleWeight":"600","titleSpace":".03em","mark":"☉ ♀ ♂"},
     label:{"ja":"オカルト哲学三書","en":"Three Books of Occult Philosophy","zh":"秘术哲学三书","ko":"오컬트 철학 삼부작"},
-    desc:{"ja":"ヘンリヒュス・コルネリウス・アグリッパによる白魔術の体系化、天使・惑星・調和","en":"Heinrich Cornelius Agrippa\\u2019s systematization of white m","zh":"海因里ヒ・コルネリウス・阿格リッパ对白魔术的系统化，天使、行星与和谐","ko":"하인리히ウス・코르네リウス・아그리파의 백마술 체계화, 천사・행성・조화"},
+    desc:{"ja":"ヘンリヒュス・コルネリウス・アグリッパによる白魔術の体系化、天使・惑星・調和","en":"Heinrich Cornelius Agrippa\\u2019s systematization of white m","zh":"海因里希·科尔内利乌斯·阿格里帕对白魔术的系统化：天使、行星与和谐","ko":"하인리히 코르넬리우스 아그리파의 백마술 체계화: 천사, 행성과 조화"},
     ui:{"--ui-bg":"#f0e8d8","--ui-panel":"rgba(240,232,216,0.96)","--ui-soft":"rgba(42,36,30,0.05)","--ui-text":"#2a241e","--ui-muted":"#5f513a","--ui-border":"rgba(184,134,11,.35)","--ui-button":"#e8e0d0","--ui-button-hover":"#cfc8b9","--ui-field":"#f5efe0","--ui-accent":"#b8860b","--ui-on-accent":"#000000","--ui-gold":"#ffd700","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(184,134,11,0.14)"},
     game:{"don":"#b8860b","ka":"#8b4513","stage":"#f5efe0","lane":"rgba(240,232,216,0.82)","track":"rgba(42,36,30,0.24)","ink":"#2a241e","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(240,232,216,0.95)","perfect":"#ffd700","good":"#2a241e","miss":"#837c72","glow":false},
     shapes:["square","square"],
@@ -313,7 +313,7 @@
     font:"\"Playfair Display\",\"Noto Serif JP\",serif",
     type:{"title":"\"Playfair Display\",serif","weight":"400","lh":"1.7","titleWeight":"600","titleSpace":".03em","mark":"7日"},
     label:{"ja":"ヘプタメロン","en":"Heptameron","zh":"七天书","ko":"헵타메론"},
-    desc:{"ja":"7日間の天使魔術、ポーピアーノによる天使召喚と白魔術の儀式","en":"Seven days of angelic magic, Pietro d\\u2019Abano\\u2019s ange","zh":"七天的天使魔术，皮埃トロ・ダバーノ的天使召唤与白魔术仪式","ko":"7일간의 천사 마법, 피에트로・다바노의 천사 소환과 백마술 의식"},
+    desc:{"ja":"7日間の天使魔術、ポーピアーノによる天使召喚と白魔術の儀式","en":"Seven days of angelic magic, Pietro d\\u2019Abano\\u2019s ange","zh":"七天的天使魔术：彼得罗·达巴诺的天使召唤与白魔术仪式","ko":"7일간의 천사 마법, 피에트로・다바노의 천사 소환과 백마술 의식"},
     ui:{"--ui-bg":"#4a3520","--ui-panel":"rgba(74,53,32,0.96)","--ui-soft":"rgba(240,230,210,0.05)","--ui-text":"#f0e6d2","--ui-muted":"#efe6d7","--ui-border":"rgba(212,175,55,.35)","--ui-button":"#7a5d40","--ui-button-hover":"#7f6246","--ui-field":"#5d4a3a","--ui-accent":"#c5a059","--ui-on-accent":"#000000","--ui-gold":"#ffe082","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(197,160,89,0.14)"},
     game:{"don":"#d4af37","ka":"#c5a059","stage":"#5d4a3a","lane":"rgba(74,53,32,0.6)","track":"rgba(240,230,210,0.24)","ink":"#f0e6d2","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(74,53,32,0.95)","perfect":"#ffe082","good":"#f0e6d2","miss":"#aa9b88","glow":false},
     shapes:["circle","square"],
@@ -347,7 +347,7 @@
     cat:["wizard","light","access"],
     font:"\"Cinzel\",\"Trajan Pro\",serif",
     type:{"title":"\"Cinzel\",serif","weight":"700","lh":"1.5","titleWeight":"800","titleSpace":".1em","titleTransform":"uppercase","mark":"✝"},
-    label:{"ja":"ホノリウスの誓約書","en":"Sworn Book of Honorius","zh":"霍诺里ウス誓约书","ko":"호노리우스의 맹약서"},
+    label:{"ja":"ホノリウスの誓約書","en":"Sworn Book of Honorius","zh":"霍诺留斯誓约书","ko":"호노리우스의 맹약서"},
     desc:{"ja":"教会に認められた白魔術、神の御名と祈り、浄化と防御の儀式","en":"Church-sanctioned white magic, the holy name of God and pray","zh":"教会认可的白魔术，上帝的圣名与祈祷，净化与防御仪式","ko":"교회가 인정한 백마술, 하느님의 거룩한 이름과 기도, 정화와 방어 의식"},
     ui:{"--ui-bg":"#fafafa","--ui-panel":"rgba(250,250,250,0.96)","--ui-soft":"rgba(26,26,26,0.05)","--ui-text":"#1a1a1a","--ui-muted":"#575757","--ui-border":"rgba(212,175,55,.35)","--ui-button":"#e8e8e8","--ui-button-hover":"#cdcdcd","--ui-field":"#ffffff","--ui-accent":"#d4af37","--ui-on-accent":"#000000","--ui-gold":"#ffd700","--ui-shadow":"0 24px 70px rgba(30,40,60,.16)","--ui-glow":"rgba(212,175,55,0.14)"},
     game:{"don":"#d4af37","ka":"#8b4513","stage":"#ffffff","lane":"rgba(250,250,250,0.82)","track":"rgba(26,26,26,0.24)","ink":"#1a1a1a","inkShadow":"rgba(255,255,255,.9)","noteBorder":"#ffffff","panel":"rgba(250,250,250,0.95)","perfect":"#ffd700","good":"#1a1a1a","miss":"#7f7f7f","glow":false},
@@ -371,8 +371,8 @@
     cat:["wizard","dark","access"],
     font:"\"Cinzel\",\"Trajan Pro\",serif",
     type:{"title":"\"Cinzel\",serif","weight":"700","lh":"1.5","titleWeight":"800","titleSpace":".1em","titleTransform":"uppercase","mark":"⛤"},
-    label:{"ja":"レメゲトン","en":"Lesser Key of Solomon","zh":"所罗门小钥匙","ko":"소omon의 소록"},
-    desc:{"ja":" goetiaを含む禁忌の魔導書、72柱の悪魔を従属させる印","en":"Lemegeton, forbidden grimoire including Goetia, seals to com","zh":"《小钥匙》，包含高蒂亚的禁忌魔导书，征服72柱恶魔的印记","ko":"레메게톤, 고에티아를 포함한 금기의 마도서, 72귀리를 복종시키는 인장"},
+    label:{"ja":"レメゲトン","en":"Lesser Key of Solomon","zh":"所罗门小钥匙","ko":"솔로몬의 작은 열쇠"},
+    desc:{"ja":" goetiaを含む禁忌の魔導書、72柱の悪魔を従属させる印","en":"Lemegeton, forbidden grimoire including Goetia, seals to com","zh":"《小钥匙》，包含高蒂亚的禁忌魔导书，征服72柱恶魔的印记","ko":"레메게톤, 고에티아를 포함한 금기의 마도서와 72 악마의 인장"},
     ui:{"--ui-bg":"#06050a","--ui-panel":"rgba(6,5,10,0.96)","--ui-soft":"rgba(216,208,224,0.05)","--ui-text":"#d8d0e0","--ui-muted":"#a199b3","--ui-border":"rgba(75,0,130,.35)","--ui-button":"#1a1624","--ui-button-hover":"#332e3c","--ui-field":"#0a0810","--ui-accent":"#4b0082","--ui-on-accent":"#ffffff","--ui-gold":"#d4af37","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(75,0,130,0.14)"},
     game:{"don":"#4b0082","ka":"#6a5acd","stage":"#0a0810","lane":"rgba(6,5,10,0.6)","track":"rgba(216,208,224,0.24)","ink":"#d8d0e0","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(6,5,10,0.95)","perfect":"#d4af37","good":"#d8d0e0","miss":"#7a7580","glow":false},
     shapes:["square","diamond"],
@@ -443,7 +443,7 @@
     font:"\"Cinzel\",\"Trajan Pro\",serif",
     type:{"title":"\"Cinzel\",serif","weight":"700","lh":"1.5","titleWeight":"800","titleSpace":".1em","titleTransform":"uppercase","mark":"📖"},
     label:{"ja":"ネクロノミコン","en":"Necronomicon","zh":"死灵名册","ko":"네크로노미콘"},
-    desc:{"ja":"アブドル・アラハズレッドが執筆した禁書、死者の名を記す黒き書","en":"Forbidden book by Abdul Alhazred, black volume recording the","zh":"阿卜杜勒·阿拉兹レッド執筆的禁书，记载死者名字的黑色书卷","ko":"압둘 알라즈レッド가 집필한 금서, 죽은 자의 이름을 기록하는 검은 책"},
+    desc:{"ja":"アブドル・アラハズレッドが執筆した禁書、死者の名を記す黒き書","en":"Forbidden book by Abdul Alhazred, black volume recording the","zh":"阿卜杜勒·阿尔哈兹莱德撰写的禁书，记载死者名字的黑色书卷","ko":"압둘 알하즈레드가 집필한 금서, 죽은 자의 이름을 기록하는 검은 책"},
     ui:{"--ui-bg":"#0a1408","--ui-panel":"rgba(10,20,8,0.96)","--ui-soft":"rgba(143,188,143,0.05)","--ui-text":"#8fbc8f","--ui-muted":"#8fb08f","--ui-border":"rgba(85,107,47,.35)","--ui-button":"#1a2e14","--ui-button-hover":"#294024","--ui-field":"#0d1b0a","--ui-accent":"#556b2f","--ui-on-accent":"#ffffff","--ui-gold":"#bdb76b","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(85,107,47,0.14)"},
     game:{"don":"#556b2f","ka":"#6b8e23","stage":"#0d1b0a","lane":"rgba(10,20,8,0.6)","track":"rgba(143,188,143,0.24)","ink":"#8fbc8f","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(10,20,8,0.95)","perfect":"#bdb76b","good":"#8fbc8f","miss":"#537052","glow":false},
     shapes:["circle","square"],
@@ -572,7 +572,7 @@
     font:"\"KaiTi\",\"SimSun\",serif",
     type:{"title":"\"KaiTi\",serif","weight":"500","lh":"1.7","titleWeight":"600","titleSpace":".03em","mark":"七"},
     label:{"ja":"武経七書","en":"Seven Military Classics","zh":"武经七书","ko":"무경칠서"},
-    desc:{"ja":"孫子・六韜・三略・司馬法・尉繚子・三略・太公六韜を含む七種の軍事書集成","en":"Seven Military Classics including Sun Tzu, Six Secret Teachi","zh":"包括孙子、六韬、三略、司马法、尉繚子等七种军事书的集成","ko":"손자·육도·삼략·사마법·위료자 등을 포함한 7종의 군사서 집성"},
+    desc:{"ja":"孫子・呉子・司馬法・尉繚子・李衛公問対・三略・六韜の七つの兵書","en":"Seven Chinese military classics, including Sunzi and Wuzi","zh":"孙子、吴子、司马法、尉缭子、李卫公问对、三略与六韬七部兵书","ko":"손자·오자·사마법·위료자·이위공문대·삼략·육도의 일곱 병서"},
     ui:{"--ui-bg":"#3e2f14","--ui-panel":"rgba(62,47,20,0.96)","--ui-soft":"rgba(240,230,210,0.05)","--ui-text":"#f0e6d2","--ui-muted":"#e4d8c5","--ui-border":"rgba(212,175,55,.35)","--ui-button":"#5d4524","--ui-button-hover":"#705a3b","--ui-field":"#4a3a1a","--ui-accent":"#d4af37","--ui-on-accent":"#000000","--ui-gold":"#ffe082","--ui-shadow":"0 24px 80px rgba(0,0,0,.55)","--ui-glow":"rgba(212,175,55,0.14)"},
     game:{"don":"#d4af37","ka":"#c5a059","stage":"#4a3a1a","lane":"rgba(62,47,20,0.6)","track":"rgba(240,230,210,0.24)","ink":"#f0e6d2","inkShadow":"rgba(0,0,0,.85)","noteBorder":"#ffffff","panel":"rgba(62,47,20,0.95)","perfect":"#ffe082","good":"#f0e6d2","miss":"#a0947d","glow":false},
     shapes:["circle","circle"],
