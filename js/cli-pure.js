@@ -90,7 +90,7 @@
      Ctrl＋K は検索（ユーザーの判断）。Ctrl＋A・C・V・X・Z・Y は、Shift を足しても予約（やり直し Ctrl＋Shift＋Z も）。
      Ctrl＋Shift＋I・C・J は開発者ツール。Ctrl＋Shift＋K は登録できる（ユーザーの判断・Firefox ではコンソール）。
      Alt と組む場合は、これらは予約しない（ブラウザーの編集に当たらない）。 */
-  const CLI_RESERVED_WITH_CTRL = ["KeyK", "KeyA", "KeyC", "KeyV", "KeyX", "KeyZ", "KeyY"];
+  const CLI_RESERVED_WITH_CTRL = ["KeyK", "KeyA", "KeyC", "KeyV", "KeyX", "KeyZ", "KeyY", "Space"];   /* Space：Ctrl＋Space は IME の切り替え（Windows の中国語・韓国語、macOS の入力ソース） */
   const CLI_RESERVED_WITH_CTRL_SHIFT = ["KeyI", "KeyC", "KeyJ"];
   function cliKeyReserved(code, mod, shift) {
     const c = String(code == null ? "" : code);

@@ -132,9 +132,9 @@ test("閉じるかどうかは設定（cliAutoClose）で決まり、既定は �
 });
 
 /* ==================== 呼び出しキー ==================== */
-test("呼び出しキーは Ctrl／⌘ + 選んだキー（既定 Ctrl+.）で、同じキーで開閉", () => {
-  assert.match(core, /cliKey: \(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : "Period"/, "既定は Period（Ctrl+.）／trk288 で Backquote から変更／trk289 で一度だけ移行");
-  assert.match(cli, /const cliKeyCode = \(\) => \(core\.validCode\(core\.settings\.cliKey\) \? core\.settings\.cliKey : "Period"\)/);
+test("呼び出しキーは Ctrl／⌘ + 選んだキー（既定はオフ）で、同じキーで開閉", () => {
+  assert.match(core, /cliKey: prefs\.cliKey === "" \? "" : \(\(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : ""\)/, "既定はオフ（trk291）。保存の Backquote は印が無いときオフ（trk289 の移行を trk291 で変更）");
+  assert.match(cli, /const cliKeyCode = \(\) => \(core\.validCode\(core\.settings\.cliKey\) \? core\.settings\.cliKey : ""\)/);
   /* ⌨ trk287：修飾キーは選べる（既定は Ctrl か ⌘／Win） */
   assert.match(cli, /if \(!cliModPressed\(e\)\) return;/, "選んだ修飾キーと一緒に押す");
   assert.match(cli, /if \(state\.open\) closeCli\(\);/, "開いていれば閉じる（トグル）");

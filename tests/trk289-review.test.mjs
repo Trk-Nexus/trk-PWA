@@ -4,7 +4,7 @@
  * ・N1 日本語の辞書の名前が、読み込みで消えない（core.js の cleanCliSpells は vm で取り出して動かす）
  * ・N2 Ctrl（⌘）と組む編集キー（A・C・V・X・Z・Y）と、Shift 付きの I・C・J は予約
  * ・N3 修飾キーを後から変えて、予約のキーになる組み合わせは受けない（本文の目印で確かめる）
- * ・R-b 背の低い画面（520px 以下）で、出力の最小が入力欄を押し出さない（CSS の後ろ順）
+ * ・R-b 背の低い画面（600px 以下）で、出力の最小が入力欄を押し出さない（CSS の後ろ順）
  * ・R-c 注記の版番号は、この版（trk288 の上の trk289）に揃える */
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
@@ -105,33 +105,33 @@ describe("trk289：N3 修飾キーを後から変えても、予約は通す", (
 });
 
 describe("trk289：R-b 背の低い画面で、出力の最小が入力欄を押し出さない", () => {
-  test("520px 以下の規則は、幅 560px 以下の規則より後ろにある（同じ強さなので後ろが勝つ）", () => {
+  test("600px 以下の規則は、幅 560px 以下の規則より後ろにある（同じ強さなので後ろが勝つ）", () => {
     const narrow = css.indexOf("@media (max-width:560px){");
     const shortRule = css.indexOf("dialog.cliDialog>.cliLog{min-height:48px}");
     assert.ok(narrow >= 0, "560px の規則がある");
     assert.ok(shortRule > narrow, "48px の規則は 560px の規則より後ろ");
-    assert.match(css.slice(shortRule - 40, shortRule), /@media \(max-height:520px\)\{/, "520px の中にある");
+    assert.match(css.slice(shortRule - 40, shortRule), /@media \(max-height:600px\)\{/, "520px の中にある");
   });
   test("背の低い画面では「半分」の板を 80dvh にして、見出し・入力の行が入る（実機の 390×360 で入力欄が出なかった）", () => {
     const at = css.indexOf('dialog.cliDialog[data-size="half"]{height:80dvh}');
-    assert.ok(at > css.indexOf("@media (max-height:520px){\n  dialog.cliDialog>.cliLog{min-height:48px}"), "520px の中");
+    assert.ok(at > css.indexOf("@media (max-height:600px){\n  dialog.cliDialog>.cliLog{min-height:48px}"), "520px の中");
     assert.ok(css.indexOf('dialog.cliDialog[data-size="half"]{height:52dvh}') < at, "通常の 52dvh は残す（上書きは 520px の中だけ）");
   });
 });
 
 describe("trk289：R-c 注記の版番号を揃える", () => {
   test("C1・C2 の注記は trk288（この版の前段）。別の版番号は残らない", () => {
-    assert.doesNotMatch(cli, /trk290/);
-    assert.doesNotMatch(css, /trk290/);
+    assert.doesNotMatch(cli, /trk290（C[12]）/, "C1・C2 の注記に、別の版番号を残さない");
+    assert.doesNotMatch(css, /trk290（C[12]）/);
     assert.doesNotMatch(cli, /trk289（C[12]）/, "C1・C2 は trk288 の内容");
     assert.match(cli, /trk288（C1）/);
     assert.match(cli, /trk288（C2）/);
   });
 });
 
-describe("trk289：R-a 保存済みの Backquote を一度だけ Period にする", () => {
+describe("trk289：R-a 保存済みの Backquote は印が無いときオフ（trk291 で Period から変更）", () => {
   test("印（cliKeyPeriod1）が無い保存の Backquote だけを移す。印の後の Backquote は残す", () => {
-    assert.match(core, /cliKey: \(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : "Period",/);
+    assert.match(core, /cliKey: prefs\.cliKey === "" \? "" : \(\(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : ""\),/);
     assert.match(core, /cliKeyPeriod1: true,/, "印を立てる（次の保存で残る）");
   });
   test("一回限りの印として登録簿に載っている（docs/MIGRATIONS.md）", () => {

@@ -108,7 +108,7 @@ describe("trk287：修飾キーを選べる（Win／⌘ = Super）", () => {
 
   test("呼び出しの判定と、いまのキーの表示に使う", () => {
     assert.match(src, /if \(!cliModPressed\(e\)\) return;/);
-    assert.match(src, /if \(value\) value\.textContent = modLabel\(\) \+ " \+ " \+ core\.formatKey\(cliKeyCode\(\)\);/);
+    assert.match(src, /if \(value\) value\.textContent = cliKeyCode\(\) \? modLabel\(\) \+ " \+ " \+ core\.formatKey\(cliKeyCode\(\)\) : tr\("cliKeyOff"\);/);
     assert.match(src, /const CLI_MOD_SHORT = \{ ctrlOrMeta: "Ctrl／⌘", meta: "Win／⌘", ctrl: "Ctrl", alt: "Alt" \};/);
     assert.match(src, /if \(modSel\) modSel\.value = cliMod\(\);/);
   });

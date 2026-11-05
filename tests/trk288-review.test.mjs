@@ -135,7 +135,7 @@ describe("trk288：呼び出しキーの予約（C3）", () => {
     }
   });
   test("遊びに使える・ブラウザーが取らないキーは通す（. などの既定の候補）", () => {
-    for (const code of ["KeyB", "KeyM", "Period", "Slash", "Backquote", "Space", "Semicolon", "Comma", "BracketLeft"]) {
+    for (const code of ["KeyB", "KeyM", "Period", "Slash", "Backquote", "Semicolon", "Comma", "BracketLeft"]) {
       assert.equal(P.cliKeyReserved(code, "ctrlOrMeta", false), false, `${code} は登録できる`);
     }
   });
@@ -154,10 +154,10 @@ describe("trk288：呼び出しキーの予約（C3）", () => {
     assert.match(cli, /if \(\(e\.shiftKey === true\) !== \(core\.settings\.cliShift === true\)\) return;/);
     assert.match(cli, /const modLabel = \(\) => modShort\(\) \+ \(core\.settings\.cliShift === true \? " \+ Shift" : ""\);/);
   });
-  test("既定の呼び出しキーは Period（Ctrl+.）。保存のない人だけ変わる", () => {
-    assert.match(core, /cliKey: \(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : "Period"/, "保存の Backquote は一度だけ Period（trk289・R-a）");
+  test("既定の呼び出しキーはオフ（trk291）。保存の Backquote は印が無いときだけオフへ", () => {
+    assert.match(core, /cliKey: prefs\.cliKey === "" \? "" : \(\(validCode\(prefs\.cliKey\) && !\(prefs\.cliKey === "Backquote" && prefs\.cliKeyPeriod1 !== true\)\) \? prefs\.cliKey : ""\)/, "保存の Backquote は印が無いときオフ（trk291）");
     assert.match(core, /cliShift: prefs\.cliShift === true,/);
-    assert.match(cli, /core\.validCode\(core\.settings\.cliKey\) \? core\.settings\.cliKey : "Period"/);
+    assert.match(cli, /core\.validCode\(core\.settings\.cliKey\) \? core\.settings\.cliKey : ""/);
   });
 });
 
@@ -190,7 +190,7 @@ describe("trk288：低い画面・キーボードが出たとき（C2）", () =>
     assert.match(css, /dialog\.cliDialog>\.cliLog\{flex:1 1 0;min-height:72px\}/);
   });
   test("低い画面では案内・バッジ・つまみを畳み、辞書の欄を抑える", () => {
-    assert.match(css, /@media \(max-height:520px\)\{[\s\S]*?\.cliTypingBadge,dialog\.cliDialog>\.cliHintText,dialog\.cliDialog>\.cliSheetHandle\{display:none\}/);
+    assert.match(css, /@media \(max-height:600px\)\{[\s\S]*?\.cliTypingBadge,dialog\.cliDialog>\.cliHintText,dialog\.cliDialog>\.cliSheetHandle\{display:none\}/);
     assert.match(css, /dialog\.cliDialog>\.cliSpellPanel\{max-height:22vh\}/);
   });
   test("visualViewport に合わせて、上限と底を決める（applySheetSkin で消えても当て直す）", () => {
