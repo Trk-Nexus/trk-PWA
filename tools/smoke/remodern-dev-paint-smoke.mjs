@@ -41,6 +41,15 @@ try {
   await wait(300);
   const s2 = await titleStyle();
   check("切り替えを戻すと、当たらない", !/color/.test(s2), `style="${s2}"`);
+  /* trk310：切り替えが入っている間は印（文字・ボタン）が出る。ボタンで切れる */
+  await page.evaluate(() => window.TrkReModernDev.setUnverifiedPaint(true));
+  await wait(300);
+  const badge = await page.evaluate(() => { const b = document.getElementById("remodernDevBadge"); return b && !b.hidden ? b.textContent : ""; });
+  check("印が出る（入っている間）", badge.length > 0, `「${badge.slice(0, 30)}」`);
+  await page.evaluate(() => document.querySelector("#remodernDevBadge .remodernDevOff").click());
+  await wait(300);
+  const off = await page.evaluate(() => ({ on: window.TrkReModernDev.isUnverifiedPaint(), hidden: document.getElementById("remodernDevBadge").hidden }));
+  check("印のボタンで切れ、印が隠れる", off.on === false && off.hidden === true, JSON.stringify(off));
   check("エラーなし", errors.length === 0, errors.join(" | "));
 } catch (e) {
   check("実行できた", false, String(e));

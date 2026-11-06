@@ -47,7 +47,7 @@ test("ダイアログに目に見える閉じるボタンがあり、1 領域だ
 });
 
 test("隠す指定が効く（display を上書きしない）", () => {
-  assert.ok(css.includes(".study-file-btn[hidden], .remodernOpenMedia[hidden] { display: none; }"));
+  assert.ok(css.includes(".study-file-btn[hidden], .remodernOpenMedia[hidden], .remodernDevBadge[hidden] { display: none; }"));
 });
 
 test("文言 4 言語に新しい鍵がそろう（書斎の鍵は study-room.js の TEXT）", () => {
