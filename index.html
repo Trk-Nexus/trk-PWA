@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk295">
+<meta name="trk-build" content="trk297">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -615,6 +615,21 @@
             <!-- 🔤 trk255：選んだ組の説明（上行）の下に、その組が合う曲を1行だけ（目録の trkUse） -->
             <div id="typoUse" class="hint" hidden></div>
             <h3 data-i18n="skin"></h3>
+            <!-- 🎨 trk297：領域ごとの 3 行（js/remodern-ui.js）。初期はどれも現状維持 -->
+            <div id="remodernRegions" class="remodernRegions">
+              <p class="hint" data-i18n="remodernHint"></p>
+              <div class="remodernRow"><span data-i18n="remodernCommon"></span>
+                <select id="remodern-common-mode" data-i18n-aria="remodernCommon"></select>
+                <select id="remodern-common-work" data-i18n-aria="remodernCommon"></select></div>
+              <div class="remodernRow"><span data-i18n="remodernStudy"></span>
+                <select id="remodern-study-mode" data-i18n-aria="remodernStudy"></select>
+                <select id="remodern-study-work" data-i18n-aria="remodernStudy"></select></div>
+              <div class="remodernRow"><span data-i18n="remodernBase"></span>
+                <select id="remodern-base-mode" data-i18n-aria="remodernBase"></select>
+                <select id="remodern-base-work" data-i18n-aria="remodernBase"></select></div>
+              <div class="miniActions"><button id="remodernResetBtn" type="button" data-i18n="remodernReset"></button></div>
+              <div id="remodernStatus" class="hint status" role="status" aria-live="polite"></div>
+            </div>
             <div id="skinNow"></div>
             <details id="skinShelf" class="subPanel" open>
               <summary><span data-i18n="skinShelf"></span> <span id="skinShelfCount"></span></summary>
@@ -2431,6 +2446,8 @@
 <script src="js/tv-presets.js"></script>
 <!-- ▲ 自作キャラのMODは、この下に <script src="js/characters/○○.js"></script> を足してください -->
 <!-- ===== 土台 ===== -->
+<!-- 🎨 trk297：trk-re-modern の領域ごとの選択（純粋な道具。core.js より前） -->
+<script src="js/remodern-regions.js"></script>
 <script src="js/core.js"></script>
 <!-- 🪶 軽量化（スマホ・低出力端末向け。描画する側より前に読みます） -->
 <script src="js/lite.js"></script>
@@ -2519,6 +2536,8 @@
 <script src="js/settings-level.js"></script>
 <script src="js/ios-pwa.js"></script>
 <script src="js/app-install.js"></script>
+<!-- 🎨 trk297：設定「🎨 スキン」の領域ごとの 3 行（js/remodern-regions.js を使う） -->
+<script src="js/remodern-ui.js"></script>
   <!-- 🔄 trk242：新しい版が入ったときだけ出る小さな帯（窓で覆わない・遊びを止めない） -->
   <div id="swUpdateBar" class="swUpdateBar" role="status" aria-live="polite" hidden>
     <span id="swUpdateBarText" data-i18n="swUpdateBarText"></span>

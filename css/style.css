@@ -2393,3 +2393,8 @@ dialog.cliDialog>.cliSpellPanel{flex:0 1 auto;min-height:0}
   /* 低い画面では「tall」を「半分」より低くしない（390×500 で半分の方が高かった） */
   dialog.cliDialog[data-size="tall"]{height:88dvh}
 }
+
+/* 🎨 trk297：trk-re-modern の領域ごとの 3 行（設定「🎨 スキン」） */
+.remodernRegions { display: grid; gap: .4em; margin: .4em 0; }
+.remodernRow { display: grid; grid-template-columns: minmax(4em, auto) 1fr 1fr; gap: .4em; align-items: center; }
+.remodernRow select { min-width: 0; width: 100%; }
