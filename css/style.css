@@ -238,8 +238,8 @@ select{padding:8px 10px;border-radius:10px;background:var(--ui-field);color:var(
 .fileBtn.disabled{opacity:.45;cursor:not-allowed}
 .hint{color:var(--ui-muted);font-size:14px;margin:calc(6px * var(--trk-dens-pad,1)) 0;line-height:var(--trk-dens-line,1.5)}
 .status{color:var(--ui-text);font-weight:700}
-/* 🎨 trk301（レビュー R6）：知らせは色だけに頼らない。文字は本文の色にし、文字があるときだけ記号を付ける */
-.status:not(:empty)::before{content:"✓ "}
+/* 🎨 trk301（レビュー R6）：知らせの文字は本文の色（--ui-gold は多くのスキンで 4.5:1 に届かない）。
+   記号は付けない（失敗・警告にも同じ記号が付いてしまうため。trk304） */
 .center{text-align:center}
 #eggStatus.egg{color:var(--ui-accent-ink,var(--ui-accent));font-weight:800}
 .seg{display:flex;flex-wrap:wrap;gap:6px;padding:5px;border-radius:16px;background:var(--ui-field);border:1px solid var(--ui-border)}

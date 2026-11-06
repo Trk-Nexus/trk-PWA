@@ -83,9 +83,9 @@ test("R1：見出しの枠は、作品の見出しを当てる処理が入るま
   assert.ok(typo.includes("if (vars.heading && HEADING_FROM_WORK) body.classList.add(\"trk-typo-heading\")"));
 });
 
-test("R6：知らせは本文の色。文字があるときだけ「✓」", () => {
+test("R6：知らせは本文の色。記号は一律に付けない", () => {
   const css = read("css/style.css");
   assert.ok(css.includes(".status{color:var(--ui-text);font-weight:700}"));
-  assert.ok(css.includes('.status:not(:empty)::before{content:"✓ "}'));
+  assert.ok(!/\.status[^{]*::before/.test(css), "知らせに記号を一律に付けない（失敗・警告にも付くため）");
   assert.ok(!css.includes(".status{color:var(--ui-gold)"));
 });
