@@ -52,5 +52,44 @@ LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node smoke.mjs
 `tools/smoke/remodern-paint-smoke.mjs` を使う。手順は 3 と同じ（`cp` して `/tmp/browser` で `LD_LIBRARY_PATH=/tmp/al2023x/lib node` で動かす）。
 
 - 期待される結果：`before` は色が空、`applied` は `text` の色（`rgb(224, 232, 255)`）、「!」（span）は空（対比が足りないので当てない）、`cleared` は両方空。`errors` は 0。
-- 実行時間は環境により 2〜3 分かかることがある（ブラウザーの終了を待つため）。
+- 実行は数秒〜数分。ブラウザーの終了待ちで止まる問題は、スクリプトの末尾で直接止めて避けている（trk306）。
 - スクリーンショットは `/home/user/smoke-paint.png`。
+
+## 5. スキンを変えたときの題字（trk306）
+
+`tools/smoke/remodern-paint-skin-smoke.mjs`。作品を選んでから、明るい通常のスキン（最初に見つかったもの）に変え、暗いスキンに戻す。
+
+- 期待される結果：`applied` は文字色が当たる。`afterLight` は文字色が空（読めないので既定へ戻る）。「!」の色は、明るい背景で対比が足りるなら残ってよい。`backDark` は文字色がもう一度当たる。`errors` は 0。
+- 手順は 3 と同じ（`cp` して `/tmp/browser` で `LD_LIBRARY_PATH=/tmp/al2023x/lib node` で動かす）。
+
+## 6. 登録簿との照合（trk307）
+
+`tools/smoke/remodern-registry-smoke.mjs`。作品の ID が登録簿（同梱の写し）に無いときは「未確認」、有るときは「登録済み」になるかを見る。
+
+- 期待される結果：`A_empty_registry` は `label` に「（unverified）」（日本語では「（未確認）」）が付き、`title` は空。`B_registered` は `label` に印が付かず、`title` に色が入る。`errors` は 0。
+- 登録簿の差し替えは、ページの読み込み時だけ（同梱の写し `data/re-modern-registry.json` は変えない）。
+- 手順は 3 と同じ（`cp` して `/tmp/browser` で `LD_LIBRARY_PATH=/tmp/al2023x/lib node` で動かす）。
+
+
+## 7. 書斎への適用と「戻す」（trk308）
+
+手で動かす（`npm run check` には入れない）。`tools/smoke/remodern-apply-smoke.mjs`。
+
+```sh
+mkdir -p /tmp/browser && cd /tmp/browser   # 6 の手順で @sparticuz/chromium と puppeteer-core を入れておく
+cp /home/user/trk-PWA/tools/smoke/remodern-apply-smoke.mjs /tmp/browser/apply-smoke.mjs
+LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node apply-smoke.mjs
+```
+
+見ること：選んだだけでは変わらない → 適用で書斎が変わる → 他の領域は変わらない → 戻すで直前へ → 適用後に変えていれば戻さず競合 → リセットで直前の記録も消える。エラーなし。期待は **11 OK / 0 NG**。
+
+## 8. 未確認の作品の題字（開発用の受け子・trk309）
+
+手で動かす（`npm run check` には入れない）。`tools/smoke/remodern-dev-paint-smoke.mjs`。
+
+```sh
+cp /home/user/trk-PWA/tools/smoke/remodern-dev-paint-smoke.mjs /tmp/browser/dev-smoke.mjs
+cd /tmp/browser && LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node dev-smoke.mjs
+```
+
+見ること：既定では未確認の作品は題字に当たらない → `window.TrkReModernDev.setUnverifiedPaint(true)` で当たる → `false` で戻る。期待は **4 OK / 0 NG**。

@@ -6,6 +6,8 @@
    ・書斎・基地のヘッダーの「🎨 スキン」（data-remodern-open）→ その領域だけのダイアログ
    作品の一覧はまだ空（window.TrkReModernWorks。次の段階で読み込む）。
    🎨 trk305：共通の領域が独立で作品があるときだけ、共通の題字の色を当てる（js/remodern-paint.js）。
+   🎨 trk306：スキンを変えたら題字の色を判定し直す（core.on("skin")）。
+   🎨 trk307：登録簿（data/re-modern-registry.json）に無い作品は「未確認」と表示し、題字には当てない。
    保存は設定（remodern）へ。道具は js/remodern-regions.js。通信・直接の保存はしない。 */
 (() => {
   "use strict";
@@ -15,6 +17,10 @@
   if (!core || !R || !box) return;
 
   const works = () => window.TrkReModernWorks || {};
+  /* 🎨 trk307（R3 ②③）：登録簿の写し。読めるまでは全部「未確認」（安全側） */
+  const REG = window.TrkReModernRegistry;
+  let registry = { ok: false, ids: [], reason: "loading" };
+  const statusOfWork = id => (REG ? REG.statusOf(id, registry) : "unverified");
   const MODE_LABEL = { keep: "remodernKeep", follow: "remodernFollow", own: "remodernOwn" };
   const REGION_LABEL = { common: "remodernCommon", study: "remodernStudy", base: "remodernBase" };
   const status = document.getElementById("remodernStatus");
@@ -48,27 +54,71 @@
       const w = works()[id];
       if (!w || !Array.isArray(w.regions) || !w.regions.includes(region)) continue;
       const opt = document.createElement("option");
-      opt.value = id; opt.textContent = (w.name && String(w.name).slice(0, 60)) || id;
+      const label = (w.name && String(w.name).slice(0, 60)) || id;
+      opt.value = id; opt.textContent = statusOfWork(id) === "registered" ? label : `${label}（${tr("remodernUnverified")}）`;
       select.append(opt);
     }
     select.value = value || "";
   }
 
-  /* 1 つの領域を変える（他の領域・読書・再生・共通ノーツには触れない） */
+  /* 1 つの領域を変える（他の領域・読書・再生・共通ノーツには触れない）。🎨 trk308：直前の状態を覚えておく（「戻す」のため） */
   function commit(region, mode, work) {
     try {
-      const before = current();
-      core.settings.remodern = R.setRegion(before, region, mode, work);
+      const a = R.apply(current(), region, mode, work);
+      core.settings.remodern = a.state;
+      core.settings.remodernLast = a.snapshot;
     } catch (_) {
       return { ok: false, key: "remodernBad" };
     }
     const saved = core.saveUserPrefs();
-    return saved === false ? { ok: false, key: "remodernSaveFail" } : { ok: true, key: "remodernSaved" };
+    return saved === false ? { ok: false, key: "remodernSaveFail" } : { ok: true, key: "remodernApplied" };
+  }
+
+  /* 🎨 trk308：影響範囲と「適用／戻す」。選んだだけでは変わらない（適用で初めて変える） */
+  function pendingOf(modeSel, workSel) {
+    const mode = modeSel ? modeSel.value : "keep";
+    return { mode, work: mode === "own" && workSel && workSel.value ? workSel.value : null };
+  }
+  function canUndo(region) { const last = core.settings.remodernLast; return !!(last && last.region === region); }
+  function impactText(region, p) {
+    if (p.mode === "keep") return tr("remodernImpactKeep");
+    if (!p.work) return tr("remodernImpactPick");
+    if (statusOfWork(p.work) !== "registered") {
+      return core.settings.remodernDevPaint === true ? tr("remodernImpactDev") : tr("remodernImpactUnverified");
+    }
+    return tr(region === "common" ? "remodernImpactCommon" : "remodernImpactLater");
+  }
+  function sameAsApplied(region, p) {
+    const a = current()[region];
+    return p.mode === a.mode && (p.work || null) === (a.work || null);
+  }
+  /* 直前の適用を戻す。後で変えられていれば上書きせず「競合」 */
+  function undo(region, node) {
+    const last = core.settings.remodernLast;
+    if (!last || last.region !== region) { say(node, "remodernNothingUndo"); return; }
+    const r = R.revert(current(), last);
+    if (r.conflict) { say(node, "remodernConflict"); return; }
+    core.settings.remodern = r.state;
+    core.settings.remodernLast = null;
+    const saved = core.saveUserPrefs();
+    say(node, saved === false ? "remodernSaveFail" : "remodernUndone");
   }
 
   /* 🎨 trk301：ダイアログは設定画面（display:none になりうる）の外（body の直下）に置く。
      中に置くと、見えない modal になり画面全体が押せなくなる（レビュー 1） */
   if (dlg && dlg.parentElement !== document.body) document.body.append(dlg);
+
+  /* 🎨 trk309（受け子）：未確認の作品に色を当てる開発用の切り替え。置き場所は Avatar 側と相談中のため、画面には出さない。
+     使い方（開発者の確認用）：window.TrkReModernDev.setUnverifiedPaint(true|false)。既定は false（当てない） */
+  window.TrkReModernDev = Object.freeze({
+    setUnverifiedPaint(on) {
+      core.settings.remodernDevPaint = on === true;
+      core.saveUserPrefs();
+      render();
+      return core.settings.remodernDevPaint;
+    },
+    isUnverifiedPaint() { return core.settings.remodernDevPaint === true; },
+  });
 
   /* 🎨 trk305（M3）：共通の領域が「独立」で作品があるときだけ、共通の題字（.brand h1）の色を当てる。
      書斎・基地はまだ当てない。作品が無い・外れたら既定の色へ戻す（js/remodern-paint.js） */
@@ -77,7 +127,8 @@
     const h1 = document.querySelector(".brand h1");
     if (!PAINT || !h1) return;
     const pick = view.common && view.common.source === "own" && view.common.work ? works()[view.common.work] : null;
-    if (!pick) { PAINT.clearTitle(h1); return; }
+    /* 登録簿に無い作品（未確認）は、画面に当てない */
+    if (!pick || !R.mayPaint(statusOfWork(pick.id), core.settings.remodernDevPaint === true)) { PAINT.clearTitle(h1); return; }
     const paint = PAINT.titlePaint(pick, PAINT.effectiveBg(h1));
     PAINT.applyTitle(h1, paint);
     if (paint.skipped.length) console.warn("[trk-re-modern] 題字：背景との対比が足りない色は使いません:", paint.skipped.join(","));
@@ -95,6 +146,7 @@
       fillWorks(workSel, region, state[region].work);
       workSel.disabled = state[region].mode !== "own";   /* 作品を選べるのは「独立」のときだけ */
       workSel.title = view[region].fallback ? tr("remodernFallback") : "";
+      refreshRow(region, modeSel, workSel, impactEl(region), applyBtn(region), undoBtn(region));
     }
     if (iconsChk) iconsChk.checked = core.settings.remodernIcons === true;
     if (studyBtn) studyBtn.hidden = core.settings.remodernIcons !== true;
@@ -102,23 +154,35 @@
     document.querySelectorAll(".remodernOpenMedia").forEach(b => { b.hidden = core.settings.remodernIcons !== true; });
   }
 
-  /* 3 行 */
+  /* 3 行。🎨 trk308：変更は「適用」で行う。「戻す」は直前の適用を取り消す */
+  const impactEl = region => document.getElementById(`remodern-${region}-impact`);
+  const applyBtn = region => document.getElementById(`remodern-${region}-apply`);
+  const undoBtn = region => document.getElementById(`remodern-${region}-undo`);
+  function refreshRow(region, modeSel, workSel, impact, apply, undo_) {
+    if (!modeSel) return;
+    const p = pendingOf(modeSel, workSel);
+    if (workSel) workSel.disabled = modeSel.value !== "own";
+    if (impact) impact.textContent = sameAsApplied(region, p) ? tr("remodernImpactSame") : impactText(region, p);
+    if (apply) apply.disabled = sameAsApplied(region, p);
+    if (undo_) undo_.disabled = !canUndo(region);
+  }
   for (const region of R.REGIONS) {
     const modeSel = document.getElementById(`remodern-${region}-mode`);
     const workSel = document.getElementById(`remodern-${region}-work`);
-    if (modeSel) modeSel.addEventListener("change", () => {
-      const cur = current()[region];
-      const r = commit(region, modeSel.value, modeSel.value === "own" ? cur.work : null);
+    const onPick = () => refreshRow(region, modeSel, workSel, impactEl(region), applyBtn(region), undoBtn(region));
+    if (modeSel) modeSel.addEventListener("change", onPick);
+    if (workSel) workSel.addEventListener("change", onPick);
+    if (applyBtn(region)) applyBtn(region).addEventListener("click", () => {
+      const p = pendingOf(modeSel, workSel);
+      const r = commit(region, p.mode, p.work);
       say(status, r.key); render();
     });
-    if (workSel) workSel.addEventListener("change", () => {
-      const r = commit(region, current()[region].mode, workSel.value || null);
-      say(status, r.key); render();
-    });
+    if (undoBtn(region)) undoBtn(region).addEventListener("click", () => { undo(region, status); render(); });
   }
   const reset = document.getElementById("remodernResetBtn");
   if (reset) reset.addEventListener("click", () => {
     core.settings.remodern = R.defaultState();
+    core.settings.remodernLast = null;
     core.saveUserPrefs();
     say(status, "remodernResetDone"); render();
   });
@@ -139,8 +203,8 @@
     const cur = current()[region];
     fillModes(dlgMode, region, cur.mode);
     fillWorks(dlgWork, region, cur.work);
-    dlgWork.disabled = cur.mode !== "own";
     say(dlgStatus, "");
+    refreshDlg();
     dlg.showModal();
     dlgMode.focus();
   }
@@ -148,19 +212,34 @@
     const btn = event.target && event.target.closest ? event.target.closest("[data-remodern-open]") : null;
     if (btn) openFor(btn.dataset.remodernOpen);
   });
-  dlgMode.addEventListener("change", () => {
+  /* 🎨 trk308：ダイアログも「適用」で変える（影響範囲を先に見せる） */
+  const dlgImpact = document.getElementById("remodernDlgImpact");
+  const dlgApply = document.getElementById("remodernDlgApply");
+  const dlgUndo = document.getElementById("remodernDlgUndo");
+  function refreshDlg() {
     if (!dlgRegion) return;
-    const cur = current()[dlgRegion];
-    const r = commit(dlgRegion, dlgMode.value, dlgMode.value === "own" ? cur.work : null);
-    say(dlgStatus, r.key);
+    const p = pendingOf(dlgMode, dlgWork);
     dlgWork.disabled = dlgMode.value !== "own";
+    if (dlgImpact) dlgImpact.textContent = sameAsApplied(dlgRegion, p) ? tr("remodernImpactSame") : impactText(dlgRegion, p);
+    if (dlgApply) dlgApply.disabled = sameAsApplied(dlgRegion, p);
+    if (dlgUndo) dlgUndo.disabled = !canUndo(dlgRegion);
+  }
+  function refillDlg() {
+    fillModes(dlgMode, dlgRegion, current()[dlgRegion].mode);
     fillWorks(dlgWork, dlgRegion, current()[dlgRegion].work);
-    render();
-  });
-  dlgWork.addEventListener("change", () => {
+    refreshDlg();
+  }
+  dlgMode.addEventListener("change", refreshDlg);
+  dlgWork.addEventListener("change", refreshDlg);
+  if (dlgApply) dlgApply.addEventListener("click", () => {
     if (!dlgRegion) return;
-    const r = commit(dlgRegion, current()[dlgRegion].mode, dlgWork.value || null);
-    say(dlgStatus, r.key); render();
+    const p = pendingOf(dlgMode, dlgWork);
+    const r = commit(dlgRegion, p.mode, p.work);
+    say(dlgStatus, r.key); refillDlg(); render();
+  });
+  if (dlgUndo) dlgUndo.addEventListener("click", () => {
+    if (!dlgRegion) return;
+    undo(dlgRegion, dlgStatus); refillDlg(); render();
   });
   if (dlgClose) dlgClose.addEventListener("click", () => dlg.close());
 
@@ -209,7 +288,7 @@
     workMap = next; window.TrkReModernWorks = workMap;
     if (!saveWorks(workMap)) return { ok: false, key: "remodernSaveFail" };
     const hash = await sha256Hex(await file.arrayBuffer());
-    return { ok: true, key: "remodernWorkOk", vars: { name: checked.work.name, hash: hash ? hash.slice(0, 12) : "—" } };
+    return { ok: true, key: "remodernWorkOk", unverified: statusOfWork(checked.work.id) !== "registered", vars: { name: checked.work.name, hash: hash ? hash.slice(0, 12) : "—" } };
   }
   if (workBtn && workFile) workBtn.addEventListener("click", () => workFile.click());
   if (workFile) workFile.addEventListener("change", async () => {
@@ -217,7 +296,7 @@
     workFile.value = "";
     if (!file) return;
     const r = await importWorkFile(file);
-    workStatus.textContent = tr(r.key, r.vars);
+    workStatus.textContent = tr(r.key, r.vars) + (r.unverified ? " " + tr("remodernUnverifiedNote") : "");
     render();
   });
   if (workClear) workClear.addEventListener("click", () => {
@@ -226,7 +305,13 @@
     say(workStatus, "remodernWorkClearDone"); render();
   });
 
+  /* 🎨 trk306：通常のスキンを変えたら、題字の色を判定し直す（背景が変わるので、対比が変わる）。
+     以前は作品を選んだあとにスキンを変えると、色が残って読みにくくなっていた（Avatar 側の試験で再現） */
+  function repaintTitle() { paintTitle(R.resolve(current(), works())); }
+  if (typeof core.on === "function") core.on("skin", repaintTitle);
+
   render();
+  if (REG) REG.load().then(r => { registry = r; render(); });
   if (Object.keys(works()).length === 0) say(status, "remodernEmpty");
   window.TrkRemodernUi = { render, openFor };
 })();

@@ -42,7 +42,7 @@ test("ダイアログに目に見える閉じるボタンがあり、1 領域だ
   assert.ok(/<dialog id="remodernDialog"/.test(html));
   assert.ok(html.includes('id="remodernDlgClose"'));
   assert.ok(ui.includes('dlgClose.addEventListener("click", () => dlg.close())'));
-  assert.ok(ui.includes("R.setRegion(before, region, mode, work)"));
+  assert.ok(ui.includes("R.apply(current(), region, mode, work)"));
   assert.ok(ui.includes('closest("[data-remodern-open]")'), "ボタンは共通の処理で拾う");
 });
 

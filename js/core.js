@@ -625,6 +625,9 @@ const settings = {
   remodernIcons: prefs.remodernIcons === true,
   /* 🎨 trk300：読んだ作品（作品ファイルの値だけ・最大 20 件）。読むときに js/remodern-work.js で検査し直す */
   remodernWorks: Array.isArray(prefs.remodernWorks) ? prefs.remodernWorks.slice(0, 20) : [],
+  /* 🎨 trk308：直前の状態（「戻す」のための記録。壊れていれば null＝戻せない） */
+  remodernDevPaint: prefs.remodernDevPaint === true,
+  remodernLast: window.TrkReModernRegions ? window.TrkReModernRegions.sanitizeSnapshot(prefs.remodernLast) : null,
   remodern: (window.TrkReModernRegions ? window.TrkReModernRegions.normalize(prefs.remodern).state
     : { version: 1, common: { mode: "keep", work: null }, study: { mode: "keep", work: null }, base: { mode: "keep", work: null } })
 };
