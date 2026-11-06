@@ -83,7 +83,9 @@
   function impactText(region, p) {
     if (p.mode === "keep") return tr("remodernImpactKeep");
     if (!p.work) return tr("remodernImpactPick");
-    if (statusOfWork(p.work) !== "registered") return tr("remodernImpactUnverified");
+    if (statusOfWork(p.work) !== "registered") {
+      return core.settings.remodernDevPaint === true ? tr("remodernImpactDev") : tr("remodernImpactUnverified");
+    }
     return tr(region === "common" ? "remodernImpactCommon" : "remodernImpactLater");
   }
   function sameAsApplied(region, p) {
@@ -106,6 +108,18 @@
      中に置くと、見えない modal になり画面全体が押せなくなる（レビュー 1） */
   if (dlg && dlg.parentElement !== document.body) document.body.append(dlg);
 
+  /* 🎨 trk309（受け子）：未確認の作品に色を当てる開発用の切り替え。置き場所は Avatar 側と相談中のため、画面には出さない。
+     使い方（開発者の確認用）：window.TrkReModernDev.setUnverifiedPaint(true|false)。既定は false（当てない） */
+  window.TrkReModernDev = Object.freeze({
+    setUnverifiedPaint(on) {
+      core.settings.remodernDevPaint = on === true;
+      core.saveUserPrefs();
+      render();
+      return core.settings.remodernDevPaint;
+    },
+    isUnverifiedPaint() { return core.settings.remodernDevPaint === true; },
+  });
+
   /* 🎨 trk305（M3）：共通の領域が「独立」で作品があるときだけ、共通の題字（.brand h1）の色を当てる。
      書斎・基地はまだ当てない。作品が無い・外れたら既定の色へ戻す（js/remodern-paint.js） */
   const PAINT = window.TrkReModernPaint;
@@ -114,7 +128,7 @@
     if (!PAINT || !h1) return;
     const pick = view.common && view.common.source === "own" && view.common.work ? works()[view.common.work] : null;
     /* 登録簿に無い作品（未確認）は、画面に当てない */
-    if (!pick || statusOfWork(pick.id) !== "registered") { PAINT.clearTitle(h1); return; }
+    if (!pick || !R.mayPaint(statusOfWork(pick.id), core.settings.remodernDevPaint === true)) { PAINT.clearTitle(h1); return; }
     const paint = PAINT.titlePaint(pick, PAINT.effectiveBg(h1));
     PAINT.applyTitle(h1, paint);
     if (paint.skipped.length) console.warn("[trk-re-modern] 題字：背景との対比が足りない色は使いません:", paint.skipped.join(","));

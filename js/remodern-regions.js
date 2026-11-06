@@ -142,6 +142,12 @@
     return before && after ? { region: raw.region, before, after } : null;
   }
 
-  const api = { REGIONS, MODES, COMMON_MODES, HEADING_FONTS, WORK_ID, defaultState, validateWork, normalize, resolve, setRegion, apply, revert, sanitizeSnapshot };
+  /* 🎨 trk309：未確認の作品に色を当てるか。既定は当てない（依頼者の決定）。
+     開発用の切り替え（settings.remodernDevPaint）を入れたときだけ当てる。題字・書斎・基地の外枠の共通の判定 */
+  function mayPaint(status, devOn) {
+    return status === "registered" || devOn === true;
+  }
+
+  const api = { mayPaint, REGIONS, MODES, COMMON_MODES, HEADING_FONTS, WORK_ID, defaultState, validateWork, normalize, resolve, setRegion, apply, revert, sanitizeSnapshot };
   if (typeof globalThis !== "undefined") globalThis.TrkReModernRegions = api;
 })();

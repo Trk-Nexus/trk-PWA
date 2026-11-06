@@ -87,7 +87,7 @@ test("読み込み：読めない・無い・例外 → 未確認。読めれば
 
 test("画面：未確認の作品は題字に当てない・一覧に「未確認」と出す", () => {
   const ui = read("js/remodern-ui.js");
-  assert.ok(ui.includes('if (!pick || statusOfWork(pick.id) !== "registered") { PAINT.clearTitle(h1); return; }'));
+  assert.ok(ui.includes('!R.mayPaint(statusOfWork(pick.id), core.settings.remodernDevPaint === true)'), "既定は登録済みだけ（trk309 で mayPaint に移した）");
   assert.ok(ui.includes('statusOfWork(id) === "registered" ? label : `${label}（${tr("remodernUnverified")}）`'));
   assert.ok(ui.includes("if (REG) REG.load().then(r => { registry = r; render(); });"));
   assert.ok(ui.includes('unverified: statusOfWork(checked.work.id) !== "registered"'));

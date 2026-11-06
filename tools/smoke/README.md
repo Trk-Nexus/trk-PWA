@@ -82,3 +82,14 @@ LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node apply-smoke.mjs
 ```
 
 見ること：選んだだけでは変わらない → 適用で書斎が変わる → 他の領域は変わらない → 戻すで直前へ → 適用後に変えていれば戻さず競合 → リセットで直前の記録も消える。エラーなし。期待は **11 OK / 0 NG**。
+
+## 8. 未確認の作品の題字（開発用の受け子・trk309）
+
+手で動かす（`npm run check` には入れない）。`tools/smoke/remodern-dev-paint-smoke.mjs`。
+
+```sh
+cp /home/user/trk-PWA/tools/smoke/remodern-dev-paint-smoke.mjs /tmp/browser/dev-smoke.mjs
+cd /tmp/browser && LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node dev-smoke.mjs
+```
+
+見ること：既定では未確認の作品は題字に当たらない → `window.TrkReModernDev.setUnverifiedPaint(true)` で当たる → `false` で戻る。期待は **4 OK / 0 NG**。
