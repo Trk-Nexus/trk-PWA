@@ -17,7 +17,8 @@ test("スキンを変えたら、題字の色を判定し直す（core.on(\"skin
   assert.ok(ui.includes("function repaintTitle() { paintTitle(R.resolve(current(), works())); }"));
   assert.ok(ui.includes('if (typeof core.on === "function") core.on("skin", repaintTitle);'));
   const painted = ui.indexOf('core.on("skin", repaintTitle)');
-  assert.ok(painted > 0 && painted < ui.indexOf("render();\n  if (Object.keys(works())"), "購読は最初の描画の前");
+  const firstRender = ui.indexOf("\n  render();\n");
+  assert.ok(painted > 0 && firstRender > painted, "購読は最初の描画の前");
 });
 
 test("判定のやり直しは paintTitle を通り、書斎・基地には触れない", () => {
