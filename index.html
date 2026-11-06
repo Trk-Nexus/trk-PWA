@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk299">
+<meta name="trk-build" content="trk300">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -631,6 +631,14 @@
               <label class="check"><input id="remodernIconsChk" type="checkbox"><span data-i18n="remodernIconsChk"></span></label>
               <div class="hint" data-i18n="remodernIconsHint"></div>
               <div id="remodernStatus" class="hint status" role="status" aria-live="polite"></div>
+              <!-- 🎨 trk300：作品ファイル（.stpack の拡張）を読む。スキンのパックとは別に入る -->
+              <div class="hint" data-i18n="remodernWorkHint"></div>
+              <div class="miniActions">
+                <button id="remodernWorkBtn" type="button" data-i18n="remodernWorkBtn"></button>
+                <button id="remodernWorkClear" type="button" data-i18n="remodernWorkClear"></button>
+              </div>
+              <input id="remodernWorkFile" type="file" accept=".stpack,.zip" hidden>
+              <div id="remodernWorkStatus" class="hint status" role="status" aria-live="polite"></div>
             </div>
             <!-- 🎨 trk297：書斎・基地の「🎨 スキン」ボタンから開く、領域ひとつぶんのダイアログ（閉じるボタンは必ず見える） -->
             <dialog id="remodernDialog" class="remodernDialog" aria-labelledby="remodernDlgTitle">
@@ -2463,6 +2471,7 @@
 <!-- ===== 土台 ===== -->
 <!-- 🎨 trk297：trk-re-modern の領域ごとの選択（純粋な道具。core.js より前） -->
 <script src="js/remodern-regions.js"></script>
+<script src="js/remodern-work.js"></script>
 <script src="js/core.js"></script>
 <!-- 🪶 軽量化（スマホ・低出力端末向け。描画する側より前に読みます） -->
 <script src="js/lite.js"></script>

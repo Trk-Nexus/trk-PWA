@@ -502,6 +502,8 @@ async function installPackFileSerial(file) {
     const root = mf.slice(0, mf.length - "pack.json".length);
     let raw = null;
     try { raw = JSON.parse(await (await inflateEntry(entries[mf], PACK_MB, mf)).text()); } catch (e) { if (e instanceof PackError) throw e; }
+    /* 🎨 trk300：作品ファイル（remodern の欄つき）はスキンのパックとして入れない（設定の「🎨 スキン」から読む） */
+    if (raw && typeof raw === "object" && raw.remodern) throw new PackError("packIsRemodernWork");
     const identity = packIdentityFromManifest(raw);
     if (!identity) throw new PackError("packBadManifest");
     const { id, man } = identity;

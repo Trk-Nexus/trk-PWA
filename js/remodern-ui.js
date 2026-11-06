@@ -143,6 +143,66 @@
   });
   if (dlgClose) dlgClose.addEventListener("click", () => dlg.close());
 
+  /* 🎨 trk300：作品ファイル（.stpack の拡張）を読む。ZIP の中身は pack.json と文書だけ。保存は設定の小さな一覧 */
+  const WORK = window.TrkReModernWork;
+  const workBtn = document.getElementById("remodernWorkBtn");
+  const workClear = document.getElementById("remodernWorkClear");
+  const workFile = document.getElementById("remodernWorkFile");
+  const workStatus = document.getElementById("remodernWorkStatus");
+  let workMap = WORK ? WORK.loadWorks(core.settings.remodernWorks) : {};
+  window.TrkReModernWorks = workMap;
+
+  function saveWorks(map) {
+    core.settings.remodernWorks = Object.values(map);
+    return core.saveUserPrefs() !== false;
+  }
+  async function sha256Hex(text) {
+    try {
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+      return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
+    } catch (_) { return ""; }
+  }
+  /* 1 つの作品ファイルを読む。失敗の理由は画面に出さず、文言は固定（形の詳細は出さない） */
+  async function importWorkFile(file) {
+    const zipIO = window.Trk && window.Trk.zipIO;
+    const bad = { ok: false, key: "remodernWorkBad" };
+    if (!WORK || !zipIO) return bad;
+    if (!file || file.size > WORK.MAX_ZIP_BYTES) return { ok: false, key: "remodernWorkTooBig" };
+    let zip;
+    try { zip = await zipIO.zipOpen(file); } catch (_) { return bad; }
+    if (!WORK.checkEntryNames(zip.entries.map(e => e.name)).ok) return bad;
+    const entry = zip.entries.find(e => e.name === "pack.json");
+    if (!entry || entry.usize > WORK.MAX_JSON_BYTES) return bad;
+    let text;
+    try { text = await (await zipIO.zipEntryBlob(zip, entry, WORK.MAX_JSON_BYTES, true)).text(); } catch (_) { return bad; }
+    let raw;
+    try { raw = JSON.parse(text); } catch (_) { return bad; }
+    const checked = WORK.checkManifest(raw);
+    if (!checked.ok) return bad;
+    const list = WORK.addWork(Object.values(workMap), checked.work);
+    if (!list) return { ok: false, key: "remodernWorkFull" };
+    const next = {};
+    for (const w of list) next[w.id] = w;
+    workMap = next; window.TrkReModernWorks = workMap;
+    if (!saveWorks(workMap)) return { ok: false, key: "remodernSaveFail" };
+    const hash = await sha256Hex(text);
+    return { ok: true, key: "remodernWorkOk", vars: { name: checked.work.name, hash: hash ? hash.slice(0, 12) : "—" } };
+  }
+  if (workBtn && workFile) workBtn.addEventListener("click", () => workFile.click());
+  if (workFile) workFile.addEventListener("change", async () => {
+    const file = workFile.files && workFile.files[0];
+    workFile.value = "";
+    if (!file) return;
+    const r = await importWorkFile(file);
+    workStatus.textContent = tr(r.key, r.vars);
+    render();
+  });
+  if (workClear) workClear.addEventListener("click", () => {
+    workMap = {}; window.TrkReModernWorks = workMap;
+    saveWorks(workMap);
+    say(workStatus, "remodernWorkClearDone"); render();
+  });
+
   render();
   if (Object.keys(works()).length === 0) say(status, "remodernEmpty");
   window.TrkRemodernUi = { render, openFor };

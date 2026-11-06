@@ -623,6 +623,8 @@ const settings = {
      読み込みで検証し、壊れた値は keep に落とす（js/remodern-regions.js）。 */
   /* 🎨 trk297：書斎・基地のヘッダーに「🎨 スキン」のボタンを出すか（既定オフ＝今の画面のまま・利用者が選ぶ） */
   remodernIcons: prefs.remodernIcons === true,
+  /* 🎨 trk300：読んだ作品（作品ファイルの値だけ・最大 20 件）。読むときに js/remodern-work.js で検査し直す */
+  remodernWorks: Array.isArray(prefs.remodernWorks) ? prefs.remodernWorks.slice(0, 20) : [],
   remodern: (window.TrkReModernRegions ? window.TrkReModernRegions.normalize(prefs.remodern).state
     : { version: 1, common: { mode: "keep", work: null }, study: { mode: "keep", work: null }, base: { mode: "keep", work: null } })
 };

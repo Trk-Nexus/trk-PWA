@@ -184,6 +184,6 @@ describe("trk242 つなぎ方（画面と登録）", () => {
 
   test("sw.js の cache は trk242 以降（この版で殻が変わった）", () => {
     const cur = swSrc.match(/const CACHE = "([^"]+)";/)[1];
-    assert.ok(/trk24[2-9]|trk2[5-9]\d/.test(cur), cur);
+    assert.ok(/trk24[2-9]|trk(2[5-9]\d|[3-9]\d\d)/.test(cur), cur);
   });
 });
