@@ -42,7 +42,7 @@ describe("trk291：呼び出しキーの既定はオフ", () => {
   });
 
   test("版：trk291（cache とビルド表示をそろえる）", () => {
-    assert.match(read("index.html"), /name="trk-build" content="trk293"/);
-    assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk293";/);
+    assert.match(read("index.html"), /name="trk-build" content="trk294"/);
+    assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk294";/);
   });
 });

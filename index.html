@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk293">
+<meta name="trk-build" content="trk294">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1633,6 +1633,12 @@
             <div id="folderAutoReadHint" class="hint" data-i18n="folderAutoReadHint"></div>
             <div class="miniActions">
               <button id="folderAutoNowBtn" type="button" data-i18n="folderAutoNow"></button>
+            </div>
+            <!-- 🔓 trk293：許可のワンボタン（初期オフ。オンにすると、覚えたフォルダーがあるときだけ出る） -->
+            <label class="check"><input id="permAskBtnChk" type="checkbox"><span data-i18n="permAskBtnChk"></span></label>
+            <div id="permAskBtnHint" class="hint" data-i18n="permAskBtnHint"></div>
+            <div class="miniActions">
+              <button id="permAskBtn" type="button" data-i18n="permAskBtn" hidden></button>
             </div>
             <div id="folderPermState" class="hint" role="status" aria-live="polite"></div>
             <div id="libShareState" class="hint"></div>
