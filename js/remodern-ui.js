@@ -7,6 +7,7 @@
    作品の一覧はまだ空（window.TrkReModernWorks。次の段階で読み込む）。
    🎨 trk305：共通の領域が独立で作品があるときだけ、共通の題字の色を当てる（js/remodern-paint.js）。
    🎨 trk306：スキンを変えたら題字の色を判定し直す（core.on("skin")）。
+   🎨 trk307：登録簿（data/re-modern-registry.json）に無い作品は「未確認」と表示し、題字には当てない。
    保存は設定（remodern）へ。道具は js/remodern-regions.js。通信・直接の保存はしない。 */
 (() => {
   "use strict";
@@ -16,6 +17,10 @@
   if (!core || !R || !box) return;
 
   const works = () => window.TrkReModernWorks || {};
+  /* 🎨 trk307（R3 ②③）：登録簿の写し。読めるまでは全部「未確認」（安全側） */
+  const REG = window.TrkReModernRegistry;
+  let registry = { ok: false, ids: [], reason: "loading" };
+  const statusOfWork = id => (REG ? REG.statusOf(id, registry) : "unverified");
   const MODE_LABEL = { keep: "remodernKeep", follow: "remodernFollow", own: "remodernOwn" };
   const REGION_LABEL = { common: "remodernCommon", study: "remodernStudy", base: "remodernBase" };
   const status = document.getElementById("remodernStatus");
@@ -49,7 +54,8 @@
       const w = works()[id];
       if (!w || !Array.isArray(w.regions) || !w.regions.includes(region)) continue;
       const opt = document.createElement("option");
-      opt.value = id; opt.textContent = (w.name && String(w.name).slice(0, 60)) || id;
+      const label = (w.name && String(w.name).slice(0, 60)) || id;
+      opt.value = id; opt.textContent = statusOfWork(id) === "registered" ? label : `${label}（${tr("remodernUnverified")}）`;
       select.append(opt);
     }
     select.value = value || "";
@@ -78,7 +84,8 @@
     const h1 = document.querySelector(".brand h1");
     if (!PAINT || !h1) return;
     const pick = view.common && view.common.source === "own" && view.common.work ? works()[view.common.work] : null;
-    if (!pick) { PAINT.clearTitle(h1); return; }
+    /* 登録簿に無い作品（未確認）は、画面に当てない */
+    if (!pick || statusOfWork(pick.id) !== "registered") { PAINT.clearTitle(h1); return; }
     const paint = PAINT.titlePaint(pick, PAINT.effectiveBg(h1));
     PAINT.applyTitle(h1, paint);
     if (paint.skipped.length) console.warn("[trk-re-modern] 題字：背景との対比が足りない色は使いません:", paint.skipped.join(","));
@@ -210,7 +217,7 @@
     workMap = next; window.TrkReModernWorks = workMap;
     if (!saveWorks(workMap)) return { ok: false, key: "remodernSaveFail" };
     const hash = await sha256Hex(await file.arrayBuffer());
-    return { ok: true, key: "remodernWorkOk", vars: { name: checked.work.name, hash: hash ? hash.slice(0, 12) : "—" } };
+    return { ok: true, key: "remodernWorkOk", unverified: statusOfWork(checked.work.id) !== "registered", vars: { name: checked.work.name, hash: hash ? hash.slice(0, 12) : "—" } };
   }
   if (workBtn && workFile) workBtn.addEventListener("click", () => workFile.click());
   if (workFile) workFile.addEventListener("change", async () => {
@@ -218,7 +225,7 @@
     workFile.value = "";
     if (!file) return;
     const r = await importWorkFile(file);
-    workStatus.textContent = tr(r.key, r.vars);
+    workStatus.textContent = tr(r.key, r.vars) + (r.unverified ? " " + tr("remodernUnverifiedNote") : "");
     render();
   });
   if (workClear) workClear.addEventListener("click", () => {
@@ -233,6 +240,7 @@
   if (typeof core.on === "function") core.on("skin", repaintTitle);
 
   render();
+  if (REG) REG.load().then(r => { registry = r; render(); });
   if (Object.keys(works()).length === 0) say(status, "remodernEmpty");
   window.TrkRemodernUi = { render, openFor };
 })();

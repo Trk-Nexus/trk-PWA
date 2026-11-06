@@ -90,7 +90,7 @@
    📌 trk266（2026-11-03・trk265 レビューの小さな推奨）：理由の行は「ホーム画面や Dock のアプリ」のときだけに
    しました（Firefox で出しっぱなしにならない）。小窓を待つ間の二度押しを無視し、説明文に Dock を足しました。
    詳しくは docs/VIEWER-TRK266-2026-11-03.md。 */
-const CACHE = "trk-v2026.11.04-trk306";
+const CACHE = "trk-v2026.11.04-trk307";
 const CACHE_PREFIX = "trk-";
 /* 🧭 trk252（2026-11-02）：CacheStorage に**実在させる名前**には `trkPWA-` を先頭に付けるようにしました。
    同じオリジンに別の trk!（上流 `/trk/` など）が在ると、相手が「`trk-` 始まりは全部消す」旧式の掃除を
@@ -123,7 +123,7 @@ const VENDOR_CACHE = `${CACHE_KEY_PREFIX}${VENDOR_CACHE_BASE}@${SCOPE_TAG}`;
    これを入れないと、**初回オフラインでリンクを押したときアプリが再表示**され、書類が読めません。
    3 つで 36 KB ほどです（残りの docs は容量が大きいので入れません）。 */
 const PRECACHE_EXTRA = ["verified.json", "assets/mmd/lat-miku/preset.json",
-  "credits.html", "privacy.html", "docs/ADDONS.md"];
+  "credits.html", "privacy.html", "docs/ADDONS.md", "data/re-modern-registry.json"];
 /* docs/ は丸ごと先読みしない（容量）。ここに書いたものだけ例外で入れる */
 const PRECACHE_ALLOW = ["docs/ADDONS.md"];
 /* 電波が弱いときに待ち続けない（ナビゲーションだけ・3秒でキャッシュへ切り替える） */

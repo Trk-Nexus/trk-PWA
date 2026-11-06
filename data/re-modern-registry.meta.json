@@ -1,0 +1,16 @@
+{
+  "what": "trk-re-modern の登録簿の写し（Avatar 側の正本の、そのままの写し）",
+  "source": {
+    "repo": "https://github.com/Trk-Nexus/trk-Avatar-Library",
+    "commit": "59aa3d4fb97dcee2aed7d0faf449d923e267df41",
+    "path": "catalog/re-modern/index.json",
+    "sha256": "808feb8151e471be141bb5f60bfb7c18b6ed457fb722231f77abb2d7e9c6d803"
+  },
+  "copiedOn": "2026-11-07",
+  "note": "ID の一致は『登録簿に載っている』という意味だけ。作者の認証やファイルの同一性（作品 ZIP のハッシュ）は証明しない。空の登録簿では、どの作品も『未確認』。",
+  "update": [
+    "Avatar Library の正本（catalog/re-modern/index.json）を、レビュー済みの commit から取り直す",
+    "data/re-modern-registry.json にそのまま上書きし（バイトを変えない）、sha256 とこの meta の commit を書き換える",
+    "npm run check を実行する（tests/trk307-remodern-registry.test.mjs が写しと meta の一致を見張る）"
+  ]
+}
