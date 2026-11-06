@@ -20,7 +20,7 @@ Avatar 側のみなさま。trk-PWA（trk309）からの質問です。
 3. Avatar 側の**検証の手順**で、この切り替えを使う場面はありますか（例：未確認の pixel-console の見た目の確認）。
 
 ## PWA 側の状態
-- trk309 は `main` へ merge予定（PR #103 に含める）。`npm run check` 1866 件 pass。
+- trk309 は `main` へ PR #103 に含めて merge する（merge 済み）。`npm run check` 1866 件 pass。
 - smoke：`tools/smoke/remodern-dev-paint-smoke.mjs`（4 OK / 0 NG、README §8）。
 
 ご返事は、このファイルへの返信（`docs/` の別名）か、Drive の親フォルダーへの返信文書で構いません。
