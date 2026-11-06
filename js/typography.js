@@ -11,7 +11,7 @@
    未導入の端末では `font-family` が次の名前へ自然にフォールバックします（＝崩れない・見本だけ縮む）。
 
    ・**いま app が描き方に使うのは2役だけ**：`display`（題字）と `body`（本文）。
-     残り4役（`heading`／`caption`／`numeral`／`accent`）は**保存できる形にしてあるが、まだ使いません**
+     `heading`（見出し）は trk299 から見出し（summary・`.panel h3`）に使う。`caption`・`numeral`・`accent` は**保存できる形にしてあるが、まだ使いません**
      （段階③ `roles` の受け口。相手の設計メモ §5 の4段階のうち、②までをここで受け取る）。
    ・保存は `settings.typography`（`core.settings` の中。localStorage のキーは増やさない）。
    ・知らない項目・壊れた値は `sanitize()` が捨てる（`sanitizeSkinDef` と同じ方針）。

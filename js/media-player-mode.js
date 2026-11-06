@@ -1834,12 +1834,13 @@ function buildMedia() {
   closeNode = makeButton("mediaClose", "instClose mediaExitBtn");   /* ← 曲リストに戻る（trk187・明示ボタンは即退出） */
   closeNode.addEventListener("click", () => closeMedia());
   /* 🎨 trk297：設定「書斎・基地にスキンのボタン」がオンのときだけ、基地の見出しに出す（押すと基地だけのダイアログ） */
-  if (core.settings.remodernIcons) {
-    const skinBtn = document.createElement("button");
-    skinBtn.type = "button"; skinBtn.className = "miniBtn remodernOpenMedia"; skinBtn.dataset.remodernOpen = "base";
-    skinBtn.textContent = tr("remodernOpenBtn");
-    header.append(hwrap, skinBtn, closeNode);
-  } else header.append(hwrap, closeNode);
+  /* 作るのは一度だけ。出し入れは remodern-ui.js の render() が hidden で行う（言語も core.js の data-i18n で替わる） */
+  const skinBtn = document.createElement("button");
+  skinBtn.type = "button"; skinBtn.className = "miniBtn remodernOpenMedia"; skinBtn.dataset.remodernOpen = "base";
+  skinBtn.dataset.i18n = "remodernOpenBtn";
+  skinBtn.textContent = tr("remodernOpenBtn");
+  skinBtn.hidden = core.settings.remodernIcons !== true;
+  header.append(hwrap, skinBtn, closeNode);
 
   const display = core.el("div", "mediaDisplay");
   titleNode = core.el("strong", "mediaDisplayTitle", tr("mediaNoTrack"));
