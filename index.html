@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk307">
+<meta name="trk-build" content="trk308">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -621,12 +621,15 @@
               <div class="remodernRow"><span data-i18n="remodernCommon"></span>
                 <select id="remodern-common-mode" data-i18n-aria="remodernCommon"></select>
                 <select id="remodern-common-work" data-i18n-aria="remodernCommon"></select></div>
+              <div class="remodernApplyRow"><span id="remodern-common-impact" class="hint" role="status"></span><div class="miniActions"><button id="remodern-common-apply" type="button" data-i18n="remodernApply"></button><button id="remodern-common-undo" type="button" data-i18n="remodernUndo"></button></div></div>
               <div class="remodernRow"><span data-i18n="remodernStudy"></span>
                 <select id="remodern-study-mode" data-i18n-aria="remodernStudy"></select>
                 <select id="remodern-study-work" data-i18n-aria="remodernStudy"></select></div>
+              <div class="remodernApplyRow"><span id="remodern-study-impact" class="hint" role="status"></span><div class="miniActions"><button id="remodern-study-apply" type="button" data-i18n="remodernApply"></button><button id="remodern-study-undo" type="button" data-i18n="remodernUndo"></button></div></div>
               <div class="remodernRow"><span data-i18n="remodernBase"></span>
                 <select id="remodern-base-mode" data-i18n-aria="remodernBase"></select>
                 <select id="remodern-base-work" data-i18n-aria="remodernBase"></select></div>
+              <div class="remodernApplyRow"><span id="remodern-base-impact" class="hint" role="status"></span><div class="miniActions"><button id="remodern-base-apply" type="button" data-i18n="remodernApply"></button><button id="remodern-base-undo" type="button" data-i18n="remodernUndo"></button></div></div>
               <div class="miniActions"><button id="remodernResetBtn" type="button" data-i18n="remodernReset"></button></div>
               <label class="check"><input id="remodernIconsChk" type="checkbox"><span data-i18n="remodernIconsChk"></span></label>
               <div class="hint" data-i18n="remodernIconsHint"></div>
@@ -648,6 +651,8 @@
                 <label><span data-i18n="remodernDlgMode"></span> <select id="remodernDlgMode"></select></label>
                 <label><span data-i18n="remodernDlgWork"></span> <select id="remodernDlgWork"></select></label>
               </div>
+              <div id="remodernDlgImpact" class="hint" role="status"></div>
+              <div class="miniActions"><button id="remodernDlgApply" type="button" data-i18n="remodernApply"></button><button id="remodernDlgUndo" type="button" data-i18n="remodernUndo"></button></div>
               <div id="remodernDlgStatus" class="hint status" role="status" aria-live="polite"></div>
               <div class="miniActions"><button id="remodernDlgClose" type="button" class="primary" data-i18n="remodernDlgClose"></button></div>
             </dialog>

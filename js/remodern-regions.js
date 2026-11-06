@@ -129,6 +129,19 @@
     return { state: { ...current, [region]: { ...before } }, conflict: false };
   }
 
-  const api = { REGIONS, MODES, COMMON_MODES, HEADING_FONTS, WORK_ID, defaultState, validateWork, normalize, resolve, setRegion, apply, revert };
+  /* 直前の状態（戻すための記録）を検査する。壊れていれば null（＝戻せない）。作品 ID は検査する */
+  function sanitizeSnapshot(raw) {
+    if (!raw || typeof raw !== "object" || !REGIONS.includes(raw.region)) return null;
+    const allowed = raw.region === "common" ? COMMON_MODES : MODES;
+    const pick = x => {
+      if (!x || typeof x !== "object" || !allowed.includes(x.mode)) return null;
+      const work = typeof x.work === "string" && WORK_ID.test(x.work) ? x.work : null;
+      return { mode: x.mode, work: x.mode === "keep" ? null : work };
+    };
+    const before = pick(raw.before), after = pick(raw.after);
+    return before && after ? { region: raw.region, before, after } : null;
+  }
+
+  const api = { REGIONS, MODES, COMMON_MODES, HEADING_FONTS, WORK_ID, defaultState, validateWork, normalize, resolve, setRegion, apply, revert, sanitizeSnapshot };
   if (typeof globalThis !== "undefined") globalThis.TrkReModernRegions = api;
 })();

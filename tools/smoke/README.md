@@ -70,3 +70,15 @@ LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node smoke.mjs
 - 登録簿の差し替えは、ページの読み込み時だけ（同梱の写し `data/re-modern-registry.json` は変えない）。
 - 手順は 3 と同じ（`cp` して `/tmp/browser` で `LD_LIBRARY_PATH=/tmp/al2023x/lib node` で動かす）。
 
+
+## 7. 書斎への適用と「戻す」（trk308）
+
+手で動かす（`npm run check` には入れない）。`tools/smoke/remodern-apply-smoke.mjs`。
+
+```sh
+mkdir -p /tmp/browser && cd /tmp/browser   # 6 の手順で @sparticuz/chromium と puppeteer-core を入れておく
+cp /home/user/trk-PWA/tools/smoke/remodern-apply-smoke.mjs /tmp/browser/apply-smoke.mjs
+LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node apply-smoke.mjs
+```
+
+見ること：選んだだけでは変わらない → 適用で書斎が変わる → 他の領域は変わらない → 戻すで直前へ → 適用後に変えていれば戻さず競合 → リセットで直前の記録も消える。エラーなし。期待は **11 OK / 0 NG**。

@@ -47,7 +47,7 @@ test("UI は作品を勝手に作らず、保存は saveUserPrefs を通す", ()
   assert.ok(ui.includes("window.TrkReModernWorks"), "作品は外から読む（今は空）");
   assert.ok(ui.includes("core.saveUserPrefs()"), "保存の経路");
   assert.ok(!/fetch\(|localStorage\./.test(ui), "通信・直接の保存をしない");
-  assert.ok(ui.includes("R.setRegion(before, region, mode, work)"), "1 行だけ変える道具を使う");
+  assert.ok(ui.includes("R.apply(current(), region, mode, work)"), "1 行だけ変える道具を使う（適用の前の状態を覚える）");
 });
 
 test("文言は 4 言語そろい、使う鍵がすべてある", () => {

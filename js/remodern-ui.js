@@ -61,16 +61,45 @@
     select.value = value || "";
   }
 
-  /* 1 つの領域を変える（他の領域・読書・再生・共通ノーツには触れない） */
+  /* 1 つの領域を変える（他の領域・読書・再生・共通ノーツには触れない）。🎨 trk308：直前の状態を覚えておく（「戻す」のため） */
   function commit(region, mode, work) {
     try {
-      const before = current();
-      core.settings.remodern = R.setRegion(before, region, mode, work);
+      const a = R.apply(current(), region, mode, work);
+      core.settings.remodern = a.state;
+      core.settings.remodernLast = a.snapshot;
     } catch (_) {
       return { ok: false, key: "remodernBad" };
     }
     const saved = core.saveUserPrefs();
-    return saved === false ? { ok: false, key: "remodernSaveFail" } : { ok: true, key: "remodernSaved" };
+    return saved === false ? { ok: false, key: "remodernSaveFail" } : { ok: true, key: "remodernApplied" };
+  }
+
+  /* 🎨 trk308：影響範囲と「適用／戻す」。選んだだけでは変わらない（適用で初めて変える） */
+  function pendingOf(modeSel, workSel) {
+    const mode = modeSel ? modeSel.value : "keep";
+    return { mode, work: mode === "own" && workSel && workSel.value ? workSel.value : null };
+  }
+  function canUndo(region) { const last = core.settings.remodernLast; return !!(last && last.region === region); }
+  function impactText(region, p) {
+    if (p.mode === "keep") return tr("remodernImpactKeep");
+    if (!p.work) return tr("remodernImpactPick");
+    if (statusOfWork(p.work) !== "registered") return tr("remodernImpactUnverified");
+    return tr(region === "common" ? "remodernImpactCommon" : "remodernImpactLater");
+  }
+  function sameAsApplied(region, p) {
+    const a = current()[region];
+    return p.mode === a.mode && (p.work || null) === (a.work || null);
+  }
+  /* 直前の適用を戻す。後で変えられていれば上書きせず「競合」 */
+  function undo(region, node) {
+    const last = core.settings.remodernLast;
+    if (!last || last.region !== region) { say(node, "remodernNothingUndo"); return; }
+    const r = R.revert(current(), last);
+    if (r.conflict) { say(node, "remodernConflict"); return; }
+    core.settings.remodern = r.state;
+    core.settings.remodernLast = null;
+    const saved = core.saveUserPrefs();
+    say(node, saved === false ? "remodernSaveFail" : "remodernUndone");
   }
 
   /* 🎨 trk301：ダイアログは設定画面（display:none になりうる）の外（body の直下）に置く。
@@ -103,6 +132,7 @@
       fillWorks(workSel, region, state[region].work);
       workSel.disabled = state[region].mode !== "own";   /* 作品を選べるのは「独立」のときだけ */
       workSel.title = view[region].fallback ? tr("remodernFallback") : "";
+      refreshRow(region, modeSel, workSel, impactEl(region), applyBtn(region), undoBtn(region));
     }
     if (iconsChk) iconsChk.checked = core.settings.remodernIcons === true;
     if (studyBtn) studyBtn.hidden = core.settings.remodernIcons !== true;
@@ -110,23 +140,35 @@
     document.querySelectorAll(".remodernOpenMedia").forEach(b => { b.hidden = core.settings.remodernIcons !== true; });
   }
 
-  /* 3 行 */
+  /* 3 行。🎨 trk308：変更は「適用」で行う。「戻す」は直前の適用を取り消す */
+  const impactEl = region => document.getElementById(`remodern-${region}-impact`);
+  const applyBtn = region => document.getElementById(`remodern-${region}-apply`);
+  const undoBtn = region => document.getElementById(`remodern-${region}-undo`);
+  function refreshRow(region, modeSel, workSel, impact, apply, undo_) {
+    if (!modeSel) return;
+    const p = pendingOf(modeSel, workSel);
+    if (workSel) workSel.disabled = modeSel.value !== "own";
+    if (impact) impact.textContent = sameAsApplied(region, p) ? tr("remodernImpactSame") : impactText(region, p);
+    if (apply) apply.disabled = sameAsApplied(region, p);
+    if (undo_) undo_.disabled = !canUndo(region);
+  }
   for (const region of R.REGIONS) {
     const modeSel = document.getElementById(`remodern-${region}-mode`);
     const workSel = document.getElementById(`remodern-${region}-work`);
-    if (modeSel) modeSel.addEventListener("change", () => {
-      const cur = current()[region];
-      const r = commit(region, modeSel.value, modeSel.value === "own" ? cur.work : null);
+    const onPick = () => refreshRow(region, modeSel, workSel, impactEl(region), applyBtn(region), undoBtn(region));
+    if (modeSel) modeSel.addEventListener("change", onPick);
+    if (workSel) workSel.addEventListener("change", onPick);
+    if (applyBtn(region)) applyBtn(region).addEventListener("click", () => {
+      const p = pendingOf(modeSel, workSel);
+      const r = commit(region, p.mode, p.work);
       say(status, r.key); render();
     });
-    if (workSel) workSel.addEventListener("change", () => {
-      const r = commit(region, current()[region].mode, workSel.value || null);
-      say(status, r.key); render();
-    });
+    if (undoBtn(region)) undoBtn(region).addEventListener("click", () => { undo(region, status); render(); });
   }
   const reset = document.getElementById("remodernResetBtn");
   if (reset) reset.addEventListener("click", () => {
     core.settings.remodern = R.defaultState();
+    core.settings.remodernLast = null;
     core.saveUserPrefs();
     say(status, "remodernResetDone"); render();
   });
@@ -147,8 +189,8 @@
     const cur = current()[region];
     fillModes(dlgMode, region, cur.mode);
     fillWorks(dlgWork, region, cur.work);
-    dlgWork.disabled = cur.mode !== "own";
     say(dlgStatus, "");
+    refreshDlg();
     dlg.showModal();
     dlgMode.focus();
   }
@@ -156,19 +198,34 @@
     const btn = event.target && event.target.closest ? event.target.closest("[data-remodern-open]") : null;
     if (btn) openFor(btn.dataset.remodernOpen);
   });
-  dlgMode.addEventListener("change", () => {
+  /* 🎨 trk308：ダイアログも「適用」で変える（影響範囲を先に見せる） */
+  const dlgImpact = document.getElementById("remodernDlgImpact");
+  const dlgApply = document.getElementById("remodernDlgApply");
+  const dlgUndo = document.getElementById("remodernDlgUndo");
+  function refreshDlg() {
     if (!dlgRegion) return;
-    const cur = current()[dlgRegion];
-    const r = commit(dlgRegion, dlgMode.value, dlgMode.value === "own" ? cur.work : null);
-    say(dlgStatus, r.key);
+    const p = pendingOf(dlgMode, dlgWork);
     dlgWork.disabled = dlgMode.value !== "own";
+    if (dlgImpact) dlgImpact.textContent = sameAsApplied(dlgRegion, p) ? tr("remodernImpactSame") : impactText(dlgRegion, p);
+    if (dlgApply) dlgApply.disabled = sameAsApplied(dlgRegion, p);
+    if (dlgUndo) dlgUndo.disabled = !canUndo(dlgRegion);
+  }
+  function refillDlg() {
+    fillModes(dlgMode, dlgRegion, current()[dlgRegion].mode);
     fillWorks(dlgWork, dlgRegion, current()[dlgRegion].work);
-    render();
-  });
-  dlgWork.addEventListener("change", () => {
+    refreshDlg();
+  }
+  dlgMode.addEventListener("change", refreshDlg);
+  dlgWork.addEventListener("change", refreshDlg);
+  if (dlgApply) dlgApply.addEventListener("click", () => {
     if (!dlgRegion) return;
-    const r = commit(dlgRegion, current()[dlgRegion].mode, dlgWork.value || null);
-    say(dlgStatus, r.key); render();
+    const p = pendingOf(dlgMode, dlgWork);
+    const r = commit(dlgRegion, p.mode, p.work);
+    say(dlgStatus, r.key); refillDlg(); render();
+  });
+  if (dlgUndo) dlgUndo.addEventListener("click", () => {
+    if (!dlgRegion) return;
+    undo(dlgRegion, dlgStatus); refillDlg(); render();
   });
   if (dlgClose) dlgClose.addEventListener("click", () => dlg.close());
 
