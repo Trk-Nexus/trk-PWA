@@ -23,7 +23,8 @@ test("CSS：見出しは heading、題字は display（見出しのクラスが�
 });
 
 test("apply：heading がある組だけクラスを張り、無い組・未選定では外す", () => {
-  assert.ok(typo.includes('if (vars.heading) body.classList.add("trk-typo-heading"); else body.classList.remove("trk-typo-heading");'));
+  assert.ok(typo.includes('if (vars.heading && HEADING_FROM_WORK) body.classList.add("trk-typo-heading"); else body.classList.remove("trk-typo-heading");'));
+  assert.ok(typo.includes("const HEADING_FROM_WORK = false;"), "作品の見出しを当てるまで効かせない（trk301・レビュー R1）");
   assert.ok(typo.includes('root.style.setProperty("--trk-typo-heading", vars.heading || "");'));
   assert.ok(typo.includes('body.classList.remove("trk-typo-heading");'), "使わないでは外す");
 });

@@ -13,7 +13,8 @@
   "use strict";
 
   const FORMAT = "shadow-taiko-pack";
-  const COLOR_KEYS = Object.freeze(["frame", "text", "accent"]);
+  /* 作品の色は Avatar の候補（pixel-console）と同じ 14 個。スキンと同じ鍵にそろえる（レビュー M4） */
+  const COLOR_KEYS = Object.freeze(["stage", "ink", "text", "muted", "bg", "panel", "field", "button", "accent", "onAccent", "gold", "border", "don", "ka"]);
   const MAX_ZIP_BYTES = 256 * 1024;   /* 作品ファイル全体 */
   const MAX_JSON_BYTES = 32 * 1024;   /* pack.json の展開後 */
   const MAX_WORKS = 20;               /* 保存する作品の数 */

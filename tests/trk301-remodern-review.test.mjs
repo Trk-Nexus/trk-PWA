@@ -62,3 +62,30 @@ test("作品はまだ画面に反映されないと 4 言語で明記する", ()
     assert.ok(hint, `${l} の remodernDlgHint に明記`);
   });
 });
+
+/* ユーザーの判断（2026-11-06）への対応：M4＝色は 14 個、R1＝見出しは作品があるときだけ、R6＝知らせは本文の色＋「✓」 */
+test("M4：作品の色は Avatar の 14 個（スキンと同じ鍵）。frame などは落ちる", () => {
+  const ctx = {};
+  vm.createContext(ctx);
+  vm.runInContext(read("js/remodern-regions.js"), ctx);
+  vm.runInContext(read("js/remodern-work.js"), ctx);
+  const W = ctx.TrkReModernWork;
+  assert.deepEqual([...W.COLOR_KEYS], ["stage", "ink", "text", "muted", "bg", "panel", "field", "button", "accent", "onAccent", "gold", "border", "don", "ka"]);
+  const r = W.checkManifest({ format: "shadow-taiko-pack", name: "x", license: "OFL-1.1",
+    remodern: { version: 1, id: "trk-re-modern-c", regions: ["base"], colors: { stage: "#101010", frame: "#ffffff" } } });
+  assert.equal(r.ok, true);
+  assert.deepEqual(JSON.parse(JSON.stringify(r.work.colors)), { stage: "#101010" });
+});
+
+test("R1：見出しの枠は、作品の見出しを当てる処理が入るまで効かせない", () => {
+  const typo = read("js/typography.js");
+  assert.ok(typo.includes("const HEADING_FROM_WORK = false;"));
+  assert.ok(typo.includes("if (vars.heading && HEADING_FROM_WORK) body.classList.add(\"trk-typo-heading\")"));
+});
+
+test("R6：知らせは本文の色。文字があるときだけ「✓」", () => {
+  const css = read("css/style.css");
+  assert.ok(css.includes(".status{color:var(--ui-text);font-weight:700}"));
+  assert.ok(css.includes('.status:not(:empty)::before{content:"✓ "}'));
+  assert.ok(!css.includes(".status{color:var(--ui-gold)"));
+});
