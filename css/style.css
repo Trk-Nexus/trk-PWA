@@ -2289,6 +2289,8 @@ body.trk-mobile.trk-density-dense{--trk-skin-cols:4;--trk-lib-thumb:36px}
    ゲーム画面の中（canvas の ctx.font）は今回触りません。 */
 body.trk-typo-on .brand h1,body.trk-typo-on details.panel>summary,body.trk-typo-on .panel h3{font-family:var(--trk-typo-display,var(--font))}
 body.trk-typo-on .hint,body.trk-typo-on .brand p{font-family:var(--trk-typo-body,var(--font))}
+/* 🎨 trk299：見出し用の枠（heading）は見出し（summary・.panel h3）だけ。題字（.brand h1）は display のまま */
+body.trk-typo-heading details.panel>summary,body.trk-typo-heading .panel h3{font-family:var(--trk-typo-heading)}
 
 /* ============ ⌨ ターミナル（trk267・受け口は trk268） ============
    色は CSS 変数（--ui-*）から取るので、スキンを当て替えると端末の色も一緒に変わります。

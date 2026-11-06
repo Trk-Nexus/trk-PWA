@@ -78,7 +78,10 @@
       return s ? '"' + s.family + '"' : "";
     };
     const stack = primary => (primary ? primary + "," + fallback : "");
-    return { display: stack(name("display") || name("heading")), body: stack(name("body") || name("caption")) };
+    const out = { display: stack(name("display") || name("heading")), body: stack(name("body") || name("caption")) };
+    /* 🎨 trk299：見出し用の枠（heading）は、見出し（summary・.panel h3）にだけ使う。無ければ入れない */
+    if (name("heading")) out.heading = stack(name("heading"));
+    return out;
   }
 
   /* 効かせる場所：`.brand h1`・`details.panel > summary`・`.panel h3`（css/style.css 側）。
@@ -91,11 +94,16 @@
     const vars = cssVars(clean);
     if (!clean || (!vars.display && !vars.body)) {
       body.classList.remove("trk-typo-on");
+      body.classList.remove("trk-typo-heading");
       root.style.removeProperty("--trk-typo-display"); root.style.removeProperty("--trk-typo-body");
+      root.style.setProperty("--trk-typo-heading", "");
       return null;
     }
     if (vars.display) root.style.setProperty("--trk-typo-display", vars.display); else root.style.removeProperty("--trk-typo-display");
     if (vars.body) root.style.setProperty("--trk-typo-body", vars.body); else root.style.removeProperty("--trk-typo-body");
+    /* 見出しの枠は、書体がある組のときだけ張る（無い組では見出しは従来どおり display のまま） */
+    root.style.setProperty("--trk-typo-heading", vars.heading || "");
+    if (vars.heading) body.classList.add("trk-typo-heading"); else body.classList.remove("trk-typo-heading");
     body.classList.add("trk-typo-on");
     return clean;
   }
