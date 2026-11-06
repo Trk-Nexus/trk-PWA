@@ -5,6 +5,7 @@
    ・設定「書斎・基地にスキンのボタンを出す」（既定オフ＝今の画面のまま。利用者が選ぶ）
    ・書斎・基地のヘッダーの「🎨 スキン」（data-remodern-open）→ その領域だけのダイアログ
    作品の一覧はまだ空（window.TrkReModernWorks。次の段階で読み込む）。
+   🎨 trk305：共通の領域が独立で作品があるときだけ、共通の題字の色を当てる（js/remodern-paint.js）。
    保存は設定（remodern）へ。道具は js/remodern-regions.js。通信・直接の保存はしない。 */
 (() => {
   "use strict";
@@ -69,9 +70,23 @@
      中に置くと、見えない modal になり画面全体が押せなくなる（レビュー 1） */
   if (dlg && dlg.parentElement !== document.body) document.body.append(dlg);
 
+  /* 🎨 trk305（M3）：共通の領域が「独立」で作品があるときだけ、共通の題字（.brand h1）の色を当てる。
+     書斎・基地はまだ当てない。作品が無い・外れたら既定の色へ戻す（js/remodern-paint.js） */
+  const PAINT = window.TrkReModernPaint;
+  function paintTitle(view) {
+    const h1 = document.querySelector(".brand h1");
+    if (!PAINT || !h1) return;
+    const pick = view.common && view.common.source === "own" && view.common.work ? works()[view.common.work] : null;
+    if (!pick) { PAINT.clearTitle(h1); return; }
+    const paint = PAINT.titlePaint(pick, PAINT.effectiveBg(h1));
+    PAINT.applyTitle(h1, paint);
+    if (paint.skipped.length) console.warn("[trk-re-modern] 題字：背景との対比が足りない色は使いません:", paint.skipped.join(","));
+  }
+
   function render() {
     const state = current();
     const view = R.resolve(state, works());
+    paintTitle(view);
     for (const region of R.REGIONS) {
       const modeSel = document.getElementById(`remodern-${region}-mode`);
       const workSel = document.getElementById(`remodern-${region}-work`);
