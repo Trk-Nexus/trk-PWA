@@ -184,6 +184,6 @@ describe("trk243 画面と約束", () => {
     assert.match(css, /\.setFind\{/);
     assert.match(css, /#setFindNothing\[hidden\]\{display:none\}/);
     const cur = swSrc.match(/const CACHE = "([^"]+)";/)[1];
-    assert.ok(/trk24[3-9]|trk2[5-9]\d/.test(cur), cur);
+    assert.ok(/trk24[3-9]|trk(2[5-9]\d|[3-9]\d\d)/.test(cur), cur);
   });
 });

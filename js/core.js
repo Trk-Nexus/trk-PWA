@@ -618,7 +618,15 @@ const settings = {
   setTouched: cleanSkinIdList(prefs.setTouched, 160),
   /* ⚖ trk281：TRUCK の揺れを全員オフへ寄せる「一回限りの印」（docs/MIGRATIONS.md）。
      1 になったら二度と掛かりません（工場出荷でも戻しません）。 */
-  swayTruckOff1: prefs.swayTruckOff1 === 1 ? 1 : 0
+  swayTruckOff1: prefs.swayTruckOff1 === 1 ? 1 : 0,
+  /* 🎨 trk297：trk-re-modern の領域ごとの選択（共通・書斎・基地）。既定は全部 keep（既存の表示のまま・D4）。
+     読み込みで検証し、壊れた値は keep に落とす（js/remodern-regions.js）。 */
+  /* 🎨 trk297：書斎・基地のヘッダーに「🎨 スキン」のボタンを出すか（既定オフ＝今の画面のまま・利用者が選ぶ） */
+  remodernIcons: prefs.remodernIcons === true,
+  /* 🎨 trk300：読んだ作品（作品ファイルの値だけ・最大 20 件）。読むときに js/remodern-work.js で検査し直す */
+  remodernWorks: Array.isArray(prefs.remodernWorks) ? prefs.remodernWorks.slice(0, 20) : [],
+  remodern: (window.TrkReModernRegions ? window.TrkReModernRegions.normalize(prefs.remodern).state
+    : { version: 1, common: { mode: "keep", work: null }, study: { mode: "keep", work: null }, base: { mode: "keep", work: null } })
 };
 /* 🖥 trk223（2026-10-31 レビュー⑤）：同じオリジンで2つの trk! を公開できる（/trk/ と /trk-PWA/）。
    localStorage はオリジンで共有なので、片方（古い版）が保存すると、その版が知らない設定

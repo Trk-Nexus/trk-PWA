@@ -1833,7 +1833,13 @@ function buildMedia() {
   hwrap.append(h, tx("p", "mediaSubtitle", "instSubtitle"));
   closeNode = makeButton("mediaClose", "instClose mediaExitBtn");   /* ← 曲リストに戻る（trk187・明示ボタンは即退出） */
   closeNode.addEventListener("click", () => closeMedia());
-  header.append(hwrap, closeNode);
+  /* 🎨 trk297：設定「書斎・基地にスキンのボタン」がオンのときだけ、基地の見出しに出す（押すと基地だけのダイアログ） */
+  if (core.settings.remodernIcons) {
+    const skinBtn = document.createElement("button");
+    skinBtn.type = "button"; skinBtn.className = "miniBtn remodernOpenMedia"; skinBtn.dataset.remodernOpen = "base";
+    skinBtn.textContent = tr("remodernOpenBtn");
+    header.append(hwrap, skinBtn, closeNode);
+  } else header.append(hwrap, closeNode);
 
   const display = core.el("div", "mediaDisplay");
   titleNode = core.el("strong", "mediaDisplayTitle", tr("mediaNoTrack"));

@@ -2289,6 +2289,8 @@ body.trk-mobile.trk-density-dense{--trk-skin-cols:4;--trk-lib-thumb:36px}
    ゲーム画面の中（canvas の ctx.font）は今回触りません。 */
 body.trk-typo-on .brand h1,body.trk-typo-on details.panel>summary,body.trk-typo-on .panel h3{font-family:var(--trk-typo-display,var(--font))}
 body.trk-typo-on .hint,body.trk-typo-on .brand p{font-family:var(--trk-typo-body,var(--font))}
+/* 🎨 trk299：見出し用の枠（heading）は見出し（summary・.panel h3）だけ。題字（.brand h1）は display のまま */
+body.trk-typo-heading details.panel>summary,body.trk-typo-heading .panel h3{font-family:var(--trk-typo-heading)}
 
 /* ============ ⌨ ターミナル（trk267・受け口は trk268） ============
    色は CSS 変数（--ui-*）から取るので、スキンを当て替えると端末の色も一緒に変わります。
@@ -2393,3 +2395,12 @@ dialog.cliDialog>.cliSpellPanel{flex:0 1 auto;min-height:0}
   /* 低い画面では「tall」を「半分」より低くしない（390×500 で半分の方が高かった） */
   dialog.cliDialog[data-size="tall"]{height:88dvh}
 }
+
+/* 🎨 trk297：trk-re-modern の領域ごとの 3 行（設定「🎨 スキン」） */
+.remodernRegions { display: grid; gap: .4em; margin: .4em 0; }
+.remodernRow { display: grid; grid-template-columns: minmax(4em, auto) 1fr 1fr; gap: .4em; align-items: center; }
+.remodernRow select { min-width: 0; width: 100%; }
+
+.study-file-btn[hidden], .remodernOpenMedia[hidden] { display: none; }
+.remodernDialog { max-width: min(32rem, 92vw); border: 1px solid currentColor; border-radius: 10px; padding: 1em; }
+.remodernDialog .remodernRow { grid-template-columns: 1fr; }
