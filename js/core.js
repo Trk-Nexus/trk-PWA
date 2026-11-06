@@ -493,6 +493,9 @@ const settings = {
      granted なら起動しただけで曲が並ぶ。prompt のときは最初のタップで1回だけ許可を確認する
      （ブラウザーはクリックの中でしか確認を出せないため）。オフにすると今までどおり手動で再接続。 */
   folderAutoRead: prefs.folderAutoRead !== false,
+  /* 🔓 trk293：「共有の許可をブラウザに求める」ワンボタンを設定に出すか（初期オフ＝今までの画面のまま）。
+     許可を「許可しない」にしたあとでも、設定からいつでも許可を求め直せるようにする。 */
+  permAskBtn: prefs.permAskBtn === true,
   libSort: pick(prefs.libSort, ["name", "plays", "recent", "best"], "name"),
   libProgress: pick(prefs.libProgress, ["all", "new", "progress", "done"], "all"),   // 📈 進捗フィルター：未聴/継続/完了で絞る（表示層だけ。trk174）
   shortMode: pick(prefs.shortMode, ["off", "90", "120", "180"], "off"),      // 🕹️ ショートプレイ（後半だけ遊ぶ・初期オフ）

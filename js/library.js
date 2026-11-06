@@ -4979,15 +4979,54 @@ async function folderAutoKick(e) {
     core.setStatus("libStatus", "folderAutoChecking", { name:h.name });
     const p = await folderPermissionOf(h);
     if (p === "granted") { await useHandle(h, false, wasShared); markFolderAccess(true); return; }
-    if (p === "denied") { core.setStatus("libShareStatus", "libDenied"); syncShareUI(); return; }
+    /* trk293：拒否されているときは「なぜ曲が出ないか」と直し方を出す（黙って libDenied だけにしない） */
+    if (p === "denied") { core.setStatus("libShareStatus", "folderPermDenied", { name:h.name }); syncShareUI(); return; }
     /* ここはクリック／キー入力の中。ブラウザーの確認は、この中でしか出せない */
     const r = await h.requestPermission({ mode:"read" });
     if (r === "granted") { await useHandle(h, false, wasShared); markFolderAccess(false); }   /* 今回の許可（毎回許可かは分からない） */
-    else { core.setStatus("libShareStatus", "libDenied"); core.$("libReconnectBtn").hidden = false; showReconnect(); syncShareUI(); }
+    else { core.setStatus("libShareStatus", r === "denied" ? "folderPermDenied" : "libDenied", { name:h.name }); core.$("libReconnectBtn").hidden = false; showReconnect(); syncShareUI(); }
   } catch (_) {
     core.setStatus("libShareStatus", "libDenied");
     core.$("libReconnectBtn").hidden = false; showReconnect(); syncShareUI();
   } finally { folderAutoBusy = false; }
+}
+/* 🔓 trk293：「共有の許可をブラウザに求める」ワンボタン（設定でオン・初期オフ）。
+   ボタンのクリックの中で、まだ許可が要る1本だけ requestPermission する（1タップ＝1本）。
+   ・許可が生きている → そのまま読む ・確認待ち（prompt）→ ブラウザーの確認を出す
+   ・拒否（denied）→ ブラウザーはもう確認を出さないので、直し方（サイトの設定）だけを出す。
+   「毎回許可」はブラウザーの確認でしか選べない（アプリからは強制できない）。 */
+async function askFolderPermissionNow() {
+  disarmFolderAutoRead();
+  const registry = sharedFolders.slice();
+  const handles = registry.length ? registry.map(f => f.handle) : (libHandle ? [libHandle] : []);
+  if (!handles.length) { core.setStatus("libShareStatus", "permAskNoFolder"); syncShareUI(); return; }
+  let target = null, state = "granted";
+  for (const h of handles) {
+    const q = await folderPermissionOf(h);
+    if (q !== "granted") { target = h; state = q; break; }
+  }
+  if (target && state === "denied") {
+    folderLastPermission = "denied";
+    core.setStatus("libShareStatus", "folderPermDenied", { name:target.name });
+    syncShareUI(); return;
+  }
+  if (target) {
+    const answer = await target.requestPermission({ mode:"read" }).catch(() => "denied");
+    folderLastPermission = answer;
+    if (answer !== "granted") {
+      core.setStatus("libShareStatus", answer === "denied" ? "folderPermDenied" : "permAskNotNow", { name:target.name });
+      syncShareUI(); return;
+    }
+    markFolderAccess(false);   /* 今回の許可（毎回許可かは分からない）→ 案内は folderPermSession の文言で出る */
+  } else {
+    markFolderAccess(folderAccessPersisted);
+  }
+  try {
+    if (registry.length) await readSharedFolders();
+    else await useHandle(libHandle, false, libShared);
+    core.setStatus("libShareStatus", "permAskGranted");
+  } catch (e) { console.error(e); core.setStatus("libShareStatus", "libDenied"); }
+  syncShareUI();
 }
 function armFolderAutoRead() {
   if (folderAutoArmed) return;
@@ -5402,6 +5441,10 @@ function syncShareUI() {
   /* 🔓 trk194：自動の読み取りの設定と、いまの許可の状態（次回も自動で読めるか） */
   const autoChk = core.$("folderAutoReadChk"), autoHint = core.$("folderAutoReadHint"), permState = core.$("folderPermState");
   if (autoChk) autoChk.checked = core.settings.folderAutoRead !== false;
+  /* 🔓 trk293：許可のワンボタン（オンのときだけ・覚えたフォルダーがあるときだけ出す） */
+  const askChk = core.$("permAskBtnChk"), askBtn = core.$("permAskBtn");
+  if (askChk) askChk.checked = core.settings.permAskBtn === true;
+  if (askBtn) askBtn.hidden = !(core.settings.permAskBtn === true && (libHandle || (typeof sharedFolders !== "undefined" && sharedFolders.length)));
   if (autoHint) autoHint.textContent = tr("folderAutoReadHint");
   if (permState) permState.textContent = folderAccessPersisted ? tr("folderPermPersisted")
     : folderAccessSession ? tr("folderPermSession")
@@ -5707,6 +5750,15 @@ if (folderAutoReadChk) folderAutoReadChk.addEventListener("change", async () => 
   else { disarmFolderAutoRead(); syncShareUI(); }
 });
 /* 「いま読み取る」ボタン：確認が必要なときに、タップの中で許可を求める（自動の待ち合わせと同じ道） */
+/* 🔓 trk293：許可のワンボタン（設定で表示をオンにしたときだけ見える） */
+const permAskBtnChk = core.$("permAskBtnChk");
+if (permAskBtnChk) permAskBtnChk.addEventListener("change", () => {
+  core.settings.permAskBtn = !!permAskBtnChk.checked;
+  core.saveUserPrefs();
+  syncShareUI();
+});
+const permAskBtn = core.$("permAskBtn");
+if (permAskBtn) permAskBtn.addEventListener("click", () => { void askFolderPermissionNow(); });
 const folderAutoNowBtn = core.$("folderAutoNowBtn");
 if (folderAutoNowBtn) folderAutoNowBtn.addEventListener("click", () => { void folderAutoKick(); });
 const trkMusicFolderBtn = core.$("trkMusicFolderBtn");

@@ -33,7 +33,7 @@
 
   /* ---------- パネルごとの既定の段（id か summary の data-i18n で引く） ---------- */
   const PANEL_TIER = {
-    uiPanel: 1, secSound: 1, secControls: 1, updatePanel: 1, storagePanel: 1,
+    uiPanel: 1, secSound: 1, secControls: 1, updatePanel: 1, installPanel: 1, storagePanel: 1,
     secDisplay: 2, secOptions: 2, mediaKeepPanel: 2, backupPanel: 2, libSharePanel: 2, favPanel: 2,
     packPanel: 3, trkPanel: 3, ghostPanel: 3,
     /* ⌨ trk283：ターミナルは**ウィザードの段から**（マスターでは隠す＝段の差を作る） */

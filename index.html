@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk293">
+<meta name="trk-build" content="trk295">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1525,6 +1525,16 @@
             <div id="swUpdateStatus" class="hint status" role="status" aria-live="polite"></div>
           </details>
 
+          <!-- 📲 trk295：trk をアプリとして入れる（js/app-install.js）。iPhone は既存のホーム画面の案内を開く -->
+          <details class="panel" id="installPanel">
+            <summary data-i18n="secInstall"></summary>
+            <div class="hint" data-i18n="installHint"></div>
+            <div class="miniActions">
+              <button id="appInstallBtn" type="button" data-i18n="appInstallBtn" hidden></button>
+            </div>
+            <div id="appInstallState" class="hint status" role="status" aria-live="polite"></div>
+          </details>
+
           <!-- 💾 端末の保存（trk136）。書斎・パック・記録の保存を、ブラウザに消されにくい状態へ固定する -->
           <details class="panel" id="storagePanel">
             <summary data-i18n="secStorage"></summary>
@@ -1634,6 +1644,24 @@
             <div class="miniActions">
               <button id="folderAutoNowBtn" type="button" data-i18n="folderAutoNow"></button>
             </div>
+            <!-- 🔓 trk293：許可のワンボタン（初期オフ。オンにすると、覚えたフォルダーがあるときだけ出る） -->
+            <label class="check"><input id="permAskBtnChk" type="checkbox"><span data-i18n="permAskBtnChk"></span></label>
+            <div id="permAskBtnHint" class="hint" data-i18n="permAskBtnHint"></div>
+            <div class="miniActions">
+              <button id="permAskBtn" type="button" data-i18n="permAskBtn" hidden></button>
+            </div>
+            <!-- 📖 trk295：「毎回許可」の選び方（ブラウザーの確認の3択の意味） -->
+            <details id="permGuide" class="hint">
+              <summary data-i18n="permGuideSummary"></summary>
+              <div class="hint" data-i18n="permGuideLead"></div>
+              <ol class="iosInstallSteps">
+                <li data-i18n="permGuideStep1"></li>
+                <li data-i18n="permGuideStep2"></li>
+                <li data-i18n="permGuideStep3"></li>
+                <li data-i18n="permGuideStep4"></li>
+              </ol>
+              <div class="hint" data-i18n="permGuideTip"></div>
+            </details>
             <div id="folderPermState" class="hint" role="status" aria-live="polite"></div>
             <div id="libShareState" class="hint"></div>
             <div id="libShareStatus" class="hint status"></div>
@@ -2490,6 +2518,7 @@
 <!-- ⚖ trk279：設定の「段」（見せる量）。さがす・開閉の記憶より後に読みます -->
 <script src="js/settings-level.js"></script>
 <script src="js/ios-pwa.js"></script>
+<script src="js/app-install.js"></script>
   <!-- 🔄 trk242：新しい版が入ったときだけ出る小さな帯（窓で覆わない・遊びを止めない） -->
   <div id="swUpdateBar" class="swUpdateBar" role="status" aria-live="polite" hidden>
     <span id="swUpdateBarText" data-i18n="swUpdateBarText"></span>
