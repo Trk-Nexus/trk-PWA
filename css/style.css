@@ -237,7 +237,9 @@ select{padding:8px 10px;border-radius:10px;background:var(--ui-field);color:var(
 .fileBtn.small:hover{border-color:var(--ui-accent);color:var(--ui-text)}
 .fileBtn.disabled{opacity:.45;cursor:not-allowed}
 .hint{color:var(--ui-muted);font-size:14px;margin:calc(6px * var(--trk-dens-pad,1)) 0;line-height:var(--trk-dens-line,1.5)}
-.status{color:var(--ui-gold);font-weight:700}
+.status{color:var(--ui-text);font-weight:700}
+/* 🎨 trk301（レビュー R6）：知らせは色だけに頼らない。文字は本文の色にし、文字があるときだけ記号を付ける */
+.status:not(:empty)::before{content:"✓ "}
 .center{text-align:center}
 #eggStatus.egg{color:var(--ui-accent-ink,var(--ui-accent));font-weight:800}
 .seg{display:flex;flex-wrap:wrap;gap:6px;padding:5px;border-radius:16px;background:var(--ui-field);border:1px solid var(--ui-border)}
@@ -2402,5 +2404,8 @@ dialog.cliDialog>.cliSpellPanel{flex:0 1 auto;min-height:0}
 .remodernRow select { min-width: 0; width: 100%; }
 
 .study-file-btn[hidden], .remodernOpenMedia[hidden] { display: none; }
-.remodernDialog { max-width: min(32rem, 92vw); border: 1px solid currentColor; border-radius: 10px; padding: 1em; }
+.remodernDialog { max-width: min(32rem, 92vw); border: 1px solid var(--ui-border, currentColor); border-radius: 10px; padding: 1em;
+  background: var(--ui-panel); color: var(--ui-text); }
+.remodernDialog::backdrop { background: rgb(0 0 0 / .5); }
+.remodernDialog .remodernRow label { display: grid; gap: .25em; }
 .remodernDialog .remodernRow { grid-template-columns: 1fr; }

@@ -11,7 +11,7 @@
    未導入の端末では `font-family` が次の名前へ自然にフォールバックします（＝崩れない・見本だけ縮む）。
 
    ・**いま app が描き方に使うのは2役だけ**：`display`（題字）と `body`（本文）。
-     残り4役（`heading`／`caption`／`numeral`／`accent`）は**保存できる形にしてあるが、まだ使いません**
+     `heading`（見出し）は trk299 から見出し（summary・`.panel h3`）に使う。`caption`・`numeral`・`accent` は**保存できる形にしてあるが、まだ使いません**
      （段階③ `roles` の受け口。相手の設計メモ §5 の4段階のうち、②までをここで受け取る）。
    ・保存は `settings.typography`（`core.settings` の中。localStorage のキーは増やさない）。
    ・知らない項目・壊れた値は `sanitize()` が捨てる（`sanitizeSkinDef` と同じ方針）。
@@ -23,6 +23,8 @@
   const BASE = 16;
   const FORMAT = "trk-typography", VERSION = 1;
   const SLOTS = ["display", "heading", "body", "caption", "numeral", "accent"];
+  /* 見出しの枠を効かせるか。作品の見出し（DotGothic 等）を当てる処理が入るまで false（trk301） */
+  const HEADING_FROM_WORK = false;
   /* 描き方の段階。契約（`trk-typography` v1）が認めるのもこの4つだけなので、
      役の名前（display など）をここに通す必要はありません（trk253・レビュー C-2 の指摘） */
   const PRESETS = ["one", "pair", "roles", "digits"];
@@ -103,7 +105,8 @@
     if (vars.body) root.style.setProperty("--trk-typo-body", vars.body); else root.style.removeProperty("--trk-typo-body");
     /* 見出しの枠は、書体がある組のときだけ張る（無い組では見出しは従来どおり display のまま） */
     root.style.setProperty("--trk-typo-heading", vars.heading || "");
-    if (vars.heading) body.classList.add("trk-typo-heading"); else body.classList.remove("trk-typo-heading");
+    /* 🎨 trk301（レビュー R1）：作品の見出しを当てる処理が入るまで、組の見出しは使わない（見出しは従来どおり） */
+    if (vars.heading && HEADING_FROM_WORK) body.classList.add("trk-typo-heading"); else body.classList.remove("trk-typo-heading");
     body.classList.add("trk-typo-on");
     return clean;
   }

@@ -65,6 +65,10 @@
     return saved === false ? { ok: false, key: "remodernSaveFail" } : { ok: true, key: "remodernSaved" };
   }
 
+  /* 🎨 trk301：ダイアログは設定画面（display:none になりうる）の外（body の直下）に置く。
+     中に置くと、見えない modal になり画面全体が押せなくなる（レビュー 1） */
+  if (dlg && dlg.parentElement !== document.body) document.body.append(dlg);
+
   function render() {
     const state = current();
     const view = R.resolve(state, works());
@@ -79,6 +83,8 @@
     }
     if (iconsChk) iconsChk.checked = core.settings.remodernIcons === true;
     if (studyBtn) studyBtn.hidden = core.settings.remodernIcons !== true;
+    /* 基地のボタンは、基地の画面を作るときに一度だけ作られる。出し入れはここで行う（レビュー R2） */
+    document.querySelectorAll(".remodernOpenMedia").forEach(b => { b.hidden = core.settings.remodernIcons !== true; });
   }
 
   /* 3 行 */
@@ -156,9 +162,10 @@
     core.settings.remodernWorks = Object.values(map);
     return core.saveUserPrefs() !== false;
   }
-  async function sha256Hex(text) {
+  /* ファイル全体（.stpack の中身）のハッシュ。配布物そのものを指す（レビュー R3） */
+  async function sha256Hex(buf) {
     try {
-      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+      const digest = await crypto.subtle.digest("SHA-256", buf);
       return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
     } catch (_) { return ""; }
   }
@@ -170,7 +177,8 @@
     if (!file || file.size > WORK.MAX_ZIP_BYTES) return { ok: false, key: "remodernWorkTooBig" };
     let zip;
     try { zip = await zipIO.zipOpen(file); } catch (_) { return bad; }
-    if (!WORK.checkEntryNames(zip.entries.map(e => e.name)).ok) return bad;
+    const names = WORK.checkEntryNames(zip.entries.map(e => e.name));
+    if (!names.ok) { console.warn("[trk-re-modern] 作品を読めませんでした:", names.reason); return bad; }
     const entry = zip.entries.find(e => e.name === "pack.json");
     if (!entry || entry.usize > WORK.MAX_JSON_BYTES) return bad;
     let text;
@@ -178,14 +186,14 @@
     let raw;
     try { raw = JSON.parse(text); } catch (_) { return bad; }
     const checked = WORK.checkManifest(raw);
-    if (!checked.ok) return bad;
+    if (!checked.ok) { console.warn("[trk-re-modern] 作品を読めませんでした:", checked.reason); return bad; }
     const list = WORK.addWork(Object.values(workMap), checked.work);
     if (!list) return { ok: false, key: "remodernWorkFull" };
     const next = {};
     for (const w of list) next[w.id] = w;
     workMap = next; window.TrkReModernWorks = workMap;
     if (!saveWorks(workMap)) return { ok: false, key: "remodernSaveFail" };
-    const hash = await sha256Hex(text);
+    const hash = await sha256Hex(await file.arrayBuffer());
     return { ok: true, key: "remodernWorkOk", vars: { name: checked.work.name, hash: hash ? hash.slice(0, 12) : "—" } };
   }
   if (workBtn && workFile) workBtn.addEventListener("click", () => workFile.click());

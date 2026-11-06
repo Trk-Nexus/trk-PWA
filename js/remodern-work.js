@@ -13,7 +13,8 @@
   "use strict";
 
   const FORMAT = "shadow-taiko-pack";
-  const COLOR_KEYS = Object.freeze(["frame", "text", "accent"]);
+  /* 作品の色は Avatar の候補（pixel-console）と同じ 14 個。スキンと同じ鍵にそろえる（レビュー M4） */
+  const COLOR_KEYS = Object.freeze(["stage", "ink", "text", "muted", "bg", "panel", "field", "button", "accent", "onAccent", "gold", "border", "don", "ka"]);
   const MAX_ZIP_BYTES = 256 * 1024;   /* 作品ファイル全体 */
   const MAX_JSON_BYTES = 32 * 1024;   /* pack.json の展開後 */
   const MAX_WORKS = 20;               /* 保存する作品の数 */
@@ -23,7 +24,10 @@
   const V = () => globalThis.TrkReModernRegions;
 
   function pstr(v, max) {
-    return typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, max) : "";
+    /* 制御文字と、書字方向の制御（逆向きに見せる偽装を防ぐ）を取り除く */
+    return typeof v === "string"
+      ? v.replace(/[\u0000-\u001f\u007f-\u009f\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, "").trim().slice(0, max)
+      : "";
   }
 
   /* 作品の値だけを取り出す（知らない項目は落とす）。検証は validateWork に任せる */

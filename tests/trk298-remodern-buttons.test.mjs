@@ -32,9 +32,10 @@ test("書斎のボタンは文字つき・既定で隠れ・領域は study", ()
   assert.ok(html.indexOf('id="studyRemodernBtn"') < html.indexOf('id="studyHeaderSettingsBtn"'), "⚙ 設定の前");
 });
 
-test("基地のボタンは設定オンのときだけ作られ、領域は base", () => {
-  assert.match(media, /if \(core\.settings\.remodernIcons\) \{[\s\S]*dataset\.remodernOpen = "base"/);
-  assert.ok(media.includes('header.append(hwrap, closeNode);'), "オフのときは今のヘッダーのまま");
+test("基地のボタンは作るが、既定は隠す（trk301：一度だけ作られるため、出し入れは render が行う）", () => {
+  assert.match(media, /skinBtn\.dataset\.remodernOpen = "base"/);
+  assert.match(media, /skinBtn\.hidden = core\.settings\.remodernIcons !== true;/);
+  assert.match(media, /skinBtn\.dataset\.i18n = "remodernOpenBtn"/, "言語を替えても文言が替わる");
 });
 
 test("ダイアログに目に見える閉じるボタンがあり、1 領域だけを変える", () => {

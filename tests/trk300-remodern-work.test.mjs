@@ -26,7 +26,7 @@ function load() {
 const good = () => ({
   format: "shadow-taiko-pack", name: "Sample Work", author: "Someone", license: "OFL-1.1",
   remodern: { version: 1, id: "trk-re-modern-sample", regions: ["study", "base"],
-    colors: { frame: "#aabbcc", text: "#112233" }, heading: { font: "dotgothic" } }
+    colors: { text: "#112233", ink: "#aabbcc" }, heading: { font: "dotgothic" } }
 });
 
 test("正しい作品は検証を通り、知らない項目は落ちる", () => {
@@ -37,7 +37,7 @@ test("正しい作品は検証を通り、知らない項目は落ちる", () =>
   assert.equal(r.ok, true);
   assert.deepEqual(same(r.work), {
     id: "trk-re-modern-sample", name: "Sample Work", author: "Someone", license: "OFL-1.1",
-    regions: ["study", "base"], colors: { frame: "#aabbcc", text: "#112233" }, heading: { font: "dotgothic" }
+    regions: ["study", "base"], colors: { text: "#112233", ink: "#aabbcc" }, heading: { font: "dotgothic" }
   });
 });
 
@@ -55,7 +55,7 @@ test("値が許可リストに合わないと、理由つきで拒否する", ()
   const cases = [
     [raw => { raw.remodern.id = "../evil"; }, "bad-id"],
     [raw => { raw.remodern.regions = ["common", "elsewhere"]; }, "unknown-region"],
-    [raw => { raw.remodern.colors.frame = "red"; }, "bad-color"],
+    [raw => { raw.remodern.colors.ink = "red"; }, "bad-color"],
     [raw => { raw.remodern.heading.font = "http://x"; }, "bad-heading-font"],
     [raw => { raw.license = ""; }, "no-license"],
     [raw => { raw.name = "  "; }, "no-name"],
