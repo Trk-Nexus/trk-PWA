@@ -46,3 +46,11 @@ LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node smoke.mjs
 - 日本語が□に化ける → この環境に CJK フォントが無いだけ。レイアウトの確認には影響しない（文字の見た目は実機で見る）。
 - 1 つのブラウザーで 2 ページ目を開くとクラッシュすることがあるので、画面サイズごとに起動し直す（smoke.mjs はそうしている）。
 - 学習室を開くと「キー操作のヘルプ」が出る場合がある。スクリーンショットに映ったら、ダイアログとは別の画面。
+
+## 4. 作品の色（trk305・共通の題字）
+
+`tools/smoke/remodern-paint-smoke.mjs` を使う。手順は 3 と同じ（`cp` して `/tmp/browser` で `LD_LIBRARY_PATH=/tmp/al2023x/lib node` で動かす）。
+
+- 期待される結果：`before` は色が空、`applied` は `text` の色（`rgb(224, 232, 255)`）、「!」（span）は空（対比が足りないので当てない）、`cleared` は両方空。`errors` は 0。
+- 実行時間は環境により 2〜3 分かかることがある（ブラウザーの終了を待つため）。
+- スクリーンショットは `/home/user/smoke-paint.png`。
