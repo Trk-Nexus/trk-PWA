@@ -103,14 +103,14 @@ test("画面側：共通の独立・作品があるときだけ題字へ当て�
   assert.ok(ui.includes("    paintTitle(view);\n"), "render から呼ぶ");
 });
 
-test("読み込み順：remodern-paint.js は remodern-ui.js より前に読む。版は trk305", () => {
+test("読み込み順：remodern-paint.js は remodern-ui.js より前に読む。版は trk306", () => {
   const html = read("index.html");
   const paint = html.indexOf('<script src="js/remodern-paint.js">');
   const ui = html.indexOf('<script src="js/remodern-ui.js">');
   assert.ok(paint > 0 && ui > 0);
   assert.ok(paint < ui, "paint は ui より前");
-  assert.match(html, /name="trk-build" content="trk305"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk305";/);
+  assert.match(html, /name="trk-build" content="trk306"/);
+  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk306";/);
 });
 
 test("設定の作品欄の文言：4 言語とも、題字だけに反映されると書く", () => {

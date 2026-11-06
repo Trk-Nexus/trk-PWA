@@ -45,4 +45,5 @@ const cleared = await page.evaluate(() => {
 });
 await page.screenshot({ path: "/home/user/smoke-paint.png" });
 console.log(JSON.stringify({ before, applied, cleared, errors }, null, 2));
-await browser.close();
+try { browser.process()?.kill("SIGKILL"); } catch (_) {}   // 終了待ちで止まることがあるため、直接止める
+process.exit(0);

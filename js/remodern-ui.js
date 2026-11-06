@@ -6,6 +6,7 @@
    ・書斎・基地のヘッダーの「🎨 スキン」（data-remodern-open）→ その領域だけのダイアログ
    作品の一覧はまだ空（window.TrkReModernWorks。次の段階で読み込む）。
    🎨 trk305：共通の領域が独立で作品があるときだけ、共通の題字の色を当てる（js/remodern-paint.js）。
+   🎨 trk306：スキンを変えたら題字の色を判定し直す（core.on("skin")）。
    保存は設定（remodern）へ。道具は js/remodern-regions.js。通信・直接の保存はしない。 */
 (() => {
   "use strict";
@@ -225,6 +226,11 @@
     saveWorks(workMap);
     say(workStatus, "remodernWorkClearDone"); render();
   });
+
+  /* 🎨 trk306：通常のスキンを変えたら、題字の色を判定し直す（背景が変わるので、対比が変わる）。
+     以前は作品を選んだあとにスキンを変えると、色が残って読みにくくなっていた（Avatar 側の試験で再現） */
+  function repaintTitle() { paintTitle(R.resolve(current(), works())); }
+  if (typeof core.on === "function") core.on("skin", repaintTitle);
 
   render();
   if (Object.keys(works()).length === 0) say(status, "remodernEmpty");

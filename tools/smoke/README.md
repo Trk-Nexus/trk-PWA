@@ -52,5 +52,12 @@ LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node smoke.mjs
 `tools/smoke/remodern-paint-smoke.mjs` を使う。手順は 3 と同じ（`cp` して `/tmp/browser` で `LD_LIBRARY_PATH=/tmp/al2023x/lib node` で動かす）。
 
 - 期待される結果：`before` は色が空、`applied` は `text` の色（`rgb(224, 232, 255)`）、「!」（span）は空（対比が足りないので当てない）、`cleared` は両方空。`errors` は 0。
-- 実行時間は環境により 2〜3 分かかることがある（ブラウザーの終了を待つため）。
+- 実行は数秒〜数分。ブラウザーの終了待ちで止まる問題は、スクリプトの末尾で直接止めて避けている（trk306）。
 - スクリーンショットは `/home/user/smoke-paint.png`。
+
+## 5. スキンを変えたときの題字（trk306）
+
+`tools/smoke/remodern-paint-skin-smoke.mjs`。作品を選んでから、明るい通常のスキン（最初に見つかったもの）に変え、暗いスキンに戻す。
+
+- 期待される結果：`applied` は文字色が当たる。`afterLight` は文字色が空（読めないので既定へ戻る）。「!」の色は、明るい背景で対比が足りるなら残ってよい。`backDark` は文字色がもう一度当たる。`errors` は 0。
+- 手順は 3 と同じ（`cp` して `/tmp/browser` で `LD_LIBRARY_PATH=/tmp/al2023x/lib node` で動かす）。
