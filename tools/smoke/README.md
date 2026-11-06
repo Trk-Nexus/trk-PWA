@@ -61,3 +61,12 @@ LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node smoke.mjs
 
 - 期待される結果：`applied` は文字色が当たる。`afterLight` は文字色が空（読めないので既定へ戻る）。「!」の色は、明るい背景で対比が足りるなら残ってよい。`backDark` は文字色がもう一度当たる。`errors` は 0。
 - 手順は 3 と同じ（`cp` して `/tmp/browser` で `LD_LIBRARY_PATH=/tmp/al2023x/lib node` で動かす）。
+
+## 6. 登録簿との照合（trk307）
+
+`tools/smoke/remodern-registry-smoke.mjs`。作品の ID が登録簿（同梱の写し）に無いときは「未確認」、有るときは「登録済み」になるかを見る。
+
+- 期待される結果：`A_empty_registry` は `label` に「（unverified）」（日本語では「（未確認）」）が付き、`title` は空。`B_registered` は `label` に印が付かず、`title` に色が入る。`errors` は 0。
+- 登録簿の差し替えは、ページの読み込み時だけ（同梱の写し `data/re-modern-registry.json` は変えない）。
+- 手順は 3 と同じ（`cp` して `/tmp/browser` で `LD_LIBRARY_PATH=/tmp/al2023x/lib node` で動かす）。
+
