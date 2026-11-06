@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk297">
+<meta name="trk-build" content="trk298">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -628,8 +628,21 @@
                 <select id="remodern-base-mode" data-i18n-aria="remodernBase"></select>
                 <select id="remodern-base-work" data-i18n-aria="remodernBase"></select></div>
               <div class="miniActions"><button id="remodernResetBtn" type="button" data-i18n="remodernReset"></button></div>
+              <label class="check"><input id="remodernIconsChk" type="checkbox"><span data-i18n="remodernIconsChk"></span></label>
+              <div class="hint" data-i18n="remodernIconsHint"></div>
               <div id="remodernStatus" class="hint status" role="status" aria-live="polite"></div>
             </div>
+            <!-- 🎨 trk297：書斎・基地の「🎨 スキン」ボタンから開く、領域ひとつぶんのダイアログ（閉じるボタンは必ず見える） -->
+            <dialog id="remodernDialog" class="remodernDialog" aria-labelledby="remodernDlgTitle">
+              <h3 id="remodernDlgTitle"></h3>
+              <p class="hint" data-i18n="remodernDlgHint"></p>
+              <div class="remodernRow">
+                <label><span data-i18n="remodernDlgMode"></span> <select id="remodernDlgMode"></select></label>
+                <label><span data-i18n="remodernDlgWork"></span> <select id="remodernDlgWork"></select></label>
+              </div>
+              <div id="remodernDlgStatus" class="hint status" role="status" aria-live="polite"></div>
+              <div class="miniActions"><button id="remodernDlgClose" type="button" class="primary" data-i18n="remodernDlgClose"></button></div>
+            </dialog>
             <div id="skinNow"></div>
             <details id="skinShelf" class="subPanel" open>
               <summary><span data-i18n="skinShelf"></span> <span id="skinShelfCount"></span></summary>
@@ -1971,6 +1984,8 @@
           <input id="studyArchiveInput" type="file" multiple accept=".cbz,.zip,application/zip,application/x-cbz,application/vnd.comicbook+zip" hidden>
           <span data-i18n="studyImportArchives">🗜 CBZ/ZIPを取り込む</span>
         </label>
+        <!-- 🎨 trk297：スキンのボタン（設定でオンのときだけ見える。押すと、この領域だけのダイアログ） -->
+        <button id="studyRemodernBtn" type="button" class="study-file-btn" data-remodern-open="study" hidden data-i18n="studyRemodernBtn">🎨 スキン</button>
         <button id="studyHeaderSettingsBtn" type="button" class="study-file-btn" aria-haspopup="dialog" aria-controls="studySettings" data-i18n="studySettings">⚙ 設定</button>
         <button id="studyHelpBtn" type="button" class="study-close-btn" data-i18n="studyHelp">❓ キーの説明</button>
         <button id="studyCloseBtn" type="button" class="study-close-btn" data-i18n="studyClose">✕ 書斎を閉じる</button>

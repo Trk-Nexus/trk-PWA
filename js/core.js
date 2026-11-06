@@ -621,6 +621,8 @@ const settings = {
   swayTruckOff1: prefs.swayTruckOff1 === 1 ? 1 : 0,
   /* 🎨 trk297：trk-re-modern の領域ごとの選択（共通・書斎・基地）。既定は全部 keep（既存の表示のまま・D4）。
      読み込みで検証し、壊れた値は keep に落とす（js/remodern-regions.js）。 */
+  /* 🎨 trk297：書斎・基地のヘッダーに「🎨 スキン」のボタンを出すか（既定オフ＝今の画面のまま・利用者が選ぶ） */
+  remodernIcons: prefs.remodernIcons === true,
   remodern: (window.TrkReModernRegions ? window.TrkReModernRegions.normalize(prefs.remodern).state
     : { version: 1, common: { mode: "keep", work: null }, study: { mode: "keep", work: null }, base: { mode: "keep", work: null } })
 };

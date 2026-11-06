@@ -9,6 +9,7 @@
 
 /* 文言はこの機能内で4言語そろえる（tools/check-study-room.mjs が4言語の抜けを検査します）。 */
 Object.assign(TEXT.ja, {
+  studyRemodernBtn: "🎨 スキン",
   studyTitle:"📚 書斎", studyOpenBtn:"📚 書斎", studyOpenBtnHint:"書斎（本棚・テレビ・画像リーダー）を開きます。曲リストの見出しを長押ししても開けます", studyLaunchHint:"♫を長押しして書斎を開く（キーボードではEnter）",
   /* 📂 trk208：フォルダーを共有して「フォルダのまま読む」（コピーしない） */
   studyShareFolder:"📂 フォルダを共有して読む",
@@ -156,6 +157,7 @@ Object.assign(TEXT.ja, {
   studyImageOrderReverse:"逆順（右綴じ向け）", studyOrphanSweep:"未使用の画像データを整理しました（{n}件）。"
 });
 Object.assign(TEXT.en, {
+  studyRemodernBtn: "🎨 Skin",
   studyTitle:"📚 Study", studyOpenBtn:"📚 Study", studyOpenBtnHint:"Open Study (shelf, TV and the image reader). You can also hold the Songs heading", studyLaunchHint:"Hold ♫ Songs to open Study (press Enter when focused)",
   /* 📂 trk208: share a folder and read it in place (no copy) */
   studyShareFolder:"📂 Share a folder and read it",
@@ -300,6 +302,7 @@ Object.assign(TEXT.en, {
   studyImageOrderReverse:"Reversed (right-binding)", studyOrphanSweep:"Cleaned up {n} unused image(s)."
 });
 Object.assign(TEXT.zh, {
+  studyRemodernBtn: "🎨 皮肤",
   studyTitle:"📚 书斋", studyOpenBtn:"📚 书斋", studyOpenBtnHint:"打开书斋（书架、电视和图片阅读器）。长按歌曲列表标题也可以打开", studyLaunchHint:"长按♫歌曲列表打开书斋（键盘聚焦后按 Enter）",
   /* 📂 trk208：共享文件夹并“就地阅读”（不复制） */
   studyShareFolder:"📂 共享文件夹并阅读",
@@ -434,6 +437,7 @@ Object.assign(TEXT.zh, {
   studyImageOrderReverse:"倒序（右开本）", studyOrphanSweep:"已整理 {n} 个未使用的图片数据。"
 });
 Object.assign(TEXT.ko, {
+  studyRemodernBtn: "🎨 스킨",
   studyTitle:"📚 서재", studyOpenBtn:"📚 서재", studyOpenBtnHint:"서재(책장, TV, 이미지 리더)를 엽니다. 곡 목록 제목을 길게 눌러도 열립니다", studyLaunchHint:"♫ 곡 목록을 길게 눌러 서재 열기 (키보드에서는 Enter)",
   /* 📂 trk208: 폴더를 공유해 '폴더 그대로' 읽기(복사 없음) */
   studyShareFolder:"📂 폴더를 공유해서 읽기",
