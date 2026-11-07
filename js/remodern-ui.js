@@ -110,15 +110,55 @@
 
   /* 🎨 trk309（受け子）：未確認の作品に色を当てる開発用の切り替え。置き場所は Avatar 側と相談中のため、画面には出さない。
      使い方（開発者の確認用）：window.TrkReModernDev.setUnverifiedPaint(true|false)。既定は false（当てない） */
-  window.TrkReModernDev = Object.freeze({
-    setUnverifiedPaint(on) {
-      core.settings.remodernDevPaint = on === true;
-      core.saveUserPrefs();
+  /* 🎨 trk310（Avatar の回答）：保存に失敗したら元に戻し、戻った状態を返す（メモリだけの値で成功と言わない）。
+     切り替えは remodernDevPaint だけを変える（作品・ノーツ・読書・再生には触れない） */
+  function setDevPaint(on) {
+    const before = core.settings.remodernDevPaint === true;
+    const want = on === true;
+    core.settings.remodernDevPaint = want;
+    if (core.saveUserPrefs() === false) {
+      core.settings.remodernDevPaint = before;
+      /* 失敗は必ず console に残す（印が隠れていても見えるように）。画面には、印と設定の状態の行の両方に出す */
+      console.warn("[trk-re-modern] 開発用の切り替えを保存できませんでした（元に戻しました）");
+      say(devNote(), "remodernDevSaveFail");
+      say(status, "remodernDevSaveFail");
       render();
-      return core.settings.remodernDevPaint;
-    },
+      return before;
+    }
+    render();
+    return want;
+  }
+  window.TrkReModernDev = Object.freeze({
+    setUnverifiedPaint(on) { return setDevPaint(on); },
     isUnverifiedPaint() { return core.settings.remodernDevPaint === true; },
   });
+
+  /* 🎨 trk310：切り替えが入っている間は、画面に固定の印を出す（色だけに頼らない・文字で言う・ボタンで切る） */
+  let devBar = null;
+  function devNote() { return devBar ? devBar.querySelector("[data-dev-note]") : null; }
+  function renderDevBar() {
+    const on = core.settings.remodernDevPaint === true;
+    if (!on) { if (devBar) devBar.hidden = true; return; }
+    if (!devBar) {
+      devBar = document.createElement("div");
+      devBar.id = "remodernDevBadge";
+      devBar.className = "remodernDevBadge";
+      devBar.setAttribute("role", "status");
+      const text = document.createElement("span");
+      text.className = "remodernDevText";
+      text.textContent = tr("remodernDevBadge");
+      const note = document.createElement("span");
+      note.setAttribute("data-dev-note", "");
+      const off = document.createElement("button");
+      off.type = "button";
+      off.className = "remodernDevOff";
+      off.textContent = tr("remodernDevOff");
+      off.addEventListener("click", () => setDevPaint(false));
+      devBar.append(text, " ", note, " ", off);
+      document.body.append(devBar);
+    }
+    devBar.hidden = false;
+  }
 
   /* 🎨 trk305（M3）：共通の領域が「独立」で作品があるときだけ、共通の題字（.brand h1）の色を当てる。
      書斎・基地はまだ当てない。作品が無い・外れたら既定の色へ戻す（js/remodern-paint.js） */
@@ -148,6 +188,7 @@
       workSel.title = view[region].fallback ? tr("remodernFallback") : "";
       refreshRow(region, modeSel, workSel, impactEl(region), applyBtn(region), undoBtn(region));
     }
+    renderDevBar();
     if (iconsChk) iconsChk.checked = core.settings.remodernIcons === true;
     if (studyBtn) studyBtn.hidden = core.settings.remodernIcons !== true;
     /* 基地のボタンは、基地の画面を作るときに一度だけ作られる。出し入れはここで行う（レビュー R2） */

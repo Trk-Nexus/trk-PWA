@@ -41,6 +41,49 @@ try {
   await wait(300);
   const s2 = await titleStyle();
   check("切り替えを戻すと、当たらない", !/color/.test(s2), `style="${s2}"`);
+  /* trk310：切り替えが入っている間は印（文字・ボタン）が出る。ボタンで切れる */
+  await page.evaluate(() => window.TrkReModernDev.setUnverifiedPaint(true));
+  await wait(300);
+  const badge = await page.evaluate(() => { const b = document.getElementById("remodernDevBadge"); return b && !b.hidden ? b.textContent : ""; });
+  check("印が出る（入っている間）", badge.length > 0, `「${badge.slice(0, 30)}」`);
+  await page.evaluate(() => document.querySelector("#remodernDevBadge .remodernDevOff").click());
+  await wait(300);
+  const off = await page.evaluate(() => ({ on: window.TrkReModernDev.isUnverifiedPaint(), hidden: document.getElementById("remodernDevBadge").hidden }));
+  check("印のボタンで切れ、印が隠れる", off.on === false && off.hidden === true, JSON.stringify(off));
+  /* trk311：保存失敗（setItem が QuotaExceededError）。①初回のオン失敗 ②印が隠れている間のオン失敗。
+     どちらも切り替えは元に戻り、console に警告が残り、設定の状態の行に文言が出る */
+  const warns = [];
+  page.on("console", m => { if (m.type() === "warn" && m.text().includes("保存できませんでした")) warns.push(m.text()); });
+  await page.evaluate(() => {
+    const orig = Storage.prototype.setItem;
+    window.__origSetItem = orig;
+    Storage.prototype.setItem = function (k, v) {
+      if (window.__failSave) throw new DOMException("quota", "QuotaExceededError");
+      return orig.call(this, k, v);
+    };
+  });
+  await page.evaluate(() => { window.__failSave = true; });
+  const r1 = await page.evaluate(() => window.TrkReModernDev.setUnverifiedPaint(true));
+  await wait(300);
+  const st1 = await page.evaluate(() => ({ on: window.TrkReModernDev.isUnverifiedPaint(), status: document.getElementById("remodernStatus").textContent }));
+  check("①初回のオン失敗：オフのまま戻る", r1 === false && st1.on === false, JSON.stringify(st1));
+  check("①初回のオン失敗：設定の状態の行に文言", st1.status.length > 0, `「${st1.status}」`);
+  check("①初回のオン失敗：console に警告", warns.length >= 1, `warnings=${warns.length}`);
+
+  await page.evaluate(() => { window.__failSave = false; window.TrkReModernDev.setUnverifiedPaint(true); });
+  await wait(300);
+  await page.evaluate(() => { window.TrkReModernDev.setUnverifiedPaint(false); });
+  await wait(300);
+  const hidden = await page.evaluate(() => document.getElementById("remodernDevBadge").hidden);
+  await page.evaluate(() => { window.__failSave = true; });
+  const before2 = warns.length;
+  const r2 = await page.evaluate(() => window.TrkReModernDev.setUnverifiedPaint(true));
+  await wait(300);
+  const st2 = await page.evaluate(() => ({ on: window.TrkReModernDev.isUnverifiedPaint(), status: document.getElementById("remodernStatus").textContent }));
+  check("②印が隠れた後のオン失敗：オフのまま戻る", hidden === true && r2 === false && st2.on === false, JSON.stringify({ hidden, r2, on: st2.on }));
+  check("②印が隠れた後の失敗：console に警告（追加分）", warns.length > before2, `+${warns.length - before2}`);
+  check("②印が隠れた後の失敗：設定の状態の行に文言", st2.status.length > 0, `「${st2.status}」`);
+  await page.evaluate(() => { window.__failSave = false; Storage.prototype.setItem = window.__origSetItem; });
   check("エラーなし", errors.length === 0, errors.join(" | "));
 } catch (e) {
   check("実行できた", false, String(e));
