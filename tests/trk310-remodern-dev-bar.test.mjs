@@ -62,6 +62,6 @@ test("文言：印・ボタン・保存失敗の 3 キーは 4 言語そろう",
 });
 
 test("版：trk310（index.html・sw.js）", () => {
-  assert.match(read("index.html"), /name="trk-build" content="trk313"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk313";/);
+  assert.match(read("index.html"), /name="trk-build" content="trk314"/);
+  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk314";/);
 });

@@ -17,6 +17,7 @@ await wait(1500);
 // 作品（文字色だけ明るい）を保存して、共通を「独立」にして読み直す
 await page.evaluate(() => {
   const core = window.Trk.core;
+  core.settings.remodernDevPaint = true;   // trk314：未登録の作品は、開発用の切り替えが入っている間だけ当てる（trk309）
   core.settings.remodernWorks = [{ id: "trk-re-modern-skin-smoke", name: "Skin smoke", author: "x", license: "OFL-1.1",
     regions: ["common"], colors: { text: "#e0e8ff", accent: "#202020" } }];
   core.settings.remodern = { version: 1, common: { mode: "own", work: "trk-re-modern-skin-smoke" },
