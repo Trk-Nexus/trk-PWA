@@ -20,6 +20,7 @@ const before = await page.evaluate(() => {
 // 作品を保存して読み直す（設定の保存 → 再読み込みの経路）
 await page.evaluate(() => {
   const core = window.Trk.core;
+  core.settings.remodernDevPaint = true;   // trk314：未登録の作品は、開発用の切り替えが入っている間だけ当てる（trk309）
   core.settings.remodernWorks = [{ id: "trk-re-modern-smoke", name: "Smoke", author: "x", license: "OFL-1.1",
     regions: ["common"], colors: { text: "#e0e8ff", accent: "#202020" } }];
   core.settings.remodern = { version: 1, common: { mode: "own", work: "trk-re-modern-smoke" },

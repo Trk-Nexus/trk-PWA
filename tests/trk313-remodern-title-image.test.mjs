@@ -5,11 +5,10 @@ import { readFileSync } from "node:fs";
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
-test("trk313：effectiveBg は背景の実画像（url）で null を返す", () => {
+test("trk313：背景の実画像（url）は判定しない（null）。判定の関数 layerOptions で見る", () => {
   const src = read("js/remodern-paint.js");
-  const fn = src.slice(src.indexOf("function effectiveBg"), src.indexOf("function effectiveBg") + 700);
-  assert.match(fn, /backgroundImage/);
-  assert.match(fn, /\/url\\\(\/i\.test\(cs\.backgroundImage/);
+  const fn = src.slice(src.indexOf("function layerOptions"), src.indexOf("function layerOptions") + 900);
+  assert.match(fn, /url\\\(/);
   assert.match(fn, /return null/);
 });
 
@@ -20,7 +19,7 @@ test("trk313：smoke は背景画像あり・背景色のみの両方を確か�
 });
 
 test("trk313：版・HANDOFF の記録", () => {
-  assert.match(read("index.html"), /name="trk-build" content="trk313"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk313";/);
+  assert.match(read("index.html"), /name="trk-build" content="trk314"/);
+  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk314";/);
   assert.match(read("docs/HANDOFF.md"), /trk313/);
 });

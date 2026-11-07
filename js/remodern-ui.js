@@ -169,7 +169,7 @@
     const pick = view.common && view.common.source === "own" && view.common.work ? works()[view.common.work] : null;
     /* 登録簿に無い作品（未確認）は、画面に当てない */
     if (!pick || !R.mayPaint(statusOfWork(pick.id), core.settings.remodernDevPaint === true)) { PAINT.clearTitle(h1); return; }
-    const paint = PAINT.titlePaint(pick, PAINT.effectiveBg(h1));
+    const paint = PAINT.titlePaint(pick, PAINT.effectiveBgs(h1));
     PAINT.applyTitle(h1, paint);
     if (paint.skipped.length) console.warn("[trk-re-modern] 題字：背景との対比が足りない色は使いません:", paint.skipped.join(","));
   }

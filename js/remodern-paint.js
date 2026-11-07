@@ -49,40 +49,117 @@
     return (hi + 0.05) / (lo + 0.05);
   }
 
-  /* 作品の値から、題字に当てる色を決める。背景（bgRgb）と対比が足りない色は null（＝既定のまま） */
-  function titlePaint(work, bgRgb) {
+  /* 候補の間の色も調べる（グラデーションの途中の色）。各組の 1/8 刻みの点を足す。候補が多いときは端だけ */
+  function withBetween(bgs) {
+    if (bgs.length > 16) return bgs;
+    const out = bgs.slice();
+    for (let i = 0; i < bgs.length; i++) {
+      for (let j = i + 1; j < bgs.length; j++) {
+        for (let k = 1; k < 8; k++) {
+          const f = k / 8;
+          out.push([0, 1, 2].map(n => bgs[i][n] * (1 - f) + bgs[j][n] * f));
+        }
+      }
+    }
+    return out;
+  }
+
+  /* 作品の値から、題字に当てる色を決める。
+     bg は次のどちらか：[r,g,b]（単色の背景）／[[r,g,b], ...]（effectiveBgs が返す候補＝グラデーションの色の組）。
+     候補の全部で対比が 4.5:1 に届かない色は使わない（既定のまま）。候補が無いとき（判定できない）は使わない。 */
+  function titlePaint(work, bg) {
     const out = { text: null, accent: null, skipped: [] };
     const colors = work && work.colors && typeof work.colors === "object" ? work.colors : {};
-    if (!bgRgb) return out;
-    for (const [slot, key] of [["text", "text"], ["accent", "accent"]]) {
+    const bgs = normalizeBgs(bg);
+    if (!bgs) return out;
+    const probes = withBetween(bgs);
+    for (const key of ["text", "accent"]) {
       const hex = colors[key];
       const rgb = hexToRgb(hex);
       if (!rgb) continue;
-      if (ratio(rgb, bgRgb) >= MIN_RATIO) out[slot] = hex.toLowerCase();
+      if (probes.every(b => ratio(rgb, b) >= MIN_RATIO)) out[key] = hex.toLowerCase();
       else out.skipped.push(key);
     }
     return out;
   }
 
-  /* 題字の背景：要素から上へ向かって、半透明の背景を下から重ねた色（不透明な基準は #000）。
-     🎨 trk313：背景に実際の画像（url(...)）があれば、色を一つに決められないので null（＝当てない）。
-     画像・動画・透過の背景は、対比を測れないため安全側に倒す（Avatar の M3 検証記録 §2）。
-     装飾の radial-gradient（例：.screen の淡い光）は画像ではないため、従来どおり背景色で測る。 */
-  function effectiveBg(el) {
+  /* 候補の形を揃える。単色（[r,g,b]）→ [[r,g,b]]。判定できない（null・空）→ null */
+  function normalizeBgs(bg) {
+    if (!bg) return null;
+    const list = Array.isArray(bg[0]) ? bg : [bg];
+    if (!list.length || list.some(c => !Array.isArray(c) || c.length < 3)) return null;
+    return list;
+  }
+
+  /* 要素の背景の見え方（1 層ぶん）→ 各候補の色。判定できない層は null。
+     🎨 trk314：画像（url）・判定できない関数・重ね方の指定（mix-blend・filter・backdrop）・透明度は、
+     対比を数値で確かめられないので null（＝当てない）。
+     グラデーションは、その色の停止点（rgb の並び）を候補にする。停止点の間は、後の「間の色」検査で見る。 */
+  const SAFE_FUNCS = /^(rgba?|linear-gradient|radial-gradient|conic-gradient|repeating-linear-gradient|repeating-radial-gradient|repeating-conic-gradient)$/;
+  function layerOptions(cs) {
+    if (!cs) return null;
+    if (cs.mixBlendMode && cs.mixBlendMode !== "normal") return null;
+    if (cs.filter && cs.filter !== "none") return null;
+    if (cs.backdropFilter && cs.backdropFilter !== "none") return null;
+    if (cs.opacity !== undefined && Number(cs.opacity) < 1) return null;
+    const img = cs.backgroundImage || "none";
+    let stops = [];
+    if (img !== "none") {
+      if (/url\(/i.test(img)) return null;
+      const names = [...img.matchAll(/([a-zA-Z-]+)\(/g)].map(m => m[1].toLowerCase());
+      if (!names.length || names.some(n => !SAFE_FUNCS.test(n))) return null;
+      stops = [...img.matchAll(/rgba?\([^)]*\)/g)].map(m => parseRgb(m[0]));
+      if (stops.some(s => !s)) return null;
+      if (!stops.length) return null;
+    }
+    const solid = parseRgb(cs.backgroundColor);
+    return { solid: solid && solid[3] > 0 ? solid : null, stops };
+  }
+
+  /* 上から下へ：候補（背景の色の組）を重ねる。層が多すぎるときは null（＝判定しない） */
+  const MAX_CANDIDATES = 64;
+  function over(top, below) {
+    const a = top[3];
+    return [0, 1, 2].map(i => top[i] * a + below[i] * (1 - a));
+  }
+
+  /* 題字の背景の候補：要素から上へ向かって、外側の層から順に重ねる。
+     返り値は [r,g,b] の配列（候補の全部）。判定できないときは null。 */
+  function effectiveBgs(el) {
     if (!el || typeof getComputedStyle !== "function") return null;
-    const layers = [];
-    for (let node = el; node && node.nodeType === 1; node = node.parentElement) {
-      const cs = getComputedStyle(node);
-      if (/url\(/i.test(cs.backgroundImage || "")) return null;
-      const rgba = parseRgb(cs.backgroundColor);
-      if (rgba && rgba[3] > 0) layers.push(rgba);
+    const chain = [];
+    for (let node = el; node && node.nodeType === 1; node = node.parentElement) chain.unshift(node);
+    let states = [[0, 0, 0]];
+    for (const node of chain) {
+      const opt = layerOptions(getComputedStyle(node));
+      if (!opt) return null;
+      if (!opt.solid && !opt.stops.length) continue;
+      const next = [];
+      for (const s of states) {
+        const under = opt.solid ? over(opt.solid, s) : s;
+        next.push(under);
+        for (const g of opt.stops) next.push(over(g, under));
+      }
+      states = dedupe(next);
+      if (states.length > MAX_CANDIDATES) return null;
     }
-    let base = [0, 0, 0];
-    for (let i = layers.length - 1; i >= 0; i--) {
-      const [r, g, b, a] = layers[i];
-      base = [r * a + base[0] * (1 - a), g * a + base[1] * (1 - a), b * a + base[2] * (1 - a)];
+    return states.map(c => c.map(v => Math.round(v)));
+  }
+
+  function dedupe(list) {
+    const seen = new Set(), out = [];
+    for (const c of list) {
+      const k = c.map(v => Math.round(v)).join(",");
+      if (!seen.has(k)) { seen.add(k); out.push(c); }
     }
-    return base.map(v => Math.round(v));
+    return out;
+  }
+
+  /* 互換：単色なら [r,g,b]、候補が複数なら配列、判定できないなら null */
+  function effectiveBg(el) {
+    const list = effectiveBgs(el);
+    if (!list) return null;
+    return list.length === 1 ? list[0] : list;
   }
 
   /* 題字（h1 と その中の「!」）に色を当てる。値が無い色は空にして既定へ戻す */
@@ -94,6 +171,6 @@
   }
   function clearTitle(h1) { applyTitle(h1, null); }
 
-  const api = { MIN_RATIO, hexToRgb, parseRgb, luminance, ratio, titlePaint, effectiveBg, applyTitle, clearTitle };
+  const api = { MIN_RATIO, hexToRgb, parseRgb, luminance, ratio, titlePaint, effectiveBg, effectiveBgs, applyTitle, clearTitle };
   if (typeof globalThis !== "undefined") globalThis.TrkReModernPaint = api;
 })();

@@ -53,6 +53,6 @@ test("文言：影響範囲の開発用の文言は 4 言語そろう", () => {
 });
 
 test("版：trk309（index.html・sw.js）", () => {
-  assert.match(read("index.html"), /name="trk-build" content="trk313"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk313";/);
+  assert.match(read("index.html"), /name="trk-build" content="trk314"/);
+  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk314";/);
 });
