@@ -49,9 +49,10 @@
     return (hi + 0.05) / (lo + 0.05);
   }
 
-  /* 候補の間の色も調べる（グラデーションの途中の色）。各組の 1/8 刻みの点を足す。候補が多いときは端だけ */
+  /* 候補の間の色も調べる（グラデーションの途中の色）。候補どうしの 1/8 刻みの点を足す。
+     🎨 trk314 修正：候補が多くても省かない（省くと、間の色で対比が落ちる例を通してしまう）。
+     候補の数は effectiveBgs の上限（MAX_CANDIDATES）で抑えてあるので、組の数は小さい */
   function withBetween(bgs) {
-    if (bgs.length > 16) return bgs;
     const out = bgs.slice();
     for (let i = 0; i < bgs.length; i++) {
       for (let j = i + 1; j < bgs.length; j++) {
@@ -91,11 +92,24 @@
     return list;
   }
 
-  /* 要素の背景の見え方（1 層ぶん）→ 各候補の色。判定できない層は null。
+  /* 要素の背景の見え方 → 単色（solid）と、画像の層の一覧（layers。CSS の順＝上の層が先）。
      🎨 trk314：画像（url）・判定できない関数・重ね方の指定（mix-blend・filter・backdrop）・透明度は、
      対比を数値で確かめられないので null（＝当てない）。
-     グラデーションは、その色の停止点（rgb の並び）を候補にする。停止点の間は、後の「間の色」検査で見る。 */
+     各層の候補は、その層の停止点の色（rgba）。停止点の色の並びは、層の中の候補として扱う。 */
   const SAFE_FUNCS = /^(rgba?|linear-gradient|radial-gradient|conic-gradient|repeating-linear-gradient|repeating-radial-gradient|repeating-conic-gradient)$/;
+  /* 最上位のカンマで層を分ける（括弧の中のカンマは除く） */
+  function splitLayers(str) {
+    const out = [];
+    let depth = 0, cur = "";
+    for (const ch of str) {
+      if (ch === "(") depth++;
+      if (ch === ")") depth--;
+      if (ch === "," && depth === 0) { out.push(cur.trim()); cur = ""; }
+      else cur += ch;
+    }
+    if (cur.trim()) out.push(cur.trim());
+    return out;
+  }
   function layerOptions(cs) {
     if (!cs) return null;
     if (cs.mixBlendMode && cs.mixBlendMode !== "normal") return null;
@@ -103,17 +117,20 @@
     if (cs.backdropFilter && cs.backdropFilter !== "none") return null;
     if (cs.opacity !== undefined && Number(cs.opacity) < 1) return null;
     const img = cs.backgroundImage || "none";
-    let stops = [];
+    const layers = [];
     if (img !== "none") {
       if (/url\(/i.test(img)) return null;
-      const names = [...img.matchAll(/([a-zA-Z-]+)\(/g)].map(m => m[1].toLowerCase());
-      if (!names.length || names.some(n => !SAFE_FUNCS.test(n))) return null;
-      stops = [...img.matchAll(/rgba?\([^)]*\)/g)].map(m => parseRgb(m[0]));
-      if (stops.some(s => !s)) return null;
-      if (!stops.length) return null;
+      for (const layer of splitLayers(img)) {
+        if (layer === "none") continue;          // 計算値の末尾に付く none は層ではない
+        const names = [...layer.matchAll(/([a-zA-Z-]+)\(/g)].map(m => m[1].toLowerCase());
+        if (!names.length || names.some(n => !SAFE_FUNCS.test(n))) return null;
+        const stops = [...layer.matchAll(/rgba?\([^)]*\)/g)].map(m => parseRgb(m[0]));
+        if (!stops.length || stops.some(s => !s)) return null;
+        layers.push(stops);
+      }
     }
     const solid = parseRgb(cs.backgroundColor);
-    return { solid: solid && solid[3] > 0 ? solid : null, stops };
+    return { solid: solid && solid[3] > 0 ? solid : null, layers };
   }
 
   /* 上から下へ：候補（背景の色の組）を重ねる。層が多すぎるときは null（＝判定しない） */
@@ -123,7 +140,9 @@
     return [0, 1, 2].map(i => top[i] * a + below[i] * (1 - a));
   }
 
-  /* 題字の背景の候補：要素から上へ向かって、外側の層から順に重ねる。
+  /* 題字の背景の候補：要素から上へ向かって、外側の要素の層から順に重ねる。
+     1 つの要素の中では、下の色 → 最も下の画像の層 → … → 最も上の層の順に、
+     各層の停止点（または「層の影響なし」）と組み合わせる。
      返り値は [r,g,b] の配列（候補の全部）。判定できないときは null。 */
   function effectiveBgs(el) {
     if (!el || typeof getComputedStyle !== "function") return null;
@@ -133,12 +152,16 @@
     for (const node of chain) {
       const opt = layerOptions(getComputedStyle(node));
       if (!opt) return null;
-      if (!opt.solid && !opt.stops.length) continue;
-      const next = [];
-      for (const s of states) {
-        const under = opt.solid ? over(opt.solid, s) : s;
-        next.push(under);
-        for (const g of opt.stops) next.push(over(g, under));
+      if (!opt.solid && !opt.layers.length) continue;
+      let next = states.map(s => (opt.solid ? over(opt.solid, s) : s));
+      for (const stops of opt.layers.slice().reverse()) {
+        const grown = [];
+        for (const under of next) {
+          grown.push(under);                       // この層が届かない所
+          for (const g of stops) grown.push(over(g, under));
+        }
+        next = dedupe(grown);
+        if (next.length > MAX_CANDIDATES) return null;
       }
       states = dedupe(next);
       if (states.length > MAX_CANDIDATES) return null;

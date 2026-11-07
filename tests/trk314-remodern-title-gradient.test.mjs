@@ -95,3 +95,34 @@ test("titlePaint は単色（[r,g,b]）も候補の配列も受け付ける", ()
   assert.equal(P.titlePaint({ colors: { text: "#000000" } }, [255, 255, 255]).text, "#000000");
   assert.equal(P.titlePaint({ colors: { text: "#000000" } }, [[255, 255, 255]]).text, "#000000");
 });
+
+/* Avatar の返事（2026-11-07）で見つかった二つの誤り：
+   ① 層を二つ重ねたときは、層どうしの重なりを順番どおりに合成する（131 の例：白30%・白30%を黒の上へ）
+   ② 候補が多いときも、間の色の検査を省かない（17 候補以上で 1.63:1 の例） */
+test("trk314 修正①：同じ要素の層を二つ重ねると、重なりの色（約 131）も候補に入り、#767676 は当たらない", () => {
+  const bg = "linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3))";
+  const { P, el } = load(node({ backgroundColor: "rgb(0, 0, 0)", backgroundImage: bg }));
+  const list = P.effectiveBgs(el);
+  assert.ok(list.some(c => Math.abs(c[0] - 131) <= 2 && c[0] === c[1] && c[1] === c[2]), `候補に約131がない: ${JSON.stringify(plain(list))}`);
+  assert.equal(P.titlePaint({ colors: { text: "#767676", accent: "#767676" } }, list).text, null);
+});
+
+test("計算値の末尾の none（層ではない）は読み飛ばす", () => {
+  const { P, el } = load(node({ backgroundColor: "rgb(255, 255, 255)", backgroundImage: "radial-gradient(at 50% 28%, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0) 62%), none" }));
+  const list = P.effectiveBgs(el);
+  assert.ok(list && list.length >= 1);
+});
+
+test("trk314 修正②：候補が 17 個以上でも、間の色（約 128 の灰）の検査を省かない", () => {
+  // 端点はどれも #767676 と 4.5:1 以上（黒に近い色・白）。黒と白の間の中間色だけが落ちる
+  const stops = ["rgb(0, 0, 0)", "rgb(255, 255, 255)"];
+  for (const r of [0, 1, 2]) for (const g of [0, 1, 2]) for (const b of [0, 1, 2]) {
+    if (r + g + b > 0 && stops.length < 17) stops.push(`rgb(${r}, ${g}, ${b})`);
+  }
+  const { P, el } = load(node({ backgroundColor: "rgb(0, 0, 0)", backgroundImage: `linear-gradient(${stops.join(", ")})` }));
+  const list = P.effectiveBgs(el);
+  assert.ok(list.length >= 17, `候補が 17 未満: ${list.length}`);
+  assert.equal(P.titlePaint({ colors: { text: "#767676", accent: "#767676" } }, list).text, null);
+  // 端点だけなら対比は足りている（落ちるのは間の色だけ、ということの確認）
+  assert.ok(P.ratio([118, 118, 118], [0, 0, 0]) >= 4.5 && P.ratio([118, 118, 118], [255, 255, 255]) >= 4.5);
+});
