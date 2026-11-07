@@ -118,8 +118,10 @@
     core.settings.remodernDevPaint = want;
     if (core.saveUserPrefs() === false) {
       core.settings.remodernDevPaint = before;
-      if (!devNote()) console.warn("[trk-re-modern] 開発用の切り替えを保存できませんでした（元に戻しました）");
+      /* 失敗は必ず console に残す（印が隠れていても見えるように）。画面には、印と設定の状態の行の両方に出す */
+      console.warn("[trk-re-modern] 開発用の切り替えを保存できませんでした（元に戻しました）");
       say(devNote(), "remodernDevSaveFail");
+      say(status, "remodernDevSaveFail");
       render();
       return before;
     }

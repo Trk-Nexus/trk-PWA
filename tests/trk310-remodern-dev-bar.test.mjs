@@ -20,6 +20,15 @@ test("保存：失敗したら元に戻し、戻った状態を返す", () => {
   assert.match(ui, /setUnverifiedPaint\(on\) \{ return setDevPaint\(on\); \}/);
 });
 
+test("保存失敗：console に必ず残し、印（隠れていても）と設定の状態の行に出す（trk311）", () => {
+  const ui = read("js/remodern-ui.js");
+  const fail = ui.slice(ui.indexOf("if (core.saveUserPrefs() === false) {"), ui.indexOf("render();\n      return before;"));
+  assert.match(fail, /console\.warn\("\[trk-re-modern\] 開発用の切り替えを保存できませんでした/);
+  assert.match(fail, /say\(devNote\(\), "remodernDevSaveFail"\);/);
+  assert.match(fail, /say\(status, "remodernDevSaveFail"\);/);
+  assert.doesNotMatch(fail, /if \(!devNote\(\)\) console/, "隠れている印の場合に console を省かない");
+});
+
 test("切り替えは remodernDevPaint だけを変える", () => {
   const ui = read("js/remodern-ui.js");
   const fn = ui.slice(ui.indexOf("function setDevPaint"), ui.indexOf("window.TrkReModernDev = Object.freeze"));
@@ -53,6 +62,6 @@ test("文言：印・ボタン・保存失敗の 3 キーは 4 言語そろう",
 });
 
 test("版：trk310（index.html・sw.js）", () => {
-  assert.match(read("index.html"), /name="trk-build" content="trk310"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk310";/);
+  assert.match(read("index.html"), /name="trk-build" content="trk311"/);
+  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk311";/);
 });
