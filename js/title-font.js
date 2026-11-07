@@ -19,6 +19,8 @@
 
   const DB_NAME = "trk-title-font", DB_VERSION = 1, STORE = "files";
   const CHOICE_KEY = "trkTitleFont";
+  /* 作品ごとの選択（将来の作品連携の受け口）。{ 作品ID: 候補ID }。まだ画面からは使わず、適用もしない。 */
+  const WORKS_KEY = "trkTitleFontWorks";
   const CLASS_ON = "trk-title-font-on";
   const VAR = "--trk-title-font";
   const CHANNEL = "trk-title-font";
@@ -75,6 +77,8 @@
   let state = { status: "off", id: "", detail: "" };
   let liveFaces = [];
   let seq = 0;
+  /* 導入し終えた候補のうち、まだ題字に使うか聞いていないもの（使わないを既定にしたまま、選択肢を見せる） */
+  let offerId = "";
   const listeners = [];
 
   function readChoice() {
@@ -86,6 +90,28 @@
   function writeChoice(v) {
     try { if (v) localStorage.setItem(CHOICE_KEY, v); else localStorage.removeItem(CHOICE_KEY); return true; }
     catch (_) { return false; }
+  }
+
+  function readWorks() {
+    try {
+      const o = JSON.parse(localStorage.getItem(WORKS_KEY) || "{}");
+      return o && typeof o === "object" && !Array.isArray(o) ? o : {};
+    } catch (_) { return {}; }
+  }
+  /* 作品の候補。作品ごとの指定がなければ全体の選択（既定は「使わない」）を返す。
+     返すのは保存された候補IDだけ。実際に当てる前に、呼び出し側が ready() と同じ確認（全ファイルが揃って読めること）をすること。 */
+  function fontForWork(workId) {
+    const w = readWorks();
+    const v = typeof workId === "string" && Object.prototype.hasOwnProperty.call(w, workId) ? w[workId] : "";
+    return byId(v) ? v : readChoice();
+  }
+  /* 作品ごとの指定を保存する（空の候補なら消す）。作品ID は短い文字列だけ受け付ける */
+  function setWorkFont(workId, candId) {
+    if (typeof workId !== "string" || !workId || workId.length > 64 || workId === "__proto__") return false;
+    if (candId && !byId(candId)) return false;
+    const w = readWorks();
+    if (candId) w[workId] = candId; else delete w[workId];
+    try { localStorage.setItem(WORKS_KEY, JSON.stringify(w)); return true; } catch (_) { return false; }
   }
 
   async function sha256Hex(buf) {
@@ -250,6 +276,7 @@
       return { ok: false, reason: "notReady" };
     }
     if (!writeChoice(id)) { await refresh(); return { ok: false, reason: "choice" }; }
+    offerId = "";
     await refresh();
     notifyOthers();
     return { ok: true, reason: "" };
@@ -279,6 +306,30 @@
     const focusId = document.activeElement && document.activeElement.id ? document.activeElement.id : "";
     container.textContent = "";
     const current = readChoice();
+    if (offerId && (current === offerId || !(await ready(offerId)))) offerId = "";
+    if (offerId) {
+      const oc = byId(offerId);
+      const box = el("div", "titleFontOffer");
+      box.id = "titleFontOffer";
+      box.setAttribute("role", "group");
+      box.setAttribute("aria-label", t("tfOfferTitle", { name: oc.name }));
+      box.appendChild(el("b", null, t("tfOfferTitle", { name: oc.name })));
+      box.appendChild(el("div", "hint", t("tfOfferBody")));
+      const use = el("button", "titleFontUse", t("tfOfferUse", { name: oc.name }));
+      use.type = "button";
+      use.addEventListener("click", async () => {
+        const id = offerId;
+        const r = await choose(id);
+        await render(container);
+        const l = document.getElementById("titleFontState");
+        if (l) l.textContent = r.ok ? statusText(state) : t(REASON_KEY[r.reason] || "tfReasonRead") + " " + statusText(state);
+      });
+      const keep = el("button", "titleFontKeep", t("tfOfferKeep"));
+      keep.type = "button";
+      keep.addEventListener("click", async () => { offerId = ""; await render(container); });
+      box.appendChild(use); box.appendChild(keep);
+      container.appendChild(box);
+    }
     const select = el("select"); select.id = "titleFontChoice";
     select.setAttribute("aria-label", t("tfLabel"));
     select.appendChild(new Option(t("tfOff"), ""));
@@ -326,6 +377,7 @@
           const f = input.files && input.files[0];
           if (!f) return;
           const r = await importFile(c.id, spec.key, f);
+          if (r.ok && readChoice() !== c.id && (await ready(c.id))) offerId = c.id;
           const msg = r.ok ? t("tfImported") : t(REASON_KEY[r.reason] || "tfReasonRead");
           await render(container);
           const l = document.getElementById("titleFontState");
@@ -385,8 +437,9 @@
 
   window.Trk = window.Trk || {};
   window.Trk.titleFont = {
-    CANDIDATES, CLASS_ON, VAR, DB_NAME, CHOICE_KEY,
+    CANDIDATES, CLASS_ON, VAR, DB_NAME, CHOICE_KEY, WORKS_KEY,
     sha256Hex, inventory, importFile, removeCandidate, choose, refresh, mount,
+    fontForWork, setWorkFont,
     state: () => ({ ...state }),
     readChoice
   };

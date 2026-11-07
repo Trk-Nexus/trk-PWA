@@ -199,3 +199,42 @@ describe("振る舞い（ブラウザなしの最小確認）", () => {
     }
   });
 });
+
+describe("導入後の選択肢と作品ごとの受け口（trk315 追補）", () => {
+  test("既定は「使わない」のまま。導入の選択肢は文言（ja・en）にあり、既定の値を変えていない", () => {
+    const offerSrc = src;
+    assert.match(offerSrc, /let offerId = ""/);
+    assert.match(offerSrc, /offerId = c\.id/);
+    assert.match(offerSrc, /tfOfferUse/);
+    assert.match(offerSrc, /tfOfferKeep/);
+    const i18n = fs.readFileSync(`${ROOT}/js/i18n.js`, "utf8");
+    for (const k of ["tfOfferTitle", "tfOfferBody", "tfOfferUse", "tfOfferKeep"]) {
+      assert.ok(i18n.indexOf(k + ":") > 0, k);
+    }
+  });
+
+  test("作品ごとの指定：既定は全体の選択に従う。保存・消去・不正な値の拒否", () => {
+    const storage = {};
+    const sandbox = {
+      console, window: {}, localStorage: {
+        getItem: k => (k in storage ? storage[k] : null),
+        setItem: (k, v) => { storage[k] = String(v); },
+        removeItem: k => { delete storage[k]; }
+      }, document: { readyState: "complete", getElementById: () => null, body: null, documentElement: null, fonts: { add() { }, delete() { } } },
+      Uint8Array, ArrayBuffer, Date, Promise, Set, Object, Array, JSON, Math, Number, String, Error
+    };
+    sandbox.addEventListener = () => { };
+    sandbox.window = sandbox;
+    vm.runInNewContext(src, sandbox);
+    const api = sandbox.Trk.titleFont;
+    assert.equal(api.fontForWork("pixel-console"), "", "first");
+    assert.equal(api.setWorkFont("pixel-console", "galmuri"), true, "set");
+    assert.equal(api.fontForWork("pixel-console"), "galmuri");   // 保存された候補IDを返す（適用前の確認は呼び出し側）
+    assert.equal(api.fontForWork("other-work"), "");              // 指定のない作品は全体の選択（既定は使わない）
+    assert.equal(api.setWorkFont("__proto__", "galmuri"), false);
+    assert.equal(api.setWorkFont("x", "<script>"), false);
+    assert.equal(api.setWorkFont("", "galmuri"), false);
+    assert.equal(api.setWorkFont("pixel-console", ""), true);
+    assert.equal(JSON.parse(storage[api.WORKS_KEY]).hasOwnProperty("pixel-console"), false);
+  });
+});

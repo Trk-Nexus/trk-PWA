@@ -2421,3 +2421,5 @@ body.trk-title-font-on .brand h1,body.trk-title-font-on #skinGrid .skinCard b{fo
 .titleFontCard{border:1px solid var(--ui-border);border-radius:8px;padding:8px;margin:6px 0}
 .titleFontFile{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;font-size:12px}
 .titleFontLicenceText{white-space:pre-wrap;max-height:240px;overflow:auto;font-size:11px;margin:4px 0}
+.titleFontOffer{border:2px solid var(--ui-border);border-radius:8px;padding:8px;margin:6px 0}
+.titleFontOffer button{margin:6px 6px 0 0}
