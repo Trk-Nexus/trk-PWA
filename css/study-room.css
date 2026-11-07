@@ -285,7 +285,7 @@ mark.study-search-hit[data-current="1"]{background:#ff9d2e;color:#1a1200;box-sha
 .study-text-stage[data-theme="warm"]{--study-theme-stage:#d6c09a;--study-theme-page:#fff0cf;--study-theme-ink:#4a321f;--study-theme-editor:#fff0cf;--study-theme-editor-ink:#4a321f;
   --study-theme-font:ui-serif,Georgia,"Noto Serif JP","Yu Mincho",serif;--study-theme-editor-font:var(--study-theme-font);--study-theme-border:rgba(143,93,34,.3);--study-theme-caret:#9d5d20;
   --study-theme-page-image:linear-gradient(135deg,rgba(255,255,255,.36),transparent 62%);--study-theme-editor-image:linear-gradient(135deg,rgba(255,255,255,.36),transparent 62%)}
-.study-text-stage[data-theme="sepia"]{--study-theme-stage:#b49a72;--study-theme-page:#ecddb9;--study-theme-ink:#49311f;--study-theme-editor:#ecddb9;--study-theme-editor-ink:#49311f;
+.study-text-stage[data-theme="sepia"]{--study-theme-stage:#b49a72;--study-theme-page:#ecddb9;--study-theme-ink:#3d2817;--study-theme-editor:#ecddb9;--study-theme-editor-ink:#3d2817;
   --study-theme-font:"Palatino Linotype","Book Antiqua",Georgia,"Noto Serif JP",serif;--study-theme-editor-font:var(--study-theme-font);--study-theme-border:rgba(97,65,35,.34);--study-theme-caret:#814b24;
   --study-theme-page-image:linear-gradient(90deg,rgba(119,76,35,.035),transparent 13%,transparent 87%,rgba(119,76,35,.035));--study-theme-editor-image:linear-gradient(90deg,rgba(119,76,35,.035),transparent 13%,transparent 87%,rgba(119,76,35,.035))}
 

@@ -84,6 +84,17 @@ try {
   check("②印が隠れた後の失敗：console に警告（追加分）", warns.length > before2, `+${warns.length - before2}`);
   check("②印が隠れた後の失敗：設定の状態の行に文言", st2.status.length > 0, `「${st2.status}」`);
   await page.evaluate(() => { window.__failSave = false; Storage.prototype.setItem = window.__origSetItem; });
+  /* trk313：背景に実画像（url）があるときは色を当てない（安全側）。装飾グラデーションや背景色だけなら当たる */
+  await page.evaluate(() => window.TrkReModernDev.setUnverifiedPaint(true));
+  await wait(300);
+  const plain = await titleStyle();
+  await page.evaluate(() => { document.body.style.backgroundImage = "url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)"; window.TrkReModernDev.setUnverifiedPaint(false); window.TrkReModernDev.setUnverifiedPaint(true); });
+  await wait(300);
+  const imaged = await titleStyle();
+  await page.evaluate(() => { document.body.style.backgroundImage = ""; });
+  check("背景色だけなら当たる（trk313 の前提）", /color/.test(plain), `style="${plain}"`);
+  check("背景に画像があれば当てない（trk313）", !/color/.test(imaged), `style="${imaged}"`);
+  await page.evaluate(() => window.TrkReModernDev.setUnverifiedPaint(false));
   check("エラーなし", errors.length === 0, errors.join(" | "));
 } catch (e) {
   check("実行できた", false, String(e));

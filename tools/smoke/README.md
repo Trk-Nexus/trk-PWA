@@ -92,4 +92,15 @@ cp /home/user/trk-PWA/tools/smoke/remodern-dev-paint-smoke.mjs /tmp/browser/dev-
 cd /tmp/browser && LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node dev-smoke.mjs
 ```
 
-見ること：既定では未確認の作品は題字に当たらない → `window.TrkReModernDev.setUnverifiedPaint(true)` で当たる → `false` で戻る。期待は **12 OK / 0 NG**（trk310 で印の表示とオフのボタン、trk311 で保存失敗の二つの場合を足した）。
+見ること：既定では未確認の作品は題字に当たらない → `window.TrkReModernDev.setUnverifiedPaint(true)` で当たる → `false` で戻る。期待は **14 OK / 0 NG**（trk310 で印の表示とオフのボタン、trk311 で保存失敗の二つの場合、trk313 で背景に実画像があれば当てない・背景色だけなら当たる、を足した）。
+
+## 9. 読書テーマ 30 種の読みやすさ（trk312）
+
+手で動かす（`npm run check` には入れない）。`tools/smoke/study-theme-contrast-smoke.mjs`。
+
+```sh
+cp /home/user/trk-PWA/tools/smoke/study-theme-contrast-smoke.mjs /tmp/browser/theme-smoke.mjs
+cd /tmp/browser && LD_LIBRARY_PATH=/tmp/al2023x/lib timeout 170 node theme-smoke.mjs
+```
+
+見ること：30 テーマを順に切り替え、読書面の文字と背景の対比を測る（グラデーションは停止点すべてで見て、最も弱い値）。期待は **30 テーマ / 4.5:1 未満 0**、errors 0。
