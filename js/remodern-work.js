@@ -18,7 +18,8 @@
   const MAX_ZIP_BYTES = 256 * 1024;   /* 作品ファイル全体 */
   const MAX_JSON_BYTES = 32 * 1024;   /* pack.json の展開後 */
   const MAX_WORKS = 20;               /* 保存する作品の数 */
-  const ALLOWED_EXTRA = /^(LICENSE|README)[^/]*$/i;  /* 作品に入れてよい文書（ほかのファイルは受け付けない） */
+  /* 作品に入れてよい文書は、LICENSE・README の名前で、拡張子が .txt か .md のものだけ（それ以外は受け付けない） */
+  const ALLOWED_EXTRA = /^(LICENSE|README)(\.(txt|md))?$/i;
 
   const fail = reason => ({ ok: false, reason, work: null });
   const V = () => globalThis.TrkReModernRegions;

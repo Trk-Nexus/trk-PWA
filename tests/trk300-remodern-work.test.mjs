@@ -72,6 +72,11 @@ test("ZIP の中身：pack.json と文書だけ。別のファイル・入れ子
   assert.equal(W.checkEntryNames(["pack.json", "index.js"]).reason, "extra-file");
   assert.equal(W.checkEntryNames(["pack.json", "sub/a.png"]).reason, "nested-file");
   assert.equal(W.checkEntryNames(["pack.json", "style.css"]).reason, "extra-file");
+  /* 文書だけを許す（拡張子が .txt／.md の LICENSE・README のみ。実行できる名前は通さない） */
+  for (const bad of ["README.js", "LICENSE.woff2", "README.html", "LICENSE-OFL.txt", "README.md.js", "README.txt.exe"]) {
+    assert.equal(W.checkEntryNames(["pack.json", bad]).ok, false, bad);
+  }
+  assert.equal(W.checkEntryNames(["pack.json", "readme.txt"]).ok, true);
 });
 
 test("保存の一覧：壊れた項目は捨て、同じ ID は置き換え、20 件で止める", () => {

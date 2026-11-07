@@ -78,3 +78,11 @@
 - 連携を含むオフラインと旧版からの移行。
 - zh・ko の文言、他ブラウザ・実機・支援技術、字形の評価（依頼者が後ほど）。
 - 名前検査の絞り込み（承認待ち）。
+
+## 8. 承認後の実装（trk317）
+
+- 作品の名前検査を `^(LICENSE|README)(\.(txt|md))?$` に絞った（`js/remodern-work.js`）。大文字・小文字の違いは区別しない（`readme.txt` は通す）。
+- `README.js`・`LICENSE.woff2`・`README.html`・`LICENSE-OFL.txt`・`README.md.js` などは受け付けない（`tests/trk300-remodern-work.test.mjs` で確認）。
+- 中身の扱いは変えていない。pack.json 以外は読まず、保存もしない。
+- **Avatar 側で確認してほしいこと**：実在する作品の ZIP に、`LICENSE-XXX.txt` や `README.html` のような名前が入っていないか。入っていれば、受け付けない名前になります。
+- 版：trk317（`index.html`・`sw.js`・`docs/HANDOFF.md`）。`npm run check` は 1913 件すべて通過。

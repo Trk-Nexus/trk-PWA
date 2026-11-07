@@ -19,7 +19,7 @@ test("trk313：smoke は背景画像あり・背景色のみの両方を確か�
 });
 
 test("trk313：版・HANDOFF の記録", () => {
-  assert.match(read("index.html"), /name="trk-build" content=\"trk316\"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk316";/);
+  assert.match(read("index.html"), /name="trk-build" content=\"trk317\"/);
+  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk317";/);
   assert.match(read("docs/HANDOFF.md"), /trk313/);
 });
