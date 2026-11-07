@@ -20,7 +20,8 @@ const files = [
   "NOTICE.md",
   "LICENSE"
 ];
-const directories = ["assets", "css", "icons", "js"];
+/* 🔤 trk315：題字の書体のライセンス全文（fonts/licenses）も入れる。書体本体はリポジトリに無い */
+const directories = ["assets", "css", "icons", "js", "fonts/licenses"];
 /* 🗂 trk256（M2）：docs は**丸ごと写さない**。開発文書（HANDOFF・レビュー記録など 70 本・約 2.2 MB）は
    アプリには要らず、`cap sync` で端末へ入る容量を増やすだけでした。利用者向けの
    `docs/guide/`（4 言語の説明）と `docs/ADDONS.md`（追加機能の説明）だけを写します。

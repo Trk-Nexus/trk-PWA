@@ -119,6 +119,7 @@ describe("振る舞い（ブラウザなしの最小確認）", () => {
       FontFace: class { constructor() { } async load() { throw new Error("no font"); } },
       Uint8Array, ArrayBuffer, Date, Promise, Set, Object, Array, JSON, Math, Number, String, Error
     };
+    sandbox.addEventListener = () => { };
     sandbox.window = sandbox;
     vm.runInNewContext(src, sandbox);
     return { api: sandbox.Trk.titleFont, style, classes, fontsAdded };
@@ -154,13 +155,41 @@ describe("振る舞い（ブラウザなしの最小確認）", () => {
     assert.equal(r.reason, "unknown");
   });
 
-  test("choose は許された候補だけ書く。知らない値は「使わない」", async () => {
-    const storage = {};
+  test("choose は、揃っていない候補には切り替えない（以前の選択を残す）。知らない値は「使わない」", async () => {
+    const storage = { trkTitleFont: "" };
     const h = load({ storage, indexedDBOK: false });
-    await h.api.choose("galmuri");
-    assert.equal(storage.trkTitleFont, "galmuri");
+    const r = await h.api.choose("galmuri");
+    assert.equal(r.ok, false);
+    assert.equal(r.reason, "notReady");
+    assert.equal(storage.trkTitleFont, "");
     await h.api.choose("<script>");
     assert.equal(storage.trkTitleFont, undefined);
+  });
+
+  test("導入は1ファイルの上限（1 MiB）を超えたら読まずに拒否", async () => {
+    const h = load({ indexedDBOK: true });
+    const big = { size: 2 * 1048576, arrayBuffer: async () => new ArrayBuffer(8) };
+    const r = await h.api.importFile("galmuri", "galmuri11", big);
+    assert.equal(r.reason, "size");
+  });
+
+  test("別のタブへの通知と storage の変化を読み直す仕組みがある", () => {
+    assert.match(src, /new BroadcastChannel\(CHANNEL\)/);
+    assert.match(src, /addEventListener\("storage"/);
+  });
+
+  test("削除は1つのトランザクションにまとめる（部分削除をしない）", () => {
+    const body = src.slice(src.indexOf("async function removeCandidate"), src.indexOf("async function ready"));
+    assert.equal((body.match(/transaction\(STORE/g) || []).length, 1);
+  });
+
+  test("モバイル版の対象にライセンス全文があり、先読みにも入っている", () => {
+    const prep = fs.readFileSync(`${ROOT}/tools/prepare-mobile-web.mjs`, "utf8");
+    const sw = fs.readFileSync(`${ROOT}/sw.js`, "utf8");
+    assert.match(prep, /"fonts\/licenses"/);
+    for (const f of ["Galmuri11-OFL.txt", "DotGothic16-OFL.txt", "NeoDunggeunmo-LICENSE.txt", "PressStart2P-OFL.txt"]) {
+      assert.ok(sw.includes("fonts/licenses/" + f), f);
+    }
   });
 
   test("ライセンス本文の場所は fonts/licenses の固定パスだけ（外部 URL を含まない）", () => {
