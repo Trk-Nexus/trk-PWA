@@ -2416,3 +2416,10 @@ dialog.cliDialog>.cliSpellPanel{flex:0 1 auto;min-height:0}
 .remodernDialog::backdrop { background: rgb(0 0 0 / .5); }
 .remodernDialog .remodernRow label { display: grid; gap: .25em; }
 .remodernDialog .remodernRow { grid-template-columns: 1fr; }
+/* 🔤 trk315：題字の書体（利用者が導入した書体）。選んで全部そろって読めたときだけ張る。題字と作品名一覧だけ */
+body.trk-title-font-on .brand h1,body.trk-title-font-on #skinGrid .skinCard b{font-family:var(--trk-title-font)}
+.titleFontCard{border:1px solid var(--ui-border);border-radius:8px;padding:8px;margin:6px 0}
+.titleFontFile{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;font-size:12px}
+.titleFontLicenceText{white-space:pre-wrap;max-height:240px;overflow:auto;font-size:11px;margin:4px 0}
+.titleFontOffer{border:2px solid var(--ui-border);border-radius:8px;padding:8px;margin:6px 0}
+.titleFontOffer button{margin:6px 6px 0 0}

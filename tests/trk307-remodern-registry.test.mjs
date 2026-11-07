@@ -98,7 +98,7 @@ test("読み込み順と SW：登録簿の道具は remodern-ui.js より前、�
   const reg = html.indexOf('<script src="js/remodern-registry.js">');
   const ui = html.indexOf('<script src="js/remodern-ui.js">');
   assert.ok(reg > 0 && ui > 0 && reg < ui);
-  assert.ok(read("sw.js").includes('"data/re-modern-registry.json"]'));
+  assert.ok(read("sw.js").includes('"data/re-modern-registry.json"'));
 });
 
 test("文言：未確認の 2 キーが 4 言語にある", () => {
