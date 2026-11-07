@@ -1384,7 +1384,7 @@ function renderAllStatuses() { Object.keys(statusState).forEach(renderStatus); }
 function applyLanguage(code) {
   lang = TEXT[code] ? code : "en"; settings.language = lang; $("language").value = lang;
   document.documentElement.lang = { ja:"ja", en:"en", zh:"zh-CN", ko:"ko" }[lang];
-  /* trk312：optgroup は textContent を書くと中の選択肢（option）が消える。見出しは label に書く（📚 書斎のテーマ選びが空になっていた） */
+  /* trk313：optgroup は textContent を書くと中の選択肢（option）が消える。見出しは label に書く（📚 書斎のテーマ選びが空になっていた） */
   document.querySelectorAll("[data-i18n]").forEach(n => { if (n.tagName === "OPTGROUP") n.label = tr(n.dataset.i18n); else n.textContent = tr(n.dataset.i18n); });
   /* 読み上げ名（aria-label）も同じ辞書から。data-i18n-aria="key" と書く */
   document.querySelectorAll("[data-i18n-aria]").forEach(n => { n.setAttribute("aria-label", tr(n.dataset.i18nAria)); });

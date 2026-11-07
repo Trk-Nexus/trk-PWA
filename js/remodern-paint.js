@@ -64,12 +64,17 @@
     return out;
   }
 
-  /* 題字の背景：要素から上へ向かって、半透明の背景を下から重ねた色（不透明な基準は #000） */
+  /* 題字の背景：要素から上へ向かって、半透明の背景を下から重ねた色（不透明な基準は #000）。
+     🎨 trk313：背景に実際の画像（url(...)）があれば、色を一つに決められないので null（＝当てない）。
+     画像・動画・透過の背景は、対比を測れないため安全側に倒す（Avatar の M3 検証記録 §2）。
+     装飾の radial-gradient（例：.screen の淡い光）は画像ではないため、従来どおり背景色で測る。 */
   function effectiveBg(el) {
     if (!el || typeof getComputedStyle !== "function") return null;
     const layers = [];
     for (let node = el; node && node.nodeType === 1; node = node.parentElement) {
-      const rgba = parseRgb(getComputedStyle(node).backgroundColor);
+      const cs = getComputedStyle(node);
+      if (/url\(/i.test(cs.backgroundImage || "")) return null;
+      const rgba = parseRgb(cs.backgroundColor);
       if (rgba && rgba[3] > 0) layers.push(rgba);
     }
     let base = [0, 0, 0];
