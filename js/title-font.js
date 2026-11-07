@@ -92,26 +92,51 @@
     catch (_) { return false; }
   }
 
+  /* 作品ごとの連携の保存：{ 作品ID: { font: 候補ID, on: true／false } }。既定は連携オフ（on なし）。
+     読み込めないもの・知らない候補は無視する。 */
   function readWorks() {
     try {
       const o = JSON.parse(localStorage.getItem(WORKS_KEY) || "{}");
-      return o && typeof o === "object" && !Array.isArray(o) ? o : {};
+      const out = {};
+      if (!o || typeof o !== "object" || Array.isArray(o)) return out;
+      for (const k of Object.keys(o)) {
+        const v = o[k];
+        if (k && k.length <= 64 && v && typeof v === "object" && byId(v.font)) out[k] = { font: v.font, on: v.on === true };
+      }
+      return out;
     } catch (_) { return {}; }
   }
-  /* 作品の候補。作品ごとの指定がなければ全体の選択（既定は「使わない」）を返す。
-     返すのは保存された候補IDだけ。実際に当てる前に、呼び出し側が ready() と同じ確認（全ファイルが揃って読めること）をすること。 */
+  /* 作品に適用する候補。優先順位：利用者が明示した全体の設定 ＞ 作品の連携（明示的にオンのときだけ）。
+     全体の設定が選ばれているのに準備できていなくても、作品の連携へは乗り換えない（黙って差し替えない）。 */
   function fontForWork(workId) {
+    const g = readChoice();
+    if (g) return g;
     const w = readWorks();
-    const v = typeof workId === "string" && Object.prototype.hasOwnProperty.call(w, workId) ? w[workId] : "";
-    return byId(v) ? v : readChoice();
+    const e = typeof workId === "string" && Object.prototype.hasOwnProperty.call(w, workId) ? w[workId] : null;
+    return e && e.on && byId(e.font) ? e.font : "";
   }
-  /* 作品ごとの指定を保存する（空の候補なら消す）。作品ID は短い文字列だけ受け付ける */
+  function saveWorks(w) {
+    try { localStorage.setItem(WORKS_KEY, JSON.stringify(w)); return true; } catch (_) { return false; }
+  }
+  function validWorkId(workId) {
+    return typeof workId === "string" && !!workId && workId.length <= 64 && workId !== "__proto__";
+  }
+  /* 作品の候補を指定する（候補IDが空なら指定を消す）。連携のオン・オフは別の操作（setWorkLink）。
+     指定しただけでは連携はオンにならない。 */
   function setWorkFont(workId, candId) {
-    if (typeof workId !== "string" || !workId || workId.length > 64 || workId === "__proto__") return false;
+    if (!validWorkId(workId)) return false;
     if (candId && !byId(candId)) return false;
     const w = readWorks();
-    if (candId) w[workId] = candId; else delete w[workId];
-    try { localStorage.setItem(WORKS_KEY, JSON.stringify(w)); return true; } catch (_) { return false; }
+    if (candId) w[workId] = { font: candId, on: w[workId] ? w[workId].on : false }; else delete w[workId];
+    return saveWorks(w);
+  }
+  /* 作品ごとの連携のオン・オフ（候補が指定されていなければ何もしない） */
+  function setWorkLink(workId, on) {
+    if (!validWorkId(workId)) return false;
+    const w = readWorks();
+    if (!w[workId]) return false;
+    w[workId].on = !!on;
+    return saveWorks(w);
   }
 
   async function sha256Hex(buf) {
@@ -268,16 +293,53 @@
     return cand.files.every(f => inv[f.key].state === "ok");
   }
 
-  /* 選択。新しい候補は全ファイルが揃って読めたときだけ保存する。揃わなければ以前の選択をそのまま残し、理由を返す。 */
+  /* 準備：候補の全ファイルが固定版どおりに揃い、全 FontFace が読めたときだけ成功を返す。
+     読めなかったものは解放し、何も保存・適用しない。 */
+  async function prepare(cand) {
+    let inv;
+    try { inv = await inventory(cand); } catch (_) { return { ok: false, reason: "read" }; }
+    if (cand.files.some(f => inv[f.key].state === "unavailable")) return { ok: false, reason: "read" };
+    if (!cand.files.every(f => inv[f.key].state === "ok")) return { ok: false, reason: "notReady" };
+    const faces = [];
+    try {
+      for (const spec of cand.files) {
+        const face = new FontFace(spec.family, inv[spec.key].buf, { display: "swap" });
+        await face.load();
+        faces.push(face);
+      }
+    } catch (_) {
+      for (const f of faces) { try { document.fonts.delete(f); } catch (_e) { } }
+      return { ok: false, reason: "load" };
+    }
+    return { ok: true, reason: "", faces };
+  }
+
+  /* 選択。新しい候補は準備（全ファイルの読み込み）が済んでから保存する。
+     どこかで失敗したら保存も適用もせず、以前の選択と表示をそのまま残して理由を返す。 */
   async function choose(v) {
     const id = byId(v) ? v : "";
-    if (id && !(await ready(id))) {
+    if (!id) {
+      if (!writeChoice("")) { await refresh(); return { ok: false, reason: "choice" }; }
+      offerId = "";
       await refresh();
-      return { ok: false, reason: "notReady" };
+      notifyOthers();
+      return { ok: true, reason: "" };
     }
-    if (!writeChoice(id)) { await refresh(); return { ok: false, reason: "choice" }; }
+    const cand = byId(id);
+    /* 失敗しても、いまの選択と表示には触らない（読み直すと、今使っている書体まで外れてしまうため） */
+    const prep = await prepare(cand);
+    if (!prep.ok) return { ok: false, reason: prep.reason };
+    if (!writeChoice(id)) {
+      for (const f of prep.faces) { try { document.fonts.delete(f); } catch (_) { } }
+      return { ok: false, reason: "choice" };
+    }
     offerId = "";
-    await refresh();
+    const my = ++seq;
+    releaseFaces();
+    for (const f of prep.faces) { document.fonts.add(f); liveFaces.push(f); }
+    if (my !== seq) return { ok: true, reason: "" };
+    activate(cand, prep.faces);
+    setState({ status: "active", id, detail: "" });
     notifyOthers();
     return { ok: true, reason: "" };
   }
@@ -293,7 +355,7 @@
     if (text != null) n.textContent = text;
     return n;
   }
-  const REASON_KEY = { mismatch: "tfReasonMismatch", save: "tfReasonSave", crypto: "tfReasonCrypto", read: "tfReasonRead", unknown: "tfReasonRead", size: "tfReasonSize", notReady: "tfReasonNotReady", choice: "tfReasonChoice" };
+  const REASON_KEY = { mismatch: "tfReasonMismatch", save: "tfReasonSave", crypto: "tfReasonCrypto", read: "tfReasonRead", unknown: "tfReasonRead", size: "tfReasonSize", notReady: "tfReasonNotReady", choice: "tfReasonChoice", load: "tfReasonLoad" };
   function statusText(s) {
     if (s.status === "active") return t("tfActive", { name: (byId(s.id) || {}).name || "" });
     if (s.status === "missing") return t("tfMissing", { files: s.detail });
@@ -439,7 +501,7 @@
   window.Trk.titleFont = {
     CANDIDATES, CLASS_ON, VAR, DB_NAME, CHOICE_KEY, WORKS_KEY,
     sha256Hex, inventory, importFile, removeCandidate, choose, refresh, mount,
-    fontForWork, setWorkFont,
+    fontForWork, setWorkFont, setWorkLink,
     state: () => ({ ...state }),
     readChoice
   };
