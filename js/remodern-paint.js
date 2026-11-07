@@ -109,7 +109,7 @@
   }
 
   /* 要素の背景の見え方 → 単色（solid）と、画像の層の一覧（layers。CSS の順＝上の層が先）。
-     🎨 trk314：画像（url）・判定できない関数・重ね方の指定（mix-blend・filter・backdrop）・透明度は、
+     🎨 trk314：画像（url）・判定できない関数・重ね方の指定（mix-blend・background-blend・filter・backdrop）・透明度は、
      対比を数値で確かめられないので null（＝当てない）。
      各層の候補は、その層の停止点の色（rgba）。停止点の色の並びは、層の中の候補として扱う。 */
   const SAFE_FUNCS = /^(rgba?|linear-gradient|radial-gradient|conic-gradient|repeating-linear-gradient|repeating-radial-gradient|repeating-conic-gradient)$/;
@@ -132,6 +132,9 @@
     if (cs.filter && cs.filter !== "none") return null;
     if (cs.backdropFilter && cs.backdropFilter !== "none") return null;
     if (cs.opacity !== undefined && Number(cs.opacity) < 1) return null;
+    // 🎨 trk314 修正④：background-blend-mode（層どうしの混ぜ方）は、ここでは計算していない。
+    // normal 以外（multiply など）が一つでもあれば判定しない。空や未設定は normal とみなす。
+    if (cs.backgroundBlendMode && String(cs.backgroundBlendMode).split(",").some(m => m.trim() !== "normal" && m.trim() !== "")) return null;
     const img = cs.backgroundImage || "none";
     const layers = [];
     if (img !== "none") {

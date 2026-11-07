@@ -136,3 +136,18 @@ test("trk314 修正③：白→#42e9eb→#dd05bd の横グラデーションで�
   assert.ok(worst < 4.5, `最悪の対比が 4.5 未満のはず: ${worst}`);
   assert.equal(P.titlePaint({ colors: { text: "#000000" } }, [[255, 255, 255], [66, 233, 235], [221, 5, 189]]).text, null);
 });
+
+test("trk314 修正④：background-blend-mode が normal 以外（multiply）なら判定しない（Avatar の追補の例：実描画 約 106、黒文字は 3.88:1）", () => {
+  const { P, el } = load(null);
+  const mk = (blend) => node({
+    backgroundColor: "rgb(150, 150, 150)",
+    backgroundImage: "linear-gradient(rgb(180, 180, 180), rgb(180, 180, 180))",
+    backgroundBlendMode: blend,
+  });
+  assert.equal(P.effectiveBgs(mk("multiply")), null);
+  assert.equal(P.effectiveBgs(mk("normal, multiply")), null);
+  assert.equal(P.titlePaint({ colors: { text: "#000000" } }, P.effectiveBgs(mk("multiply"))).text, null);
+  // normal（または未設定）は従来どおり判定する
+  assert.ok(Array.isArray(P.effectiveBgs(mk("normal"))));
+  assert.ok(Array.isArray(P.effectiveBgs(mk(""))));
+});
