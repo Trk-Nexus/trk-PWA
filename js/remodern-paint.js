@@ -49,20 +49,37 @@
     return (hi + 0.05) / (lo + 0.05);
   }
 
-  /* 候補の間の色も調べる（グラデーションの途中の色）。候補どうしの 1/8 刻みの点を足す。
-     🎨 trk314 修正：候補が多くても省かない（省くと、間の色で対比が落ちる例を通してしまう）。
-     候補の数は effectiveBgs の上限（MAX_CANDIDATES）で抑えてあるので、組の数は小さい */
-  function withBetween(bgs) {
-    const out = bgs.slice();
+  /* 成分の直線化（sRGB→線形）を 256 段の表にする（間は直線補間）。計算が速い分、検査の回数を増やせる */
+  const LIN = Array.from({ length: 256 }, (_, i) => {
+    const s = i / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  });
+  function linFast(c) {
+    const lo = Math.floor(c), hi = Math.min(255, lo + 1), f = c - lo;
+    return LIN[lo] * (1 - f) + LIN[hi] * f;
+  }
+  function lumFast(c) { return 0.2126 * linFast(c[0]) + 0.7152 * linFast(c[1]) + 0.0722 * linFast(c[2]); }
+
+  /* 文字色（rgb）が、候補の全部と、候補どうしの間の全部（1/64 刻み）で 4.5:1 以上か。
+     1 つでも足りなければすぐ false。候補の数は MAX_CANDIDATES で抑えてある */
+  function passesAll(rgb, bgs) {
+    const lt = luminance(rgb);
+    const ok = lb => {
+      const hi = Math.max(lt, lb), lo = Math.min(lt, lb);
+      return (hi + 0.05) / (lo + 0.05) >= MIN_RATIO;
+    };
     for (let i = 0; i < bgs.length; i++) {
+      if (!ok(lumFast(bgs[i]))) return false;
       for (let j = i + 1; j < bgs.length; j++) {
-        for (let k = 1; k < 8; k++) {
-          const f = k / 8;
-          out.push([0, 1, 2].map(n => bgs[i][n] * (1 - f) + bgs[j][n] * f));
+        for (let k = 1; k < BETWEEN_STEPS; k++) {
+          const f = k / BETWEEN_STEPS;
+          const a = bgs[i], b = bgs[j], g = 1 - f;
+          const lm = 0.2126 * linFast(a[0] * g + b[0] * f) + 0.7152 * linFast(a[1] * g + b[1] * f) + 0.0722 * linFast(a[2] * g + b[2] * f);
+          if (!ok(lm)) return false;
         }
       }
     }
-    return out;
+    return true;
   }
 
   /* 作品の値から、題字に当てる色を決める。
@@ -73,12 +90,11 @@
     const colors = work && work.colors && typeof work.colors === "object" ? work.colors : {};
     const bgs = normalizeBgs(bg);
     if (!bgs) return out;
-    const probes = withBetween(bgs);
     for (const key of ["text", "accent"]) {
       const hex = colors[key];
       const rgb = hexToRgb(hex);
       if (!rgb) continue;
-      if (probes.every(b => ratio(rgb, b) >= MIN_RATIO)) out[key] = hex.toLowerCase();
+      if (passesAll(rgb, bgs)) out[key] = hex.toLowerCase();
       else out.skipped.push(key);
     }
     return out;
@@ -135,6 +151,7 @@
 
   /* 上から下へ：候補（背景の色の組）を重ねる。層が多すぎるときは null（＝判定しない） */
   const MAX_CANDIDATES = 64;
+  const BETWEEN_STEPS = 64;
   function over(top, below) {
     const a = top[3];
     return [0, 1, 2].map(i => top[i] * a + below[i] * (1 - a));
