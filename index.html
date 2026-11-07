@@ -614,6 +614,9 @@
             <div id="typoState" class="hint status" role="status" aria-live="polite"></div>
             <!-- 🔤 trk255：選んだ組の説明（上行）の下に、その組が合う曲を1行だけ（目録の trkUse） -->
             <div id="typoUse" class="hint" hidden></div>
+            <!-- 🔤 trk315：題字の書体（利用者が導入する書体ファイル。同梱・自動取得はしない）。中身は js/title-font.js が作る -->
+            <h3 data-i18n="tfHeading"></h3>
+            <div id="titleFontPanel" class="titleFontPanel"></div>
             <h3 data-i18n="skin"></h3>
             <!-- 🎨 trk297：領域ごとの 3 行（js/remodern-ui.js）。初期はどれも現状維持 -->
             <div id="remodernRegions" class="remodernRegions">
@@ -2464,6 +2467,7 @@
 <script src="js/data.js"></script>
 <!-- 🔤 trk246：書体の組み合わせの目録（14組）。data.js の後・core.js の前に読みます（core.js が settings を作るときに使うため） -->
 <script src="js/typography.js"></script>
+<script src="js/title-font.js"></script>
 <!-- ▼ キャラクター（data.js の後、core.js の前）
      初音ミク：PCL（非営利・無償のみ）。商用の派生版では、この1行とファイルを削除してください。 -->
 <script src="js/characters/miku.js"></script>
