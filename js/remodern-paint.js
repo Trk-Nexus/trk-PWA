@@ -68,6 +68,11 @@
       const hi = Math.max(lt, lb), lo = Math.min(lt, lb);
       return (hi + 0.05) / (lo + 0.05) >= MIN_RATIO;
     };
+    // 刻みの間の点は、近似の誤差（実画素との差）を見込んで余裕を持たせる（BETWEEN_MARGIN）
+    const okBetween = lb => {
+      const hi = Math.max(lt, lb), lo = Math.min(lt, lb);
+      return (hi + 0.05) / (lo + 0.05) >= MIN_RATIO + BETWEEN_MARGIN;
+    };
     for (let i = 0; i < bgs.length; i++) {
       if (!ok(lumFast(bgs[i]))) return false;
       for (let j = i + 1; j < bgs.length; j++) {
@@ -75,7 +80,7 @@
           const f = k / BETWEEN_STEPS;
           const a = bgs[i], b = bgs[j], g = 1 - f;
           const lm = 0.2126 * linFast(a[0] * g + b[0] * f) + 0.7152 * linFast(a[1] * g + b[1] * f) + 0.0722 * linFast(a[2] * g + b[2] * f);
-          if (!ok(lm)) return false;
+          if (!okBetween(lm)) return false;
         }
       }
     }
@@ -155,6 +160,8 @@
   /* 上から下へ：候補（背景の色の組）を重ねる。層が多すぎるときは null（＝判定しない） */
   const MAX_CANDIDATES = 64;
   const BETWEEN_STEPS = 64;
+  // 🎨 trk314 修正⑤：実画素との比較で、近似は最大 0.1 ほど楽観的だった。刻みの間の点は +0.1 の余裕で判定する
+  const BETWEEN_MARGIN = 0.1;
   function over(top, below) {
     const a = top[3];
     return [0, 1, 2].map(i => top[i] * a + below[i] * (1 - a));

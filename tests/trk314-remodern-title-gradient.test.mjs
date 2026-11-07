@@ -151,3 +151,15 @@ test("trk314 修正④：background-blend-mode が normal 以外（multiply）�
   assert.ok(Array.isArray(P.effectiveBgs(mk("normal"))));
   assert.ok(Array.isArray(P.effectiveBgs(mk(""))));
 });
+
+test("trk314 修正⑤：刻みの間の点は +0.1 の余裕で判定（白→#cc3399、黒文字：端点 4.501、間 4.592 → 当てない）", () => {
+  const { P } = load(null);
+  const a = [255, 255, 255], b = [204, 51, 153];
+  // 端点はどちらも 4.5 以上（候補としては通る）
+  assert.ok(P.ratio(a, [0, 0, 0]) >= 4.5 && P.ratio(b, [0, 0, 0]) >= 4.5);
+  // 間の最悪は 4.5 以上だが 4.6 未満（余裕で落ちる）
+  let inner = 99;
+  for (let k = 1; k < 64; k++) { const f = k / 64; inner = Math.min(inner, P.ratio([0, 1, 2].map(q => a[q] * (1 - f) + b[q] * f), [0, 0, 0])); }
+  assert.ok(inner >= 4.5 && inner < 4.6, `間の最悪: ${inner}`);
+  assert.equal(P.titlePaint({ colors: { text: "#000000" } }, [a, b]).text, null);
+});
