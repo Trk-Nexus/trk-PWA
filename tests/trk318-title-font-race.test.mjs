@@ -311,14 +311,23 @@ describe("D. 削除の説明：指定している作品の件数（trk320）", (
 });
 
 describe("E. 削除の文言と部分的な失敗（trk320）", () => {
-  test("確認文：使用中の候補は元に戻る、使用中でなければ題字は変わらない", () => {
-    const h = harness({ withFiles: false });
-    h.storage.trkTitleFont = "galmuri";
+  test("確認文：適用中の候補は元に戻る、選ばれているが適用中でない・選ばれていないものは題字は変わらない（trk322）", async () => {
+    const h = harness({ withFiles: true });
+    const p1 = h.api.choose("galmuri");
+    await waitFor(() => h.pending.length > 0);
+    while (h.pending.length) { h.pending.shift()(); await tick(); }
+    await p1;
     const active = h.api.removeConfirmText({ id: "galmuri", name: "Galmuri11" });
-    const other = h.api.removeConfirmText({ id: "press", name: "Press Start 2P" });
     assert.ok(active.includes("元の表示に戻ります"), active);
+    const other = h.api.removeConfirmText({ id: "press", name: "Press Start 2P" });
     assert.ok(other.includes("変わりません"), other);
     assert.ok(!other.includes("元の表示に戻ります"), other);
+    /* 選ばれているが、準備できず適用中でない（ファイルが無い） */
+    const h2 = harness({ withFiles: false });
+    h2.storage.trkTitleFont = "galmuri";
+    const hidden = h2.api.removeConfirmText({ id: "galmuri", name: "Galmuri11" });
+    assert.ok(hidden.includes("表示されていません"), hidden);
+    assert.ok(!hidden.includes("元の表示に戻ります"), hidden);
   });
 
   test("選択の解除だけ失敗：ファイルは消え、結果は partial（選択は残ると分かる）", async () => {

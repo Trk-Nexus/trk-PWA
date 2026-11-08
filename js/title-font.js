@@ -104,8 +104,27 @@
   /* 作品ごとの連携の保存：{ 作品ID: { font: 候補ID, on: true／false } }。既定は連携オフ（on なし）。
      読み込めないもの・知らない候補は無視する。 */
   /* 旧形式（trk315）の { 作品ID: 候補ID } は、連携をオフのままの { font, on: false } として読む（自動でオンにはしない） */
-  function readWorks() {
-    const raw = readWorksRaw();
+  /* 作品の保存を「一度だけ」読む。判定と書き込みと件数を同じ読み取りで行うため、途中の読み取り失敗で食い違わない。
+     state：absent（未設定）／ok（読めた）／invalid（JSON でない・オブジェクトでない・空文字）／unreadable（読み取りで例外）。
+     書き込みは absent と ok のときだけ。invalid と unreadable では何も書かず、件数も不明（null）にする。 */
+  function snapshotWorks() {
+    let s;
+    try { s = localStorage.getItem(WORKS_KEY); }
+    catch (_) { return { state: "unreadable", raw: null, obj: null }; }
+    if (s === null) return { state: "absent", raw: null, obj: {} };
+    let o;
+    try { o = JSON.parse(s); }
+    catch (_) { return { state: "invalid", raw: s, obj: null }; }
+    if (!o || typeof o !== "object" || Array.isArray(o)) return { state: "invalid", raw: s, obj: null };
+    const obj = {};
+    for (const k of Object.keys(o)) {
+      if (k && k.length <= 64 && k !== "__proto__") obj[k] = o[k];
+    }
+    return { state: "ok", raw: s, obj };
+  }
+  function writable(snap) { return snap.state === "ok" || snap.state === "absent"; }
+  /* 旧形式（trk315）の { 作品ID: 候補ID } は、連携をオフのままの { font, on: false } として読む（自動でオンにはしない） */
+  function normalizeWorks(raw) {
     const out = {};
     for (const k of Object.keys(raw)) {
       const v = raw[k];
@@ -114,31 +133,27 @@
     }
     return out;
   }
-  /* 保存されている値をそのまま読む（知らない候補や破損した値も、書き換えるまで消さない） */
-  function readWorksRaw() {
-    try {
-      const o = JSON.parse(localStorage.getItem(WORKS_KEY) || "{}");
-      const out = {};
-      if (!o || typeof o !== "object" || Array.isArray(o)) return out;
-      for (const k of Object.keys(o)) {
-        if (k && k.length <= 64 && k !== "__proto__") out[k] = o[k];
-      }
-      return out;
-    } catch (_) { return {}; }
+  function readWorks() {
+    const snap = snapshotWorks();
+    return snap.obj ? normalizeWorks(snap.obj) : {};
   }
   /* 作品に適用する候補。優先順位：利用者が明示した全体の設定 ＞ 作品の連携（明示的にオンのときだけ）。
      全体の設定が選ばれているのに準備できていなくても、作品の連携へは乗り換えない（黙って差し替えない）。 */
   /* この候補を作品の指定に使っている件数（削除の説明に使う。指定そのものは変えない） */
   /* 読めない保存のときは null（0 件と断定しない） */
   function linkedWorkCount(candId) {
-    if (!worksIntact()) return null;
-    const w = readWorks();
+    const snap = snapshotWorks();
+    if (!writable(snap)) return null;
+    const w = normalizeWorks(snap.obj);
     return Object.keys(w).filter(k => w[k].font === candId).length;
   }
   /* 削除の確認文：使用中かどうか・作品の指定の件数（不明なら不明と書く）で文を組み立てる */
   function removeConfirmText(c) {
     const parts = [t("tfRemoveConfirmBase", { name: c.name })];
-    parts.push(readChoice() === c.id ? t("tfRemoveEffectActive") : t("tfRemoveEffectOther"));
+    // 「使っている」は、選択があり、かつ実際に題字へ適用中（active）のときだけ
+    const selected = readChoice() === c.id;
+    const shown = selected && state.status === "active" && state.id === c.id;
+    parts.push(shown ? t("tfRemoveEffectActive") : selected ? t("tfRemoveEffectHidden") : t("tfRemoveEffectOther"));
     const n = linkedWorkCount(c.id);
     if (n === null) parts.push(t("tfRemoveWorksUnknown"));
     else if (n > 0) parts.push(t("tfRemoveWorks", { n: String(n) }));
@@ -160,30 +175,44 @@
   }
   /* 作品の候補を指定する（候補IDが空なら指定を消す）。連携のオン・オフは別の操作（setWorkLink）。
      指定しただけでは連携はオンにならない。 */
-  /* 作品の保存が壊れている（JSON でない・オブジェクトでない）ときは、上書きせず書き込みを拒否する */
-  function worksIntact() {
-    let s;
-    try { s = localStorage.getItem(WORKS_KEY); } catch (_) { return false; }
-    if (s === null || s === "") return true;
-    try { const o = JSON.parse(s); return !!o && typeof o === "object" && !Array.isArray(o); }
-    catch (_) { return false; }
-  }
   function setWorkFont(workId, candId) {
-    if (!validWorkId(workId) || !worksIntact()) return false;
+    const snap = snapshotWorks();
+    if (!validWorkId(workId) || !writable(snap)) return false;
     if (candId && !byId(candId)) return false;
-    const w = readWorksRaw();
-    const cur = readWorks()[workId];
+    const w = snap.obj;
+    const cur = normalizeWorks(w)[workId];
     if (candId) w[workId] = { font: candId, on: cur ? cur.on : false }; else delete w[workId];
     return saveWorks(w);
   }
-  /* 作品ごとの連携のオン・オフ（候補が指定されていなければ何もしない） */
+  /* 作品ごとの連携のオン・オフ（指定がなければ何もしない） */
   function setWorkLink(workId, on) {
-    if (!validWorkId(workId) || !worksIntact()) return false;
-    const cur = readWorks()[workId];
+    const snap = snapshotWorks();
+    if (!validWorkId(workId) || !writable(snap)) return false;
+    const cur = normalizeWorks(snap.obj)[workId];
     if (!cur) return false;
-    const w = readWorksRaw();
+    const w = snap.obj;
     w[workId] = { font: cur.font, on: !!on };
     return saveWorks(w);
+  }
+  /* 退避：読めたときだけ、保存の生の値を JSON の封筒にして返す（画面・ログには出さない）。
+     未設定・読めないときは退避できないと返す。 */
+  function backupWorks() {
+    const snap = snapshotWorks();
+    if (snap.state === "unreadable") return { ok: false, reason: "read" };
+    if (snap.state === "absent") return { ok: false, reason: "absent" };
+    const envelope = { format: "trk-title-font-works-backup", version: 1, state: snap.state, raw: snap.raw };
+    return { ok: true, reason: "", text: JSON.stringify(envelope, null, 2) };
+  }
+  /* 削除：作品の指定だけを消す（書体ファイル・題字の選択・他の設定は消さない）。読めないときは消さない。
+     消した後に確かめられなければ unknown（結果が分からない）。 */
+  function removeWorksSettings() {
+    const snap = snapshotWorks();
+    if (snap.state === "unreadable") return { ok: false, reason: "read" };
+    if (snap.state === "absent") return { ok: true, reason: "" };
+    try { localStorage.removeItem(WORKS_KEY); } catch (_) { return { ok: false, reason: "save" }; }
+    let still;
+    try { still = localStorage.getItem(WORKS_KEY); } catch (_) { return { ok: false, reason: "unknown" }; }
+    return still === null ? { ok: true, reason: "" } : { ok: false, reason: "save" };
   }
 
   async function sha256Hex(buf) {
@@ -569,6 +598,39 @@
       card.appendChild(lic);
       container.appendChild(card);
     }
+    // 作品ごとの書体の指定：状態の表示・退避（ダウンロード）・指定だけの削除（書体ファイル・題字の選択は消さない）
+    const snapW = snapshotWorks();
+    const worksBox = el("div", "titleFontWorks");
+    const wLine = snapW.state === "absent" ? t("tfWorksAbsent")
+      : snapW.state === "ok" ? t("tfWorksOk", { n: String(Object.keys(normalizeWorks(snapW.obj)).length) })
+      : snapW.state === "invalid" ? t("tfWorksInvalid") : t("tfWorksUnreadable");
+    worksBox.appendChild(el("div", "hint", wLine));
+    const stateLine = (msg) => { const l = document.getElementById("titleFontState"); if (l) l.textContent = msg; };
+    if (snapW.state === "ok" || snapW.state === "invalid") {
+      const bk = el("button", "titleFontBackup", t("tfBackup"));
+      bk.type = "button";
+      bk.addEventListener("click", () => {
+        const r = backupWorks();
+        if (!r.ok) { stateLine(t("tfBackupFail")); return; }
+        const url = URL.createObjectURL(new Blob([r.text], { type: "application/json" }));
+        const a = document.createElement("a");
+        a.href = url; a.download = "trk-title-font-works-backup.json";
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        stateLine(t("tfBackupDone"));
+      });
+      worksBox.appendChild(bk);
+      const rm = el("button", "titleFontWorksRemove", t("tfWorksRemove"));
+      rm.type = "button";
+      rm.addEventListener("click", async () => {
+        if (!window.confirm(t("tfWorksRemoveConfirm"))) return;
+        const r = removeWorksSettings();
+        await render(container);
+        stateLine(r.ok ? t("tfWorksRemoved") : r.reason === "unknown" ? t("tfReasonUnknown") : t("tfWorksRemoveFail"));
+      });
+      worksBox.appendChild(rm);
+    }
+    container.appendChild(worksBox);
     if (focusId) { const again = document.getElementById(focusId); if (again && typeof again.focus === "function") again.focus(); }
   }
 
@@ -586,7 +648,7 @@
   window.Trk.titleFont = {
     CANDIDATES, CLASS_ON, VAR, DB_NAME, CHOICE_KEY, WORKS_KEY,
     linkedWorkCount, removeConfirmText, sha256Hex, inventory, importFile, removeCandidate, choose, refresh, mount,
-    fontForWork, setWorkFont, setWorkLink,
+    fontForWork, setWorkFont, setWorkLink, backupWorks, removeWorksSettings, snapshotWorks,
     state: () => ({ ...state }),
     readChoice
   };
