@@ -77,6 +77,8 @@
   let state = { status: "off", id: "", detail: "" };
   let liveFaces = [];
   let seq = 0;
+  /* 全体の選択の世代。準備の途中で新しい選択・オフが始まったら、古い準備の結果は保存しない（refresh の seq とは別に数える） */
+  let choiceSeq = 0;
   /* 導入し終えた候補のうち、まだ題字に使うか聞いていないもの（使わないを既定にしたまま、選択肢を見せる） */
   let offerId = "";
   const listeners = [];
@@ -94,14 +96,25 @@
 
   /* 作品ごとの連携の保存：{ 作品ID: { font: 候補ID, on: true／false } }。既定は連携オフ（on なし）。
      読み込めないもの・知らない候補は無視する。 */
+  /* 旧形式（trk315）の { 作品ID: 候補ID } は、連携をオフのままの { font, on: false } として読む（自動でオンにはしない） */
   function readWorks() {
+    const raw = readWorksRaw();
+    const out = {};
+    for (const k of Object.keys(raw)) {
+      const v = raw[k];
+      if (typeof v === "string" && byId(v)) out[k] = { font: v, on: false };
+      else if (v && typeof v === "object" && byId(v.font)) out[k] = { font: v.font, on: v.on === true };
+    }
+    return out;
+  }
+  /* 保存されている値をそのまま読む（知らない候補や破損した値も、書き換えるまで消さない） */
+  function readWorksRaw() {
     try {
       const o = JSON.parse(localStorage.getItem(WORKS_KEY) || "{}");
       const out = {};
       if (!o || typeof o !== "object" || Array.isArray(o)) return out;
       for (const k of Object.keys(o)) {
-        const v = o[k];
-        if (k && k.length <= 64 && v && typeof v === "object" && byId(v.font)) out[k] = { font: v.font, on: v.on === true };
+        if (k && k.length <= 64 && k !== "__proto__") out[k] = o[k];
       }
       return out;
     } catch (_) { return {}; }
@@ -126,16 +139,18 @@
   function setWorkFont(workId, candId) {
     if (!validWorkId(workId)) return false;
     if (candId && !byId(candId)) return false;
-    const w = readWorks();
-    if (candId) w[workId] = { font: candId, on: w[workId] ? w[workId].on : false }; else delete w[workId];
+    const w = readWorksRaw();
+    const cur = readWorks()[workId];
+    if (candId) w[workId] = { font: candId, on: cur ? cur.on : false }; else delete w[workId];
     return saveWorks(w);
   }
   /* 作品ごとの連携のオン・オフ（候補が指定されていなければ何もしない） */
   function setWorkLink(workId, on) {
     if (!validWorkId(workId)) return false;
-    const w = readWorks();
-    if (!w[workId]) return false;
-    w[workId].on = !!on;
+    const cur = readWorks()[workId];
+    if (!cur) return false;
+    const w = readWorksRaw();
+    w[workId] = { font: cur.font, on: !!on };
     return saveWorks(w);
   }
 
@@ -318,6 +333,7 @@
      どこかで失敗したら保存も適用もせず、以前の選択と表示をそのまま残して理由を返す。 */
   async function choose(v) {
     const id = byId(v) ? v : "";
+    const my = ++choiceSeq;
     if (!id) {
       if (!writeChoice("")) { await refresh(); return { ok: false, reason: "choice" }; }
       offerId = "";
@@ -329,15 +345,20 @@
     /* 失敗しても、いまの選択と表示には触らない（読み直すと、今使っている書体まで外れてしまうため） */
     const prep = await prepare(cand);
     if (!prep.ok) return { ok: false, reason: prep.reason };
+    /* 準備の途中で、後から別の選択やオフが始まっていれば、この古い結果は保存も適用もしない */
+    if (my !== choiceSeq) {
+      for (const f of prep.faces) { try { document.fonts.delete(f); } catch (_) { } }
+      return { ok: false, reason: "superseded" };
+    }
     if (!writeChoice(id)) {
       for (const f of prep.faces) { try { document.fonts.delete(f); } catch (_) { } }
       return { ok: false, reason: "choice" };
     }
     offerId = "";
-    const my = ++seq;
+    const mySeq = ++seq;
     releaseFaces();
     for (const f of prep.faces) { document.fonts.add(f); liveFaces.push(f); }
-    if (my !== seq) return { ok: true, reason: "" };
+    if (mySeq !== seq) return { ok: true, reason: "" };
     activate(cand, prep.faces);
     setState({ status: "active", id, detail: "" });
     notifyOthers();
@@ -355,7 +376,7 @@
     if (text != null) n.textContent = text;
     return n;
   }
-  const REASON_KEY = { mismatch: "tfReasonMismatch", save: "tfReasonSave", crypto: "tfReasonCrypto", read: "tfReasonRead", unknown: "tfReasonRead", size: "tfReasonSize", notReady: "tfReasonNotReady", choice: "tfReasonChoice", load: "tfReasonLoad" };
+  const REASON_KEY = { mismatch: "tfReasonMismatch", save: "tfReasonSave", crypto: "tfReasonCrypto", read: "tfReasonRead", unknown: "tfReasonRead", size: "tfReasonSize", notReady: "tfReasonNotReady", choice: "tfReasonChoice", load: "tfReasonLoad", superseded: "tfReasonSuperseded" };
   function statusText(s) {
     if (s.status === "active") return t("tfActive", { name: (byId(s.id) || {}).name || "" });
     if (s.status === "missing") return t("tfMissing", { files: s.detail });
