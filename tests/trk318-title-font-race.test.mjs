@@ -191,7 +191,7 @@ describe("B. 旧形式の作品の指定を消さない", () => {
 
   test("理由 superseded の文言が ja・en にある", () => {
     const i18n = fs.readFileSync(`${ROOT}/js/i18n.js`, "utf8");
-    assert.equal((i18n.match(/tfReasonSuperseded:/g) || []).length, 2);
+    assert.equal((i18n.match(/tfReasonSuperseded:/g) || []).length, 4, "ja・en・zh・ko");
   });
 });
 
@@ -296,7 +296,7 @@ describe("D. 削除の説明：指定している作品の件数（trk320）", (
   test("削除の文言のキーは ja・en の両方にある", () => {
     const i18n = fs.readFileSync(`${ROOT}/js/i18n.js`, "utf8");
     for (const k of ["tfRemoveConfirmBase", "tfRemoveEffectActive", "tfRemoveEffectOther", "tfRemoveWorks", "tfRemoveWorksUnknown", "tfRemoveEnd", "tfReasonPartial"]) {
-      assert.equal((i18n.match(new RegExp(k + ":", "g")) || []).length, 2, k);
+      assert.equal((i18n.match(new RegExp(k + ":", "g")) || []).length, 4, k + "（ja・en・zh・ko）");
     }
     assert.ok(/tfRemoveWorks:"[^"]*\{n\}[^"]*指定は残ります/.test(i18n), "日本語の件数");
   });
