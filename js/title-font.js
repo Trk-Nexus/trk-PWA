@@ -77,6 +77,15 @@
   let state = { status: "off", id: "", detail: "" };
   let liveFaces = [];
   let seq = 0;
+  /* 全体の選択の世代。準備の途中で新しい選択・オフが始まったら、古い準備の結果は保存しない（refresh の seq とは別に数える） */
+  let choiceSeq = 0;
+  /* いま選択中（準備中を含む）の候補と、削除の途中の候補。削除・導入で前提が変わったら古い準備を取り消す */
+  let choosingId = "";
+  let removingId = "";
+  /* 複数のタブでも、選択・削除・導入を一つずつ行うための名前（Web Locks が使えるときだけ） */
+  const LOCK_NAME = "trk-title-font";
+  /* 1 つの書体の読み込みに待つ上限（待ち続けて、ほかの操作を止めないため） */
+  const LOAD_LIMIT_MS = 15000;
   /* 導入し終えた候補のうち、まだ題字に使うか聞いていないもの（使わないを既定にしたまま、選択肢を見せる） */
   let offerId = "";
   const listeners = [];
@@ -92,26 +101,72 @@
     catch (_) { return false; }
   }
 
+  /* 作品ごとの連携の保存：{ 作品ID: { font: 候補ID, on: true／false } }。既定は連携オフ（on なし）。
+     読み込めないもの・知らない候補は無視する。 */
+  /* 旧形式（trk315）の { 作品ID: 候補ID } は、連携をオフのままの { font, on: false } として読む（自動でオンにはしない） */
   function readWorks() {
+    const raw = readWorksRaw();
+    const out = {};
+    for (const k of Object.keys(raw)) {
+      const v = raw[k];
+      if (typeof v === "string" && byId(v)) out[k] = { font: v, on: false };
+      else if (v && typeof v === "object" && byId(v.font)) out[k] = { font: v.font, on: v.on === true };
+    }
+    return out;
+  }
+  /* 保存されている値をそのまま読む（知らない候補や破損した値も、書き換えるまで消さない） */
+  function readWorksRaw() {
     try {
       const o = JSON.parse(localStorage.getItem(WORKS_KEY) || "{}");
-      return o && typeof o === "object" && !Array.isArray(o) ? o : {};
+      const out = {};
+      if (!o || typeof o !== "object" || Array.isArray(o)) return out;
+      for (const k of Object.keys(o)) {
+        if (k && k.length <= 64 && k !== "__proto__") out[k] = o[k];
+      }
+      return out;
     } catch (_) { return {}; }
   }
-  /* 作品の候補。作品ごとの指定がなければ全体の選択（既定は「使わない」）を返す。
-     返すのは保存された候補IDだけ。実際に当てる前に、呼び出し側が ready() と同じ確認（全ファイルが揃って読めること）をすること。 */
+  /* 作品に適用する候補。優先順位：利用者が明示した全体の設定 ＞ 作品の連携（明示的にオンのときだけ）。
+     全体の設定が選ばれているのに準備できていなくても、作品の連携へは乗り換えない（黙って差し替えない）。 */
   function fontForWork(workId) {
+    const g = readChoice();
+    if (g) return g;
     const w = readWorks();
-    const v = typeof workId === "string" && Object.prototype.hasOwnProperty.call(w, workId) ? w[workId] : "";
-    return byId(v) ? v : readChoice();
+    const e = typeof workId === "string" && Object.prototype.hasOwnProperty.call(w, workId) ? w[workId] : null;
+    return e && e.on && byId(e.font) ? e.font : "";
   }
-  /* 作品ごとの指定を保存する（空の候補なら消す）。作品ID は短い文字列だけ受け付ける */
-  function setWorkFont(workId, candId) {
-    if (typeof workId !== "string" || !workId || workId.length > 64 || workId === "__proto__") return false;
-    if (candId && !byId(candId)) return false;
-    const w = readWorks();
-    if (candId) w[workId] = candId; else delete w[workId];
+  function saveWorks(w) {
     try { localStorage.setItem(WORKS_KEY, JSON.stringify(w)); return true; } catch (_) { return false; }
+  }
+  function validWorkId(workId) {
+    return typeof workId === "string" && !!workId && workId.length <= 64 && workId !== "__proto__";
+  }
+  /* 作品の候補を指定する（候補IDが空なら指定を消す）。連携のオン・オフは別の操作（setWorkLink）。
+     指定しただけでは連携はオンにならない。 */
+  /* 作品の保存が壊れている（JSON でない・オブジェクトでない）ときは、上書きせず書き込みを拒否する */
+  function worksIntact() {
+    let s;
+    try { s = localStorage.getItem(WORKS_KEY); } catch (_) { return false; }
+    if (s === null || s === "") return true;
+    try { const o = JSON.parse(s); return !!o && typeof o === "object" && !Array.isArray(o); }
+    catch (_) { return false; }
+  }
+  function setWorkFont(workId, candId) {
+    if (!validWorkId(workId) || !worksIntact()) return false;
+    if (candId && !byId(candId)) return false;
+    const w = readWorksRaw();
+    const cur = readWorks()[workId];
+    if (candId) w[workId] = { font: candId, on: cur ? cur.on : false }; else delete w[workId];
+    return saveWorks(w);
+  }
+  /* 作品ごとの連携のオン・オフ（候補が指定されていなければ何もしない） */
+  function setWorkLink(workId, on) {
+    if (!validWorkId(workId) || !worksIntact()) return false;
+    const cur = readWorks()[workId];
+    if (!cur) return false;
+    const w = readWorksRaw();
+    w[workId] = { font: cur.font, on: !!on };
+    return saveWorks(w);
   }
 
   async function sha256Hex(buf) {
@@ -218,6 +273,10 @@
 
   /* 導入：選んだファイルが固定版と一致するときだけ保存する。戻り値は結果の理由（画面の文言に使う） */
   async function importFile(candId, key, file) {
+    if (choosingId === candId) { choiceSeq++; choosingId = ""; }
+    return serial(() => importNow(candId, key, file));
+  }
+  async function importNow(candId, key, file) {
     const cand = byId(candId), spec = fileSpec(cand, key);
     if (!spec) return { ok: false, reason: "unknown" };
     if (!file || !window.crypto || !crypto.subtle) return { ok: false, reason: "crypto" };
@@ -239,6 +298,13 @@
   async function removeCandidate(candId) {
     const cand = byId(candId);
     if (!cand) return { ok: false, reason: "unknown" };
+    /* 削除の前提が消えるので、準備中の同じ候補の選択は取り消す（先に世代を進める。読み込み完了を待たない） */
+    if (choosingId === candId) { choiceSeq++; choosingId = ""; }
+    removingId = candId;
+    try { return await serial(() => removeNow(cand, candId)); }
+    finally { if (removingId === candId) removingId = ""; }
+  }
+  async function removeNow(cand, candId) {
     try {
       const db = await openDb();
       await new Promise((resolve, reject) => {
@@ -268,16 +334,80 @@
     return cand.files.every(f => inv[f.key].state === "ok");
   }
 
-  /* 選択。新しい候補は全ファイルが揃って読めたときだけ保存する。揃わなければ以前の選択をそのまま残し、理由を返す。 */
+  function withLimit(p) {
+    let timer = 0;
+    const limit = new Promise((_, rej) => { timer = setTimeout(() => rej(new Error("timeout")), LOAD_LIMIT_MS); });
+    return Promise.race([p, limit]).then(v => { clearTimeout(timer); return v; }, e => { clearTimeout(timer); throw e; });
+  }
+  /* 操作の直列化：Web Locks が使えれば、タブをまたいでも一つずつ行う。使えなければそのまま行う */
+  function serial(fn) {
+    try {
+      if (typeof navigator !== "undefined" && navigator && navigator.locks && typeof navigator.locks.request === "function") {
+        return navigator.locks.request(LOCK_NAME, fn);
+      }
+    } catch (_) { }
+    return fn();
+  }
+
+  /* 準備：候補の全ファイルが固定版どおりに揃い、全 FontFace が読めたときだけ成功を返す。
+     読めなかったものは解放し、何も保存・適用しない。 */
+  async function prepare(cand) {
+    let inv;
+    try { inv = await inventory(cand); } catch (_) { return { ok: false, reason: "read" }; }
+    if (cand.files.some(f => inv[f.key].state === "unavailable")) return { ok: false, reason: "read" };
+    if (!cand.files.every(f => inv[f.key].state === "ok")) return { ok: false, reason: "notReady" };
+    const faces = [];
+    try {
+      for (const spec of cand.files) {
+        const face = new FontFace(spec.family, inv[spec.key].buf, { display: "swap" });
+        await withLimit(face.load());
+        faces.push(face);
+      }
+    } catch (_) {
+      for (const f of faces) { try { document.fonts.delete(f); } catch (_e) { } }
+      return { ok: false, reason: "load" };
+    }
+    return { ok: true, reason: "", faces };
+  }
+
+  /* 選択。新しい候補は準備（全ファイルの読み込み）が済んでから保存する。
+     どこかで失敗したら保存も適用もせず、以前の選択と表示をそのまま残して理由を返す。
+     準備の途中で後から別の選択・オフ・削除が始まったら、この結果は保存も適用もしない（superseded）。 */
   async function choose(v) {
     const id = byId(v) ? v : "";
-    if (id && !(await ready(id))) {
+    const my = ++choiceSeq;
+    choosingId = id;
+    return serial(() => runChoose(id, my));
+  }
+  async function runChoose(id, my) {
+    if (my !== choiceSeq) return { ok: false, reason: "superseded" };
+    if (!id) {
+      if (!writeChoice("")) { await refresh(); return { ok: false, reason: "choice" }; }
+      offerId = "";
       await refresh();
-      return { ok: false, reason: "notReady" };
+      notifyOthers();
+      return { ok: true, reason: "" };
     }
-    if (!writeChoice(id)) { await refresh(); return { ok: false, reason: "choice" }; }
+    const cand = byId(id);
+    /* 失敗しても、いまの選択と表示には触らない（読み直すと、今使っている書体まで外れてしまうため） */
+    const prep = await prepare(cand);
+    if (!prep.ok) return { ok: false, reason: prep.reason };
+    /* 準備の途中で、後から別の選択・オフ・削除が始まっていれば、この古い結果は保存も適用もしない */
+    if (my !== choiceSeq || removingId === id) {
+      for (const f of prep.faces) { try { document.fonts.delete(f); } catch (_) { } }
+      return { ok: false, reason: "superseded" };
+    }
+    if (!writeChoice(id)) {
+      for (const f of prep.faces) { try { document.fonts.delete(f); } catch (_) { } }
+      return { ok: false, reason: "choice" };
+    }
     offerId = "";
-    await refresh();
+    const mySeq = ++seq;
+    releaseFaces();
+    for (const f of prep.faces) { document.fonts.add(f); liveFaces.push(f); }
+    if (mySeq !== seq) return { ok: true, reason: "" };
+    activate(cand, prep.faces);
+    setState({ status: "active", id, detail: "" });
     notifyOthers();
     return { ok: true, reason: "" };
   }
@@ -293,7 +423,7 @@
     if (text != null) n.textContent = text;
     return n;
   }
-  const REASON_KEY = { mismatch: "tfReasonMismatch", save: "tfReasonSave", crypto: "tfReasonCrypto", read: "tfReasonRead", unknown: "tfReasonRead", size: "tfReasonSize", notReady: "tfReasonNotReady", choice: "tfReasonChoice" };
+  const REASON_KEY = { mismatch: "tfReasonMismatch", save: "tfReasonSave", crypto: "tfReasonCrypto", read: "tfReasonRead", unknown: "tfReasonRead", size: "tfReasonSize", notReady: "tfReasonNotReady", choice: "tfReasonChoice", load: "tfReasonLoad", superseded: "tfReasonSuperseded" };
   function statusText(s) {
     if (s.status === "active") return t("tfActive", { name: (byId(s.id) || {}).name || "" });
     if (s.status === "missing") return t("tfMissing", { files: s.detail });
@@ -439,7 +569,7 @@
   window.Trk.titleFont = {
     CANDIDATES, CLASS_ON, VAR, DB_NAME, CHOICE_KEY, WORKS_KEY,
     sha256Hex, inventory, importFile, removeCandidate, choose, refresh, mount,
-    fontForWork, setWorkFont,
+    fontForWork, setWorkFont, setWorkLink,
     state: () => ({ ...state }),
     readChoice
   };

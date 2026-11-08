@@ -160,7 +160,7 @@ describe("振る舞い（ブラウザなしの最小確認）", () => {
     const h = load({ storage, indexedDBOK: false });
     const r = await h.api.choose("galmuri");
     assert.equal(r.ok, false);
-    assert.equal(r.reason, "notReady");
+    assert.equal(r.reason, "read", "保存領域が使えないときは読めない理由");
     assert.equal(storage.trkTitleFont, "");
     await h.api.choose("<script>");
     assert.equal(storage.trkTitleFont, undefined);
@@ -213,7 +213,7 @@ describe("導入後の選択肢と作品ごとの受け口（trk315 追補）", 
     }
   });
 
-  test("作品ごとの指定：既定は全体の選択に従う。保存・消去・不正な値の拒否", () => {
+  test("作品ごとの連携：既定はオフ。全体の設定が優先し、作品の連携は明示的にオンのときだけ使う", () => {
     const storage = {};
     const sandbox = {
       console, window: {}, localStorage: {
@@ -227,14 +227,31 @@ describe("導入後の選択肢と作品ごとの受け口（trk315 追補）", 
     sandbox.window = sandbox;
     vm.runInNewContext(src, sandbox);
     const api = sandbox.Trk.titleFont;
-    assert.equal(api.fontForWork("pixel-console"), "", "first");
-    assert.equal(api.setWorkFont("pixel-console", "galmuri"), true, "set");
-    assert.equal(api.fontForWork("pixel-console"), "galmuri");   // 保存された候補IDを返す（適用前の確認は呼び出し側）
-    assert.equal(api.fontForWork("other-work"), "");              // 指定のない作品は全体の選択（既定は使わない）
+    assert.equal(api.setWorkFont("pixel-console", "dotneo"), true, "指定");
+    assert.equal(api.fontForWork("pixel-console"), "", "指定しただけでは連携はオフ");
+    assert.equal(api.setWorkLink("pixel-console", true), true, "連携オン");
+    assert.equal(api.fontForWork("pixel-console"), "dotneo", "全体が空なら作品の連携を使う");
+    assert.equal(api.fontForWork("other-work"), "", "指定のない作品は既存の表示");
+    storage.trkTitleFont = "galmuri";
+    assert.equal(api.fontForWork("pixel-console"), "galmuri", "全体の設定が優先（作品の指定は消さない）");
+    assert.equal(JSON.parse(storage[api.WORKS_KEY])["pixel-console"].font, "dotneo", "作品の指定は残る");
+    delete storage.trkTitleFont;
+    assert.equal(api.setWorkLink("pixel-console", false), true);
+    assert.equal(api.fontForWork("pixel-console"), "", "連携オフなら使わない");
+    assert.equal(api.setWorkLink("nobody", true), false, "指定のない作品はオンにできない");
     assert.equal(api.setWorkFont("__proto__", "galmuri"), false);
     assert.equal(api.setWorkFont("x", "<script>"), false);
     assert.equal(api.setWorkFont("", "galmuri"), false);
-    assert.equal(api.setWorkFont("pixel-console", ""), true);
+    assert.equal(api.setWorkFont("pixel-console", ""), true, "空なら指定を消す");
     assert.equal(JSON.parse(storage[api.WORKS_KEY]).hasOwnProperty("pixel-console"), false);
+  });
+
+  test("選択は、読み込みを済ませてから保存する（失敗したら保存も適用もしない）", () => {
+    const body = src.slice(src.indexOf("async function choose(v)"), src.indexOf("/* 別のタブでの導入"));
+    assert.ok(body.indexOf("await prepare(cand)") > 0);
+    assert.ok(body.indexOf("await prepare(cand)") < body.indexOf("writeChoice(id)"), "準備が先、保存が後");
+    assert.ok(/reason: "load"/.test(src), "読み込み失敗の理由がある");
+    const i18n = fs.readFileSync(`${ROOT}/js/i18n.js`, "utf8");
+    assert.ok(i18n.includes("tfReasonLoad:"), "読み込み失敗の文言（ja・en）");
   });
 });
