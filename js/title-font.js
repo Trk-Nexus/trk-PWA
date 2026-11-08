@@ -129,9 +129,21 @@
   /* 作品に適用する候補。優先順位：利用者が明示した全体の設定 ＞ 作品の連携（明示的にオンのときだけ）。
      全体の設定が選ばれているのに準備できていなくても、作品の連携へは乗り換えない（黙って差し替えない）。 */
   /* この候補を作品の指定に使っている件数（削除の説明に使う。指定そのものは変えない） */
+  /* 読めない保存のときは null（0 件と断定しない） */
   function linkedWorkCount(candId) {
+    if (!worksIntact()) return null;
     const w = readWorks();
     return Object.keys(w).filter(k => w[k].font === candId).length;
+  }
+  /* 削除の確認文：使用中かどうか・作品の指定の件数（不明なら不明と書く）で文を組み立てる */
+  function removeConfirmText(c) {
+    const parts = [t("tfRemoveConfirmBase", { name: c.name })];
+    parts.push(readChoice() === c.id ? t("tfRemoveEffectActive") : t("tfRemoveEffectOther"));
+    const n = linkedWorkCount(c.id);
+    if (n === null) parts.push(t("tfRemoveWorksUnknown"));
+    else if (n > 0) parts.push(t("tfRemoveWorks", { n: String(n) }));
+    parts.push(t("tfRemoveEnd"));
+    return parts.join("");
   }
   function fontForWork(workId) {
     const g = readChoice();
@@ -324,11 +336,11 @@
       await refresh();
       return { ok: false, reason: "save" };
     }
-    let reason = "";
-    if (readChoice() === candId && !writeChoice("")) reason = "choice";
+    /* ファイルは消えた。選択の解除だけ失敗したら「部分的」と返す（何が消え、何が残ったかを伝えるため） */
+    const partial = readChoice() === candId && !writeChoice("");
     await refresh();
     notifyOthers();
-    return { ok: !reason, reason };
+    return partial ? { ok: false, reason: "partial" } : { ok: true, reason: "" };
   }
 
   /* 候補の全ファイルが固定版どおりに揃っているか（読み込み可能かは refresh が確かめる） */
@@ -428,7 +440,7 @@
     if (text != null) n.textContent = text;
     return n;
   }
-  const REASON_KEY = { mismatch: "tfReasonMismatch", save: "tfReasonSave", crypto: "tfReasonCrypto", read: "tfReasonRead", unknown: "tfReasonRead", size: "tfReasonSize", notReady: "tfReasonNotReady", choice: "tfReasonChoice", load: "tfReasonLoad", superseded: "tfReasonSuperseded" };
+  const REASON_KEY = { mismatch: "tfReasonMismatch", save: "tfReasonSave", crypto: "tfReasonCrypto", read: "tfReasonRead", unknown: "tfReasonRead", size: "tfReasonSize", notReady: "tfReasonNotReady", choice: "tfReasonChoice", load: "tfReasonLoad", superseded: "tfReasonSuperseded", partial: "tfReasonPartial" };
   function statusText(s) {
     if (s.status === "active") return t("tfActive", { name: (byId(s.id) || {}).name || "" });
     if (s.status === "missing") return t("tfMissing", { files: s.detail });
@@ -527,13 +539,11 @@
         const del = el("button", "titleFontRemove", t("tfRemove"));
         del.type = "button";
         del.addEventListener("click", async () => {
-          const n = linkedWorkCount(c.id);
-          const question = n > 0 ? t("tfRemoveConfirmWorks", { name: c.name, n: String(n) }) : t("tfRemoveConfirm", { name: c.name });
-          if (!window.confirm(question)) return;
+          if (!window.confirm(removeConfirmText(c))) return;
           const r = await removeCandidate(c.id);
           await render(container);
           const l = document.getElementById("titleFontState");
-          if (l) l.textContent = (r.ok ? t("tfRemoved") : t("tfReasonSave")) + " " + statusText(state);
+          if (l) l.textContent = (r.ok ? t("tfRemoved") : t(REASON_KEY[r.reason] || "tfReasonSave")) + " " + statusText(state);
         });
         card.appendChild(del);
       }
@@ -575,7 +585,7 @@
   window.Trk = window.Trk || {};
   window.Trk.titleFont = {
     CANDIDATES, CLASS_ON, VAR, DB_NAME, CHOICE_KEY, WORKS_KEY,
-    linkedWorkCount, sha256Hex, inventory, importFile, removeCandidate, choose, refresh, mount,
+    linkedWorkCount, removeConfirmText, sha256Hex, inventory, importFile, removeCandidate, choose, refresh, mount,
     fontForWork, setWorkFont, setWorkLink,
     state: () => ({ ...state }),
     readChoice
