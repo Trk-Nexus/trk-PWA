@@ -128,6 +128,11 @@
   }
   /* 作品に適用する候補。優先順位：利用者が明示した全体の設定 ＞ 作品の連携（明示的にオンのときだけ）。
      全体の設定が選ばれているのに準備できていなくても、作品の連携へは乗り換えない（黙って差し替えない）。 */
+  /* この候補を作品の指定に使っている件数（削除の説明に使う。指定そのものは変えない） */
+  function linkedWorkCount(candId) {
+    const w = readWorks();
+    return Object.keys(w).filter(k => w[k].font === candId).length;
+  }
   function fontForWork(workId) {
     const g = readChoice();
     if (g) return g;
@@ -522,7 +527,9 @@
         const del = el("button", "titleFontRemove", t("tfRemove"));
         del.type = "button";
         del.addEventListener("click", async () => {
-          if (!window.confirm(t("tfRemoveConfirm", { name: c.name }))) return;
+          const n = linkedWorkCount(c.id);
+          const question = n > 0 ? t("tfRemoveConfirmWorks", { name: c.name, n: String(n) }) : t("tfRemoveConfirm", { name: c.name });
+          if (!window.confirm(question)) return;
           const r = await removeCandidate(c.id);
           await render(container);
           const l = document.getElementById("titleFontState");
@@ -568,7 +575,7 @@
   window.Trk = window.Trk || {};
   window.Trk.titleFont = {
     CANDIDATES, CLASS_ON, VAR, DB_NAME, CHOICE_KEY, WORKS_KEY,
-    sha256Hex, inventory, importFile, removeCandidate, choose, refresh, mount,
+    linkedWorkCount, sha256Hex, inventory, importFile, removeCandidate, choose, refresh, mount,
     fontForWork, setWorkFont, setWorkLink,
     state: () => ({ ...state }),
     readChoice

@@ -270,3 +270,24 @@ describe("C. 削除の競合・壊れた保存・直列化（trk319）", () => {
     assert.ok(/navigator\.locks\.request\(LOCK_NAME/.test(realSrc));
   });
 });
+
+describe("D. 削除の説明：指定している作品の件数（trk320）", () => {
+  test("候補ごとに、その書体を指定している作品の数を数える（指定は変えない）", () => {
+    const h = harness({ withFiles: false });
+    h.api.setWorkFont("w1", "galmuri");
+    h.api.setWorkFont("w2", "galmuri");
+    h.api.setWorkFont("w3", "press");
+    const before = h.storage[h.api.WORKS_KEY];
+    assert.equal(h.api.linkedWorkCount("galmuri"), 2);
+    assert.equal(h.api.linkedWorkCount("press"), 1);
+    assert.equal(h.api.linkedWorkCount("dotneo"), 0);
+    assert.equal(h.storage[h.api.WORKS_KEY], before, "数えるだけで保存は変えない");
+  });
+
+  test("削除の確認文に件数と「指定は残る」を書く（ja・en の両方）", () => {
+    const i18n = fs.readFileSync(`${ROOT}/js/i18n.js`, "utf8");
+    assert.equal((i18n.match(/tfRemoveConfirmWorks:/g) || []).length, 2);
+    assert.ok(/tfRemoveConfirmWorks:"[^"]*\{n\}[^"]*指定は残ります/.test(i18n), "日本語");
+    assert.ok(/tfRemoveConfirmWorks:"[^"]*\{n\} work\(s\)[^"]*stay/.test(i18n), "英語");
+  });
+});
