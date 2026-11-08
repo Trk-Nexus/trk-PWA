@@ -79,6 +79,13 @@
   let seq = 0;
   /* 全体の選択の世代。準備の途中で新しい選択・オフが始まったら、古い準備の結果は保存しない（refresh の seq とは別に数える） */
   let choiceSeq = 0;
+  /* いま選択中（準備中を含む）の候補と、削除の途中の候補。削除・導入で前提が変わったら古い準備を取り消す */
+  let choosingId = "";
+  let removingId = "";
+  /* 複数のタブでも、選択・削除・導入を一つずつ行うための名前（Web Locks が使えるときだけ） */
+  const LOCK_NAME = "trk-title-font";
+  /* 1 つの書体の読み込みに待つ上限（待ち続けて、ほかの操作を止めないため） */
+  const LOAD_LIMIT_MS = 15000;
   /* 導入し終えた候補のうち、まだ題字に使うか聞いていないもの（使わないを既定にしたまま、選択肢を見せる） */
   let offerId = "";
   const listeners = [];
@@ -136,8 +143,16 @@
   }
   /* 作品の候補を指定する（候補IDが空なら指定を消す）。連携のオン・オフは別の操作（setWorkLink）。
      指定しただけでは連携はオンにならない。 */
+  /* 作品の保存が壊れている（JSON でない・オブジェクトでない）ときは、上書きせず書き込みを拒否する */
+  function worksIntact() {
+    let s;
+    try { s = localStorage.getItem(WORKS_KEY); } catch (_) { return false; }
+    if (s === null || s === "") return true;
+    try { const o = JSON.parse(s); return !!o && typeof o === "object" && !Array.isArray(o); }
+    catch (_) { return false; }
+  }
   function setWorkFont(workId, candId) {
-    if (!validWorkId(workId)) return false;
+    if (!validWorkId(workId) || !worksIntact()) return false;
     if (candId && !byId(candId)) return false;
     const w = readWorksRaw();
     const cur = readWorks()[workId];
@@ -146,7 +161,7 @@
   }
   /* 作品ごとの連携のオン・オフ（候補が指定されていなければ何もしない） */
   function setWorkLink(workId, on) {
-    if (!validWorkId(workId)) return false;
+    if (!validWorkId(workId) || !worksIntact()) return false;
     const cur = readWorks()[workId];
     if (!cur) return false;
     const w = readWorksRaw();
@@ -258,6 +273,10 @@
 
   /* 導入：選んだファイルが固定版と一致するときだけ保存する。戻り値は結果の理由（画面の文言に使う） */
   async function importFile(candId, key, file) {
+    if (choosingId === candId) { choiceSeq++; choosingId = ""; }
+    return serial(() => importNow(candId, key, file));
+  }
+  async function importNow(candId, key, file) {
     const cand = byId(candId), spec = fileSpec(cand, key);
     if (!spec) return { ok: false, reason: "unknown" };
     if (!file || !window.crypto || !crypto.subtle) return { ok: false, reason: "crypto" };
@@ -279,6 +298,13 @@
   async function removeCandidate(candId) {
     const cand = byId(candId);
     if (!cand) return { ok: false, reason: "unknown" };
+    /* 削除の前提が消えるので、準備中の同じ候補の選択は取り消す（先に世代を進める。読み込み完了を待たない） */
+    if (choosingId === candId) { choiceSeq++; choosingId = ""; }
+    removingId = candId;
+    try { return await serial(() => removeNow(cand, candId)); }
+    finally { if (removingId === candId) removingId = ""; }
+  }
+  async function removeNow(cand, candId) {
     try {
       const db = await openDb();
       await new Promise((resolve, reject) => {
@@ -308,6 +334,21 @@
     return cand.files.every(f => inv[f.key].state === "ok");
   }
 
+  function withLimit(p) {
+    let timer = 0;
+    const limit = new Promise((_, rej) => { timer = setTimeout(() => rej(new Error("timeout")), LOAD_LIMIT_MS); });
+    return Promise.race([p, limit]).then(v => { clearTimeout(timer); return v; }, e => { clearTimeout(timer); throw e; });
+  }
+  /* 操作の直列化：Web Locks が使えれば、タブをまたいでも一つずつ行う。使えなければそのまま行う */
+  function serial(fn) {
+    try {
+      if (typeof navigator !== "undefined" && navigator && navigator.locks && typeof navigator.locks.request === "function") {
+        return navigator.locks.request(LOCK_NAME, fn);
+      }
+    } catch (_) { }
+    return fn();
+  }
+
   /* 準備：候補の全ファイルが固定版どおりに揃い、全 FontFace が読めたときだけ成功を返す。
      読めなかったものは解放し、何も保存・適用しない。 */
   async function prepare(cand) {
@@ -319,7 +360,7 @@
     try {
       for (const spec of cand.files) {
         const face = new FontFace(spec.family, inv[spec.key].buf, { display: "swap" });
-        await face.load();
+        await withLimit(face.load());
         faces.push(face);
       }
     } catch (_) {
@@ -330,10 +371,16 @@
   }
 
   /* 選択。新しい候補は準備（全ファイルの読み込み）が済んでから保存する。
-     どこかで失敗したら保存も適用もせず、以前の選択と表示をそのまま残して理由を返す。 */
+     どこかで失敗したら保存も適用もせず、以前の選択と表示をそのまま残して理由を返す。
+     準備の途中で後から別の選択・オフ・削除が始まったら、この結果は保存も適用もしない（superseded）。 */
   async function choose(v) {
     const id = byId(v) ? v : "";
     const my = ++choiceSeq;
+    choosingId = id;
+    return serial(() => runChoose(id, my));
+  }
+  async function runChoose(id, my) {
+    if (my !== choiceSeq) return { ok: false, reason: "superseded" };
     if (!id) {
       if (!writeChoice("")) { await refresh(); return { ok: false, reason: "choice" }; }
       offerId = "";
@@ -345,8 +392,8 @@
     /* 失敗しても、いまの選択と表示には触らない（読み直すと、今使っている書体まで外れてしまうため） */
     const prep = await prepare(cand);
     if (!prep.ok) return { ok: false, reason: prep.reason };
-    /* 準備の途中で、後から別の選択やオフが始まっていれば、この古い結果は保存も適用もしない */
-    if (my !== choiceSeq) {
+    /* 準備の途中で、後から別の選択・オフ・削除が始まっていれば、この古い結果は保存も適用もしない */
+    if (my !== choiceSeq || removingId === id) {
       for (const f of prep.faces) { try { document.fonts.delete(f); } catch (_) { } }
       return { ok: false, reason: "superseded" };
     }

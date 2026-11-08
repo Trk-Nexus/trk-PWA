@@ -28,7 +28,7 @@ async function waitFor(pred) {
 }
 
 /* 固定版のハッシュを、模擬のファイルの中身のハッシュに差し替えたソースを作る（実際の書体は使わない） */
-function harness({ withFiles = true } = {}) {
+function harness({ withFiles = true, locks = null } = {}) {
   const galmuri = candidatesFromSource().find(c => c.id === "galmuri");
   let src = realSrc;
   const fake = new Map();
@@ -79,6 +79,7 @@ function harness({ withFiles = true } = {}) {
       }
     },
     crypto: crypto.webcrypto,
+    navigator: locks ? { locks } : undefined,
     document: {
       readyState: "complete",
       getElementById: () => null,
@@ -182,5 +183,90 @@ describe("B. 旧形式の作品の指定を消さない", () => {
   test("理由 superseded の文言が ja・en にある", () => {
     const i18n = fs.readFileSync(`${ROOT}/js/i18n.js`, "utf8");
     assert.equal((i18n.match(/tfReasonSuperseded:/g) || []).length, 2);
+  });
+});
+
+/* 一つずつ順番に行うだけの、Web Locks の模擬（同じ名前の要求は前の要求が終わってから動く） */
+function fakeLocks() {
+  let tail = Promise.resolve();
+  return { request(name, fn) { const run = tail.then(() => fn()); tail = run.then(() => { }, () => { }); return run; } };
+}
+
+describe("C. 削除の競合・壊れた保存・直列化（trk319）", () => {
+  test("選択準備→同じ候補の削除→遅延完了：古い選択は保存されず、削除の結果が残る", async () => {
+    const h = harness();
+    const p1 = h.api.choose("galmuri");
+    await waitFor(() => h.pending.length > 0);
+    const rd = await h.api.removeCandidate("galmuri");
+    assert.equal(plain(rd).ok, true, "削除は成功");
+    while (h.pending.length) { h.pending.shift()(); await tick(); }
+    const r1 = await p1;
+    assert.equal(r1.reason, "superseded", "古い準備は取り消される");
+    assert.equal(h.storage.trkTitleFont, undefined, "選択が復活しない");
+    assert.equal(h.records.size, 0, "削除した書体は残らない");
+    assert.equal(h.classes.has(h.api.CLASS_ON), false, "表示も復活しない");
+  });
+
+  test("別の候補の削除は、進行中の選択を取り消さない", async () => {
+    const h = harness();
+    const p1 = h.api.choose("galmuri");
+    await waitFor(() => h.pending.length > 0);
+    const rd = await h.api.removeCandidate("press");
+    assert.equal(plain(rd).ok, true);
+    while (h.pending.length) { h.pending.shift()(); await tick(); }
+    assert.deepEqual(plain(await p1), { ok: true, reason: "" });
+    assert.equal(h.storage.trkTitleFont, "galmuri");
+    assert.equal(h.classes.has(h.api.CLASS_ON), true);
+  });
+
+  test("直列化の模擬：削除は、進行中の選択が終わるまで行われない", async () => {
+    const h = harness({ locks: fakeLocks() });
+    const p1 = h.api.choose("galmuri");
+    await waitFor(() => h.pending.length > 0);
+    const before = h.records.size;
+    assert.ok(before > 0, "削除の前に書体がある");
+    const pd = h.api.removeCandidate("galmuri");
+    for (let i = 0; i < 20; i++) await tick();
+    assert.equal(h.records.size, before, "選択が終わるまで、まだ削除されていない");
+    while (h.pending.length) { h.pending.shift()(); await tick(); }
+    assert.equal(plain(await p1).reason, "superseded");
+    assert.equal(plain(await pd).ok, true);
+    assert.equal(h.records.size, 0, "その後に削除される");
+    assert.equal(h.storage.trkTitleFont, undefined);
+  });
+
+  test("壊れた保存（JSON として読めない）は上書きせず、書き込みを拒否する", () => {
+    const h = harness({ withFiles: false });
+    const broken = '{"old-work":';
+    h.storage[h.api.WORKS_KEY] = broken;
+    assert.equal(h.api.setWorkFont("new-work", "dotneo"), false, "拒否");
+    assert.equal(h.api.setWorkLink("old-work", true), false, "拒否");
+    assert.equal(h.storage[h.api.WORKS_KEY], broken, "元の文字列を残す");
+  });
+
+  test("オブジェクトでない保存（配列・数値）も拒否する。空は通常どおり書ける", () => {
+    const h = harness({ withFiles: false });
+    h.storage[h.api.WORKS_KEY] = "[1,2]";
+    assert.equal(h.api.setWorkFont("a", "galmuri"), false);
+    h.storage[h.api.WORKS_KEY] = "42";
+    assert.equal(h.api.setWorkFont("a", "galmuri"), false);
+    delete h.storage[h.api.WORKS_KEY];
+    assert.equal(h.api.setWorkFont("a", "galmuri"), true, "空からは書ける");
+  });
+
+  test("選択と削除は、ロックが使えるとき同じ順番で行う（削除は選択の後）", async () => {
+    const h = harness({ locks: fakeLocks() });
+    const order = [];
+    const pa = h.api.choose("galmuri").then(r => order.push("choose:" + r.reason));
+    await waitFor(() => h.pending.length > 0);
+    const pb = h.api.removeCandidate("galmuri").then(() => order.push("remove"));
+    while (h.pending.length) { h.pending.shift()(); await tick(); }
+    await Promise.all([pa, pb]);
+    assert.deepEqual(order, ["choose:superseded", "remove"]);
+  });
+
+  test("直列化の仕組み（Web Locks）は、固定の名前で呼ばれる", () => {
+    assert.ok(/LOCK_NAME = "trk-title-font"/.test(realSrc));
+    assert.ok(/navigator\.locks\.request\(LOCK_NAME/.test(realSrc));
   });
 });
