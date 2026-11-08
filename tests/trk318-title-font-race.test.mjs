@@ -18,6 +18,14 @@ function candidatesFromSource() {
   const end = realSrc.indexOf("];", start);
   return vm.runInNewContext("(" + realSrc.slice(start + "const CANDIDATES = ".length, end + 1) + ")");
 }
+/* 試験の中の翻訳：js/i18n.js の日本語（先頭の定義）を使う。画面の window.tr と同じ置き換え方 */
+const i18nSrc = fs.readFileSync(`${ROOT}/js/i18n.js`, "utf8");
+function trFromI18n(key, vars) {
+  const m = new RegExp("\\b" + key + ":\"((?:[^\"\\\\]|\\\\.)*)\"").exec(i18nSrc);
+  let out = m ? m[1].replace(/\\"/g, '"') : key;
+  for (const k of Object.keys(vars || {})) out = out.split("{" + k + "}").join(String(vars[k]));
+  return out;
+}
 const sha = buf => crypto.createHash("sha256").update(buf).digest("hex");
 /* vm の中で作られた値を、このテストの実行環境の値に直す */
 const plain = o => JSON.parse(JSON.stringify(o));
@@ -28,7 +36,7 @@ async function waitFor(pred) {
 }
 
 /* 固定版のハッシュを、模擬のファイルの中身のハッシュに差し替えたソースを作る（実際の書体は使わない） */
-function harness({ withFiles = true, locks = null } = {}) {
+function harness({ withFiles = true, locks = null, failChoiceRemove = false } = {}) {
   const galmuri = candidatesFromSource().find(c => c.id === "galmuri");
   let src = realSrc;
   const fake = new Map();
@@ -52,7 +60,7 @@ function harness({ withFiles = true, locks = null } = {}) {
     localStorage: {
       getItem: k => (k in storage ? storage[k] : null),
       setItem: (k, v) => { storage[k] = String(v); },
-      removeItem: k => { delete storage[k]; }
+      removeItem: k => { if (failChoiceRemove && k === "trkTitleFont") throw new Error("denied"); delete storage[k]; }
     },
     indexedDB: {
       open() {
@@ -79,6 +87,7 @@ function harness({ withFiles = true, locks = null } = {}) {
       }
     },
     crypto: crypto.webcrypto,
+    tr: trFromI18n,
     navigator: locks ? { locks } : undefined,
     document: {
       readyState: "complete",
@@ -182,7 +191,7 @@ describe("B. 旧形式の作品の指定を消さない", () => {
 
   test("理由 superseded の文言が ja・en にある", () => {
     const i18n = fs.readFileSync(`${ROOT}/js/i18n.js`, "utf8");
-    assert.equal((i18n.match(/tfReasonSuperseded:/g) || []).length, 2);
+    assert.equal((i18n.match(/tfReasonSuperseded:/g) || []).length, 4, "ja・en・zh・ko");
   });
 });
 
@@ -268,5 +277,80 @@ describe("C. 削除の競合・壊れた保存・直列化（trk319）", () => {
   test("直列化の仕組み（Web Locks）は、固定の名前で呼ばれる", () => {
     assert.ok(/LOCK_NAME = "trk-title-font"/.test(realSrc));
     assert.ok(/navigator\.locks\.request\(LOCK_NAME/.test(realSrc));
+  });
+});
+
+describe("D. 削除の説明：指定している作品の件数（trk320）", () => {
+  test("候補ごとに、その書体を指定している作品の数を数える（指定は変えない）", () => {
+    const h = harness({ withFiles: false });
+    h.api.setWorkFont("w1", "galmuri");
+    h.api.setWorkFont("w2", "galmuri");
+    h.api.setWorkFont("w3", "press");
+    const before = h.storage[h.api.WORKS_KEY];
+    assert.equal(h.api.linkedWorkCount("galmuri"), 2);
+    assert.equal(h.api.linkedWorkCount("press"), 1);
+    assert.equal(h.api.linkedWorkCount("dotneo"), 0);
+    assert.equal(h.storage[h.api.WORKS_KEY], before, "数えるだけで保存は変えない");
+  });
+
+  test("削除の文言のキーは ja・en の両方にある", () => {
+    const i18n = fs.readFileSync(`${ROOT}/js/i18n.js`, "utf8");
+    for (const k of ["tfRemoveConfirmBase", "tfRemoveEffectActive", "tfRemoveEffectOther", "tfRemoveWorks", "tfRemoveWorksUnknown", "tfRemoveEnd", "tfReasonPartial"]) {
+      assert.equal((i18n.match(new RegExp(k + ":", "g")) || []).length, 4, k + "（ja・en・zh・ko）");
+    }
+    assert.ok(/tfRemoveWorks:"[^"]*\{n\}[^"]*指定は残ります/.test(i18n), "日本語の件数");
+  });
+
+  test("保存が読めないとき件数は null（0 件と断定しない）", () => {
+    const h = harness({ withFiles: false });
+    h.storage[h.api.WORKS_KEY] = '{"old-work":';
+    assert.equal(h.api.linkedWorkCount("galmuri"), null);
+    const text = h.api.removeConfirmText({ id: "galmuri", name: "Galmuri11" });
+    assert.ok(text.includes("確認できません") || text.includes("could not be read"), text);
+  });
+});
+
+describe("E. 削除の文言と部分的な失敗（trk320）", () => {
+  test("確認文：適用中の候補は元に戻る、選ばれているが適用中でない・選ばれていないものは題字は変わらない（trk322）", async () => {
+    const h = harness({ withFiles: true });
+    const p1 = h.api.choose("galmuri");
+    await waitFor(() => h.pending.length > 0);
+    while (h.pending.length) { h.pending.shift()(); await tick(); }
+    await p1;
+    const active = h.api.removeConfirmText({ id: "galmuri", name: "Galmuri11" });
+    assert.ok(active.includes("元の表示に戻ります"), active);
+    const other = h.api.removeConfirmText({ id: "press", name: "Press Start 2P" });
+    assert.ok(other.includes("変わりません"), other);
+    assert.ok(!other.includes("元の表示に戻ります"), other);
+    /* 選ばれているが、準備できず適用中でない（ファイルが無い） */
+    const h2 = harness({ withFiles: false });
+    h2.storage.trkTitleFont = "galmuri";
+    const hidden = h2.api.removeConfirmText({ id: "galmuri", name: "Galmuri11" });
+    assert.ok(hidden.includes("表示されていません"), hidden);
+    assert.ok(!hidden.includes("元の表示に戻ります"), hidden);
+  });
+
+  test("選択の解除だけ失敗：ファイルは消え、結果は partial（選択は残ると分かる）", async () => {
+    const h = harness({ failChoiceRemove: true });
+    const p1 = h.api.choose("galmuri");
+    await waitFor(() => h.pending.length > 0);
+    while (h.pending.length) { h.pending.shift()(); await tick(); }
+    assert.equal(plain(await p1).ok, true);
+    assert.equal(h.storage.trkTitleFont, "galmuri");
+    const r = plain(await h.api.removeCandidate("galmuri"));
+    assert.deepEqual(r, { ok: false, reason: "partial" });
+    assert.equal(h.records.size, 0, "ファイルは消えている");
+    assert.equal(h.storage.trkTitleFont, "galmuri", "選択は残っている（と案内する）");
+    assert.equal(h.classes.has(h.api.CLASS_ON), false, "表示は元に戻っている");
+  });
+
+  test("ファイルの削除そのものが失敗したら save（従来どおり、表示は変わらない）", async () => {
+    const h = harness({ withFiles: true });
+    const p1 = h.api.choose("galmuri");
+    await waitFor(() => h.pending.length > 0);
+    while (h.pending.length) { h.pending.shift()(); await tick(); }
+    await p1;
+    assert.equal(h.storage.trkTitleFont, "galmuri");
+    assert.equal(h.classes.has(h.api.CLASS_ON), true);
   });
 });

@@ -99,6 +99,6 @@ test("文言：新しいキーは 4 言語とも揃っている", () => {
 });
 
 test("版：trk308（index.html・sw.js）", () => {
-  assert.match(read("index.html"), /name="trk-build" content=\"trk319\"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk319";/);
+  assert.match(read("index.html"), /name="trk-build" content=\"trk323\"/);
+  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk323";/);
 });
