@@ -50,3 +50,15 @@
 - 実機・他ブラウザ・支援技術・話者による確認は未実施。
 - 非協調タブの競合（確認と削除の間の書き込み）は、比べる仕組みで減らしたが、防いではいない。
 - 退避は生の値を封筒にしてダウンロードするだけで、アプリ内の復元は未実装。
+
+## 7. 対応の記録
+
+| 項目 | 内容 |
+|---|---|
+| 対応の版 | trk324（cache `trk-v2026.11.04-trk324`） |
+| PR | #110（`arena/71c00c4a-trk-pwa`、head `b6aceed`） |
+| 確認 | `npm run check` 1963/1963、Static check passed、PR の check 成功 |
+| 依頼者の判断 | 対応を記録して merge |
+| 一括の成果物 | `trk324-pwa-review-package.zip`（この文書、差分、変更した js・試験・文書）を Drive に upload |
+
+merge の後の `main` は、PR #110 の merge commit を参照してください。
