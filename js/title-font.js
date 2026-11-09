@@ -116,17 +116,15 @@
     try { o = JSON.parse(s); }
     catch (_) { return { state: "invalid", raw: s, obj: null }; }
     if (!o || typeof o !== "object" || Array.isArray(o)) return { state: "invalid", raw: s, obj: null };
-    const obj = {};
-    for (const k of Object.keys(o)) {
-      if (k && k.length <= 64 && k !== "__proto__") obj[k] = o[k];
-    }
-    return { state: "ok", raw: s, obj };
+    /* 読んだ値はそのまま持つ（キーを捨てない）。書き戻すときに、読めない項目も残すため */
+    return { state: "ok", raw: s, obj: o };
   }
   function writable(snap) { return snap.state === "ok" || snap.state === "absent"; }
   /* 旧形式（trk315）の { 作品ID: 候補ID } は、連携をオフのままの { font, on: false } として読む（自動でオンにはしない） */
   function normalizeWorks(raw) {
     const out = {};
     for (const k of Object.keys(raw)) {
+      if (!validWorkId(k)) continue;
       const v = raw[k];
       if (typeof v === "string" && byId(v)) out[k] = { font: v, on: false };
       else if (v && typeof v === "object" && byId(v.font)) out[k] = { font: v.font, on: v.on === true };
@@ -175,13 +173,32 @@
   }
   /* 作品の候補を指定する（候補IDが空なら指定を消す）。連携のオン・オフは別の操作（setWorkLink）。
      指定しただけでは連携はオンにならない。 */
+  /* 値を、同じ内容の新しいオブジェクトに写す（"__proto__" のような名前も自分のプロパティとして残す） */
+  function ownCopy(src) {
+    const out = {};
+    if (src && typeof src === "object" && !Array.isArray(src)) {
+      for (const k of Object.keys(src)) {
+        Object.defineProperty(out, k, { value: src[k], enumerable: true, writable: true, configurable: true });
+      }
+    }
+    return out;
+  }
+  /* 作品の項目を書く。既存の項目の未知の値は残し、font と on だけを変える */
+  function mergeEntry(raw, patch) {
+    const base = raw && typeof raw === "object" && !Array.isArray(raw) ? ownCopy(raw) : {};
+    for (const k of Object.keys(patch)) {
+      Object.defineProperty(base, k, { value: patch[k], enumerable: true, writable: true, configurable: true });
+    }
+    return base;
+  }
   function setWorkFont(workId, candId) {
     const snap = snapshotWorks();
     if (!validWorkId(workId) || !writable(snap)) return false;
     if (candId && !byId(candId)) return false;
     const w = snap.obj;
     const cur = normalizeWorks(w)[workId];
-    if (candId) w[workId] = { font: candId, on: cur ? cur.on : false }; else delete w[workId];
+    if (candId) w[workId] = mergeEntry(w[workId], { font: candId, on: cur ? cur.on : false });
+    else delete w[workId];
     return saveWorks(w);
   }
   /* 作品ごとの連携のオン・オフ（指定がなければ何もしない） */
@@ -191,7 +208,7 @@
     const cur = normalizeWorks(snap.obj)[workId];
     if (!cur) return false;
     const w = snap.obj;
-    w[workId] = { font: cur.font, on: !!on };
+    w[workId] = mergeEntry(w[workId], { font: cur.font, on: !!on });
     return saveWorks(w);
   }
   /* 退避：読めたときだけ、保存の生の値を JSON の封筒にして返す（画面・ログには出さない）。
@@ -205,10 +222,12 @@
   }
   /* 削除：作品の指定だけを消す（書体ファイル・題字の選択・他の設定は消さない）。読めないときは消さない。
      消した後に確かめられなければ unknown（結果が分からない）。 */
-  function removeWorksSettings() {
+  function removeWorksSettings(seenRaw) {
     const snap = snapshotWorks();
     if (snap.state === "unreadable") return { ok: false, reason: "read" };
     if (snap.state === "absent") return { ok: true, reason: "" };
+    /* 確認の画面を出したあとに保存が変わっていたら、確認していない値を消すので止める */
+    if (seenRaw !== undefined && snap.raw !== seenRaw) return { ok: false, reason: "changed" };
     try { localStorage.removeItem(WORKS_KEY); } catch (_) { return { ok: false, reason: "save" }; }
     let still;
     try { still = localStorage.getItem(WORKS_KEY); } catch (_) { return { ok: false, reason: "unknown" }; }
@@ -605,6 +624,10 @@
       : snapW.state === "ok" ? t("tfWorksOk", { n: String(Object.keys(normalizeWorks(snapW.obj)).length) })
       : snapW.state === "invalid" ? t("tfWorksInvalid") : t("tfWorksUnreadable");
     worksBox.appendChild(el("div", "hint", wLine));
+    if (snapW.obj && snapW.state === "ok") {
+      const other = Object.keys(snapW.obj).length - Object.keys(normalizeWorks(snapW.obj)).length;
+      if (other > 0) worksBox.appendChild(el("div", "hint", t("tfWorksOther", { n: String(other) })));
+    }
     const stateLine = (msg) => { const l = document.getElementById("titleFontState"); if (l) l.textContent = msg; };
     if (snapW.state === "ok" || snapW.state === "invalid") {
       const bk = el("button", "titleFontBackup", t("tfBackup"));
@@ -622,11 +645,16 @@
       worksBox.appendChild(bk);
       const rm = el("button", "titleFontWorksRemove", t("tfWorksRemove"));
       rm.type = "button";
+      const seenRaw = snapW.raw;
       rm.addEventListener("click", async () => {
-        if (!window.confirm(t("tfWorksRemoveConfirm"))) return;
-        const r = removeWorksSettings();
+        const msg = snapW.state === "invalid" ? t("tfWorksRemoveInvalidConfirm") : t("tfWorksRemoveConfirm");
+        if (!window.confirm(msg)) return;
+        const r = removeWorksSettings(seenRaw);
         await render(container);
-        stateLine(r.ok ? t("tfWorksRemoved") : r.reason === "unknown" ? t("tfReasonUnknown") : t("tfWorksRemoveFail"));
+        stateLine(r.ok ? t("tfWorksRemoved")
+          : r.reason === "unknown" ? t("tfReasonUnknown")
+          : r.reason === "changed" ? t("tfWorksRemoveChanged")
+          : t("tfWorksRemoveFail"));
       });
       worksBox.appendChild(rm);
     }
