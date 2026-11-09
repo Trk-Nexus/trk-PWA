@@ -42,3 +42,13 @@
 
 - 修正後の PWA（trk322、commit は PR #109 の head）で、Avatar の独立試験（`tests/re-modern-pwa-trk321-review.test.mjs`、`TRK_PWA_321` で PWA の checkout を指定）を再実行してほしい。読取例外の試験が通るかを見てほしい。
 - zh・ko の草案は、話者レビューの結果があれば次の版で反映する。
+
+---
+
+## 追記（trk323・trk324 時点）
+
+この返答の執筆時点の記録（「zh・ko は未導入」「PR は merge していない」）は、その後の版で変わっています。
+
+- **zh・ko**：trk323 で草案（`tf*` 46 キー）を入れ、trk322 の 13 キーも訳して入れた（話者未確認）。
+- **PR #109**：merge 済み（`95baac2`）。
+- **trk324**：Avatar 40・PWA レビュー 01 への対応。読めない作品キーを残す、未知の値を残す、削除は確認時と同じ保存のときだけ、`tfHowTo` を実装に合わせる。詳細は `docs/REMODERN-PWA-REPLY-40-2026-11-09.md`。
