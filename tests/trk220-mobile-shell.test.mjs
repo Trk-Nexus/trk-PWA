@@ -335,8 +335,8 @@ describe("trk220 文言（4言語）", () => {
 });
 
 describe("trk220 逃げ道と重なりを残す", () => {
-  test("🛟 セーフモードの浮きボタンは、窓が開いたときだけ引っ込める（プレイ中も残す）", () => {
-    assert.ok(/floatingButton\.hidden = blockingModal;/.test(shellSrc), "窓が開いたときだけ隠す");
+  test("🛟 セーフモードの浮きボタンは、設定がオンのときだけ出し、窓が開いたら引っ込める（プレイ中も残す）", () => {
+    assert.ok(/floatingButton\.hidden = blockingModal \|\| core\.settings\.showFloatingSafeBtn !== true;/.test(shellSrc), "設定がオフまたは窓が開いたときに隠す");
     assert.equal(/floatingButton\.hidden = core\.phase !== "title"/.test(shellSrc), false, "プレイ中でも消さない");
   });
 

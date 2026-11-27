@@ -188,4 +188,44 @@ describe("trk262：配線（本文の目印）", () => {
     assert.equal((mediaSrc.match(/ライブキャプション|Live Captions|实时字幕|라이브 캡션/g) || []).length >= 4, true);
     assert.ok(!mediaSrc.includes("getUserMedia("), "trk はマイクを取らない");
   });
+
+  test("全画面ビューアの ⏪⏩ ボタンは前の曲・次の曲へ移動する（4言語のラベル）", () => {
+    assert.ok(vmSrc.includes("async function stepTrack(dir)"));
+    assert.ok(vmSrc.includes("backNode.addEventListener(\"click\", () => { stepTrack(-1); pokeChrome(); });"));
+    assert.ok(vmSrc.includes("fwdNode.addEventListener(\"click\", () => { stepTrack(1); pokeChrome(); });"));
+    assert.ok(vmSrc.includes('backNode.title = tr("videoMaxPrev")'));
+    assert.ok(vmSrc.includes('fwdNode.title = tr("videoMaxNext")'));
+    assert.ok(mediaSrc.includes("step:stepMedia"));
+    for (const key of ["videoMaxPrev", "videoMaxNext"]) {
+      const n = (vmSrc.match(new RegExp(`${key}:`, "g")) || []).length;
+      assert.equal(n, 4, `${key} が ${n} 言語しかない`);
+    }
+  });
+
+  test("🛟 セーフモードの右下ボタンは設定で表示切替でき、既定はオフ", () => {
+    assert.ok(html.includes('<input id="showFloatingSafeBtn" type="checkbox">'));
+    assert.ok(html.includes('<button id="floatingSafeBtn" type="button" hidden '));
+    assert.ok(css.includes("#floatingSafeBtn[hidden]{display:none!important}"));
+    assert.ok(coreSrc.includes("showFloatingSafeBtn: prefs.showFloatingSafeBtn === true"));
+    assert.ok(coreSrc.includes("fb.hidden = settings.showFloatingSafeBtn !== true;"));
+    for (const key of ["showFloatingSafeBtnLabel", "showFloatingSafeBtnHint"]) {
+      const n = (i18n.match(new RegExp(`${key}:`, "g")) || []).length;
+      assert.equal(n, 4, `${key} が ${n} 言語しかない`);
+    }
+  });
+
+  test("🙈 設定を隠すパネルが緊急復旧の上段にあり、4言語の文言と保存・解除の配線がある", () => {
+    const hideIdx = html.indexOf('id="hideSettingsPanel"');
+    const emgIdx = html.indexOf('id="emergencyPanel"');
+    assert.ok(hideIdx > 0 && emgIdx > hideIdx, "緊急復旧の上段に配置されている");
+    assert.ok(html.includes('id="hideSettingsList"') && html.includes('id="hideSettingsResetBtn"'));
+    assert.ok(css.includes("#settingsScreen details.panel.trk-user-hidden{display:none!important}"));
+    assert.ok(coreSrc.includes("hiddenSettingPanels:"));
+    assert.ok(coreSrc.includes('const HIDE_EXEMPT = new Set(["hideSettingsPanel", "emergencyPanel"])'));
+    assert.ok(read("js/settings-level.js").includes("hideSettingsPanel: 1"));
+    for (const key of ["hideSettingsTitle", "hideSettingsHint", "hideSettingsReset", "hideSettingsCount", "hideSettingsNone"]) {
+      const n = (i18n.match(new RegExp(`${key}:`, "g")) || []).length;
+      assert.equal(n, 4, `${key} が ${n} 言語しかない`);
+    }
+  });
 });

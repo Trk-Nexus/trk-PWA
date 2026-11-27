@@ -1869,6 +1869,16 @@
             <div id="favPanelBody"></div>
           </details>
 
+          <details class="panel" id="hideSettingsPanel">
+            <summary data-i18n="hideSettingsTitle">🙈 設定を隠す</summary>
+            <p class="hint" data-i18n="hideSettingsHint"></p>
+            <div id="hideSettingsList" class="hideSettingsList"></div>
+            <div class="miniActions" style="margin-top:8px">
+              <button id="hideSettingsResetBtn" type="button" class="slim" data-i18n="hideSettingsReset">↺ すべて表示に戻す</button>
+              <span id="hideSettingsStatus" class="hint"></span>
+            </div>
+          </details>
+
           <details class="panel" id="emergencyPanel">
             <summary>🛟 緊急復旧 / Emergency Recovery</summary>
             <div class="hint">
@@ -1881,6 +1891,8 @@
               <button id="emergencyAudioResetBtn" type="button">🔊 音リセット</button>
               <button id="emergencyWelcomeBtn" type="button" data-i18n="welcomeReplay">👋 ようこそをもう一度</button>
             </div>
+            <label class="check" style="margin-top:10px"><input id="showFloatingSafeBtn" type="checkbox"><span data-i18n="showFloatingSafeBtnLabel">🛟 セーフモードのボタンを表示する</span></label>
+            <p class="hint" data-i18n="showFloatingSafeBtnHint"></p>
             <div class="miniActions">
               <button id="emergencyExportNotesBtn" type="button">🎨 ノーツ設定を書き出し</button>
               <button id="emergencyExportAllBtn" type="button">💾 全設定を書き出し</button>
@@ -2438,7 +2450,7 @@
   </div>
 </section>
 
-<button id="floatingSafeBtn" type="button" title="🛟 セーフモード (5回クリックで緊急復旧) / ?safe=1" style="position:fixed;right:8px;bottom:8px;z-index:99999;opacity:.15;width:36px;height:36px;border-radius:50%;background:#111;color:#fff;border:2px solid #0f0;font-size:18px;display:flex;align-items:center;justify-content:center;transition:opacity .2s, transform .2s;cursor:pointer">🛟</button>
+<button id="floatingSafeBtn" type="button" hidden title="🛟 セーフモード (5回クリックで緊急復旧) / ?safe=1" style="position:fixed;right:8px;bottom:8px;z-index:99999;opacity:.15;width:36px;height:36px;border-radius:50%;background:#111;color:#fff;border:2px solid #0f0;font-size:18px;display:flex;align-items:center;justify-content:center;transition:opacity .2s, transform .2s;cursor:pointer">🛟</button>
 <script>
   (function(){
     const b = document.getElementById("floatingSafeBtn");

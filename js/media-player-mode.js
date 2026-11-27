@@ -2347,7 +2347,7 @@ addEventListener("DOMContentLoaded", () => {
   if (!buildMedia()) return;
   core.applyLanguage(core.settings.language);
 });
-window.TrkMediaPlayer = { open:openMedia, close:closeMedia, isOpen:mediaActive, play:playSong,
+window.TrkMediaPlayer = { open:openMedia, close:closeMedia, isOpen:mediaActive, play:playSong, step:stepMedia,
   /* trk164: テスト用の素の関数（DOM不要の決定だけを取り出して検証できる） */
   resumeRewindSeconds, rewindResumePosition, planSleepFade, pipSupported, wakeLockSupported,
   mediaExitPlan };
