@@ -625,6 +625,8 @@ const settings = {
      読み込みで検証し、壊れた値は keep に落とす（js/remodern-regions.js）。 */
   /* 🎨 trk297：書斎・基地のヘッダーに「🎨 スキン」のボタンを出すか（既定オフ＝今の画面のまま・利用者が選ぶ） */
   remodernIcons: prefs.remodernIcons === true,
+  /* 🔤 trk326（R-REM-3）：書斎・基地に作品の配色を当てるか（独立のオプトイン）。既定はどちらもオフ */
+  remodernOptIn: (window.TrkReModernRegions ? window.TrkReModernRegions.normalizeOptIn(prefs.remodernOptIn) : { study: false, base: false }),
   /* 🎨 trk300：読んだ作品（作品ファイルの値だけ・最大 20 件）。読むときに js/remodern-work.js で検査し直す */
   remodernWorks: Array.isArray(prefs.remodernWorks) ? prefs.remodernWorks.slice(0, 20) : [],
   /* 🎨 trk308：直前の状態（「戻す」のための記録。壊れていれば null＝戻せない） */
@@ -2718,7 +2720,7 @@ function renderStoragePersist(state) {
    ・**1項目の失敗で全体を止めない**：壊れた項目だけ rejected に入れて、他は適用する
      （trk246 まで：notes の検査が投げると外側の catch で終わり、読み込み失敗だけ残った）
    ・報告 → 保存 → 再読み込み。未適用があるときだけ読む時間を取る */
-const PREFS_IMPORT_HANDLED = ["notes", "videoStyle", "tvDockSkin", "bgDim", "bgBlur", "tvParamFavs", "trkRemoved", "trkListed", "trkFixedNotice", "musicVolume", "musicVolumeRestore", "typography", "language"];
+const PREFS_IMPORT_HANDLED = ["notes", "videoStyle", "tvDockSkin", "bgDim", "bgBlur", "tvParamFavs", "trkRemoved", "trkListed", "trkFixedNotice", "musicVolume", "musicVolumeRestore", "typography", "language", "remodernOptIn"];
 async function runPrefsImport(file, setSt) {
   let applied = [], rejected = [];
   try {
@@ -2763,6 +2765,8 @@ async function runPrefsImport(file, setSt) {
     attempt("trkFixedNotice", () => { if (!hasImported("trkFixedNotice")) return false; settings.trkFixedNotice = data.trkFixedNotice === 1 ? 1 : 0; });
     /* 🔤 trk246：書体の組み合わせも同じ流儀（知らない組名は null＝使わない） */
     attempt("typography", () => { if (!hasImported("typography")) return false; const t = window.Trk.typography ? window.Trk.typography.sanitize(data.typography) : null; if (t) settings.typography = t; if (window.Trk.typography) window.Trk.typography.apply(settings.typography); });
+    /* 🔤 trk326（R-REM-3）：書斎・基地のオプトイン（真偽だけを読む） */
+    attempt("remodernOptIn", () => { if (!hasImported("remodernOptIn")) return false; settings.remodernOptIn = window.TrkReModernRegions ? window.TrkReModernRegions.normalizeOptIn(data.remodernOptIn) : { study: false, base: false }; });
     attempt("tvDockSkin", () => {
       const ok = hasImported("tvDockSkin") && typeof data.tvDockSkin === "string" && window.TrkTV && typeof window.TrkTV.skins === "function" &&
         window.TrkTV.skins().some(item => item && item.id === data.tvDockSkin);

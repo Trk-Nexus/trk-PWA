@@ -614,6 +614,11 @@
             <div id="typoState" class="hint status" role="status" aria-live="polite"></div>
             <!-- 🔤 trk255：選んだ組の説明（上行）の下に、その組が合う曲を1行だけ（目録の trkUse） -->
             <div id="typoUse" class="hint" hidden></div>
+            <!-- 🔤 trk326（R-TYP-1）：倉庫で調整した組み合わせ単体 JSON（trk-typography-pairing v1）を読む -->
+            <div class="miniActions"><button id="typoImportBtn" type="button" data-i18n="typoImportBtn"></button></div>
+            <input id="typoImportFile" type="file" accept="application/json,.json" hidden>
+            <div class="hint" data-i18n="typoImportHint"></div>
+            <div id="typoImportState" class="hint status" role="status" aria-live="polite"></div>
             <!-- 🔤 trk315：題字の書体（利用者が導入する書体ファイル。同梱・自動取得はしない）。中身は js/title-font.js が作る -->
             <h3 data-i18n="tfHeading"></h3>
             <div id="titleFontPanel" class="titleFontPanel"></div>
@@ -636,6 +641,10 @@
               <div class="miniActions"><button id="remodernResetBtn" type="button" data-i18n="remodernReset"></button></div>
               <label class="check"><input id="remodernIconsChk" type="checkbox"><span data-i18n="remodernIconsChk"></span></label>
               <div class="hint" data-i18n="remodernIconsHint"></div>
+              <!-- 🔤 trk326（R-REM-3）：書斎・基地に作品の配色を当てるか（独立のオプトイン。既定はどちらもオフ） -->
+              <label class="check"><input id="remodernOptInStudy" type="checkbox"><span data-i18n="remodernOptInStudy"></span></label>
+              <label class="check"><input id="remodernOptInBase" type="checkbox"><span data-i18n="remodernOptInBase"></span></label>
+              <div class="hint" data-i18n="remodernOptInHint"></div>
               <div id="remodernStatus" class="hint status" role="status" aria-live="polite"></div>
               <!-- 🎨 trk300：作品ファイル（.stpack の拡張）を読む。スキンのパックとは別に入る -->
               <div class="hint" data-i18n="remodernWorkHint"></div>

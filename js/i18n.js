@@ -599,7 +599,22 @@ tfHeading:"🔤 題字の書体（導入する書体）", tfLabel:"題字に使�
     tfRestoreFormat:"このファイルは退避の形（trk-title-font-works-backup v1）ではありません。",
     tfWorksApplied:"作品の指定で表示中：{name}",
     remodernFontLink:"作品ごとの題字の書体",
-    remodernFontLinkHint:"共通の題字に作品を当てているとき、その作品の指定の書体（🔤 題字の書体）があれば一緒に当てます。指定が無ければ全体の設定のままです。"
+    remodernFontLinkHint:"共通の題字に作品を当てているとき、その作品の指定の書体（🔤 題字の書体）があれば一緒に当てます。指定が無ければ全体の設定のままです。",
+    remodernOptInStudy:"📚 書斎にも作品の配色を当てる（既定はオフ）",
+    remodernOptInBase:"🛠 基地にも作品の配色を当てる（既定はオフ）",
+    remodernOptInHint:"書斎の読書テーマ（30 種）と基地の配色は、利用者が選んだものを勝手に上書きしません。当てたい領域だけオンにしてください。オフの領域は、いまの読書テーマ・ノーツの設定のままです。",
+    remodernOptInOn:"この領域にも作品の配色を当てます（次の表示から）。",
+    remodernOptInOff:"この領域には作品の配色を当てません（元の表示のまま）。",
+    remodernOptInSaveFail:"オプトインを保存できませんでした（元に戻しました）。",
+    remodernOptOutImpact:"この領域はオプトインがオフのため、選んでも画面には当たりません（設定の「🎨 スキン」でオンにできます）。",
+    typoImportBtn:"📥 組み合わせの JSON を読む",
+    typoImportHint:"倉庫（trk-Avatar-Library）で調整した組み合わせ（trk-typography-pairing v1）を読みます。書体ファイル（.stpack）は自動で取りに行きません。足りないパックの名前は下に出ます。",
+    typoImportDone:"「{name}」を読みました。この端末の書体ファイルはそのままです。",
+    typoImportMissing:"「{name}」を読みました。入れると揃うパック：{packs}",
+    typoImportBad:"このファイルは組み合わせの形（trk-typography-pairing v1）ではありません。",
+    typoImportSize:"ファイルが大きすぎます（上限 64 KiB）。読み込まずに拒否しました。",
+    typoImportRead:"ファイルを読めませんでした。",
+    typoMissingPacks:"入れると揃うパック：{packs}"
   },
   /* ==================== English ==================== */
   en: {
@@ -1186,7 +1201,22 @@ tfHeading:"🔤 Title font (import a font file)", tfLabel:"Font for the title", 
     tfRestoreFormat:"This file is not a backup (trk-title-font-works-backup v1).",
     tfWorksApplied:"Shown with the work's choice: {name}",
     remodernFontLink:"Per-work title font",
-    remodernFontLinkHint:"When the common title follows a work, that work's title font (🔤 Title font) is applied as well. Without one, the global setting stays."
+    remodernFontLinkHint:"When the common title follows a work, that work's title font (🔤 Title font) is applied as well. Without one, the global setting stays.",
+    remodernOptInStudy:"📚 Apply the work's colors to the study too (off by default)",
+    remodernOptInBase:"🛠 Apply the work's colors to the base too (off by default)",
+    remodernOptInHint:"The reading theme (30 kinds) in the study and the base colors are never overwritten without your choice. Turn on only the regions you want. Regions that are off keep your current reading theme and note settings.",
+    remodernOptInOn:"The work's colors will also apply to this region (from the next view).",
+    remodernOptInOff:"The work's colors no longer apply to this region (the original look stays).",
+    remodernOptInSaveFail:"Could not save the opt-in (it was reverted).",
+    remodernOptOutImpact:"This region's opt-in is off, so choices do not change the screen (turn it on in Settings → 🎨 Skin).",
+    typoImportBtn:"📥 Read a pairing JSON",
+    typoImportHint:"Reads a pairing made in the library (trk-typography-pairing v1). Font files (.stpack) are never downloaded automatically; the packs you still need are listed below.",
+    typoImportDone:"Read \"{name}\". The font files on this device are unchanged.",
+    typoImportMissing:"Read \"{name}\". Packs that would complete it: {packs}",
+    typoImportBad:"This file is not a pairing (trk-typography-pairing v1).",
+    typoImportSize:"The file is too large (limit 64 KiB). It was refused without being read.",
+    typoImportRead:"Could not read the file.",
+    typoMissingPacks:"Packs that would complete it: {packs}"
   },
   /* ==================== 简体中文 ==================== */
   zh: {
@@ -1836,7 +1866,22 @@ typoLabel:"🔤 字体搭配", typoOff:"不使用（保持皮肤字体）", typo
     tfRestoreFormat:"此文件不是备份格式（trk-title-font-works-backup v1）。",
     tfWorksApplied:"正在按作品的指定显示：{name}",
     remodernFontLink:"按作品指定题字书体",
-    remodernFontLinkHint:"当共通题字使用某作品时，如该作品指定了题字书体（🔤 题字书体），会一起应用。没有指定时保持全局设置。"
+    remodernFontLinkHint:"当共通题字使用某作品时，如该作品指定了题字书体（🔤 题字书体），会一起应用。没有指定时保持全局设置。",
+    remodernOptInStudy:"📚 书斋也使用作品配色（默认关闭）",
+    remodernOptInBase:"🛠 基地也使用作品配色（默认关闭）",
+    remodernOptInHint:"书斋的阅读主题（30 种）与基地配色，不会在未经选择时被覆盖。只开启需要的区域。关闭的区域保持当前的阅读主题与音符设置。",
+    remodernOptInOn:"此区域也将使用作品配色（从下一次显示开始）。",
+    remodernOptInOff:"此区域不再使用作品配色（保持原有显示）。",
+    remodernOptInSaveFail:"未能保存该开关（已恢复原状）。",
+    remodernOptOutImpact:"此区域未开启，因此选择后画面不会变化（可在设置的“🎨 皮肤”中开启）。",
+    typoImportBtn:"📥 读取组合 JSON",
+    typoImportHint:"读取在库中调整的组合（trk-typography-pairing v1）。不会自动下载字体文件（.stpack），缺少的包名显示在下方。",
+    typoImportDone:"已读取“{name}”。此设备的字体文件保持不变。",
+    typoImportMissing:"已读取“{name}”。补齐所需的包：{packs}",
+    typoImportBad:"此文件不是组合格式（trk-typography-pairing v1）。",
+    typoImportSize:"文件过大（上限 64 KiB），未读取即被拒绝。",
+    typoImportRead:"无法读取文件。",
+    typoMissingPacks:"补齐所需的包：{packs}"
   },
   /* ==================== 한국어 ==================== */
   ko: {
@@ -2480,7 +2525,22 @@ typoLabel:"🔤 글꼴 조합", typoOff:"사용 안 함(스킨 글꼴 유지)", 
     tfRestoreFormat:"이 파일은 백업 형식(trk-title-font-works-backup v1)이 아닙니다.",
     tfWorksApplied:"작품 지정으로 표시 중: {name}",
     remodernFontLink:"작품별 제목 서체",
-    remodernFontLinkHint:"공통 제목에 작품을 적용할 때, 그 작품의 제목 서체(🔤 제목 서체)가 있으면 함께 적용합니다. 지정이 없으면 전체 설정을 그대로 씁니다."
+    remodernFontLinkHint:"공통 제목에 작품을 적용할 때, 그 작품의 제목 서체(🔤 제목 서체)가 있으면 함께 적용합니다. 지정이 없으면 전체 설정을 그대로 씁니다.",
+    remodernOptInStudy:"📚 서재에도 작품 색상을 적용(기본 끔)",
+    remodernOptInBase:"🛠 기지에도 작품 색상을 적용(기본 끔)",
+    remodernOptInHint:"서재의 읽기 테마(30종)와 기지 색상은 선택하지 않으면 덮어쓰지 않습니다. 원하는 영역만 켜 주세요. 끈 영역은 지금의 읽기 테마·노트 설정 그대로입니다.",
+    remodernOptInOn:"이 영역에도 작품 색상을 적용합니다(다음 표시부터).",
+    remodernOptInOff:"이 영역에는 작품 색상을 적용하지 않습니다(원래 표시 그대로).",
+    remodernOptInSaveFail:"설정을 저장하지 못했습니다(되돌렸습니다).",
+    remodernOptOutImpact:"이 영역은 켜져 있지 않아 선택해도 화면이 바뀌지 않습니다(설정의 🎨 스킨에서 켤 수 있습니다).",
+    typoImportBtn:"📥 조합 JSON 읽기",
+    typoImportHint:"라이브러리에서 조정한 조합(trk-typography-pairing v1)을 읽습니다. 서체 파일(.stpack)은 자동으로 받지 않으며, 필요한 팩 이름은 아래에 나옵니다.",
+    typoImportDone:"\"{name}\"을 읽었습니다. 이 기기의 서체 파일은 그대로입니다.",
+    typoImportMissing:"\"{name}\"을 읽었습니다. 채우려면 필요한 팩: {packs}",
+    typoImportBad:"이 파일은 조합 형식(trk-typography-pairing v1)이 아닙니다.",
+    typoImportSize:"파일이 너무 큽니다(상한 64 KiB). 읽지 않고 거부했습니다.",
+    typoImportRead:"파일을 읽지 못했습니다.",
+    typoMissingPacks:"채우려면 필요한 팩: {packs}"
   }
 };
 /* ---- 翻訳の取り出し（その言語になければ英語→日本語→キー名の順） ---- */
