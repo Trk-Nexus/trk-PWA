@@ -46,6 +46,8 @@ import vm from "node:vm";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { loadCatalogFile } from "./lib/skin-catalog.mjs";
+/* 📚 trk326（R-SKIN-1）：差し戻しの一覧は 1 か所（tools/skin-holdback.mjs）。ここは書き出す側 */
+import { holdbackIds, holdbackOf, diffHoldback, holdbackSummary } from "./skin-holdback.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TOOL = "import-skin-catalog";
@@ -319,6 +321,24 @@ function applyExtras(skin, s) {
   const cli = D.sanitizeCliLook(s.cli);
   if (cli) skin.cli = cli;
 }
+/* 📚 trk326（R-SKIN-1）：旧配色（legacyColors）の受け口。目録が legacyColors を持っていれば、
+   新配色（いまの ui）とは別に「旧配色の ui」を作って内蔵する。利用者が「旧配色を使う」を選んだときだけ
+   js/core.js の applySkin が差し替える（既定は新配色）。読めない色が 1 つでも混ざっていたら、旧配色ごと作らない。 */
+const LEGACY_MAP = { bg: "--ui-bg", panel: "--ui-panel", field: "--ui-field", button: "--ui-button", text: "--ui-text",
+  muted: "--ui-muted", accent: "--ui-accent", gold: "--ui-gold", border: "--ui-border" };
+function legacyUiOf(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const out = {};
+  let any = false;
+  for (const [key, cssVar] of Object.entries(LEGACY_MAP)) {
+    if (raw[key] === undefined) continue;
+    const hex = cleanColor(raw[key]);
+    if (!hex) return null;   /* 1 つでも読めなければ、旧配色は作らない（中途半端に混ぜない） */
+    out[cssVar] = hex; any = true;
+  }
+  return any ? out : null;
+}
+
 function convert(s) {
   const c = s.colors || {};
   /* trk274：地は**グラデーションのまま**受ける（1 色に潰すと目表と見た目が変わる） */
@@ -497,6 +517,11 @@ function convert(s) {
   applyExtras(skin, s);
   skin.ui = ui;
   skin.game = game;
+  /* 📚 trk326（R-SKIN-1）：旧配色（あれば）。既定の見た目は変わらない */
+  {
+    const legacy = legacyUiOf(s.legacyColors);
+    if (legacy) { skin.legacyColors = s.legacyColors; skin.legacyUi = legacy; }
+  }
   const moved = [];
   if (textMoved.length) moved.push("文字 " + textMoved[0]);
   if (panel !== panel0) moved.push("パネル " + panel0 + " → " + panel);
@@ -535,6 +560,10 @@ function convertRaw(s) {
     holdback: true,
   };
   applyExtras(skin, s);
+  {
+    const legacy = legacyUiOf(s.legacyColors);
+    if (legacy) { skin.legacyColors = s.legacyColors; skin.legacyUi = legacy; }
+  }
   skin.ui = {
     "--ui-bg": bgCss,
     "--ui-panel": D.hexToRgba(panel, 0.96),
@@ -760,6 +789,9 @@ for (const { id, skin } of chosen) {
   if (skin.video) lines.push("    video:" + q(skin.video) + ",");
   if (skin.cli) lines.push("    cli:" + q(skin.cli) + ",");
   if (skin.locked) lines.push("    locked:true,");
+  /* 📚 trk326（R-SKIN-1）：旧配色（この端末だけ切り替えられる。既定は新配色） */
+  if (skin.legacyColors) lines.push("    legacyColors:" + q(skin.legacyColors) + ",");
+  if (skin.legacyUi) lines.push("    legacyUi:" + q(skin.legacyUi) + ",");
   if (skin.holdback) lines.push("    holdback:true,");
   /* trk293：目録の「意図した低コントラスト」の宣言（house-edge など）。合格証でも免除でもない。
      差し戻しの判定（上の holdback）には関わらず、理由の文だけを画面に出す。 */
@@ -772,8 +804,18 @@ for (const { id, skin } of chosen) {
   lines[lines.length - 1] = last.replace(/,$/, "");
   lines.push("  };");
 }
-{ /* trk275：差し戻しの一覧（道具が読んで「黙って通さない」ために使う） */
-  const hb = chosen.filter(c => c.holdback).map(c => c.id);
+{ /* trk275：差し戻しの一覧（道具が読んで「黙って通さない」ために使う）
+     📚 trk326（R-SKIN-1）：単一定義（tools/skin-holdback.mjs）と突き合わせ、食い違えば止める。
+     生成された差し戻しが定義に無い ＝ 新しい差し戻しが出た（定義に足すか、目録を直す）。
+     ＊並びは辞書順（生成物のバイト列を安定させる）。 */
+  const computed = chosen.filter(c => c.holdback).map(c => c.id);
+  const drift = diffHoldback(computed);
+  if (drift.unknownInGenerated.length) {
+    console.error(`✗ 差し戻しが定義（tools/skin-holdback.mjs）にありません：${drift.unknownInGenerated.join(", ")}`);
+    console.error("  目録を直すか、定義に理由つきで足してから、もう一度実行してください。");
+    process.exit(1);
+  }
+  const hb = [...new Set(computed.concat(holdbackIds()))].sort();
   if (hb.length) {
     lines.push("  /* ⚠ 差し戻し（目録へお返しした色のもの）：寄せると別のテーマになるので、");
     lines.push("     **色は目録のまま**内蔵し、既定の棚から外しています（ALL と その巻では見えます）。");
@@ -836,7 +878,8 @@ if (volumes) {
 if (already.length) console.log(`  既にあるので書かない：${already.length} 件（--only-new）`);
 if (skipped.length) console.log(`  飛ばした：${skipped.length} 件（${skipped.slice(0, 5).join(" / ")}${skipped.length > 5 ? " …" : ""}）`);
 if (fitted.length) console.log(`  合格点まで寄せた：${fitted.length} 件\n    ` + fitted.join("\n    "));
-if (holdbacks.length) console.log(`  ⚠ 差し戻し（目録の色のまま・既定の棚から外す）：${holdbacks.length} 件\n    ` + holdbacks.join("\n    "));
+if (holdbacks.length) console.log(`  ⚠ 差し戻し（目録の色のまま・既定の棚から外す）：${holdbacks.length} 件\n    ` + holdbacks.join("\n    ")
+  + `\n  　種類：${holdbackSummary()}\n  　` + [...new Set(chosen.filter(c => c.holdback).map(c => c.id))].map(id => `${id}［${holdbackOf(id) ? holdbackOf(id).kind : "定義なし"}］`).join(" ／ "));
 if (mutedFixed.length) console.log(`  うすい文字を中間に置き直した：${mutedFixed.length} 件`);
 { /* 読めることを優先して「同化のまま」にしたものは、黙らずに数える（レビュー Q2 の残り） */
   const stay = chosen.filter(c => !c.holdback && dEok(c.skin.ui["--ui-muted"], c.skin.ui["--ui-text"]) < 0.03).map(c => c.id);

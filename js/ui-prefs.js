@@ -51,15 +51,24 @@
     const select = document.getElementById("typoPairing");
     if (!T || !select) return;
     const saved = T.sanitize(core.settings.typography);
+    /* 🔤 trk326（R-TYP-1）：取り込んだ組は選択肢が無いので、いま使っている組を 1 つ足して選んだままにする */
+    if (saved && saved.pairing === T.CUSTOM) {
+      let opt = select.querySelector('option[value="custom"]');
+      if (!opt) { opt = document.createElement("option"); opt.value = "custom"; select.appendChild(opt); }
+      opt.textContent = T.nameOf(saved);
+    }
     if (select.value !== (saved ? saved.pairing : "")) select.value = saved ? saved.pairing : "";
     const state = document.getElementById("typoState");
     const use = document.getElementById("typoUse");
     let text = "";
     let p = null;
     if (saved) {
-      p = T.byId(saved.pairing) || { name: saved.pairing };
+      p = T.byId(saved.pairing) || { name: T.nameOf(saved) };
       text = tr("typoState", { name: p.name, display: (saved.slots.display || {}).family || "-", body: (saved.slots.body || {}).family || "-" });
       if (T.available(saved) === false) text += tr("typoMissing");
+      /* 🔤 trk326：入れるべき .stpack の名前を具体的に出す（自動では取りに行かない） */
+      const miss = T.missingPacks(saved);
+      if (miss.length) text += " " + tr("typoMissingPacks", { packs: miss.join(" / ") });
     }
     if (state && state.textContent !== text) state.textContent = text;
     /* 🔤 trk255：この組が trk! でどんな曲に合うか（目録の trkUse）。選んでいなければ隠す。 */
@@ -133,6 +142,29 @@
     /* 🔤 trk246：組み合わせを選ぶ（「使わない」で元に戻る）。保存は settings.typography だけ・キーは増やしません */
     const typoSelect = document.getElementById("typoPairing");
     if (typoSelect) {
+      /* 🔤 trk326（R-TYP-1）：組み合わせ単体 JSON を読む（保存は settings.typography だけ・自動取得なし） */
+      const typoImportBtn = document.getElementById("typoImportBtn");
+      const typoImportFile = document.getElementById("typoImportFile");
+      if (typoImportBtn && typoImportFile) {
+        const sayImport = key => { const el = document.getElementById("typoImportState"); if (el) el.textContent = key ? tr(key) : ""; };
+        typoImportBtn.addEventListener("click", () => typoImportFile.click());
+        typoImportFile.addEventListener("change", async () => {
+          const f = typoImportFile.files && typoImportFile.files[0];
+          typoImportFile.value = "";
+          if (!f) return;
+          const Tt = typo();
+          if (!Tt) return;
+          const r = await Tt.importPairingFile(f);
+          syncTypo();
+          if (!r.ok) {
+            sayImport(r.reason === "size" ? "typoImportSize" : r.reason === "read" ? "typoImportRead" : "typoImportBad");
+            return;
+          }
+          sayImport("");
+          const el = document.getElementById("typoImportState");
+          if (el) el.textContent = r.missing.length ? tr("typoImportMissing", { name: r.name, packs: r.missing.join(" / ") }) : tr("typoImportDone", { name: r.name });
+        });
+      }
       typoSelect.addEventListener("change", () => {
         const T = typo();
         if (!T) return;

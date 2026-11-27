@@ -14,7 +14,8 @@ const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
 
 test("スキンを変えたら、題字の色を判定し直す（core.on(\"skin\")）", () => {
   const ui = read("js/remodern-ui.js");
-  assert.ok(ui.includes("function repaintTitle() { paintTitle(R.resolve(current(), works())); }"));
+  /* 🔤 trk326：書斎・基地のオプトインを resolve に渡すようになった（既定はどちらもオフ） */
+  assert.ok(ui.includes("function repaintTitle() { paintTitle(R.resolve(current(), works(), optIn())); }"));
   assert.ok(ui.includes('if (typeof core.on === "function") core.on("skin", repaintTitle);'));
   const painted = ui.indexOf('core.on("skin", repaintTitle)');
   const firstRender = ui.indexOf("\n  render();\n");
@@ -29,6 +30,11 @@ test("判定のやり直しは paintTitle を通り、書斎・基地には触�
 });
 
 test("版は trk306", () => {
-  assert.match(read("index.html"), /name="trk-build" content=\"trk324\"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk324";/);
+  {
+    /* 📚 trk326：版はラウンドごとに上がるので、固定の名前ではなく sw.js と揃っていることを見る */
+    const build = (read("sw.js").match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
+    assert.ok(build);
+    assert.match(read("index.html"), new RegExp(`name="trk-build" content="${build}"`));
+  }
+  assert.match(read("sw.js"), /const CACHE = "trk-v[\d.]+-trk\d+";/);
 });

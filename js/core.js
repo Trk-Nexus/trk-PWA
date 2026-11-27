@@ -625,6 +625,16 @@ const settings = {
      読み込みで検証し、壊れた値は keep に落とす（js/remodern-regions.js）。 */
   /* 🎨 trk297：書斎・基地のヘッダーに「🎨 スキン」のボタンを出すか（既定オフ＝今の画面のまま・利用者が選ぶ） */
   remodernIcons: prefs.remodernIcons === true,
+  /* 🔤 trk326（R-REM-3）：書斎・基地に作品の配色を当てるか（独立のオプトイン）。既定はどちらもオフ */
+  /* 📚 trk326（R-WIZ-1）：倉庫の Advance Wizard 設定（読んだときだけ入る。既定は空） */
+  cliAdvance: (prefs.cliAdvance && typeof prefs.cliAdvance === "object" && !Array.isArray(prefs.cliAdvance)
+    ? { format: "trk-avatar-library-advance-prefs", version: 1,
+        advance: (prefs.cliAdvance.advance && typeof prefs.cliAdvance.advance === "object" ? prefs.cliAdvance.advance : {}),
+        dictionary: (Array.isArray(prefs.cliAdvance.dictionary) ? prefs.cliAdvance.dictionary.filter(w => typeof w === "string").slice(0, 500) : []) }
+    : null),
+  /* 📚 trk326（R-SKIN-1）：旧配色（legacyColors）をこの端末だけ使うスキンの ID。既定は全て新配色 */
+  skinLegacy: cleanSkinIdList(prefs.skinLegacy, 300),
+  remodernOptIn: (window.TrkReModernRegions ? window.TrkReModernRegions.normalizeOptIn(prefs.remodernOptIn) : { study: false, base: false }),
   /* 🎨 trk300：読んだ作品（作品ファイルの値だけ・最大 20 件）。読むときに js/remodern-work.js で検査し直す */
   remodernWorks: Array.isArray(prefs.remodernWorks) ? prefs.remodernWorks.slice(0, 20) : [],
   /* 🎨 trk308：直前の状態（「戻す」のための記録。壊れていれば null＝戻せない） */
@@ -1398,7 +1408,7 @@ function applyLanguage(code) {
 
 /* ---------- スキン ---------- */
 const SKIN_CATS = [["all","catAll"],["basic","catBasic"],["type","catType"],["miku","catMiku"],["dark","catDark"],["light","catLight"],["grad","catGrad"],["fun","catFun"],["access","catAccess"],["life","catLife"],["wizard","catWizard"],["custom","catCustom"]];
-const skinCatList = s => (s.custom || s.pack) ? ["custom"] : (Array.isArray(s.cat) && s.cat.length ? s.cat : ["basic"]);
+const skinCatList = s => (s.custom || s.pack || s.imported) ? ["custom"] : (Array.isArray(s.cat) && s.cat.length ? s.cat : ["basic"]);
 /* 🔤 書体スキン（trk228）：棚カードの中だけに書体・太さ・字間を効かせる。書体見本の文字も添える */
 function skinCardType(b, s) {
   if (s.font) b.style.setProperty("--sk-font", s.font);
@@ -1461,6 +1471,7 @@ function skinVolumes() {
 const SKIN_VOL_NAME_KEYS = {
   "vol-01": "skinVolNameVol01", "vol-02": "skinVolNameVol02", "vol-03": "skinVolNameVol03",
   "vol-04": "skinVolNameVol04", "vol-05": "skinVolNameVol05", "vol-06": "skinVolNameVol06",
+  imported: "skinVolNameImported",   /* 📚 trk326：取り込んだ巻 */
   "vol-07": "skinVolNameVol07", "vol-08": "skinVolNameVol08", "vol-09": "skinVolNameVol09",
   "vol-10": "skinVolNameVol10", glitch: "skinVolNameGlitch", wizard: "skinVolNameWizard", other: "skinVolNameOther",
 };
@@ -1518,7 +1529,8 @@ function skinShelfEntries(skins, opt) {
        wizard も既定の棚から外しました（📚 の巻で wizard を選んだとき・ALL では見えます）。 */
     outside = new Set();
     for (const g of volumes) {
-      if (!g || g.id === "other") continue;
+      /* 📚 trk326：取り込んだ巻（imported）は利用者が自分で入れたものなので、既定の棚にも残す */
+      if (!g || g.id === "other" || g.id === "imported") continue;
       /* ⚖ trk281：ウィザードの段では、wizard の巻を既定の棚に戻す（5 段目だけの特権） */
       if (o.level === "wizard" && g.id === "wizard") continue;
       for (const id of Array.isArray(g.ids) ? g.ids : []) outside.add(id);
@@ -2077,7 +2089,9 @@ function buildSkinGrid() {
     b.style.setProperty("--sk-bg", s.game.stage); b.style.setProperty("--sk-text", s.ui["--ui-text"]);
     b.style.setProperty("--sk-border", s.ui["--ui-border"]);
     skinCardType(b, s);
-    if (s.custom || s.pack) b.append(el("span", "skinTag", s.pack ? "PACK" : tr("customTag")));
+    if (s.custom || s.pack || s.imported) b.append(el("span", "skinTag", s.pack ? "PACK" : s.imported ? tr("skinImportedTag") : tr("customTag")));
+    /* 📚 trk326：意図した低コントラストのスキンは、理由の前に警告の印を出す（合格証ではない） */
+    if (s.readability === "intentional-low") b.append(el("span", "skinTag", tr("skinLowReadTag")));
     const dots = el("span", "dots");
     for (const c of [s.ui["--ui-accent"], s.ui["--ui-gold"], s.ui["--ui-text"]]) { const d = el("i", "dot square"); d.style.background = c; dots.append(d); }
     b.append(dots, el("b", "", marks(id) + (s.label[lang] || s.label.en)));
@@ -2225,9 +2239,13 @@ function applySkin(id, persist = true) {
     settings.skinUse[settings.skin] = Math.min(1e9, (settings.skinUse[settings.skin] || 0) + 1);
     settings.skinLast[settings.skin] = Date.now();
   }
-  for (const [k, v] of Object.entries(s.ui)) root.setProperty(k, v);
+  /* 📚 trk326（R-SKIN-1）：旧配色を持つスキンで、利用者が「旧配色を使う」を選んだときだけ、ui を旧配色にする。
+     既定は目録の新配色（コントラスト適合後）。game（舞台・ノーツ）は変えない = 旧配色の範囲を狭くする。 */
+  const legacyOn = s.legacyUi && Array.isArray(settings.skinLegacy) && settings.skinLegacy.includes(settings.skin);
+  const uiSet = legacyOn ? Object.assign({}, s.ui, s.legacyUi) : s.ui;
+  for (const [k, v] of Object.entries(uiSet)) root.setProperty(k, v);
   /* 🔤 小さな文字に使うアクセント色（入れ子の欄でも 4.5:1。足りているスキンは --ui-accent と同じ） */
-  root.setProperty("--ui-accent-ink", window.Trk.data.accentInk(s.ui));
+  root.setProperty("--ui-accent-ink", window.Trk.data.accentInk(uiSet));
   root.setProperty("--stage-bg", s.game.stage); root.setProperty("--hud-text", s.game.ink);
   /* 🔤 書体パック（trk232）：パックが持ち込んだ書体を、いま使うスキンの --font の先頭に置く
      （そのパックのスキンを使っているとき／スキンを持たない書体パックのとき。外すと空になる） */
@@ -2714,7 +2732,7 @@ function renderStoragePersist(state) {
    ・**1項目の失敗で全体を止めない**：壊れた項目だけ rejected に入れて、他は適用する
      （trk246 まで：notes の検査が投げると外側の catch で終わり、読み込み失敗だけ残った）
    ・報告 → 保存 → 再読み込み。未適用があるときだけ読む時間を取る */
-const PREFS_IMPORT_HANDLED = ["notes", "videoStyle", "tvDockSkin", "bgDim", "bgBlur", "tvParamFavs", "trkRemoved", "trkListed", "trkFixedNotice", "musicVolume", "musicVolumeRestore", "typography", "language"];
+const PREFS_IMPORT_HANDLED = ["notes", "videoStyle", "tvDockSkin", "bgDim", "bgBlur", "tvParamFavs", "trkRemoved", "trkListed", "trkFixedNotice", "musicVolume", "musicVolumeRestore", "typography", "language", "remodernOptIn", "skinLegacy", "cliAdvance"];
 async function runPrefsImport(file, setSt) {
   let applied = [], rejected = [];
   try {
@@ -2759,6 +2777,18 @@ async function runPrefsImport(file, setSt) {
     attempt("trkFixedNotice", () => { if (!hasImported("trkFixedNotice")) return false; settings.trkFixedNotice = data.trkFixedNotice === 1 ? 1 : 0; });
     /* 🔤 trk246：書体の組み合わせも同じ流儀（知らない組名は null＝使わない） */
     attempt("typography", () => { if (!hasImported("typography")) return false; const t = window.Trk.typography ? window.Trk.typography.sanitize(data.typography) : null; if (t) settings.typography = t; if (window.Trk.typography) window.Trk.typography.apply(settings.typography); });
+    /* 🔤 trk326（R-REM-3）：書斎・基地のオプトイン（真偽だけを読む） */
+    /* 📚 trk326（R-SKIN-1）：旧配色を使うスキン（知っている ID だけ・最大 300） */
+    /* 📚 trk326（R-WIZ-1）：Advance Wizard 設定（禁止文字を含む語は捨てる。道具は js/cli.js と同じ判断） */
+    attempt("cliAdvance", () => {
+      if (!hasImported("cliAdvance") || !data.cliAdvance || typeof data.cliAdvance !== "object") return false;
+      const CLI = window.Trk && window.Trk.cli;
+      if (!CLI || typeof CLI.importAdvancePrefs !== "function") return false;
+      const r = CLI.importAdvancePrefs(data.cliAdvance);
+      if (!r.ok) return false;
+    });
+    attempt("skinLegacy", () => { if (!hasImported("skinLegacy")) return false; settings.skinLegacy = cleanSkinIdList(data.skinLegacy, 300); applySkin(settings.skin, false); });
+    attempt("remodernOptIn", () => { if (!hasImported("remodernOptIn")) return false; settings.remodernOptIn = window.TrkReModernRegions ? window.TrkReModernRegions.normalizeOptIn(data.remodernOptIn) : { study: false, base: false }; });
     attempt("tvDockSkin", () => {
       const ok = hasImported("tvDockSkin") && typeof data.tvDockSkin === "string" && window.TrkTV && typeof window.TrkTV.skins === "function" &&
         window.TrkTV.skins().some(item => item && item.id === data.tvDockSkin);

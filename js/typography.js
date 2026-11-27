@@ -22,6 +22,11 @@
   const SCALES = ["1.125", "1.2", "1.25", "1.333", "1.5"];
   const BASE = 16;
   const FORMAT = "trk-typography", VERSION = 1;
+  /* 🔤 trk326（R-TYP-1）：倉庫の組み合わせ単体 JSON（`trk-typography-pairing` v1）を受け取る。
+     取り込んだ組は `pairing: "custom"` として settings.typography に**そのまま**残す（保存キーは増やさない）。 */
+  const PAIRING_FORMAT = "trk-typography-pairing";
+  const CUSTOM = "custom";
+  const PAIRING_MAX_BYTES = 64 * 1024;
   const SLOTS = ["display", "heading", "body", "caption", "numeral", "accent"];
   /* 見出しの枠を効かせるか。作品の見出し（DotGothic 等）を当てる処理が入るまで false（trk301） */
   const HEADING_FROM_WORK = false;
@@ -42,6 +47,9 @@
     const family = familyOf(v.family);
     if (!family) return null;
     const out = { family, weight: weightOf(v.weight) };
+    /* 🔤 trk326：どのパックを入れればよいかの手掛かり（載っているときだけ・安全な名前だけ） */
+    const pack = typeof v.pack === "string" ? v.pack.split("/").pop() : "";
+    if (/^[A-Za-z0-9][A-Za-z0-9._-]{0,63}\.stpack$/.test(pack)) out.pack = pack;
     const tracking = numOf(v.tracking, -0.02, 0.08, NaN);
     const leading = numOf(v.leading, 0.9, 2, NaN);
     if (isFinite(tracking)) out.tracking = Math.round(tracking * 1000) / 1000;
@@ -49,26 +57,158 @@
     return out;
   }
 
+  /* 🔤 trk326：取り込んだ組（custom）の検証。書体名は Trk* だけ・パック名は安全な形だけ */
+  const PACK_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}\.stpack$/;
+  function sanitizeCustom(v) {
+    if (!v || typeof v !== "object") return null;
+    const id = typeof v.id === "string" && /^[A-Za-z0-9][A-Za-z0-9_-]{0,43}$/.test(v.id) ? v.id : "";
+    if (!id) return null;
+    const name = typeof v.name === "string" && v.name.trim() ? v.name.trim().slice(0, 80) : id;
+    const packs = Array.isArray(v.packs) ? v.packs.filter(x => typeof x === "string" && PACK_RE.test(x)).slice(0, 12) : [];
+    const slots = {};
+    const src = v.slots && typeof v.slots === "object" ? v.slots : {};
+    for (const key of SLOTS) {
+      const one = src[key];
+      if (!one || typeof one !== "object") continue;
+      const family = typeof one.family === "string" && /^Trk[A-Za-z0-9]{1,36}$/.test(one.family) ? one.family : "";
+      if (!family) continue;
+      slots[key] = sanitizeSlot({ family, weight: one.weight, tracking: one.tracking, leading: one.leading, pack: one.pack });
+    }
+    if (!slots.display && !slots.body) return null;
+    return { id, name, scale: SCALES.includes(v.scale) ? v.scale : "1.25", trkUse: typeof v.trkUse === "string" ? v.trkUse.slice(0, 120) : "", packs, slots };
+  }
+
   /* 保存値の掃除。**何も分かりません（unknown pairing・old 版・壊れた値）→ null ＝「使わない」**。
      未知の項目はここから先へコピーしないので、新しい版が足した項目を古い版が読んでも消えるだけ。 */
   function sanitize(v) {
     if (!v || typeof v !== "object") return null;
     const preset = PRESETS.includes(v.preset) ? v.preset : "pair";
-    const pairing = byId(v.pairing);
+    const custom = v.pairing === CUSTOM ? sanitizeCustom(v.custom) : null;
+    const pairing = byId(v.pairing) || custom;
     if (!pairing) return null;
     const src = v.slots && typeof v.slots === "object" ? v.slots : {};
     const slots = {};
     for (const key of SLOTS) {
-      const mine = sanitizeSlot(src[key]) || sanitizeSlot(pairing[key]);
+      /* 取り込んだ組は slots の中、目録の組は組の直下に役を持つ */
+      const mine = sanitizeSlot(src[key]) || sanitizeSlot((pairing.slots || pairing)[key]);
       if (mine) slots[key] = mine;
     }
     if (!slots.display && !slots.body) return null;
-    return {
-      format: FORMAT, version: VERSION, pairing: pairing.id, preset,
+    const outValue = {
+      format: FORMAT, version: VERSION, pairing: custom ? CUSTOM : pairing.id, preset,
       base: numOf(v.base, 8, 40, BASE),
       scale: SCALES.includes(v.scale) ? v.scale : (SCALES.includes(pairing.scale) ? pairing.scale : "1.25"),
       slots
     };
+    /* 取り込んだ組は、名前とパックの一覧も保存に残す（次に開いたとき「どの組か」「何を入れればよいか」を出せる） */
+    if (custom) outValue.custom = custom;
+    return outValue;
+  }
+
+  /* 🔤 trk326（R-TYP-1）：組み合わせ単体 JSON を、保存できる形へ。理由：format（書式・版）／slots（役が無い）／"" */
+  function pairingFromJson(raw) {
+    let v = raw;
+    if (typeof v === "string") { try { v = JSON.parse(v); } catch (_) { return { ok: false, reason: "parse", value: null }; } }
+    if (!v || typeof v !== "object" || v.format !== PAIRING_FORMAT || v.version !== 1) return { ok: false, reason: "format", value: null };
+    /* 倉庫の検証（js/library-receiver.js）があれば、先に同じ目で見る（許可された Trk* 書体・安全なパス） */
+    const LR = window.Trk && window.Trk.libraryReceiver;
+    let src = v;
+    if (LR && typeof LR.validateTypographyPairing === "function") {
+      const checked = LR.validateTypographyPairing(v);
+      if (!checked.ok) return { ok: false, reason: "slots", value: null, errors: checked.errors };
+      src = checked.pairing;
+    }
+    const declared = Array.isArray(src.requiredPacks) ? src.requiredPacks : (Array.isArray(src.packs) ? src.packs : []);
+    /* パック名は「…/名前.stpack」か「名前.stpack」の形だけ。形の違うものが混ざっていたら読まない（黙って捨てない） */
+    const packs = [];
+    for (const one of declared) {
+      if (typeof one !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._\/-]{0,127}$/.test(one) || !/\.stpack$/.test(one) || one.includes("..")) return { ok: false, reason: "slots", value: null };
+      const base = one.split("/").pop();
+      if (!packs.includes(base)) packs.push(base);
+    }
+    /* 役の書体名も、書いてあるものが違えば読まない（黙って落として別の組として扱わない） */
+    const slotSrc = src.slots && typeof src.slots === "object" ? src.slots : {};
+    for (const key of SLOTS) {
+      const one = slotSrc[key];
+      if (one === undefined) continue;
+      if (!one || typeof one !== "object") return { ok: false, reason: "slots", value: null };
+      if (one.family !== undefined && !(typeof one.family === "string" && /^Trk[A-Za-z0-9]{1,36}$/.test(one.family))) return { ok: false, reason: "slots", value: null };
+      if (one.pack !== undefined) {
+        const pth = String(one.pack);
+        if (!/^[A-Za-z0-9][A-Za-z0-9._\/-]{0,127}$/.test(pth) || !/\.stpack$/.test(pth) || pth.includes("..")) return { ok: false, reason: "slots", value: null };
+      }
+    }
+    const value = sanitizeCustom({ id: src.id, name: src.name, scale: src.scale, trkUse: src.trkUse, packs, slots: src.slots });
+    if (!value) return { ok: false, reason: "slots", value: null };
+    return { ok: true, reason: "", value };
+  }
+
+  /* この端末で使えない書体の、入れるべき `.stpack` の名前（重複なし・最大 8 件）。判定できない環境は空 */
+  function missingPacks(typo) {
+    const clean = typo && typo.slots ? typo : null;
+    if (!clean) return [];
+    const fonts = document && document.fonts;
+    if (!fonts || typeof fonts.check !== "function") return [];
+    const names = [];
+    for (const key of SLOTS) {
+      const slot = clean.slots[key];
+      if (!slot || !slot.family) continue;
+      let ok = true;
+      try { ok = !!fonts.check('12px "' + slot.family + '"'); } catch (_) { ok = true; }
+      if (!ok && slot.pack && !names.includes(slot.pack)) names.push(slot.pack);
+    }
+    /* パック名が分からないときは、組の requiredPacks を「入れれば直る見込み」として出す */
+    if (!names.length) {
+      const custom = clean.custom;
+      if (custom && Array.isArray(custom.packs) && custom.packs.length) {
+        const hasAll = (() => {
+          try { return Object.values(clean.slots).every(s => !s.family || fonts.check('12px "' + s.family + '"')); } catch (_) { return true; }
+        })();
+        if (!hasAll) return custom.packs.slice(0, 8);
+      }
+    }
+    return names.slice(0, 8);
+  }
+
+  /* 取り込んで、すぐ使う（保存は settings.typography だけ）。戻り値：ok／reason／missing／name */
+  function importPairing(raw) {
+    const r = pairingFromJson(raw);
+    if (!r.ok) return { ok: false, reason: r.reason, missing: [], name: "" };
+    const core = window.Trk && window.Trk.core;
+    const typo = sanitize({ pairing: CUSTOM, custom: r.value, preset: "pair" });
+    if (!typo) return { ok: false, reason: "slots", missing: [], name: "" };
+    if (core && core.settings) {
+      const before = core.settings.typography;
+      core.settings.typography = typo;
+      apply(typo);
+      if (typeof core.saveUserPrefs === "function" && core.saveUserPrefs() === false) {
+        core.settings.typography = before;
+        apply(before);
+        return { ok: false, reason: "save", missing: [], name: r.value.name };
+      }
+    } else {
+      apply(typo);
+    }
+    return { ok: true, reason: "", missing: missingPacks(typo), name: r.value.name, typography: typo };
+  }
+
+  /* ファイルから。上限 64 KiB（読む前に見る） */
+  async function importPairingFile(file) {
+    if (!file) return { ok: false, reason: "format", missing: [], name: "" };
+    if (typeof file.size === "number" && file.size > PAIRING_MAX_BYTES) return { ok: false, reason: "size", missing: [], name: "" };
+    let text = "";
+    try { text = await file.text(); } catch (_) { return { ok: false, reason: "read", missing: [], name: "" }; }
+    if (text.length > PAIRING_MAX_BYTES) return { ok: false, reason: "size", missing: [], name: "" };
+    return importPairing(text);
+  }
+
+  /* いま選ばれている組の名前（取り込んだ組は保存から） */
+  function nameOf(typo) {
+    const clean = typo && typo.slots ? typo : null;
+    if (!clean) return "";
+    if (clean.pairing === CUSTOM) return (clean.custom && clean.custom.name) || CUSTOM;
+    const p = byId(clean.pairing);
+    return p ? p.name : clean.pairing;
   }
 
   /* CSS 変数の中身を作る。`extra` を渡すと、その役が無くても本文の名前を後から足せる（test 用） */
@@ -129,6 +269,8 @@
   window.Trk = window.Trk || {};
   window.Trk.typography = {
     PAIRINGS, SCALES, BASE, SLOTS, PRESETS, byId, sanitize, sanitizeSlot, cssVars, apply, available,
+    /* 🔤 trk326（R-TYP-1）：組み合わせ単体 JSON（trk-typography-pairing v1）の受け口 */
+    PAIRING_FORMAT, CUSTOM, pairingFromJson, missingPacks, importPairing, importPairingFile, nameOf, sanitizeCustom,
     /* 設定欄の選択肢（14組＋「使わない」）。名前は相手の目録の日本語そのまま */
     options: () => [{ id: "", name: "" }].concat(PAIRINGS.map(p => ({ id: p.id, name: p.name, why: p.why })))
   };

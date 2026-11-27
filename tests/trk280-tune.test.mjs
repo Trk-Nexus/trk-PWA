@@ -82,7 +82,8 @@ test("TRUCK のレーンの揺れは既定オン＋道の抽選（trk282 で置�
 test("既定の棚からウィザードを外した（巻で選べば見える）", () => {
   /* ⚖ trk281：5 つ目の段（ウィザード）だけは、既定の棚に戻します */
   assert.match(core, /if \(defaultVol && !inUse && o\.level !== "wizard" && skinCatList\(s\)\.includes\("wizard"\)\) continue;/);
-  assert.match(core, /if \(!g \|\| g\.id === "other"\) continue;/, "既定＝定番（other）だけ");
+  /* 📚 trk326：取り込んだ巻（imported）は利用者が自分で入れたものなので、これも既定の棚では出さない（巻を選べば見える） */
+  assert.match(core, /if \(!g \|\| g\.id === "other" \|\| g\.id === "imported"\) continue;/, "既定＝定番（other）だけ");
   assert.equal((i18n.match(/skinVolDefault:"定番"/g) || []).length, 1, "巻の名前も「定番」");
   for (const key of ["skinVolDefault", "skinVolUnknown"]) {
     assert.equal((i18n.match(new RegExp(`\\b${key}:`, "g")) || []).length, 4, `${key} は 4 言語`);

@@ -19,7 +19,12 @@ test("trk313：smoke は背景画像あり・背景色のみの両方を確か�
 });
 
 test("trk313：版・HANDOFF の記録", () => {
-  assert.match(read("index.html"), /name="trk-build" content=\"trk324\"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk324";/);
+  {
+    /* 📚 trk326：版はラウンドごとに上がるので、固定の名前ではなく sw.js と揃っていることを見る */
+    const build = (read("sw.js").match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
+    assert.ok(build);
+    assert.match(read("index.html"), new RegExp(`name="trk-build" content="${build}"`));
+  }
+  assert.match(read("sw.js"), /const CACHE = "trk-v[\d.]+-trk\d+";/);
   assert.match(read("docs/HANDOFF.md"), /trk313/);
 });

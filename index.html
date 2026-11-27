@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk324">
+<meta name="trk-build" content="trk326">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -614,6 +614,11 @@
             <div id="typoState" class="hint status" role="status" aria-live="polite"></div>
             <!-- 🔤 trk255：選んだ組の説明（上行）の下に、その組が合う曲を1行だけ（目録の trkUse） -->
             <div id="typoUse" class="hint" hidden></div>
+            <!-- 🔤 trk326（R-TYP-1）：倉庫で調整した組み合わせ単体 JSON（trk-typography-pairing v1）を読む -->
+            <div class="miniActions"><button id="typoImportBtn" type="button" data-i18n="typoImportBtn"></button></div>
+            <input id="typoImportFile" type="file" accept="application/json,.json" hidden>
+            <div class="hint" data-i18n="typoImportHint"></div>
+            <div id="typoImportState" class="hint status" role="status" aria-live="polite"></div>
             <!-- 🔤 trk315：題字の書体（利用者が導入する書体ファイル。同梱・自動取得はしない）。中身は js/title-font.js が作る -->
             <h3 data-i18n="tfHeading"></h3>
             <div id="titleFontPanel" class="titleFontPanel"></div>
@@ -636,6 +641,10 @@
               <div class="miniActions"><button id="remodernResetBtn" type="button" data-i18n="remodernReset"></button></div>
               <label class="check"><input id="remodernIconsChk" type="checkbox"><span data-i18n="remodernIconsChk"></span></label>
               <div class="hint" data-i18n="remodernIconsHint"></div>
+              <!-- 🔤 trk326（R-REM-3）：書斎・基地に作品の配色を当てるか（独立のオプトイン。既定はどちらもオフ） -->
+              <label class="check"><input id="remodernOptInStudy" type="checkbox"><span data-i18n="remodernOptInStudy"></span></label>
+              <label class="check"><input id="remodernOptInBase" type="checkbox"><span data-i18n="remodernOptInBase"></span></label>
+              <div class="hint" data-i18n="remodernOptInHint"></div>
               <div id="remodernStatus" class="hint status" role="status" aria-live="polite"></div>
               <!-- 🎨 trk300：作品ファイル（.stpack の拡張）を読む。スキンのパックとは別に入る -->
               <div class="hint" data-i18n="remodernWorkHint"></div>
@@ -741,6 +750,34 @@
                 <div id="skinManageList"></div>
                 <p class="hint" id="skinManageNothing" hidden data-i18n="skinNoMatch"></p>
               </details>
+            </details>
+
+            <!-- 📚 trk326（R-SKIN-1）：旧配色（legacyColors）をこの端末だけ使う。中身は js/custom.js が作る -->
+            <details id="skinLegacyBox" class="subPanel" hidden>
+              <summary data-i18n="skinLegacyLabel"></summary>
+              <div class="hint" data-i18n="skinLegacyHint"></div>
+              <div id="skinLegacyList" class="skinLegacyList"></div>
+              <div id="skinLegacyStatus" class="hint status" role="status" aria-live="polite"></div>
+            </details>
+            <!-- 📚 trk326：巻別スキンの受け子（R-VOL-1）。検証は js/library-receiver.js、保存と画面は js/custom.js -->
+            <details id="skinImportPanel" class="subPanel">
+              <summary data-i18n="skinImportTitle"></summary>
+              <div class="hint" data-i18n="skinImportHint"></div>
+              <div class="miniActions">
+                <button id="skinImportBtn" type="button" data-i18n="skinImportPick"></button>
+                <button id="skinImportClear" type="button" data-i18n="skinImportClear" disabled></button>
+              </div>
+              <input id="skinImportFile" type="file" accept="application/json,.json" hidden>
+              <div id="skinImportStatus" class="hint status" role="status" aria-live="polite"></div>
+              <div id="skinImportPreview" class="hint" hidden></div>
+              <div class="miniActions" id="skinImportActions" hidden>
+                <button id="skinImportSkip" type="button" class="primary" data-i18n="skinImportSkip"></button>
+                <button id="skinImportOverwrite" type="button" data-i18n="skinImportOverwrite"></button>
+                <button id="skinImportCancel" type="button" data-i18n="skinImportCancel"></button>
+              </div>
+              <div id="skinImportErrors" hidden></div>
+              <div id="skinImportSummary" class="hint" hidden></div>
+              <div id="skinImportList"></div>
             </details>
 
             <details id="skinMaker" class="subPanel devOnly">
@@ -2477,6 +2514,7 @@
 <script src="js/i18n-options.js"></script>
 <!-- ===== データ ===== -->
 <script src="js/data.js"></script>
+<script src="js/library-receiver.js"></script>
 <!-- 🔤 trk246：書体の組み合わせの目録（14組）。data.js の後・core.js の前に読みます（core.js が settings を作るときに使うため） -->
 <script src="js/typography.js"></script>
 <script src="js/title-font.js"></script>

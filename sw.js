@@ -89,8 +89,11 @@
    押せないときは、ボタンのすぐ下に見える理由を出します。詳しくは docs/VIEWER-TRK265-2026-11-03.md。
    📌 trk266（2026-11-03・trk265 レビューの小さな推奨）：理由の行は「ホーム画面や Dock のアプリ」のときだけに
    しました（Firefox で出しっぱなしにならない）。小窓を待つ間の二度押しを無視し、説明文に Dock を足しました。
-   詳しくは docs/VIEWER-TRK266-2026-11-03.md。 */
-const CACHE = "trk-v2026.11.27-trk325";
+   詳しくは docs/VIEWER-TRK266-2026-11-03.md。
+   📚 trk326（2026-11-27・Avatar 倉庫の受け子）：巻別スキンの取り込み（R-VOL-1）を足し、
+   js/library-receiver.js（検証と変換）・js/custom.js（保存と画面）・js/core.js（棚の「📚 取り込んだ巻」）・
+   index.html・css/style.css・js/i18n.js が変わったので、名前を上げます。 */
+const CACHE = "trk-v2026.11.27-trk326";
 const CACHE_PREFIX = "trk-";
 /* 🧭 trk252（2026-11-02）：CacheStorage に**実在させる名前**には `trkPWA-` を先頭に付けるようにしました。
    同じオリジンに別の trk!（上流 `/trk/` など）が在ると、相手が「`trk-` 始まりは全部消す」旧式の掃除を

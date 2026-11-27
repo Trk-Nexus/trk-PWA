@@ -1185,8 +1185,290 @@ async function renderPackList() {
 /* 起動時：一覧を出して、使っていたパックを戻す（main.js から呼びます） */
 async function initPacks() {
   await renderPackList();
+  /* 📚 trk326：取り込んだ巻を、パックの復元より先に棚へ戻す */
+  try { await initSkinImports(); } catch (_) {}
   if (core.settings.activePack) await activatePack(core.settings.activePack, { restore:true });
 }
+
+/* ============ 📚 trk326：巻別スキンの受け子（R-VOL-1） ============
+   倉庫（trk-Avatar-Library）の skin-volumes/<vol>/skins.json（`trk-avatar-library-skins` v1）と、
+   単体の items/<id>.json を、画面から取り込みます。
+
+   ・検証と変換は js/library-receiver.js（純粋な道具。DOM も保存もしない）。
+   ・保存は**内蔵 291 種・カスタム 20 件枠とは別**の IndexedDB（shadow_taiko_skin_imports）。
+   ・棚では「📚 取り込んだ巻」として分け、カードに IMPORT の印を出します。
+   ・同じ ID は黙って上書きせず、件数を見せて「スキップ／上書き／キャンセル」を選ばせます。
+   ・readability: "intentional-low" と 4 言語の理由は落とさず、カードに警告と理由を出します
+     （機械の検査は「見た目の保証」ではありません。理由を読んで選ぶための表示です）。
+   ・1 ファイル 1 MiB・合計 300 種まで。上限は設定で外せません。 */
+const LR = window.Trk.libraryReceiver;
+const VOLUME_FORMAT = "trk-avatar-library-skins";   /* 倉庫の巻 JSON の書式名（目録の正本と同じ） */
+const IMPORT_VOLUME_ID = "imported";
+const importDB = core.idbStore("shadow_taiko_skin_imports", "skins", { sizeKey:"size", idKey:"shelfId" });
+const importedSkins = {};          /* 棚のキー（imp-…）→ 本体のスキン定義 */
+let pendingImport = null;          /* 重複の確認待ち（{ payload, plan, volume }） */
+let importBusy = false;
+
+const shelfIdOf = importId => `imp-${importId}`;
+const importedIds = () => Object.keys(importedSkins);
+function ensureImportVolumeGroup() {
+  const D = window.Trk.data;
+  if (!Array.isArray(D.SKIN_VOLUMES)) D.SKIN_VOLUMES = [];
+  let g = D.SKIN_VOLUMES.find(x => x && x.id === IMPORT_VOLUME_ID);
+  if (!g) { g = { id: IMPORT_VOLUME_ID, title: "📚 取り込んだ巻", ids: [] }; D.SKIN_VOLUMES.push(g); }
+  g.ids = importedIds().sort();
+  return g;
+}
+function registerImported(shelfId, def) {
+  importedSkins[shelfId] = def;
+  window.Trk.data.SKINS[shelfId] = def;
+}
+function unregisterImported(shelfId) {
+  delete importedSkins[shelfId];
+  delete window.Trk.data.SKINS[shelfId];
+}
+/* 保存から読み直して、棚へ登録する（起動時と、保存が変わったとき） */
+async function initSkinImports() {
+  let recs = [];
+  try { recs = await importDB.all(); } catch (_) { return 0; }
+  for (const rec of Array.isArray(recs) ? recs : []) {
+    if (!rec || typeof rec !== "object") continue;
+    const shelfId = typeof rec.shelfId === "string" ? rec.shelfId : "";
+    const def = rec.def;
+    if (!shelfId.startsWith("imp-") || !def || typeof def !== "object") continue;
+    if (!def.ui || typeof def.ui !== "object" || !def.game || typeof def.game !== "object") continue;
+    def.imported = true;
+    registerImported(shelfId, def);
+  }
+  ensureImportVolumeGroup();
+  renderSkinLegacyList();
+  if (importedIds().length) {
+    core.buildSkinGrid();
+    /* 前回の終わりに取り込んだスキンを使っていたなら、その見た目へ戻す（見つからなければ shadow のまま） */
+    const boot = String(core.savedSkinAtBoot || "");
+    if (boot && Object.prototype.hasOwnProperty.call(importedSkins, boot) && core.settings.skin !== boot) core.applySkin(boot);
+    renderImportedList();
+  }
+  return importedIds().length;
+}
+/* 取り込みの予告（新しい数・重複の数）。保存はまだしない */
+function importPlan(payload) {
+  const plan = { total: 0, fresh: [], duplicates: [] };
+  if (!payload || !Array.isArray(payload.skins)) return plan;
+  plan.total = payload.skins.length;
+  for (const skin of payload.skins) {
+    const shelfId = shelfIdOf(skin.id);
+    if (Object.prototype.hasOwnProperty.call(importedSkins, shelfId)) plan.duplicates.push(skin);
+    else plan.fresh.push(skin);
+  }
+  return plan;
+}
+/* 実際に保存する。mode：skip（重複を飛ばす）／overwrite（重複を上書き） */
+async function applyImport(payload, opt) {
+  const o = opt || {};
+  const mode = o.mode === "overwrite" ? "overwrite" : "skip";
+  const volume = typeof o.volume === "string" ? o.volume.slice(0, 40) : "";
+  const plan = importPlan(payload);
+  const incoming = mode === "overwrite" ? plan.fresh.concat(plan.duplicates) : plan.fresh;
+  const room = Math.max(0, LR.SKIN_IMPORT_MAX - importedIds().length);
+  const take = incoming.slice(0, room);
+  const at = Date.now();
+  let saved = 0, failed = 0;
+  for (const skin of take) {
+    const shelfId = shelfIdOf(skin.id);
+    const def = LR.volumeSkinToDef(skin, { volume, at });
+    def.importedAt = at;
+    let size = 0;
+    try { size = JSON.stringify(def).length; } catch (_) {}
+    try { await importDB.put(shelfId, { shelfId, importId: skin.id, volume, size, def }); registerImported(shelfId, def); saved++; }
+    catch (_) { failed++; }
+  }
+  ensureImportVolumeGroup();
+  /* 入れたものがすぐ見えるように、棚の巻を「📚 取り込んだ巻」へ（保存は既存の設定キーだけ） */
+  if (saved) { try { core.settings.skinShelfVol = IMPORT_VOLUME_ID; core.saveUserPrefs(); } catch (_) {} }
+  core.buildSkinGrid();
+  renderImportedList();
+  return {
+    ok: failed === 0, mode, saved, failed, volume,
+    fresh: plan.fresh.length, duplicates: plan.duplicates.length,
+    skipped: Math.max(0, incoming.length - take.length) + (mode === "skip" ? plan.duplicates.length : 0),
+    capped: incoming.length > take.length, total: plan.total
+  };
+}
+async function removeImported(shelfId) {
+  if (!Object.prototype.hasOwnProperty.call(importedSkins, shelfId)) return false;
+  try { await importDB.del(shelfId); } catch (_) { return false; }
+  unregisterImported(shelfId);
+  ensureImportVolumeGroup();
+  if (core.settings.skin === shelfId) core.applySkin("shadow");
+  core.buildSkinGrid();
+  renderImportedList();
+  return true;
+}
+async function clearImported() {
+  const ids = importedIds();
+  let removed = 0;
+  for (const shelfId of ids) {
+    try { await importDB.del(shelfId); } catch (_) { continue; }
+    unregisterImported(shelfId); removed++;
+  }
+  ensureImportVolumeGroup();
+  if (core.settings.skin && !Object.prototype.hasOwnProperty.call(window.Trk.data.SKINS, core.settings.skin)) core.applySkin("shadow");
+  core.buildSkinGrid();
+  renderImportedList();
+  return removed;
+}
+
+/* ---------- 📚 trk326（R-SKIN-1）：旧配色（legacyColors）を使うスキンの一覧 ----------
+   目録の新配色が既定。旧配色を持つスキンだけを並べ、オンにしたスキルだけがこの端末で従来の色になる。
+   保存は settings.skinLegacy（知っている ID だけ・最大 300）。ほかの端末・書き出しには乗らない設定です。 */
+function renderSkinLegacyList() {
+  const box = core.$("skinLegacyBox"), list = core.$("skinLegacyList");
+  if (!box || !list) return;
+  const skins = window.Trk.data.SKINS || {};
+  const ids = Object.keys(skins).filter(id => skins[id] && skins[id].legacyUi).sort((a, b) => {
+    const A = skins[a].label || {}, B = skins[b].label || {};
+    return String(A[lang] || A.en || a).localeCompare(String(B[lang] || B.en || b), lang);
+  });
+  box.hidden = ids.length === 0;
+  list.textContent = "";
+  const chosen = Array.isArray(core.settings.skinLegacy) ? core.settings.skinLegacy : [];
+  for (const id of ids) {
+    const s = skins[id];
+    const label = core.el("label", "check");
+    const input = core.el("input"); input.type = "checkbox"; input.dataset.skinLegacy = id;
+    input.checked = chosen.includes(id);
+    input.addEventListener("change", () => {
+      const now = new Set(Array.isArray(core.settings.skinLegacy) ? core.settings.skinLegacy : []);
+      if (input.checked) now.add(id); else now.delete(id);
+      core.settings.skinLegacy = [...now].slice(0, 300);
+      core.saveUserPrefs();
+      core.applySkin(core.settings.skin, false);
+      core.setStatus("skinLegacyStatus", input.checked ? "skinLegacyOn" : "skinLegacyOff");
+    });
+    const name = core.el("span", "", String((s.label && (s.label[lang] || s.label.en)) || id));
+    label.append(input, name);
+    list.append(label);
+  }
+}
+
+/* ---------- 画面（設定 → 🎨 見た目 → 📚 取り込んだ巻） ---------- */
+function importStatus(key, vars) { core.setStatus("skinImportStatus", key, vars || null); }
+function syncImportActions() {
+  const row = core.$("skinImportActions");
+  if (row) row.hidden = !pendingImport;
+}
+function importSummaryText(plan, capped) {
+  return tr("skinImportPreview", {
+    n: plan.total, add: plan.fresh.length, dup: plan.duplicates.length,
+    room: Math.max(0, LR.SKIN_IMPORT_MAX - importedIds().length),
+    max: LR.SKIN_IMPORT_MAX, capped: capped ? tr("skinImportCappedNote") : ""
+  });
+}
+function showImportErrors(errors) {
+  const box = core.$("skinImportErrors");
+  if (!box) return;
+  box.textContent = "";
+  for (const line of (Array.isArray(errors) ? errors : []).slice(0, 6)) box.append(core.el("div", "hint", String(line)));
+  box.hidden = !box.children.length;
+}
+function renderImportedList() {
+  const box = core.$("skinImportList");
+  const summary = core.$("skinImportSummary");
+  const clearBtn = core.$("skinImportClear");
+  const ids = importedIds();
+  if (clearBtn) clearBtn.disabled = ids.length === 0;
+  if (summary) {
+    summary.hidden = ids.length === 0;
+    summary.textContent = ids.length ? tr("skinImportCount", { n: ids.length, max: LR.SKIN_IMPORT_MAX }) : "";
+  }
+  if (!box) return;
+  box.textContent = "";
+  const labelOf = shelfId => {
+    const def = importedSkins[shelfId];
+    const label = def && def.label ? (def.label[lang] || def.label.en || def.label.ja) : shelfId;
+    return String(label || shelfId);
+  };
+  for (const shelfId of ids.slice().sort((a, b) => labelOf(a).localeCompare(labelOf(b), lang))) {
+    const def = importedSkins[shelfId];
+    const row = core.el("div", "skinImportRow");
+    const name = core.el("b", "", labelOf(shelfId));
+    const meta = core.el("small", "", (def && def.importVolume ? `📚 ${def.importVolume} ／ ` : "") + `id: ${(def && def.importId) || shelfId.slice(4)}`);
+    row.append(name, meta);
+    if (def && def.readability === "intentional-low") row.append(core.el("small", "skinHoldback", tr("skinLowReadTag")));
+    const rm = core.el("button", "miniBtn", tr("skinImportRemove"));
+    rm.type = "button";
+    rm.addEventListener("click", () => { removeImported(shelfId).catch(() => importStatus("skinImportRemoveFail")); });
+    row.append(rm);
+    box.append(row);
+  }
+}
+async function readImportFile(file) {
+  pendingImport = null; syncImportActions(); showImportErrors([]);
+  if (!file) return;
+  if (typeof file.size === "number" && file.size > LR.SKIN_IMPORT_FILE_MAX) { importStatus("skinImportTooBig", { max: 1 }); return; }
+  let raw = null;
+  try { raw = JSON.parse(await file.text()); } catch (_) { importStatus("skinImportBadJson"); return; }
+  const res = LR.validateVolumePayload(raw);
+  if (!res.ok) { importStatus("skinImportBad", { n: res.errors.length }); showImportErrors(res.errors); return; }
+  const volume = (raw && typeof raw.volume === "string" && raw.volume) || (raw && typeof raw.title === "string" && raw.title) || "";
+  const plan = importPlan(res);
+  /* 重複があるときは、保存する前に件数を見せて選ばせる（黙って上書きしない） */
+  if (plan.duplicates.length) {
+    pendingImport = { payload: res, plan, volume };
+    const box = core.$("skinImportPreview");
+    if (box) { box.textContent = importSummaryText(plan, false); box.hidden = false; }
+    importStatus("skinImportNeedChoice", { n: plan.total, add: plan.fresh.length, dup: plan.duplicates.length });
+    syncImportActions();
+    return;
+  }
+  const r = await applyImport(res, { mode: "skip", volume });
+  importStatus(r.ok ? "skinImportDone" : "skinImportPartly", { n: r.saved, dup: r.duplicates, max: LR.SKIN_IMPORT_MAX });
+}
+function wireSkinImports() {
+  const btn = core.$("skinImportBtn"), file = core.$("skinImportFile");
+  if (btn && file) {
+    btn.addEventListener("click", () => file.click());
+    file.addEventListener("change", async () => {
+      if (importBusy) return;
+      const f = file.files && file.files[0];
+      file.value = "";
+      if (!f) return;
+      importBusy = true;
+      try { await readImportFile(f); } finally { importBusy = false; }
+    });
+  }
+  const skip = core.$("skinImportSkip"), over = core.$("skinImportOverwrite"), cancel = core.$("skinImportCancel");
+  if (skip) skip.addEventListener("click", async () => {
+    if (!pendingImport) return;
+    const pending = pendingImport;
+    pendingImport = null; syncImportActions();
+    const r = await applyImport(pending.payload, { mode: "skip", volume: pending.volume });
+    importStatus(r.ok ? "skinImportDone" : "skinImportPartly", { n: r.saved, dup: r.duplicates, max: LR.SKIN_IMPORT_MAX });
+  });
+  if (over) over.addEventListener("click", async () => {
+    if (!pendingImport) return;
+    const pending = pendingImport;
+    pendingImport = null; syncImportActions();
+    const r = await applyImport(pending.payload, { mode: "overwrite", volume: pending.volume });
+    importStatus(r.ok ? "skinImportDone" : "skinImportPartly", { n: r.saved, dup: r.duplicates, max: LR.SKIN_IMPORT_MAX });
+  });
+  if (cancel) cancel.addEventListener("click", () => {
+    pendingImport = null; syncImportActions();
+    const box = core.$("skinImportPreview"); if (box) box.hidden = true;
+    const errs = core.$("skinImportErrors"); if (errs) { errs.textContent = ""; errs.hidden = true; }
+    importStatus("skinImportCancelled");
+  });
+  on("language", renderSkinLegacyList);
+  const clear = core.$("skinImportClear");
+  if (clear) clear.addEventListener("click", async () => {
+    if (!importedIds().length) return;
+    if (!confirm(tr("skinImportClearConfirm", { n: importedIds().length }))) return;
+    const n = await clearImported();
+    importStatus("skinImportCleared", { n });
+  });
+}
+wireSkinImports();
 
 /* ============ イベント ============ */
 core.$("packFile").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if (f) installAndUse(f); });
@@ -1251,6 +1533,10 @@ window.Trk.custom = Object.assign(window.Trk.custom || {}, { initPacks, noteImag
   packSizeText, packUsageInfo, packDeletePlan, deletePacksByIds, wipeAllPacks,
   /* 🔤 trk238：入れている書体の索引（目録の一覧の「🔤 入れている書体」が使う） */
   packFontRows, listInstalledFonts });
+/* 📚 trk326：巻別スキンの受け子（R-VOL-1）。既存の公開名の並びは崩さず、あとから足す */
+Object.assign(window.Trk.custom, { initSkinImports, importVolumePayload: applyImport, planVolumeImport: importPlan,
+  importedSkins, removeImported, clearImported, VOLUME_FORMAT, renderSkinLegacyList,
+  validateVolumePayload: payload => (window.Trk.libraryReceiver ? window.Trk.libraryReceiver.validateVolumePayload(payload) : null) });
 Object.defineProperty(window.Trk.custom, "getPackSongs", { configurable:true, get:() => getPackSongs, set:v => { getPackSongs = v; } });
 Object.defineProperty(window.Trk.custom, "installPackFile", { configurable:true, get:() => installPackFile, set:v => { installPackFile = v; } });
 Object.defineProperty(window.Trk.custom, "renderPackList", { configurable:true, get:() => renderPackList, set:v => { renderPackList = v; } });

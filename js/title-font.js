@@ -19,7 +19,9 @@
 
   const DB_NAME = "trk-title-font", DB_VERSION = 1, STORE = "files";
   const CHOICE_KEY = "trkTitleFont";
-  /* 作品ごとの選択（将来の作品連携の受け口）。{ 作品ID: 候補ID }。まだ画面からは使わず、適用もしない。 */
+  /* 作品ごとの選択（作品連携の受け口・🔤 trk326／R-REM-1）。{ 作品ID: { font: 候補ID, on: true／false } }。
+     全体の設定が空のとき、いま開いている作品（🎨 trk-re-modern の共通の題字の作品）の指定が on なら、その書体を当てる。
+     退避（trk-title-font-works-backup v1）は 📥 で読み戻せる（R-REM-2）。 */
   const WORKS_KEY = "trkTitleFontWorks";
   const CLASS_ON = "trk-title-font-on";
   const VAR = "--trk-title-font";
@@ -75,6 +77,7 @@
 
   /* 状態。status：off（使わない）／active（適用中）／missing（未導入あり）／bad（版違い・壊れている）／error（読込失敗） */
   let state = { status: "off", id: "", detail: "" };
+  let appliedOrigin = "";   /* 🔤 trk326：いまの適用がどこから来たか（"" ＝全体の設定、"work:<作品ID>"） */
   let liveFaces = [];
   let seq = 0;
   /* 全体の選択の世代。準備の途中で新しい選択・オフが始まったら、古い準備の結果は保存しない（refresh の seq とは別に数える） */
@@ -301,10 +304,13 @@
   }
 
   /* 選んだ候補を読み直して適用する。古い結果は seq で捨てる（連続操作・複数の呼び出しに強くする） */
-  async function refresh() {
+  async function refresh() { return applyChoice(readChoice(), ""); }
+  /* 🔤 trk326（R-REM-1）：指定された候補を読み直して適用する（全体の設定と、作品ごとの指定の両方から使う）。
+     origin は「どこからの適用か」（"" ＝全体の設定、"work:<作品ID>"）。部分適用はしない（欠けたら外す）。 */
+  async function applyChoice(id, origin) {
     const my = ++seq;
-    const id = readChoice();
-    if (!id) { deactivate(); setState({ status: "off", id: "", detail: "" }); return state; }
+    appliedOrigin = origin || "";
+    if (!id) { deactivate(); setState({ status: "off", id: "", detail: "", origin: appliedOrigin }); return state; }
     const cand = byId(id);
     let next;
     try {
@@ -313,9 +319,9 @@
       const missing = cand.files.filter(f => inv[f.key].state === "absent").map(f => f.name);
       const bad = cand.files.filter(f => inv[f.key].state === "bad").map(f => f.name);
       const unavail = cand.files.some(f => inv[f.key].state === "unavailable");
-      if (bad.length) next = { status: "bad", id, detail: bad.join(", ") };
-      else if (unavail) next = { status: "error", id, detail: "" };
-      else if (missing.length) next = { status: "missing", id, detail: missing.join(", ") };
+      if (bad.length) next = { status: "bad", id, detail: bad.join(", "), origin: appliedOrigin };
+      else if (unavail) next = { status: "error", id, detail: "", origin: appliedOrigin };
+      else if (missing.length) next = { status: "missing", id, detail: missing.join(", "), origin: appliedOrigin };
       else {
         const faces = [];
         for (const spec of cand.files) {
@@ -325,15 +331,87 @@
         }
         if (my !== seq) return state;
         activate(cand, faces);
-        next = { status: "active", id, detail: "" };
+        next = { status: "active", id, detail: "", origin: appliedOrigin };
       }
     } catch (_) {
       if (my !== seq) return state;
-      next = { status: "error", id, detail: "" };
+      next = { status: "error", id, detail: "", origin: appliedOrigin };
     }
     if (next.status !== "active") deactivate();
     setState(next);
     return state;
+  }
+
+  /* 🔤 trk326（R-REM-1）：いま開いている作品（🎨 の共通の題字の作品）に、作品ごとの指定の書体を当てる。
+     全体の設定が選ばれていれば、そちらが優先（fontForWork の決まり）。作品が無い（""）ときは全体の設定へ戻す。
+     書体ファイルが揃っていなければ当てない（部分適用をしない）。戻り値は当てた候補ID（"" なら当てていない）。 */
+  async function applyForWork(workId) {
+    const id = fontForWork(workId);
+    const origin = id && !readChoice() ? "work:" + String(workId || "") : "";
+    await applyChoice(id, origin);
+    return id;
+  }
+
+  /* 🔤 trk326（R-REM-2）：退避（trk-title-font-works-backup v1）を読み戻す。
+     返す理由：parse（JSON でない）／format（書式・版が違う）／invalid（state=invalid＝壊れた保存の退避なので戻さない）／
+     save（保存できない）／unknown（書けたか確かめられない）／""（戻した）。 */
+  function restoreWorks(envelope) {
+    let env = envelope;
+    if (typeof env === "string") {
+      try { env = JSON.parse(env); } catch (_) { return { ok: false, reason: "parse" }; }
+    }
+    if (!env || typeof env !== "object") return { ok: false, reason: "format" };
+    if (env.format !== "trk-title-font-works-backup" || env.version !== 1) return { ok: false, reason: "format" };
+    if (env.state === "invalid") return { ok: false, reason: "invalid" };
+    if (typeof env.raw !== "string" || !env.raw) return { ok: false, reason: "format" };
+    /* 読める JSON のオブジェクトだけを戻す。読めないものを書き戻すと、次に読む側が壊れたままになる */
+    let obj;
+    try { obj = JSON.parse(env.raw); } catch (_) { return { ok: false, reason: "format" }; }
+    if (!obj || typeof obj !== "object" || Array.isArray(obj)) return { ok: false, reason: "format" };
+    const text = JSON.stringify(normalizeWorks(obj));
+    try { localStorage.setItem(WORKS_KEY, text); } catch (_) { return { ok: false, reason: "save" }; }
+    const snap = snapshotWorks();
+    if (snap.state !== "ok") return { ok: false, reason: "unknown" };
+    return { ok: true, reason: "", count: Object.keys(normalizeWorks(snap.obj)).length };
+  }
+
+  /* ファイル（.json）から読み戻す（上限 256 KiB）。中身の判断は restoreWorks に任せる */
+  async function importWorksBackup(file) {
+    if (!file) return { ok: false, reason: "format" };
+    const limit = 256 * 1024;
+    if (typeof file.size === "number" && file.size > limit) return { ok: false, reason: "size" };
+    let text = "";
+    try { text = await file.text(); } catch (_) { return { ok: false, reason: "read" }; }
+    if (text.length > limit) return { ok: false, reason: "size" };
+    const r = restoreWorks(text);
+    if (r.ok) {
+      await refresh();
+      /* 作品ごとの指定が変わったので、🎨 の側（題字の書体の当て直し）へ知らせる */
+      try { if (typeof window.dispatchEvent === "function") window.dispatchEvent(new Event("trk-title-font")); } catch (_) { }
+    }
+    return r;
+  }
+
+  /* 🎨 trk326（補遺）：re-modern の作品の一覧の退避（trk-re-modern-works-backup v1）。
+     作品は設定（core.settings.remodernWorks）に持つので、ここでは封筒の組み立てと読み戻しだけを持つ。 */
+  const REMODERN_FORMAT = "trk-re-modern-works-backup";
+  function exportRemodernWorks() {
+    const core = window.Trk && window.Trk.core;
+    const works = core && core.settings && Array.isArray(core.settings.remodernWorks) ? core.settings.remodernWorks : [];
+    return JSON.stringify({ format: REMODERN_FORMAT, version: 1, exportedAt: Date.now(), works }, null, 2);
+  }
+  function restoreRemodernWorks(text) {
+    const core = window.Trk && window.Trk.core;
+    if (!core || !core.settings) return { ok: false, reason: "format" };
+    let env = text;
+    if (typeof env === "string") { try { env = JSON.parse(env); } catch (_) { return { ok: false, reason: "parse" }; } }
+    if (!env || typeof env !== "object" || env.format !== REMODERN_FORMAT || env.version !== 1 || !Array.isArray(env.works)) return { ok: false, reason: "format" };
+    const previous = Array.isArray(core.settings.remodernWorks) ? core.settings.remodernWorks : [];
+    core.settings.remodernWorks = env.works;
+    const saved = core.saveUserPrefs();
+    if (saved === false) { core.settings.remodernWorks = previous; return { ok: false, reason: "save" }; }
+    if (typeof window.dispatchEvent === "function") window.dispatchEvent(new Event("trk-remodern-works"));
+    return { ok: true, reason: "", count: env.works.length };
   }
 
   /* 導入：選んだファイルが固定版と一致するときだけ保存する。戻り値は結果の理由（画面の文言に使う） */
@@ -624,11 +702,42 @@
       : snapW.state === "ok" ? t("tfWorksOk", { n: String(Object.keys(normalizeWorks(snapW.obj)).length) })
       : snapW.state === "invalid" ? t("tfWorksInvalid") : t("tfWorksUnreadable");
     worksBox.appendChild(el("div", "hint", wLine));
+    /* 🔤 trk326（R-REM-1）：作品の指定は、🎨 で共通の題字に当てている作品で使われる（指定が無ければ全体の設定） */
+    worksBox.appendChild(el("div", "hint", t("remodernFontLink") + "：" + t("remodernFontLinkHint")));
+    if (state.status === "active" && String(state.origin || "").startsWith("work:")) {
+      const c = byId(state.id);
+      worksBox.appendChild(el("div", "hint", t("tfWorksApplied", { name: c ? c.name : state.id })));
+    }
     if (snapW.obj && snapW.state === "ok") {
       const other = Object.keys(snapW.obj).length - Object.keys(normalizeWorks(snapW.obj)).length;
       if (other > 0) worksBox.appendChild(el("div", "hint", t("tfWorksOther", { n: String(other) })));
     }
     const stateLine = (msg) => { const l = document.getElementById("titleFontState"); if (l) l.textContent = msg; };
+    /* 🔤 trk326（R-REM-2）：退避（v1）から指定を読み戻す。壊れた保存の退避（state=invalid）は戻さない */
+    {
+      const restore = el("button", "titleFontRestore", t("tfRestore"));
+      restore.type = "button";
+      const pick = el("input");
+      pick.type = "file"; pick.accept = "application/json,.json";
+      pick.id = "titleFontRestoreFile";
+      pick.setAttribute("aria-label", t("tfRestore"));
+      pick.hidden = true;
+      restore.addEventListener("click", () => pick.click());
+      pick.addEventListener("change", async () => {
+        const f = pick.files && pick.files[0];
+        pick.value = "";
+        if (!f) return;
+        const r = await importWorksBackup(f);
+        await render(container);
+        stateLine(r.ok ? t("tfRestoreDone", { n: String(r.count || 0) })
+          : r.reason === "invalid" ? t("tfRestoreInvalid")
+          : r.reason === "size" ? t("tfRestoreSize")
+          : r.reason === "save" || r.reason === "unknown" ? t("tfRestoreSaveFail")
+          : t("tfRestoreFormat"));
+      });
+      worksBox.appendChild(restore);
+      worksBox.appendChild(pick);
+    }
     if (snapW.state === "ok" || snapW.state === "invalid") {
       const bk = el("button", "titleFontBackup", t("tfBackup"));
       bk.type = "button";
@@ -677,6 +786,8 @@
     CANDIDATES, CLASS_ON, VAR, DB_NAME, CHOICE_KEY, WORKS_KEY,
     linkedWorkCount, removeConfirmText, sha256Hex, inventory, importFile, removeCandidate, choose, refresh, mount,
     fontForWork, setWorkFont, setWorkLink, backupWorks, removeWorksSettings, snapshotWorks,
+    /* 🔤 trk326（R-REM-1／R-REM-2／補遺）：作品ごとの適用と、退避の読み戻し */
+    applyForWork, applyChoice, restoreWorks, importWorksBackup, exportRemodernWorks, restoreRemodernWorks,
     state: () => ({ ...state }),
     readChoice
   };

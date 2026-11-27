@@ -28,6 +28,8 @@
    ⚠ これは「決まりごと」ではありません。**助言の道具**です（値が違っても受け取れます）。 */
 import fs from "node:fs";
 import path from "node:path";
+/* 📚 trk326（R-SKIN-1）：差し戻しの一覧は 1 か所（tools/skin-holdback.mjs）。ここでは定義側を使う */
+import { holdbackIds, holdbackOf, holdbackByKind, diffHoldback } from "./skin-holdback.mjs";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 import { catalogFromJs } from "./lib/skin-catalog.mjs";
@@ -216,7 +218,20 @@ for (const rel of files) {
     volumeCount = read.volumes.length;
     dangling = read.dangling || 0;
     looseIds = read.looseIds || [];
+    /* 生成物の一覧と、単一定義（tools/skin-holdback.mjs）を突き合わせる。食い違えば落とす */
     holdback = read.holdback || [];
+    /* 差し戻しを 1 つも持たない生成物（skins-wizard.js など）では突き合わせをしない */
+    const drift = holdback.length ? diffHoldback(holdback) : { missingInGenerated: [], unknownInGenerated: [] };
+    /* 食い違いは **警告**（この道具は渡されたファイルを検めるだけで、目録の正本は持たない）。
+       本物の生成物（js/skins-volumes.js）では一致することを、試験と make の側で見張る。 */
+    if (drift.missingInGenerated.length) {
+      report.warnings = (report.warnings || []).concat([{ reason: "holdback-drift", file: rel,
+        message: `差し戻しの定義にあるのに生成物に無い：${drift.missingInGenerated.join(", ")}` }]);
+    }
+    if (drift.unknownInGenerated.length) {
+      report.warnings = (report.warnings || []).concat([{ reason: "holdback-drift", file: rel,
+        message: `生成物にあるのに定義に無い：${drift.unknownInGenerated.join(", ")}` }]);
+    }
   } catch (e) {
     report.ok = false;
     report.problems.push({ reason: "parse", file: rel, message: `読めません（${e.message}）` });
@@ -269,11 +284,21 @@ if (asJson) {
     else if (!quiet) console.log(`✓ ${f.file}：${f.skins} 種${extra}は全部合格（文字 4.5:1・エラー 3:1）${hb}`);
   }
   for (const p of report.problems) if (p.message && p.reason !== "io") console.log(`    ${p.id ? p.id + "：" : ""}${p.message}`);
+  for (const w of report.warnings || []) console.log(`    ⚠ ${w.file}：${w.message}`);
   if (!quiet) for (const f of report.files) {
     if (!f.holdbackIds || !f.holdbackIds.length) continue;
     console.log(`    ⚠ 差し戻し（目録へお返し中・既定の棚から外しています）：${f.holdbackIds.join(", ")}`);
+    for (const id of f.holdbackIds) {
+      const info = holdbackOf(id);
+      if (info) console.log(`      ・${id}［${info.kind}］${info.reason}`);
+    }
   }
   /* どの組を見たかを 1 行で（黙って通していないことの証拠） */
+  /* 📚 trk326：意図的低可読と調整待ちを分けて 1 行で（同じ「差し戻し」でも手当てが違う） */
+  if (!quiet) {
+    const low = holdbackByKind("intentional-low"), pend = holdbackByKind("pending");
+    console.log(`  差し戻しの種類：意図的な低コントラスト ${low.length} 種${low.length ? `（${low.join(", ")}）` : ""}／調整待ち ${pend.length} 種${pend.length ? `（${pend.join(", ")}）` : ""}`);
+  }
   if (!quiet) console.log(`  見た組：本文・うすい文字 ×（地・パネル・入力欄・ボタン・hover）／選択中 × アクセント／舞台 × ゲームの文字／エラー × 入力欄／小さなアクセント × 入れ子`);
 }
 process.exit(report.ok ? 0 : 1);

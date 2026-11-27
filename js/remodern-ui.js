@@ -31,9 +31,26 @@
   const dlgStatus = document.getElementById("remodernDlgStatus");
   const dlgClose = document.getElementById("remodernDlgClose");
   const iconsChk = document.getElementById("remodernIconsChk");
+  /* 🔤 trk326（R-REM-3）：書斎・基地のオプトインのチェック */
+  const optStudy = document.getElementById("remodernOptInStudy");
+  const optBase = document.getElementById("remodernOptInBase");
   const studyBtn = document.getElementById("studyRemodernBtn");
 
   const current = () => core.settings.remodern || R.defaultState();
+  /* 🔤 trk326（R-REM-3）：書斎・基地の独立オプトイン（既定はどちらもオフ＝作品の配色を当てない） */
+  const optIn = () => R.normalizeOptIn(core.settings.remodernOptIn);
+  function setOptIn(region, on) {
+    const before = optIn();
+    core.settings.remodernOptIn = R.regionOptIn(before, region, on === true);
+    if (core.saveUserPrefs() === false) {
+      core.settings.remodernOptIn = before;
+      say(status, "remodernOptInSaveFail");
+      return false;
+    }
+    say(status, on === true ? "remodernOptInOn" : "remodernOptInOff");
+    render();
+    return true;
+  }
   const say = (node, key) => { if (node) node.textContent = key ? tr(key) : ""; };
 
   function fillModes(select, region, value) {
@@ -81,6 +98,8 @@
   }
   function canUndo(region) { const last = core.settings.remodernLast; return !!(last && last.region === region); }
   function impactText(region, p) {
+    /* 🔤 trk326：書斎・基地のオプトインがオフなら、選んでも画面には当たらないと伝える */
+    if (R.OPT_IN_REGIONS.includes(region) && optIn()[region] !== true && p.mode !== "keep") return tr("remodernOptOutImpact");
     if (p.mode === "keep") return tr("remodernImpactKeep");
     if (!p.work) return tr("remodernImpactPick");
     if (statusOfWork(p.work) !== "registered") {
@@ -163,10 +182,29 @@
   /* 🎨 trk305（M3）：共通の領域が「独立」で作品があるときだけ、共通の題字（.brand h1）の色を当てる。
      書斎・基地はまだ当てない。作品が無い・外れたら既定の色へ戻す（js/remodern-paint.js） */
   const PAINT = window.TrkReModernPaint;
+  /* 🔤 trk326（R-REM-1）：共通の題字に当てている作品があれば、その作品の題字の書体も当てる。
+     書体の道具（js/title-font.js）が無い・作品が無いときは、全体の設定（または「使わない」）へ戻す。
+     書体ファイルが揃っていなければ title-font.js 側が当てない（部分適用をしない）。 */
+  const titleFont = () => window.Trk && window.Trk.titleFont;
+  function fontForWork(workId) {
+    const tf = titleFont();
+    return tf && typeof tf.fontForWork === "function" ? tf.fontForWork(workId) : "";
+  }
+  function applyTitleFont(view) {
+    const tf = titleFont();
+    if (!tf || typeof tf.applyForWork !== "function") return "";
+    const id = view && view.common && view.common.source === "own" && view.common.work ? view.common.work : "";
+    /* 未確認の作品でも、書体は作品の指定（利用者が自分で入れたもの）だけを見る。色とは別の判断 */
+    tf.applyForWork(id).catch(() => { });
+    return fontForWork(id);
+  }
+
   function paintTitle(view) {
     const h1 = document.querySelector(".brand h1");
     if (!PAINT || !h1) return;
     const pick = view.common && view.common.source === "own" && view.common.work ? works()[view.common.work] : null;
+    /* 🔤 trk326：題字の色と同じ「作品」を、書体の側にも渡す（色が当たらないときも、書体の指定は使う） */
+    applyTitleFont(view);
     /* 登録簿に無い作品（未確認）は、画面に当てない */
     if (!pick || !R.mayPaint(statusOfWork(pick.id), core.settings.remodernDevPaint === true)) { PAINT.clearTitle(h1); return; }
     const paint = PAINT.titlePaint(pick, PAINT.effectiveBgs(h1));
@@ -176,7 +214,10 @@
 
   function render() {
     const state = current();
-    const view = R.resolve(state, works());
+    const o = optIn();
+    if (optStudy) optStudy.checked = o.study === true;
+    if (optBase) optBase.checked = o.base === true;
+    const view = R.resolve(state, works(), optIn());
     paintTitle(view);
     for (const region of R.REGIONS) {
       const modeSel = document.getElementById(`remodern-${region}-mode`);
@@ -244,7 +285,6 @@
     const cur = current()[region];
     fillModes(dlgMode, region, cur.mode);
     fillWorks(dlgWork, region, cur.work);
-    say(dlgStatus, "");
     refreshDlg();
     dlg.showModal();
     dlgMode.focus();
@@ -262,6 +302,8 @@
     const p = pendingOf(dlgMode, dlgWork);
     dlgWork.disabled = dlgMode.value !== "own";
     if (dlgImpact) dlgImpact.textContent = sameAsApplied(dlgRegion, p) ? tr("remodernImpactSame") : impactText(dlgRegion, p);
+    /* 🔤 trk326：書斎・基地は、この欄のオプトインがオフの間は当たらない。そう伝える（色の影響の文の下） */
+    say(dlgStatus, R.OPT_IN_REGIONS.includes(dlgRegion) && optIn()[dlgRegion] !== true ? "remodernOptOutImpact" : "");
     if (dlgApply) dlgApply.disabled = sameAsApplied(dlgRegion, p);
     if (dlgUndo) dlgUndo.disabled = !canUndo(dlgRegion);
   }
@@ -348,8 +390,19 @@
 
   /* 🎨 trk306：通常のスキンを変えたら、題字の色を判定し直す（背景が変わるので、対比が変わる）。
      以前は作品を選んだあとにスキンを変えると、色が残って読みにくくなっていた（Avatar 側の試験で再現） */
-  function repaintTitle() { paintTitle(R.resolve(current(), works())); }
+  function repaintTitle() { paintTitle(R.resolve(current(), works(), optIn())); }
+  /* 🔤 trk326（R-REM-3）：書斎・基地のオプトインの受け口（選んだだけでは当たらない。次の描画から効く） */
+  if (optStudy) optStudy.addEventListener("change", () => setOptIn("study", optStudy.checked));
+  if (optBase) optBase.addEventListener("change", () => setOptIn("base", optBase.checked));
   if (typeof core.on === "function") core.on("skin", repaintTitle);
+  /* 🔤 trk326：題字の書体の側が変わったら（作品の指定の復元など）、当て直す（色はそのまま） */
+  if (typeof window.addEventListener === "function") window.addEventListener("trk-title-font", repaintTitle);
+  /* 🎨 trk326：作品の一覧を退避から戻したとき（js/title-font.js の restoreRemodernWorks）は読み直す */
+  if (typeof window.addEventListener === "function") window.addEventListener("trk-remodern-works", () => {
+    workMap = WORK ? WORK.loadWorks(core.settings.remodernWorks) : {};
+    window.TrkReModernWorks = workMap;
+    render();
+  });
 
   render();
   if (REG) REG.load().then(r => { registry = r; render(); });
