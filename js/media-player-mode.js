@@ -181,6 +181,125 @@ mediaSubsPos:"자막 위치", mediaSubsPosBottom:"아래", mediaSubsPosMiddle:"�
   mediaModeStatus:"미디어 플레이어 중 (게임 기록에 영향 없음)"
 });
 
+
+/* 🎧 trk327：曲間のつなぎ・手動キュー・再生の健全性の文言（4 言語そろえる） */
+Object.assign(TEXT.ja, {
+  mediaBuffering:"⏳ 読み込み中…",
+  mediaStalled:"⏳ 読み込みが止まっています（回線かファイルを確かめてください）",
+  mediaPlaybackFailed:"この曲を再生できませんでした（形式かファイルを確かめてください）",
+  mediaRetrying:"⟳ もう一度読み込んでいます…",
+  mediaRetry:"⟳ もう一度",
+  mediaRetryNoSource:"読み直す元のファイルがありません。曲を選び直してください。",
+  mediaResumed:"⏪ 前回の続き（{t}）から再生します",
+  mediaResumedRewind:"⏪ 前回の続き（{t}）から、{s}秒戻して再生します",
+  mediaQueueNextTitle:"⏭ 次に再生（手動）",
+  mediaQueueNextHint:"この順に鳴らします。終わったら消えます。",
+  mediaQueueRest:"ここから下は通常の順番",
+  mediaQueuePlayNext:"次に再生",
+  mediaQueueAdd:"キューの最後に足す",
+  mediaQueueRemove:"キューから外す",
+  mediaQueueAdded:"⏭ キューに入れました（{n} 曲）",
+  mediaQueuePlaylist:"💾 このキューでプレイリストを作る",
+  mediaQueuePlaylistName:"プレイリストの名前（40 文字まで）",
+  mediaQueuePlaylistDefault:"キューから作ったリスト",
+  mediaQueuePlaylistDone:"💾 プレイリスト「{name}」を作りました（{n} 曲）",
+  mediaQueuePlaylistEmpty:"キューが空です。曲を足してから作ってください。",
+  mediaQueuePlaylistFail:"プレイリストを作れませんでした（保存を確かめてください）",
+  mediaCrossfadeLabel:"🎚 曲の終わりのフェード",
+  mediaCrossfadeOff:"オフ",
+  mediaCrossfadeHint:"曲の終わりを N 秒かけて静かに閉じ、次の曲の頭を短く立ち上げます。曲は重ねません（2 本同時には鳴らしません）。既定はオフ。",
+  mediaCrossfadeSet:"🎚 フェード {s} 秒",
+  mediaGaplessLabel:"🎧 曲間を詰める（次の曲を先に読み込む・既定オフ）",
+  mediaGaplessHint:"端末内のファイルの曲だけ、次の曲を先に読み込んでおきます。曲間の待ちが短くなります（音は出しません）。"
+});
+Object.assign(TEXT.en, {
+  mediaBuffering:"⏳ Loading…",
+  mediaStalled:"⏳ Loading has stopped (check the connection or the file)",
+  mediaPlaybackFailed:"This track could not be played (check the format or the file)",
+  mediaRetrying:"⟳ Loading once more…",
+  mediaRetry:"⟳ Try again",
+  mediaRetryNoSource:"There is no file to reload. Choose the track again.",
+  mediaResumed:"⏪ Resuming from {t}",
+  mediaResumedRewind:"⏪ Resuming {s}s before the last position ({t})",
+  mediaQueueNextTitle:"⏭ Next up (manual)",
+  mediaQueueNextHint:"These play in this order, then leave the queue.",
+  mediaQueueRest:"Below this line, the usual order",
+  mediaQueuePlayNext:"Play next",
+  mediaQueueAdd:"Add to the end of the queue",
+  mediaQueueRemove:"Remove from the queue",
+  mediaQueueAdded:"⏭ Queued ({n} tracks)",
+  mediaQueuePlaylist:"💾 Make a playlist from this queue",
+  mediaQueuePlaylistName:"Playlist name (up to 40 characters)",
+  mediaQueuePlaylistDefault:"Made from the queue",
+  mediaQueuePlaylistDone:"💾 Created the playlist 「{name}」 ({n} tracks)",
+  mediaQueuePlaylistEmpty:"The queue is empty. Add tracks first.",
+  mediaQueuePlaylistFail:"Could not create the playlist (check the saved data)",
+  mediaCrossfadeLabel:"🎚 Fade at the end of a track",
+  mediaCrossfadeOff:"Off",
+  mediaCrossfadeHint:"Closes the end of a track over N seconds and lifts the start of the next one briefly. Tracks never overlap (two are never played at once). Off by default.",
+  mediaCrossfadeSet:"🎚 Fade {s}s",
+  mediaGaplessLabel:"🎧 Shorten the gap (preload the next track, off by default)",
+  mediaGaplessHint:"For files on this device only, the next track is read ahead so the wait between tracks is shorter (no sound is played)."
+});
+Object.assign(TEXT.zh, {
+  mediaBuffering:"⏳ 载入中…",
+  mediaStalled:"⏳ 载入停住了（请检查网络或文件）",
+  mediaPlaybackFailed:"无法播放此曲（请检查格式或文件）",
+  mediaRetrying:"⟳ 正在重新载入…",
+  mediaRetry:"⟳ 再试一次",
+  mediaRetryNoSource:"没有可重新载入的文件。请重新选择曲目。",
+  mediaResumed:"⏪ 从上次的位置（{t}）继续播放",
+  mediaResumedRewind:"⏪ 从上次的位置（{t}）回退 {s} 秒后继续播放",
+  mediaQueueNextTitle:"⏭ 接下来播放（手动）",
+  mediaQueueNextHint:"按此顺序播放，播完即从队列移除。",
+  mediaQueueRest:"以下为通常顺序",
+  mediaQueuePlayNext:"接下来播放",
+  mediaQueueAdd:"加到队列末尾",
+  mediaQueueRemove:"从队列移除",
+  mediaQueueAdded:"⏭ 已加入队列（{n} 首）",
+  mediaQueuePlaylist:"💾 用此队列创建播放列表",
+  mediaQueuePlaylistName:"播放列表名称（最多 40 字）",
+  mediaQueuePlaylistDefault:"由队列创建",
+  mediaQueuePlaylistDone:"💾 已创建播放列表“{name}”（{n} 首）",
+  mediaQueuePlaylistEmpty:"队列是空的。请先加入曲目。",
+  mediaQueuePlaylistFail:"未能创建播放列表（请检查保存）",
+  mediaCrossfadeLabel:"🎚 曲末淡出",
+  mediaCrossfadeOff:"关闭",
+  mediaCrossfadeHint:"用 N 秒把曲尾安静收住，并短暂抬起下一曲的开头。曲目不会重叠（不会同时播放两首）。默认关闭。",
+  mediaCrossfadeSet:"🎚 淡出 {s} 秒",
+  mediaGaplessLabel:"🎧 缩短曲间等待（预读下一曲・默认关闭）",
+  mediaGaplessHint:"仅对本设备上的文件，提前读入下一曲，缩短曲间等待（不会出声）。"
+});
+Object.assign(TEXT.ko, {
+  mediaBuffering:"⏳ 불러오는 중…",
+  mediaStalled:"⏳ 불러오기가 멈췄습니다(연결이나 파일을 확인해 주세요)",
+  mediaPlaybackFailed:"이 곡을 재생할 수 없습니다(형식이나 파일을 확인해 주세요)",
+  mediaRetrying:"⟳ 다시 불러오는 중…",
+  mediaRetry:"⟳ 다시 시도",
+  mediaRetryNoSource:"다시 불러올 파일이 없습니다. 곡을 다시 골라 주세요.",
+  mediaResumed:"⏪ 지난 위치({t})부터 재생합니다",
+  mediaResumedRewind:"⏪ 지난 위치({t})에서 {s}초 되감아 재생합니다",
+  mediaQueueNextTitle:"⏭ 다음 재생(수동)",
+  mediaQueueNextHint:"이 순서대로 재생하고, 끝나면 목록에서 사라집니다.",
+  mediaQueueRest:"아래는 평소의 순서",
+  mediaQueuePlayNext:"다음에 재생",
+  mediaQueueAdd:"대기열 끝에 추가",
+  mediaQueueRemove:"대기열에서 빼기",
+  mediaQueueAdded:"⏭ 대기열에 넣었습니다({n}곡)",
+  mediaQueuePlaylist:"💾 이 대기열로 재생목록 만들기",
+  mediaQueuePlaylistName:"재생목록 이름(40자까지)",
+  mediaQueuePlaylistDefault:"대기열에서 만든 목록",
+  mediaQueuePlaylistDone:"💾 재생목록 「{name}」을 만들었습니다({n}곡)",
+  mediaQueuePlaylistEmpty:"대기열이 비어 있습니다. 곡을 먼저 넣어 주세요.",
+  mediaQueuePlaylistFail:"재생목록을 만들지 못했습니다(저장을 확인해 주세요)",
+  mediaCrossfadeLabel:"🎚 곡 끝 페이드",
+  mediaCrossfadeOff:"끔",
+  mediaCrossfadeHint:"곡 끝을 N초에 걸쳐 조용히 닫고, 다음 곡의 시작을 짧게 올립니다. 곡은 겹치지 않습니다(두 곡을 동시에 재생하지 않음). 기본은 끔.",
+  mediaCrossfadeSet:"🎚 페이드 {s}초",
+  mediaGaplessLabel:"🎧 곡 사이를 줄이기(다음 곡 미리 읽기·기본 끔)",
+  mediaGaplessHint:"이 기기의 파일에만, 다음 곡을 미리 읽어 곡 사이 대기를 줄입니다(소리는 나지 않습니다)."
+});
+
 const HOLD_MS = 650;
 if (!Array.isArray(core.settings.videoKeys) || core.settings.videoKeys.length !== core.VIDEO_KEY_DEFAULTS.length || core.settings.videoKeys.some(k => !core.validCode(k)) || new Set(core.settings.videoKeys).size !== core.VIDEO_KEY_DEFAULTS.length) core.settings.videoKeys = core.VIDEO_KEY_DEFAULTS.slice();
 let overlay, dialog, powerButton;
@@ -198,6 +317,10 @@ const repeatOptions = () => (repeatOneOnly()
 if (repeatOneOnly() && repeatMode === "all") repeatMode = "off";
 let mediaRate = Number(core.settings.mediaRate) || 1, sleepTimer = 0, sleepUntil = 0, tickTimer = 0;
 let seeking = false, queueFilter = "", videoBinding = null;
+/* 🎧 trk327：曲間のつなぎと、再生の健全性（待つ・詰まる・失敗する）の表示 */
+let bufferNode = null, retryNode = null, bufferTimer = 0, bufferKey = "";
+let fadeInPending = false;   /* 🎧 trk327：次の "playing" で頭を立ち上げるか（曲が変わったときだけ true） */
+let gaplessEl = null, gaplessKey = "", fadeTimer = 0, fading = false;
 let reverseActive = false, reverseLoading = false, reverseTimer = 0, reverseSource = null, reverseGain = null;
 let reverseBuffer = null, reverseBufferKey = "", reverseVideoMuted = false, reverseStartAt = 0, reverseClockAt = 0;
 let loopTimer = 0;
@@ -819,11 +942,127 @@ function mediaCandidates() {
   }
   return list;
 }
-function nextMediaSong(dir = 1) {
+/* 🎧 trk327：手動の「次に再生」キュー（settings.mediaQueueNext）。空なら従来どおりの順番。
+   キューは**消費したら消える**（曲が無くなった key は黙って捨てる）。 */
+const manualQueue = () => (Array.isArray(core.settings.mediaQueueNext) ? core.settings.mediaQueueNext : []);
+function saveManualQueue(list) {
+  core.settings.mediaQueueNext = (Array.isArray(list) ? list : []).slice(0, 100);
+  core.saveUserPrefs();
+  renderQueue();
+}
+function enqueueNext(key) {
+  if (typeof key !== "string" || !key) return false;
+  const q = manualQueue().filter(k => k !== key);
+  saveManualQueue([key].concat(q));
+  showMediaStatus("mediaQueueAdded", { n: manualQueue().length });
+  return true;
+}
+function enqueueLast(key) {
+  if (typeof key !== "string" || !key) return false;
+  const q = manualQueue().filter(k => k !== key);
+  saveManualQueue(q.concat([key]));
+  showMediaStatus("mediaQueueAdded", { n: manualQueue().length });
+  return true;
+}
+function dequeueManual(key) {
+  const q = manualQueue();
+  if (!q.includes(key)) return;
+  saveManualQueue(q.filter(k => k !== key));
+}
+/* 次に鳴らす曲を「見るだけ」（キューを減らさない。先読み用） */
+function peekNextMediaSong(dir = 1) {
+  if (dir === 1) {
+    const songs = mpSongs();
+    for (const key of manualQueue()) { const it = songs.find(x => x.key === key); if (it) return it; }
+  }
   const list = mediaCandidates(); if (!list.length) return null;
   if (shuffle) return list[Math.floor(Math.random() * list.length)];
   const i = core.currentSong ? list.findIndex(x => x.key === core.currentSong.key) : -1;
   return list[(i + dir + list.length) % list.length];
+}
+function nextMediaSong(dir = 1) {
+  const list = mediaCandidates(); if (!list.length) return null;
+  if (dir === 1) {
+    const songs = mpSongs();
+    const q = manualQueue();
+    while (q.length) {
+      const key = q.shift();
+      core.settings.mediaQueueNext = q.slice(0, 100);
+      core.saveUserPrefs();
+      const it = songs.find(x => x.key === key);
+      if (it) { renderQueue(); return it; }
+    }
+  }
+  if (shuffle) return list[Math.floor(Math.random() * list.length)];
+  const i = core.currentSong ? list.findIndex(x => x.key === core.currentSong.key) : -1;
+  return list[(i + dir + list.length) % list.length];
+}
+
+/* 🎧 trk327：ギャップレス（既定オフ）。次の曲のファイルを先に読み込んでおき、曲間の待ちを詰める。
+   ・端末内のファイル（file を持つ曲）だけ。URL は先読み用に作り、次に進むか曲を変えたら捨てる。
+   ・音は出さない（muted）。読み込みと復号の準備だけを前もって行う。 */
+function disposeGapless() {
+  if (gaplessEl) {
+    const url = gaplessEl._trkUrl;
+    try { gaplessEl.removeAttribute("src"); gaplessEl.load(); } catch (_) {}
+    if (url) { try { URL.revokeObjectURL(url); } catch (_) {} }
+    gaplessEl = null;
+  }
+  gaplessKey = "";
+}
+function preloadNextForGapless() {
+  if (core.settings.mediaGapless !== true) { disposeGapless(); return; }
+  const it = peekNextMediaSong(1);
+  if (!it || !it.file || gaplessKey === it.key) return;
+  disposeGapless();
+  try {
+    const hinted = window.Trk.media && typeof window.Trk.media.withMimeHint === "function" ? window.Trk.media.withMimeHint(it.file) : it.file;
+    const url = URL.createObjectURL(hinted);
+    const el = document.createElement("audio");
+    el.preload = "auto"; el.muted = true; el.src = url; el._trkUrl = url; el.dataset.trkGapless = "1";
+    const drop = () => { if (gaplessEl === el) disposeGapless(); };
+    el.addEventListener("error", drop, { once: true });
+    el.load();
+    gaplessEl = el; gaplessKey = it.key;
+  } catch (_) { disposeGapless(); }
+}
+
+/* 🎧 trk327：クロスフェード（既定オフ）。曲の終わり N 秒をかけて静かに閉じ、次の曲の頭を短く立ち上げる。
+   **曲を重ねない**（2 本目の再生はしない）。音量は要素の volume だけを触り、設定（musicVolume）は変えない。 */
+function crossfadeSeconds() {
+  const n = Number(core.settings.mediaCrossfade);
+  return Number.isFinite(n) && n > 0 ? Math.min(12, Math.round(n)) : 0;
+}
+function baseVolume() { return Math.max(0, Math.min(1, Number(core.settings.musicVolume) || 0)); }
+function resetCrossfade() {
+  clearInterval(fadeTimer); fadeTimer = 0; fading = false;
+  if (!core.video) return;
+  try { if (!core.video.muted) core.video.volume = baseVolume(); } catch (_) {}
+}
+function fadeIn() {
+  const n = crossfadeSeconds();
+  if (!n || !core.videoReady || fading) return;
+  const target = baseVolume();
+  if (target <= 0) return;
+  let step = 0; const steps = 8;
+  fading = true;
+  clearInterval(fadeTimer);
+  try { core.video.volume = target * 0.25; } catch (_) {}
+  fadeTimer = setInterval(() => {
+    step++;
+    try { core.video.volume = target * Math.min(1, 0.25 + (0.75 * step / steps)); } catch (_) {}
+    if (step >= steps) { clearInterval(fadeTimer); fadeTimer = 0; fading = false; }
+  }, 60);
+}
+function applyFadeOut() {
+  const n = crossfadeSeconds();
+  if (!n || !core.videoReady || fading) return;
+  const d = core.video.duration;
+  if (!Number.isFinite(d) || d <= 0) return;
+  const remain = d - (core.video.currentTime || 0);
+  if (remain > n || remain <= 0 || core.video.paused) return;
+  const target = baseVolume() * Math.max(0, remain / n);
+  try { if (!core.video.muted) core.video.volume = Math.max(0, Math.min(1, target)); } catch (_) {}
 }
 async function playSong(it, fromStart = true) {
   if (!it || typeof selectSong !== "function") return;
@@ -842,7 +1081,17 @@ async function playSong(it, fromStart = true) {
     await window.Trk.library.selectSong(it);
   }
   if (!mediaActive() || core.currentSong !== it || !core.videoReady) { renderMedia(); return; }
-  if (fromStart) { try { core.video.currentTime = savedMediaPosition({ resume: true }); } catch (_) {} }  /* ⏪ 続きから再生のときだけ巻き戻す（trk164） */
+  if (fromStart) {
+    const pos = savedMediaPosition({ resume: true });
+    try { core.video.currentTime = pos; } catch (_) {}
+    /* 🎧 trk327：前回の続きから始めたことを言葉で出す（巻き戻しの設定が効いていることも分かる） */
+    if (pos > 5) {
+      const back = resumeRewindSeconds(core.settings.mediaResumeRewind);
+      showMediaStatus(back > 0 ? "mediaResumedRewind" : "mediaResumed", { t: mpFmt(pos), s: back });
+    }
+  }
+  disposeGapless();
+  fadeInPending = crossfadeSeconds() > 0;   /* 🎧 頭の立ち上げは「曲が変わったとき」だけ（再開のたびには掛けない） */
   core.video.muted = false; core.video.volume = core.settings.musicVolume; setRate(mediaRate);
   try { await core.video.play(); } catch (_) { showMediaStatus("mediaLoadFailed"); }
   renderMedia(); updateMediaSession();
@@ -866,6 +1115,38 @@ function seekBy(delta) {
   if (reverseActive || reverseLoading) stopReverse(false, true);
   core.video.currentTime = Math.max(0, Math.min(core.video.duration, (core.video.currentTime || 0) + delta));
   renderMedia();
+}
+/* 🎧 trk327：読み込み中・詰まり・失敗の表示と「⟳ もう一度」。
+   ・waiting＝待っている、stalled＝3 秒たっても進まない、error＝失敗（理由＋再試行）。
+   ・無期限の「読み込み中」を出しっぱなしにしない（終わったら消す・失敗したら理由を出す）。 */
+function showBuffer(key, vars) {
+  if (!bufferNode) return;
+  bufferKey = key || "";
+  if (!key) { bufferNode.hidden = true; bufferNode.textContent = ""; bufferNode.dataset.i18n = ""; return; }
+  bufferNode.hidden = false;
+  bufferNode.dataset.i18n = key;
+  bufferNode.textContent = tr(key, vars);
+}
+function clearBuffer() { clearTimeout(bufferTimer); bufferTimer = 0; showBuffer(""); if (retryNode) retryNode.hidden = true; }
+function retryPlayback() {
+  const v = core.video;
+  if (!core.videoReady && !core.mediaURL) { showBuffer("mediaRetryNoSource"); return; }
+  showBuffer("mediaRetrying");
+  try { v.load(); } catch (_) {}
+  Promise.resolve(v.play()).then(() => { clearBuffer(); renderMedia(); updateMediaSession(); })
+    .catch(() => { showBuffer("mediaPlaybackFailed"); if (retryNode) retryNode.hidden = false; });
+}
+function wirePlaybackHealth() {
+  const v = core.video;
+  v.addEventListener("waiting", () => { if (mediaActive()) showBuffer("mediaBuffering"); });
+  v.addEventListener("stalled", () => { clearTimeout(bufferTimer); bufferTimer = setTimeout(() => { if (mediaActive() && !v.paused) showBuffer("mediaStalled"); }, 3000); });
+  v.addEventListener("canplay", () => { clearBuffer(); });
+  v.addEventListener("playing", () => {
+    clearBuffer();
+    if (fadeInPending) { fadeInPending = false; resetCrossfade(); fadeIn(); }
+  });
+  v.addEventListener("error", () => { clearBuffer(); showBuffer("mediaPlaybackFailed"); if (retryNode) retryNode.hidden = false; });
+  if (retryNode) retryNode.addEventListener("click", retryPlayback);
 }
 function showMediaStatus(key, vars) {
   if (!statusNode) return;
@@ -908,12 +1189,19 @@ function updateMediaSession() {
   const s = core.currentSong || {};
   if (typeof MediaMetadata !== "undefined" && s) {
     const d = trackDisplayMeta(core.currentSong);   /* 🏷 ロック画面・通知もタグ込みの表示名に揃える（trk167） */
-    try { ms.metadata = new MediaMetadata({ title:d.title || s.title || core.baseName(core.mediaName) || "trk!", artist:d.artist || s.artist || "trk!", album:d.album || s.packName || "trk!", artwork:[{ src:"icons/icon-512.png", sizes:"512x512", type:"image/png" }] }); } catch (_) {}
+    /* 🎧 trk327：アートは OS が大きさを選ぶので**複数サイズ**を出す（1 枚だけだと出ない端末がある） */
+    try { ms.metadata = new MediaMetadata({ title:d.title || s.title || core.baseName(core.mediaName) || "trk!", artist:d.artist || s.artist || "trk!", album:d.album || s.packName || "trk!",
+      artwork:[{ src:"icons/icon-192.png", sizes:"192x192", type:"image/png" }, { src:"icons/icon-512.png", sizes:"512x512", type:"image/png" }] }); } catch (_) {}
   }
   try {
     if (core.videoReady && Number.isFinite(core.video.duration) && core.video.duration > 0 && typeof ms.setPositionState === "function") {
       ms.setPositionState({ duration:core.video.duration, playbackRate:core.video.playbackRate || 1, position:Math.max(0, Math.min(core.video.duration, core.video.currentTime || 0)) });
     }
+  } catch (_) {}
+  /* 🎧 trk327：ロック画面のボタンのアイコンは playbackState で決まる。要素の状態から毎回そろえる
+     （設定しないと「再生中なのに一時停止の絵」のような食い違いが出る） */
+  try {
+    ms.playbackState = !core.videoReady ? "none" : (core.video && core.video.paused ? "paused" : "playing");
   } catch (_) {}
 }
 async function sessionSong(dir) {
@@ -958,21 +1246,56 @@ function updateTrackText() {
 function srcLabelSafe(s) {
   try { return typeof srcLabel === "function" ? window.Trk.library.srcLabel(s) : s.source || ""; } catch (_) { return s.source || ""; }
 }
+/* 🎧 trk327：キューの 1 行（曲を選ぶ／次に再生／キューに足す）。行は div にして、
+   中に「選ぶ」ボタンと小さな操作を並べる（button の中に button を入れない）。 */
+function queueRow(it, opts) {
+  const o = opts || {};
+  const row = core.el("div", "mediaQueueRow");
+  const b = core.el("button", "mediaQueueItem" + (core.currentSong && core.currentSong.key === it.key ? " selected" : ""));
+  b.type = "button"; b.dataset.key = it.key;
+  const d = trackDisplayMeta(it);   /* 🏷 キューもタグ込みの表示名（trk167） */
+  const name = core.el("strong", "mediaQueueName", d.title || it.title || "song");
+  const meta = core.el("span", "mediaQueueMeta", [d.artist || it.artist, d.album, srcLabelSafe(it)].filter(Boolean).join(" · "));
+  b.append(name, meta);
+  b.addEventListener("click", () => playSong(it, true));
+  row.append(b);
+  if (o.manual) {
+    const rm = core.el("button", "mediaQueueTool", "✕");
+    rm.type = "button";
+    rm.setAttribute("aria-label", tr("mediaQueueRemove"));
+    rm.title = tr("mediaQueueRemove");
+    rm.addEventListener("click", () => dequeueManual(it.key));
+    row.append(rm);
+  } else {
+    const nx = core.el("button", "mediaQueueTool", "⏭");
+    nx.type = "button";
+    nx.setAttribute("aria-label", tr("mediaQueuePlayNext"));
+    nx.title = tr("mediaQueuePlayNext");
+    nx.addEventListener("click", () => enqueueNext(it.key));
+    const qa = core.el("button", "mediaQueueTool", "＋");
+    qa.type = "button";
+    qa.setAttribute("aria-label", tr("mediaQueueAdd"));
+    qa.title = tr("mediaQueueAdd");
+    qa.addEventListener("click", () => enqueueLast(it.key));
+    row.append(nx, qa);
+  }
+  return row;
+}
 function renderQueue() {
   if (!queueNode) return;
   queueNode.textContent = "";
+  const songs = mpSongs();
+  const manual = manualQueue().map(key => songs.find(x => x.key === key)).filter(Boolean);
+  if (manual.length) {
+    const head = core.el("div", "mediaQueueManualHead");
+    head.append(core.el("strong", "", tr("mediaQueueNextTitle")), core.el("span", "hint", tr("mediaQueueNextHint")));
+    queueNode.append(head);
+    for (const it of manual.slice(0, 100)) queueNode.append(queueRow(it, { manual: true }));
+    queueNode.append(core.el("div", "mediaQueueDivider", tr("mediaQueueRest")));
+  }
   const all = currentList();
   if (!all.length) { queueNode.append(core.el("div", "mediaEmpty", tr(mpSongs().length ? "mediaNoMatch" : "mediaNoSongs"))); return; }
-  for (const it of all.slice(0, 300)) {
-    const b = core.el("button", "mediaQueueItem" + (core.currentSong && core.currentSong.key === it.key ? " selected" : ""));
-    b.type = "button"; b.dataset.key = it.key;
-    const d = trackDisplayMeta(it);   /* 🏷 キューもタグ込みの表示名（trk167） */
-    const name = core.el("strong", "mediaQueueName", d.title || it.title || "song");
-    const meta = core.el("span", "mediaQueueMeta", [d.artist || it.artist, d.album, srcLabelSafe(it)].filter(Boolean).join(" · "));
-    b.append(name, meta);
-    b.addEventListener("click", () => playSong(it, true));
-    queueNode.append(b);
-  }
+  for (const it of all.slice(0, 300)) queueNode.append(queueRow(it, {}));
   if (all.length > 300) queueNode.append(core.el("div", "hint", `+ ${all.length - 300}`));
 }
 /* ================= ✨ フレーム補完（js/frame-interp.js） =================
@@ -1889,10 +2212,18 @@ function buildMedia() {
   maxNode.addEventListener("click", () => { if (window.TrkVideoMax) window.TrkVideoMax.toggle(); });
   if (window.TrkVideoMax) window.TrkVideoMax.onChange(() => renderMedia());
   controls.append(prev, playNode, next, reverseNode, maxNode, pipNode, wallNode, restart);
+  /* 🎧 trk327：失敗したときだけ出る「⟳ もう一度」（成功したら隠す） */
+  retryNode = makeButton("mediaRetry", "mediaSmallBtn"); retryNode.hidden = true; controls.append(retryNode);
 
   const progressRow = core.el("div", "mediaProgressRow");
   progressNode = document.createElement("input"); progressNode.type = "range"; progressNode.min = "0"; progressNode.step = "0.1"; progressNode.value = "0"; progressNode.className = "mediaProgress"; progressNode.setAttribute("aria-label", tr("mediaSeek"));
   timeNode = core.el("span", "mono mediaTime", "0:00 / 0:00");
+  /* 🎧 trk327：読み込み中・詰まり・失敗の 1 行（無期限に出しっぱなしにしない） */
+  bufferNode = core.el("span", "mediaBuffer hint"); bufferNode.hidden = true;
+  bufferNode.setAttribute("role", "status"); bufferNode.setAttribute("aria-live", "polite");
+  /* 操作の列（mediaControls／mediaProgressRow）は無操作で薄くなるので、この 1 行は外に置きます
+     （読み込みが長引くときこそ見えてほしいため）。 */
+  const bufferRow = core.el("div", "mediaBufferRow"); bufferRow.append(bufferNode);
   /* 🌊 波形シークバー（trk173）：range の上に canvas を重ねる（pointer-events:none＝操作は range のまま）。
      吹き出しはホバー位置の時刻（動画フレームのサムネはデコード経路が別なので今回は見送り） */
   waveWrapNode = core.el("div", "mediaProgressWrap");
@@ -2132,12 +2463,55 @@ function buildMedia() {
     if (typeof showToast === "function") window.Trk.play.showToast(tr("mediaResumeSet", { s: core.settings.mediaResumeRewind }));
   });
   resumeLabel.append(resumeNode);
-  options.append(volumeRow, muteNode, shuffleNode, repeatLabel, rateLabel, sleepLabel, resumeLabel, zeroRow);
+  /* 🎧 trk327：曲間のつなぎ（どちらも既定オフ）。数字は言語に依らない表記 */
+  const cfLabel = core.el("label", "mediaOption"); cfLabel.append(tx("span", "mediaCrossfadeLabel"));
+  const cfNode = document.createElement("select");
+  for (const v of [0, 3, 5, 8, 12]) {
+    const o = document.createElement("option"); o.value = String(v);
+    if (v === 0) { o.dataset.i18n = "mediaCrossfadeOff"; o.textContent = tr("mediaCrossfadeOff"); } else o.textContent = `${v}s`;
+    cfNode.append(o);
+  }
+  cfNode.value = String(Math.min(12, Math.max(0, Number(core.settings.mediaCrossfade) || 0)));
+  cfNode.addEventListener("change", () => {
+    core.settings.mediaCrossfade = Math.min(12, Math.max(0, Number(cfNode.value) || 0));
+    core.saveUserPrefs(); resetCrossfade();
+    if (typeof showToast === "function") window.Trk.play.showToast(tr("mediaCrossfadeSet", { s: core.settings.mediaCrossfade }));
+  });
+  cfLabel.append(cfNode);
+  const cfHint = tx("div", "mediaCrossfadeHint", "hint");
+  const gpRow = core.el("label", "mediaOption mediaCheckRow");
+  const gpNode = document.createElement("input"); gpNode.type = "checkbox"; gpNode.id = "mediaGaplessChk";
+  const gpText = document.createElement("span"); gpText.dataset.i18n = "mediaGaplessLabel"; gpText.textContent = tr("mediaGaplessLabel");
+  gpRow.append(gpNode, gpText);
+  gpNode.checked = core.settings.mediaGapless === true;
+  gpNode.addEventListener("change", () => {
+    core.settings.mediaGapless = gpNode.checked === true;
+    core.saveUserPrefs();
+    if (core.settings.mediaGapless) preloadNextForGapless(); else disposeGapless();
+  });
+  const gpHint = tx("div", "mediaGaplessHint", "hint");
+  options.append(volumeRow, muteNode, shuffleNode, repeatLabel, rateLabel, sleepLabel, resumeLabel, zeroRow, cfLabel, cfHint, gpRow, gpHint);
 
   const queuePanel = core.el("section", "mediaQueuePanel");
   const qhead = core.el("div", "mediaQueueHead"); qhead.append(tx("h3", "mediaQueue"), tx("p", "mediaQueueHint", "hint"));
   searchNode = document.createElement("input"); searchNode.type = "search"; searchNode.placeholder = tr("mediaSearch"); searchNode.dataset.i18nPlaceholder = "mediaSearch"; searchNode.className = "mediaSearch"; searchNode.addEventListener("input", () => { queueFilter = searchNode.value; renderQueue(); });
-  queueNode = core.el("div", "mediaQueueList"); queuePanel.append(qhead, searchNode, queueNode);
+  queueNode = core.el("div", "mediaQueueList");
+  /* 🎧 trk327：いまのキューからプレイリストを作る（曲ファイルは動かさない。押したときだけ） */
+  const qSaveBtn = makeButton("mediaQueuePlaylist", "mediaSmallBtn");
+  qSaveBtn.addEventListener("click", () => {
+    /* さがすの文字が残っていても、キュー全部（手動キューの先頭＋曲リストの並び）から作ります
+       （見えている一部だけのプレイリストが、黙ってできるのを避ける） */
+    const list = manualQueue().concat(mpSongs().map(it => it.key));
+    if (!list.length) { showMediaStatus("mediaQueuePlaylistEmpty"); return; }
+    const name = window.prompt(tr("mediaQueuePlaylistName"), tr("mediaQueuePlaylistDefault"));
+    if (name === null) return;
+    const lib = window.Trk.library;
+    if (!lib || typeof lib.createPlaylistFromSongs !== "function") { showMediaStatus("mediaQueuePlaylistFail"); return; }
+    const r = lib.createPlaylistFromSongs(name, list);
+    showMediaStatus(r.ok ? "mediaQueuePlaylistDone" : "mediaQueuePlaylistFail", { n: r.count || 0, name: r.name || "" });
+  });
+  qhead.append(qSaveBtn);
+  queuePanel.append(qhead, searchNode, queueNode);
 
   const footer = core.el("footer", "instFooter mediaFooter"); footer.append(tx("span", "mediaModeStatus"), tx("span", "mediaKeyboard", "instKeyHint"));
   /* 📜 ヘッダー（← 曲リストに戻る）はスクロール面の外に置き、中身だけ .mediaBody でスクロールさせる（trk187）。
@@ -2154,6 +2528,8 @@ function buildMedia() {
   const wallHint = tx("div", "mediaWallHint", "mediaWallHintText");
   wallOverlay.append(wallTop, wallCenter, wallHint);
   overlay.append(backdrop, dialog, wallOverlay); document.body.append(overlay);
+  progressRow.after(bufferRow);   /* 🎧 trk327：読み込み中の 1 行は進捗のすぐ下（並びの本体は変えない） */
+  wirePlaybackHealth();   /* 🎧 trk327：待つ・詰まる・失敗するときの表示と再試行 */
 
   backdrop.addEventListener("click", () => closeMedia());
   overlay.addEventListener("click", e => { if (e.target === overlay) closeMedia(); });
@@ -2204,9 +2580,10 @@ function buildMedia() {
   let lastPositionSave = 0;
   for (const type of ["play", "pause", "timeupdate", "loadedmetadata", "durationchange", "volumechange", "ratechange", "ended", "loadeddata"]) core.video.addEventListener(type, () => {
     if (type === "timeupdate" && Date.now() - lastPositionSave > 2000) { lastPositionSave = Date.now(); saveMediaPosition(); }
-    if (type === "ended") endedMedia(); else renderMedia();
+    if (type === "timeupdate") { applyFadeOut(); if (core.videoReady && core.video.duration - core.video.currentTime < 12) preloadNextForGapless(); }
+    if (type === "ended") { resetCrossfade(); disposeGapless(); endedMedia(); } else renderMedia();
   });
-  core.on("beforeLoad", () => { if (clipAbort) clipAbort(); stopReverse(false, true); clearMediaLoop(true); reverseBuffer = null; reverseBufferKey = ""; });
+  core.on("beforeLoad", () => { if (clipAbort) clipAbort(); stopReverse(false, true); clearMediaLoop(true); reverseBuffer = null; reverseBufferKey = ""; disposeGapless(); resetCrossfade(); });
   core.on("songSelected", () => { renderMedia(); if (lyricsBoxOpen()) loadLyrics(); loadSubs(true); });   /* 🎤 曲が変わったら歌詞も（trk166）💬 字幕も（trk169） */
   core.on("mediaReady", () => { if (mediaOpen) renderMedia(); updateMediaSession(); });
   core.on("songSelected", () => { loadChapters(true); });   /* 🔖 曲が変わったらチャプターも（trk170・上の歌詞/字幕の行とは別に購読） */
