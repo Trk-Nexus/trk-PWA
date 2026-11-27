@@ -1398,7 +1398,7 @@ function applyLanguage(code) {
 
 /* ---------- スキン ---------- */
 const SKIN_CATS = [["all","catAll"],["basic","catBasic"],["type","catType"],["miku","catMiku"],["dark","catDark"],["light","catLight"],["grad","catGrad"],["fun","catFun"],["access","catAccess"],["life","catLife"],["wizard","catWizard"],["custom","catCustom"]];
-const skinCatList = s => (s.custom || s.pack) ? ["custom"] : (Array.isArray(s.cat) && s.cat.length ? s.cat : ["basic"]);
+const skinCatList = s => (s.custom || s.pack || s.imported) ? ["custom"] : (Array.isArray(s.cat) && s.cat.length ? s.cat : ["basic"]);
 /* 🔤 書体スキン（trk228）：棚カードの中だけに書体・太さ・字間を効かせる。書体見本の文字も添える */
 function skinCardType(b, s) {
   if (s.font) b.style.setProperty("--sk-font", s.font);
@@ -1461,6 +1461,7 @@ function skinVolumes() {
 const SKIN_VOL_NAME_KEYS = {
   "vol-01": "skinVolNameVol01", "vol-02": "skinVolNameVol02", "vol-03": "skinVolNameVol03",
   "vol-04": "skinVolNameVol04", "vol-05": "skinVolNameVol05", "vol-06": "skinVolNameVol06",
+  imported: "skinVolNameImported",   /* 📚 trk326：取り込んだ巻 */
   "vol-07": "skinVolNameVol07", "vol-08": "skinVolNameVol08", "vol-09": "skinVolNameVol09",
   "vol-10": "skinVolNameVol10", glitch: "skinVolNameGlitch", wizard: "skinVolNameWizard", other: "skinVolNameOther",
 };
@@ -1518,7 +1519,8 @@ function skinShelfEntries(skins, opt) {
        wizard も既定の棚から外しました（📚 の巻で wizard を選んだとき・ALL では見えます）。 */
     outside = new Set();
     for (const g of volumes) {
-      if (!g || g.id === "other") continue;
+      /* 📚 trk326：取り込んだ巻（imported）は利用者が自分で入れたものなので、既定の棚にも残す */
+      if (!g || g.id === "other" || g.id === "imported") continue;
       /* ⚖ trk281：ウィザードの段では、wizard の巻を既定の棚に戻す（5 段目だけの特権） */
       if (o.level === "wizard" && g.id === "wizard") continue;
       for (const id of Array.isArray(g.ids) ? g.ids : []) outside.add(id);
@@ -2077,7 +2079,9 @@ function buildSkinGrid() {
     b.style.setProperty("--sk-bg", s.game.stage); b.style.setProperty("--sk-text", s.ui["--ui-text"]);
     b.style.setProperty("--sk-border", s.ui["--ui-border"]);
     skinCardType(b, s);
-    if (s.custom || s.pack) b.append(el("span", "skinTag", s.pack ? "PACK" : tr("customTag")));
+    if (s.custom || s.pack || s.imported) b.append(el("span", "skinTag", s.pack ? "PACK" : s.imported ? tr("skinImportedTag") : tr("customTag")));
+    /* 📚 trk326：意図した低コントラストのスキンは、理由の前に警告の印を出す（合格証ではない） */
+    if (s.readability === "intentional-low") b.append(el("span", "skinTag", tr("skinLowReadTag")));
     const dots = el("span", "dots");
     for (const c of [s.ui["--ui-accent"], s.ui["--ui-gold"], s.ui["--ui-text"]]) { const d = el("i", "dot square"); d.style.background = c; dots.append(d); }
     b.append(dots, el("b", "", marks(id) + (s.label[lang] || s.label.en)));

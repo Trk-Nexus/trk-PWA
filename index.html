@@ -36,7 +36,7 @@
 <meta name="theme-color" content="#07080d">
 <!-- 🏷 trk255：いまの版。設定の「🔄 アプリの更新」だけに出す（帯には出さない）。
      sw.js の CACHE と同じ番号にそろえる（tools と tests が見張ります）。 -->
-<meta name="trk-build" content="trk324">
+<meta name="trk-build" content="trk326">
 <!-- 🍎 iOS のホーム画面アプリ（standalone）として開くための指定。
      iOS 26 以降は manifest が無くても standalone で開きますが、古い iOS のために残します。 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -741,6 +741,27 @@
                 <div id="skinManageList"></div>
                 <p class="hint" id="skinManageNothing" hidden data-i18n="skinNoMatch"></p>
               </details>
+            </details>
+
+            <!-- 📚 trk326：巻別スキンの受け子（R-VOL-1）。検証は js/library-receiver.js、保存と画面は js/custom.js -->
+            <details id="skinImportPanel" class="subPanel">
+              <summary data-i18n="skinImportTitle"></summary>
+              <div class="hint" data-i18n="skinImportHint"></div>
+              <div class="miniActions">
+                <button id="skinImportBtn" type="button" data-i18n="skinImportPick"></button>
+                <button id="skinImportClear" type="button" data-i18n="skinImportClear" disabled></button>
+              </div>
+              <input id="skinImportFile" type="file" accept="application/json,.json" hidden>
+              <div id="skinImportStatus" class="hint status" role="status" aria-live="polite"></div>
+              <div id="skinImportPreview" class="hint" hidden></div>
+              <div class="miniActions" id="skinImportActions" hidden>
+                <button id="skinImportSkip" type="button" class="primary" data-i18n="skinImportSkip"></button>
+                <button id="skinImportOverwrite" type="button" data-i18n="skinImportOverwrite"></button>
+                <button id="skinImportCancel" type="button" data-i18n="skinImportCancel"></button>
+              </div>
+              <div id="skinImportErrors" hidden></div>
+              <div id="skinImportSummary" class="hint" hidden></div>
+              <div id="skinImportList"></div>
             </details>
 
             <details id="skinMaker" class="subPanel devOnly">
@@ -2477,6 +2498,7 @@
 <script src="js/i18n-options.js"></script>
 <!-- ===== データ ===== -->
 <script src="js/data.js"></script>
+<script src="js/library-receiver.js"></script>
 <!-- 🔤 trk246：書体の組み合わせの目録（14組）。data.js の後・core.js の前に読みます（core.js が settings を作るときに使うため） -->
 <script src="js/typography.js"></script>
 <script src="js/title-font.js"></script>

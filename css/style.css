@@ -401,6 +401,21 @@ body.trkNoMascot #vrmCanvas,body.trkNoMascot #vrmPreview{display:none!important}
 /* 🧺 trk229：棚のさがす・並べる・整理 */
 #skinFind{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin:10px 0 0}
 .skinFindBox{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ui-muted);font-weight:700}
+/* 📚 trk326：取り込んだ巻（R-VOL-1）の一覧と小さなボタン */
+#skinImportList{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.skinImportRow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 11px;border-radius:11px;
+  border:1px solid var(--ui-border);background:var(--ui-field);color:var(--ui-text);font-size:13px;line-height:1.35}
+.skinImportRow>b{font-weight:800}
+.skinImportRow>small{color:var(--ui-muted);font-weight:600}
+.skinImportRow>.miniBtn{margin-left:auto;padding:5px 10px;font-size:12px;border-radius:9px;
+  border:1px solid var(--ui-border);background:var(--ui-panel);color:var(--ui-text);font-weight:700}
+.skinImportRow>.miniBtn:hover{filter:brightness(1.14)}
+.miniBtn{padding:6px 11px;font-size:13px;border-radius:10px;border:1px solid var(--ui-border);
+  background:var(--ui-field);color:var(--ui-text);font-weight:700}
+.miniBtn:hover{filter:brightness(1.12)}
+#skinImportErrors{margin-top:8px;padding:8px 11px;border-radius:11px;border:1px solid var(--ui-border);
+  background:var(--ui-field);color:var(--ui-text)}
+#skinImportPreview{margin-top:8px}
 /* 📚 trk274：巻の絞り込み（`#skinFind` の 2 段目＝<select> と「巻から選ぶ」） */
 #skinFind>button.miniBtn{align-self:end;padding:8px 12px;border-radius:10px;border:1px solid var(--ui-border);
   background:var(--ui-field);color:var(--ui-text);font-weight:700}
