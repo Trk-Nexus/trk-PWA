@@ -207,7 +207,7 @@ Object.assign(TEXT.ja, {
   mediaQueuePlaylistFail:"プレイリストを作れませんでした（保存を確かめてください）",
   mediaCrossfadeLabel:"🎚 曲の終わりのフェード",
   mediaCrossfadeOff:"オフ",
-  mediaCrossfadeHint:"曲の終わりを N 秒かけて静かに閉じ、次の曲の頭を短く立ち上げます。曲は重ねません（2 本同時には鳴らしません）。既定はオフ。",
+  mediaCrossfadeHint:"曲の終わりを N 秒かけて静かに閉じ、次の曲の頭を短く立ち上げます。曲は重ねません（2 本同時には鳴らしません）。既定はオフ。iPhone・iPad は音量を変えられない作りなので、この設定は効きません（音はそのまま鳴ります）。",
   mediaCrossfadeSet:"🎚 フェード {s} 秒",
   mediaGaplessLabel:"🎧 曲間を詰める（次の曲を先に読み込む・既定オフ）",
   mediaGaplessHint:"端末内のファイルの曲だけ、次の曲を先に読み込んでおきます。曲間の待ちが短くなります（音は出しません）。"
@@ -236,7 +236,7 @@ Object.assign(TEXT.en, {
   mediaQueuePlaylistFail:"Could not create the playlist (check the saved data)",
   mediaCrossfadeLabel:"🎚 Fade at the end of a track",
   mediaCrossfadeOff:"Off",
-  mediaCrossfadeHint:"Closes the end of a track over N seconds and lifts the start of the next one briefly. Tracks never overlap (two are never played at once). Off by default.",
+  mediaCrossfadeHint:"Closes the end of a track over N seconds and lifts the start of the next one briefly. Tracks never overlap (two are never played at once). Off by default. iPhone and iPad do not allow a web page to change the volume, so this setting has no effect there (the track simply plays).",
   mediaCrossfadeSet:"🎚 Fade {s}s",
   mediaGaplessLabel:"🎧 Shorten the gap (preload the next track, off by default)",
   mediaGaplessHint:"For files on this device only, the next track is read ahead so the wait between tracks is shorter (no sound is played)."
@@ -265,7 +265,7 @@ Object.assign(TEXT.zh, {
   mediaQueuePlaylistFail:"未能创建播放列表（请检查保存）",
   mediaCrossfadeLabel:"🎚 曲末淡出",
   mediaCrossfadeOff:"关闭",
-  mediaCrossfadeHint:"用 N 秒把曲尾安静收住，并短暂抬起下一曲的开头。曲目不会重叠（不会同时播放两首）。默认关闭。",
+  mediaCrossfadeHint:"用 N 秒把曲尾安静收住，并短暂抬起下一曲的开头。曲目不会重叠（不会同时播放两首）。默认关闭。iPhone・iPad 不允许网页改变音量，因此此设置不生效（曲目照常播放）。",
   mediaCrossfadeSet:"🎚 淡出 {s} 秒",
   mediaGaplessLabel:"🎧 缩短曲间等待（预读下一曲・默认关闭）",
   mediaGaplessHint:"仅对本设备上的文件，提前读入下一曲，缩短曲间等待（不会出声）。"
@@ -294,7 +294,7 @@ Object.assign(TEXT.ko, {
   mediaQueuePlaylistFail:"재생목록을 만들지 못했습니다(저장을 확인해 주세요)",
   mediaCrossfadeLabel:"🎚 곡 끝 페이드",
   mediaCrossfadeOff:"끔",
-  mediaCrossfadeHint:"곡 끝을 N초에 걸쳐 조용히 닫고, 다음 곡의 시작을 짧게 올립니다. 곡은 겹치지 않습니다(두 곡을 동시에 재생하지 않음). 기본은 끔.",
+  mediaCrossfadeHint:"곡 끝을 N초에 걸쳐 조용히 닫고, 다음 곡의 시작을 짧게 올립니다. 곡은 겹치지 않습니다(두 곡을 동시에 재생하지 않음). 기본은 끔. iPhone・iPad는 웹 페이지가 음량을 바꿀 수 없어 이 설정은 효과가 없습니다(곡은 그대로 재생됩니다).",
   mediaCrossfadeSet:"🎚 페이드 {s}초",
   mediaGaplessLabel:"🎧 곡 사이를 줄이기(다음 곡 미리 읽기·기본 끔)",
   mediaGaplessHint:"이 기기의 파일에만, 다음 곡을 미리 읽어 곡 사이 대기를 줄입니다(소리는 나지 않습니다)."
@@ -1060,7 +1060,13 @@ function applyFadeOut() {
   const d = core.video.duration;
   if (!Number.isFinite(d) || d <= 0) return;
   const remain = d - (core.video.currentTime || 0);
-  if (remain > n || remain <= 0 || core.video.paused) return;
+  if (remain > n || remain <= 0 || core.video.paused) {
+    /* 🎧 trk328：終わりの N 秒から**外へ戻った**（巻き戻し・シーク）なら、下げた音量を元に戻す。
+       trk327 は戻すのが「次の曲・再生／一時停止」だけだったので、フェード中に巻き戻すと
+       音量が下がったままになっていました（0.8 → 0.28 のまま）。 */
+    if (remain > n && !core.video.muted && core.video.volume < baseVolume() - 0.001) { try { core.video.volume = baseVolume(); } catch (_) {} }
+    return;
+  }
   const target = baseVolume() * Math.max(0, remain / n);
   try { if (!core.video.muted) core.video.volume = Math.max(0, Math.min(1, target)); } catch (_) {}
 }

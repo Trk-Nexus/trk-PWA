@@ -815,7 +815,10 @@ for (const { id, skin } of chosen) {
     console.error("  目録を直すか、定義に理由つきで足してから、もう一度実行してください。");
     process.exit(1);
   }
-  const hb = [...new Set(computed.concat(holdbackIds()))].sort();
+  /* 📚 trk328：**この生成物に居る ID だけ**を足す（trk326 までは定義の 3 種を毎回足していたので、
+     gold-chip の居ない wizard の生成物にも gold-chip が書かれ、道具と生成物がずれていました）。 */
+  const inFile = new Set(chosen.map(c => c.id));
+  const hb = [...new Set(computed.concat(holdbackIds().filter(id => inFile.has(id))))].sort();
   if (hb.length) {
     lines.push("  /* ⚠ 差し戻し（目録へお返しした色のもの）：寄せると別のテーマになるので、");
     lines.push("     **色は目録のまま**内蔵し、既定の棚から外しています（ALL と その巻では見えます）。");
