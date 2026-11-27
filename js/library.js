@@ -1876,6 +1876,23 @@ function ensureTrkClassicPlaylist(opts) {
   if (go) { core.settings.libTab = "pl:" + TRK_CLASSIC_ID; core.saveUserPrefs(); try { renderLib(); } catch(_){} }
   return true;
 }
+/* 🎧 trk327：いまのキューからプレイリストを作る（利用者が押したときだけ・曲ファイルは動かさない）。
+   name は空なら「Queue」。戻り値 { ok, id, count, name } か { ok:false, reason: "empty"|"bad" }。 */
+function createPlaylistFromSongs(name, keys) {
+  const list = Array.isArray(keys) ? [...new Set(keys.filter(k => typeof k === "string" && k.length > 0 && k.length <= 200))].slice(0, 500) : [];
+  if (!list.length) return { ok: false, reason: "empty" };
+  const clean = String(name == null ? "" : name).trim().slice(0, 40) || "Queue";
+  const id = "pl-" + Date.now().toString(36) + "-" + Math.floor(Math.random() * 1000).toString(36);
+  const p = plSanitize({ id, name: clean, icon: "\uD83C\uDFA7", color: "none", tags: ["queue"], wish: [], songs: list, createdAt: Date.now() });
+  if (!p) return { ok: false, reason: "bad" };
+  core.settings.playlists.push(p);
+  if (core.saveUserPrefs() === false) {
+    core.settings.playlists = core.settings.playlists.filter(x => x !== p);
+    return { ok: false, reason: "save" };
+  }
+  try { renderLib(); } catch (_) {}
+  return { ok: true, id, count: p.songs.length, name: clean };
+}
 /* 🎓 trk's OST Vol.1 — オリジナル曲とチュートリアルのデモ曲をまとめるプレイリスト。
    🐔 trk's playlist の中（Game Vol.1 の下）に置く。開いたタブは libOpenTabs で残るため
    行き止まりにならず、削除はタブの ⚙（長押し）設定から行える（曲はライブラリに残る）。
@@ -6056,7 +6073,7 @@ window.Trk = window.Trk || {};
 core.on("phase", () => core.emit("nowPlaying", nowPlaying()));
 core.on("mediaReady", () => core.emit("nowPlaying", nowPlaying()));
 
-window.Trk.library = Object.assign(window.Trk.library || {}, { LIB_SHOW, MEDIA_EXT, VIDEO_EXT, addSongFiles, addVideoFiles, allSongs, bannerRandomBtn, bannerVolTip, ensureTrkDistributionPlaylists, ensureTrkOstPlaylist, trkOstPlaylistId: TRK_OST_ID, trkRestoreRemoved, initLibrary, nextSong, noteMediaPlayed, onLongPress, setStartFromZero, syncStartZeroInputs, startBarOpen, syncPreviewSetBtn, restoreFolderAccess, folderReadPlan, plToast, prevSong, previewStartFor, previewContinue, pruneFolderRefsOnce, refreshPackSongs, saveSongPrefs, selectSong, setAddonSongs, songInfo, songDisplayTitle, songDisplayMeta, songTagsOf, loadSongTags, srcLabel, nowPlaying, startPreview, trySongChart, plTitleKeys, plSongMatchKeys, plWishTitleKeys, plIsClassicalTitle, plClassicalTitleKey, plDecoratedTitleKeys, plWishDecoratedKeys, plHasVersionTag, plWishMediaMatches, previewRestartFor, shufflePool });
+window.Trk.library = Object.assign(window.Trk.library || {}, { createPlaylistFromSongs, LIB_SHOW, MEDIA_EXT, VIDEO_EXT, addSongFiles, addVideoFiles, allSongs, bannerRandomBtn, bannerVolTip, ensureTrkDistributionPlaylists, ensureTrkOstPlaylist, trkOstPlaylistId: TRK_OST_ID, trkRestoreRemoved, initLibrary, nextSong, noteMediaPlayed, onLongPress, setStartFromZero, syncStartZeroInputs, startBarOpen, syncPreviewSetBtn, restoreFolderAccess, folderReadPlan, plToast, prevSong, previewStartFor, previewContinue, pruneFolderRefsOnce, refreshPackSongs, saveSongPrefs, selectSong, setAddonSongs, songInfo, songDisplayTitle, songDisplayMeta, songTagsOf, loadSongTags, srcLabel, nowPlaying, startPreview, trySongChart, plTitleKeys, plSongMatchKeys, plWishTitleKeys, plIsClassicalTitle, plClassicalTitleKey, plDecoratedTitleKeys, plWishDecoratedKeys, plHasVersionTag, plWishMediaMatches, previewRestartFor, shufflePool });
 Object.defineProperty(window.Trk.library, "addonSongs", { configurable:true, get:() => addonSongs, set:v => { addonSongs = v; } });
 Object.defineProperty(window.Trk.library, "libView", { configurable:true, get:() => libView, set:v => { libView = v; } });
 Object.defineProperty(window.Trk.library, "renderBanner", { configurable:true, get:() => renderBanner, set:v => { renderBanner = v; } });

@@ -126,6 +126,16 @@ const num = (v, lo, hi, def) => (typeof v === "number" && isFinite(v)) ? Math.mi
 /* 🧺 trk229：スキンの棚の整理に使う保存値の掃除（壊れた値・長すぎる値を落とす）。
    id は本体・カスタム・パックのスキンで形が違うので、使う文字だけを見ます。 */
 const SKIN_ID_RE = /^[A-Za-z0-9_.-]{1,48}$/;
+/* 🎧 trk327：手動キューは「曲の key」だけ（最大 100・重複なし・長すぎるものは捨てる） */
+function cleanMediaQueue(v, max = 100) {
+  if (!Array.isArray(v)) return [];
+  return [...new Set(v.filter(k => typeof k === "string" && k.length > 0 && k.length <= 200))].slice(0, max);
+}
+/* 🎧 trk327：クロスフェードの秒数（0〜12 の整数。0＝オフ） */
+function clampCrossfade(v) {
+  const n = Math.round(Number(v));
+  return Number.isFinite(n) && n > 0 ? Math.min(12, n) : 0;
+}
 function cleanSkinIdList(v, max = 400) {
   if (!Array.isArray(v)) return [];
   return [...new Set(v.filter(x => typeof x === "string" && SKIN_ID_RE.test(x)))].slice(0, max);
@@ -589,6 +599,13 @@ const settings = {
   cliSkinPickOn: prefs.cliSkinPickOn === true,
   cliSkinPick: typeof prefs.cliSkinPick === "string" && has(window.Trk.data.SKINS, prefs.cliSkinPick) ? prefs.cliSkinPick : "",
   /* ▶ メディアプレーヤー（TV電源長押し） */
+  /* 🎧 trk327：曲間のつなぎ。**どちらも既定はオフ**（勝手に音を変えない）。
+     gapless＝次の曲のファイルを先に読み込んでおく（曲間の待ちを詰める）。
+     crossfade＝曲の終わりを N 秒かけて静かに閉じ、次の曲の頭を短く立ち上げる（曲は重ねない）。 */
+  mediaGapless: prefs.mediaGapless === true,
+  mediaCrossfade: num(prefs.mediaCrossfade, 0, 12, 0),
+  /* 🎧 trk327：手動の「次に再生」キュー（曲の key・最大 100）。空なら順番どおり */
+  mediaQueueNext: cleanMediaQueue(prefs.mediaQueueNext),
   mediaRepeat: pick(prefs.mediaRepeat, ["off", "one", "all"], "off"),
   mediaShuffle: prefs.mediaShuffle === true,
   mediaRate: num(prefs.mediaRate, .5, 2, 1),
@@ -2732,7 +2749,7 @@ function renderStoragePersist(state) {
    ・**1項目の失敗で全体を止めない**：壊れた項目だけ rejected に入れて、他は適用する
      （trk246 まで：notes の検査が投げると外側の catch で終わり、読み込み失敗だけ残った）
    ・報告 → 保存 → 再読み込み。未適用があるときだけ読む時間を取る */
-const PREFS_IMPORT_HANDLED = ["notes", "videoStyle", "tvDockSkin", "bgDim", "bgBlur", "tvParamFavs", "trkRemoved", "trkListed", "trkFixedNotice", "musicVolume", "musicVolumeRestore", "typography", "language", "remodernOptIn", "skinLegacy", "cliAdvance"];
+const PREFS_IMPORT_HANDLED = ["notes", "videoStyle", "tvDockSkin", "bgDim", "bgBlur", "tvParamFavs", "trkRemoved", "trkListed", "trkFixedNotice", "musicVolume", "musicVolumeRestore", "typography", "language", "remodernOptIn", "skinLegacy", "cliAdvance", "mediaGapless", "mediaCrossfade", "mediaQueueNext"];
 async function runPrefsImport(file, setSt) {
   let applied = [], rejected = [];
   try {
@@ -2787,6 +2804,10 @@ async function runPrefsImport(file, setSt) {
       const r = CLI.importAdvancePrefs(data.cliAdvance);
       if (!r.ok) return false;
     });
+    /* 🎧 trk327：曲間のつなぎと手動キュー（知っている形だけ・勝手にオンにしない） */
+    attempt("mediaGapless", () => { if (!hasImported("mediaGapless")) return false; settings.mediaGapless = data.mediaGapless === true; });
+    attempt("mediaCrossfade", () => { if (!hasImported("mediaCrossfade")) return false; settings.mediaCrossfade = clampCrossfade(data.mediaCrossfade); });
+    attempt("mediaQueueNext", () => { if (!hasImported("mediaQueueNext")) return false; settings.mediaQueueNext = cleanMediaQueue(data.mediaQueueNext); });
     attempt("skinLegacy", () => { if (!hasImported("skinLegacy")) return false; settings.skinLegacy = cleanSkinIdList(data.skinLegacy, 300); applySkin(settings.skin, false); });
     attempt("remodernOptIn", () => { if (!hasImported("remodernOptIn")) return false; settings.remodernOptIn = window.TrkReModernRegions ? window.TrkReModernRegions.normalizeOptIn(data.remodernOptIn) : { study: false, base: false }; });
     attempt("tvDockSkin", () => {
@@ -3003,7 +3024,7 @@ window.view = view;
 window.windows = windows;
 /* 領域（window.Trk.core）：コア状態の正規の場所。window直下の旧互換名は frozen js/fx.js が読む5件だけ。 */
 window.Trk = window.Trk || {};
-window.Trk.core = Object.assign(window.Trk.core || {}, { $, applyUiScale, fitStage, uiScaleValue, UI_SCALES, UI_DENSITIES, UI_DENSITY_CHOICES, DENSITY_BY_SCALE, DENSITY_WINDOW_STEPS, densityFromScale, densityFromWindow, libListHeight, applyDensityClasses, uiDensityValue, uiDensityAuto, uiScaleCompactOn, uiScaleShrinks, renderStoragePersist, storageLimitsIgnored, requestStoragePersist, storagePersistState, BEST_KEY, CAPTION_MS, CUSTOM_SKIN_MAX, KEY_PRESETS, PAD_DEFAULTS, SKIN_FORMAT, TRK_ENUM_VALUES, TV_PARAM_FAV_MAX, VIDEO_KEY_DEFAULTS, activeMascot, applyLanguage, applyNoteVars, baseName, buildSkinGrid, buildSkinNow, chartSummary, clampTvBlur, clampTvDim, cleanTvParamFavorites, closeSettings, ctx, customSkinDefs, downloadBlob, downloadJSON, el, emit, esc, extOf, fmtDate, fmtTime, fontFamily, formatKey, formatPadBind, fx, gameplayFxMultiplier, gameplayFxPower, hashString, idbStore, isPclMascot, keyCodeOf, keysLabel, laneCol, laneColor, laneName, modsUnranked, mulberry32, noteShape, num, on, openSettings, pick, prefsForSave, refreshSeedSecrets, rememberMusicVolume, renderAllStatuses, renderStatus, safeHttpUrl, safeLink, safeModeHref, safeName, saveCustomSkins, saveUserPrefs, savedSkinAtBoot, setPhase, setStatus, settings, showScreen, skin, slotLane, slotOfKey, stage, syncPickers, takeAmpReset, travelMs, updateChartButtons, updateKeyUI, updateTouchKeys, validCode, validPadBind, vctx, video, view, windows });
+window.Trk.core = Object.assign(window.Trk.core || {}, { cleanMediaQueue, clampCrossfade, $, applyUiScale, fitStage, uiScaleValue, UI_SCALES, UI_DENSITIES, UI_DENSITY_CHOICES, DENSITY_BY_SCALE, DENSITY_WINDOW_STEPS, densityFromScale, densityFromWindow, libListHeight, applyDensityClasses, uiDensityValue, uiDensityAuto, uiScaleCompactOn, uiScaleShrinks, renderStoragePersist, storageLimitsIgnored, requestStoragePersist, storagePersistState, BEST_KEY, CAPTION_MS, CUSTOM_SKIN_MAX, KEY_PRESETS, PAD_DEFAULTS, SKIN_FORMAT, TRK_ENUM_VALUES, TV_PARAM_FAV_MAX, VIDEO_KEY_DEFAULTS, activeMascot, applyLanguage, applyNoteVars, baseName, buildSkinGrid, buildSkinNow, chartSummary, clampTvBlur, clampTvDim, cleanTvParamFavorites, closeSettings, ctx, customSkinDefs, downloadBlob, downloadJSON, el, emit, esc, extOf, fmtDate, fmtTime, fontFamily, formatKey, formatPadBind, fx, gameplayFxMultiplier, gameplayFxPower, hashString, idbStore, isPclMascot, keyCodeOf, keysLabel, laneCol, laneColor, laneName, modsUnranked, mulberry32, noteShape, num, on, openSettings, pick, prefsForSave, refreshSeedSecrets, rememberMusicVolume, renderAllStatuses, renderStatus, safeHttpUrl, safeLink, safeModeHref, safeName, saveCustomSkins, saveUserPrefs, savedSkinAtBoot, setPhase, setStatus, settings, showScreen, skin, slotLane, slotOfKey, stage, syncPickers, takeAmpReset, travelMs, updateChartButtons, updateKeyUI, updateTouchKeys, validCode, validPadBind, vctx, video, view, windows });
 /* catch.js／stage.js はこの正規アクセサを差し替える（旧window.activeMods別名はtrk90で廃止）。 */
 Object.defineProperty(window.Trk.core, "activeMods", { configurable:true, get:() => activeMods, set:v => { activeMods = v; } });
 Object.defineProperty(window.Trk.core, "analysis", { configurable:true, get:() => analysis, set:v => { analysis = v; } });
