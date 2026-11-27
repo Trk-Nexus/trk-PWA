@@ -54,9 +54,9 @@ python -m http.server 8000
 # → http://localhost:8000 を開く
 ```
 
-ここは**開発版**です。ふだん使う安定版は [`Trk-Nexus/trk`](https://github.com/Trk-Nexus/trk)。
+ここは**開発版**です（trk328）。安定版は [`Trk-Nexus/trk`](https://github.com/Trk-Nexus/trk)（`/trk/`・trk328 対応）。
 
-配布ZIPは `index.html`・`README.txt`・`trk-files/` の3つだけの形で作ります（OS共通の1本）。`npm run release`（手順は [docs/HANDOFF.md](docs/HANDOFF.md) の §9）。
+配布ZIPの形と作り方は [docs/HANDOFF.md](docs/HANDOFF.md) の §9。
 
 ### 📦 同梱曲と保存場所（プレイヤーだけ使いたい人へ）
 
