@@ -96,8 +96,12 @@
    🎧 trk327（2026-11-27・メディアプレイヤーの点検表 P1）：ロック画面の再生状態と絵、読み込み中／詰まり／
    失敗の表示と「⟳ もう一度」、キュー編集（次に再生・最後へ・外す）と「このキューでプレイリストを作る」、
    続きから再生の知らせ、曲間のつなぎ（ギャップレス／フェード・どちらも既定オフ）を足しました。
-   js/media-player-mode.js・js/core.js・js/library.js・css/style.css・index.html が変わったので、名前を上げます。 */
-const CACHE = "trk-v2026.11.27-trk327";
+   js/media-player-mode.js・js/core.js・js/library.js・css/style.css・index.html が変わったので、名前を上げます。
+   🧾 trk328（2026-11-27・安定版を出す前の 2 つの修正）：外部レビューの M1（生成の道具が、その生成物に
+   居ない差し戻し ID まで書いていた）と M3（フェードの途中で巻き戻すと音量が下がったまま）を直し、
+   推奨の 1 行（iOS ではフェードが効かない・更新直後に崩れたら開き直す）を足しました。
+   tools/import-skin-catalog.mjs・js/media-player-mode.js・js/i18n.js が変わったので、名前を上げます。 */
+const CACHE = "trk-v2026.11.27-trk328";
 const CACHE_PREFIX = "trk-";
 /* 🧭 trk252（2026-11-02）：CacheStorage に**実在させる名前**には `trkPWA-` を先頭に付けるようにしました。
    同じオリジンに別の trk!（上流 `/trk/` など）が在ると、相手が「`trk-` 始まりは全部消す」旧式の掃除を
