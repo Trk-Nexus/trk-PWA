@@ -163,10 +163,29 @@
   /* 🎨 trk305（M3）：共通の領域が「独立」で作品があるときだけ、共通の題字（.brand h1）の色を当てる。
      書斎・基地はまだ当てない。作品が無い・外れたら既定の色へ戻す（js/remodern-paint.js） */
   const PAINT = window.TrkReModernPaint;
+  /* 🔤 trk326（R-REM-1）：共通の題字に当てている作品があれば、その作品の題字の書体も当てる。
+     書体の道具（js/title-font.js）が無い・作品が無いときは、全体の設定（または「使わない」）へ戻す。
+     書体ファイルが揃っていなければ title-font.js 側が当てない（部分適用をしない）。 */
+  const titleFont = () => window.Trk && window.Trk.titleFont;
+  function fontForWork(workId) {
+    const tf = titleFont();
+    return tf && typeof tf.fontForWork === "function" ? tf.fontForWork(workId) : "";
+  }
+  function applyTitleFont(view) {
+    const tf = titleFont();
+    if (!tf || typeof tf.applyForWork !== "function") return "";
+    const id = view && view.common && view.common.source === "own" && view.common.work ? view.common.work : "";
+    /* 未確認の作品でも、書体は作品の指定（利用者が自分で入れたもの）だけを見る。色とは別の判断 */
+    tf.applyForWork(id).catch(() => { });
+    return fontForWork(id);
+  }
+
   function paintTitle(view) {
     const h1 = document.querySelector(".brand h1");
     if (!PAINT || !h1) return;
     const pick = view.common && view.common.source === "own" && view.common.work ? works()[view.common.work] : null;
+    /* 🔤 trk326：題字の色と同じ「作品」を、書体の側にも渡す（色が当たらないときも、書体の指定は使う） */
+    applyTitleFont(view);
     /* 登録簿に無い作品（未確認）は、画面に当てない */
     if (!pick || !R.mayPaint(statusOfWork(pick.id), core.settings.remodernDevPaint === true)) { PAINT.clearTitle(h1); return; }
     const paint = PAINT.titlePaint(pick, PAINT.effectiveBgs(h1));
@@ -350,6 +369,14 @@
      以前は作品を選んだあとにスキンを変えると、色が残って読みにくくなっていた（Avatar 側の試験で再現） */
   function repaintTitle() { paintTitle(R.resolve(current(), works())); }
   if (typeof core.on === "function") core.on("skin", repaintTitle);
+  /* 🔤 trk326：題字の書体の側が変わったら（作品の指定の復元など）、当て直す（色はそのまま） */
+  if (typeof window.addEventListener === "function") window.addEventListener("trk-title-font", repaintTitle);
+  /* 🎨 trk326：作品の一覧を退避から戻したとき（js/title-font.js の restoreRemodernWorks）は読み直す */
+  if (typeof window.addEventListener === "function") window.addEventListener("trk-remodern-works", () => {
+    workMap = WORK ? WORK.loadWorks(core.settings.remodernWorks) : {};
+    window.TrkReModernWorks = workMap;
+    render();
+  });
 
   render();
   if (REG) REG.load().then(r => { registry = r; render(); });

@@ -590,7 +590,16 @@ tfHeading:"🔤 題字の書体（導入する書体）", tfLabel:"題字に使�
   skinLegacyLabel:"旧配色（この端末だけ）",
   skinLegacyHint:"このスキンには旧配色があります。オンにすると、この端末だけ従来の色で表示します（新しい配色が既定です）。",
   skinLegacyOn:"旧配色にしました。",
-  skinLegacyOff:"新しい配色に戻しました。"
+  skinLegacyOff:"新しい配色に戻しました。",
+    tfRestore:"📥 退避から指定を戻す",
+    tfRestoreDone:"退避から作品の指定を {n} 件戻しました。",
+    tfRestoreInvalid:"この退避は「読めなかった保存」のもので、戻せません（壊れた値を書き戻さないため）。",
+    tfRestoreSize:"ファイルが大きすぎます（上限 256 KiB）。読み込まずに拒否しました。",
+    tfRestoreSaveFail:"戻せませんでした。保存を確かめてください。",
+    tfRestoreFormat:"このファイルは退避の形（trk-title-font-works-backup v1）ではありません。",
+    tfWorksApplied:"作品の指定で表示中：{name}",
+    remodernFontLink:"作品ごとの題字の書体",
+    remodernFontLinkHint:"共通の題字に作品を当てているとき、その作品の指定の書体（🔤 題字の書体）があれば一緒に当てます。指定が無ければ全体の設定のままです。"
   },
   /* ==================== English ==================== */
   en: {
@@ -1168,7 +1177,16 @@ tfHeading:"🔤 Title font (import a font file)", tfLabel:"Font for the title", 
   skinLegacyLabel:"Legacy colors (this device only)",
   skinLegacyHint:"This skin has legacy colors. Turn this on to use the older palette on this device only (the new palette stays the default).",
   skinLegacyOn:"Switched to the legacy colors.",
-  skinLegacyOff:"Switched back to the new colors."
+  skinLegacyOff:"Switched back to the new colors.",
+    tfRestore:"📥 Restore per-work choices from a backup",
+    tfRestoreDone:"Restored {n} per-work choice(s) from the backup.",
+    tfRestoreInvalid:"This backup holds a save that could not be read, so it is not restored (a broken value is not written back).",
+    tfRestoreSize:"The file is too large (limit 256 KiB). It was refused without being read.",
+    tfRestoreSaveFail:"Could not restore it. Please check the saved data.",
+    tfRestoreFormat:"This file is not a backup (trk-title-font-works-backup v1).",
+    tfWorksApplied:"Shown with the work's choice: {name}",
+    remodernFontLink:"Per-work title font",
+    remodernFontLinkHint:"When the common title follows a work, that work's title font (🔤 Title font) is applied as well. Without one, the global setting stays."
   },
   /* ==================== 简体中文 ==================== */
   zh: {
@@ -1809,7 +1827,16 @@ typoLabel:"🔤 字体搭配", typoOff:"不使用（保持皮肤字体）", typo
   skinLegacyLabel:"旧配色（仅此设备）",
   skinLegacyHint:"此皮肤有旧配色。开启后仅在此设备使用原来的颜色（新配色仍为默认）。",
   skinLegacyOn:"已切换为旧配色。",
-  skinLegacyOff:"已恢复为新配色。"
+  skinLegacyOff:"已恢复为新配色。",
+    tfRestore:"📥 从备份恢复作品指定",
+    tfRestoreDone:"已从备份恢复 {n} 条作品指定。",
+    tfRestoreInvalid:"此备份是“无法读取的保存”，因此不会恢复（不会把损坏的值写回）。",
+    tfRestoreSize:"文件过大（上限 256 KiB），未读取即被拒绝。",
+    tfRestoreSaveFail:"未能恢复。请检查保存。",
+    tfRestoreFormat:"此文件不是备份格式（trk-title-font-works-backup v1）。",
+    tfWorksApplied:"正在按作品的指定显示：{name}",
+    remodernFontLink:"按作品指定题字书体",
+    remodernFontLinkHint:"当共通题字使用某作品时，如该作品指定了题字书体（🔤 题字书体），会一起应用。没有指定时保持全局设置。"
   },
   /* ==================== 한국어 ==================== */
   ko: {
@@ -2444,7 +2471,16 @@ typoLabel:"🔤 글꼴 조합", typoOff:"사용 안 함(스킨 글꼴 유지)", 
   skinLegacyLabel:"이전 색상(이 기기에서만)",
   skinLegacyHint:"이 스킨에는 이전 색상이 있습니다. 켜면 이 기기에서만 예전 색으로 표시합니다(새 색이 기본).",
   skinLegacyOn:"이전 색상으로 바꿨습니다.",
-  skinLegacyOff:"새 색상으로 되돌렸습니다."
+  skinLegacyOff:"새 색상으로 되돌렸습니다.",
+    tfRestore:"📥 백업에서 작품 지정 복원",
+    tfRestoreDone:"백업에서 작품 지정 {n}건을 복원했습니다.",
+    tfRestoreInvalid:"이 백업은 ‘읽을 수 없던 저장’이라 복원하지 않습니다(깨진 값을 되쓰지 않기 위해).",
+    tfRestoreSize:"파일이 너무 큽니다(상한 256 KiB). 읽지 않고 거부했습니다.",
+    tfRestoreSaveFail:"복원하지 못했습니다. 저장을 확인해 주세요.",
+    tfRestoreFormat:"이 파일은 백업 형식(trk-title-font-works-backup v1)이 아닙니다.",
+    tfWorksApplied:"작품 지정으로 표시 중: {name}",
+    remodernFontLink:"작품별 제목 서체",
+    remodernFontLinkHint:"공통 제목에 작품을 적용할 때, 그 작품의 제목 서체(🔤 제목 서체)가 있으면 함께 적용합니다. 지정이 없으면 전체 설정을 그대로 씁니다."
   }
 };
 /* ---- 翻訳の取り出し（その言語になければ英語→日本語→キー名の順） ---- */
