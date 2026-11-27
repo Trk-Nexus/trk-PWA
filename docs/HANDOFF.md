@@ -5,7 +5,7 @@
 > trk251 時点：**上流 `trk` も組織 `Trk-Nexus` に入り、再び同一オリジンを共有**（`https://trk-nexus.github.io` の `/trk/` と `/trk-PWA/`）。
 > → 上流の SW が版上げ時にうちのキャッシュを消す件など、**A〜D の対処案が未決**（`docs/ORIGIN.md` §7・`docs/ORIGIN-TRK-NEXUS-2026-11-02.md` §6）。
 > trk250 時点：**リポジトリは組織 `Trk-Nexus` に移籍済み**（本番URL **`https://trk-nexus.github.io/trk-PWA/`**・旧 git URL は死亡）。
-> 0円方針のまま独自ドメインは取らず、上流 `trk`（個人）との保存領域共有を解きました＝経緯と残作業は [`ORIGIN-TRK-NEXUS-2026-11-02.md`](ORIGIN-TRK-NEXUS-2026-11-02.md)。アプリ本体は trk248（**初回案内に「保存はこの端末だけ」の1行**）、trk247（**設定の書き出し・読み込みの導線**＝⚙ → 💾 端末の保存に 📤📥・上限 20 MiB・**壊れた項目だけ除く**）、trk246（**書体の組み合わせ14組**＝見出し用の字を目録から選べる）、trk245（**密度の自動**＝窓の広さに合わせる／**曲リストの高さを画面に合わせる**）で、trk244 は**表示の密度**（PCで縮小しても文字を小さくせず詰める）、trk243 は**設定のさがす**、trk242 は**新しい版の知らせ**でした。`npm run check` は **1285 pass / 0 fail**、`sw.js` の cache は **`trk-v2026.11.02-trk254`**（実体は `trkPWA-trk-v2026.11.02-trk254@trk-pwa`。trk253 でレビュー対応、trk254 で 🔤 の写しを目録から生成方式に）。上流 `trk` の配布版は **1.1.8（trk219）** で、その仕様と条件をこの文書が引き継いでいます。
+> 0円方針のまま独自ドメインは取らず、上流 `trk`（個人）との保存領域共有を解きました＝経緯と残作業は [`ORIGIN-TRK-NEXUS-2026-11-02.md`](ORIGIN-TRK-NEXUS-2026-11-02.md)。アプリ本体は trk248（**初回案内に「保存はこの端末だけ」の1行**）、trk247（**設定の書き出し・読み込みの導線**＝⚙ → 💾 端末の保存に 📤📥・上限 20 MiB・**壊れた項目だけ除く**）、trk246（**書体の組み合わせ14組**＝見出し用の字を目録から選べる）、trk245（**密度の自動**＝窓の広さに合わせる／**曲リストの高さを画面に合わせる**）で、trk244 は**表示の密度**（PCで縮小しても文字を小さくせず詰める）、trk243 は**設定のさがす**、trk242 は**新しい版の知らせ**でした。`npm run check` は **2069 pass / 0 fail**（static 0/0）、`sw.js` の cache は **`trk-v2026.11.27-trk328`**（実体は `trkPWA-trk-v2026.11.27-trk328@trk-pwa`）。**`trk-PWA` の `main` が本番**で、利用者さんに配る安定版 `trk`（`/trk/`）は、その `main` を鏡で写した版です＝いまの対応は **trk328**（手順は [`STABLE-RELEASE-INSTRUCTIONS-TRK328-2026-11-27.md`](STABLE-RELEASE-INSTRUCTIONS-TRK328-2026-11-27.md)。**公開中の版は `/trk/` の `sw.js` の `CACHE` を見てください**）。この文書は、上流 `trk` 1.1.8（trk219）から続く仕様と条件を引き継いでいます。
 >
 > **2026-11-03：** trk278 まで merge 済み（`main` = `1df448a`）。trk279 で **⚙ の「段」**（見せる量を選ぶ・trk281 で 5 段へ）、trk280 で **体力の数字をそろえ・TRUCK の揺れを既定オフ・既定の棚からウィザードを外す**。trk276〜trk278 で 📚 をキーで動かせるように（アサイン・使わない・縦読み・回り込み・連読）。trk279 の記録＝ [`PLAN-TRK279-2026-11-03.md`](PLAN-TRK279-2026-11-03.md)、数えた事実＝ [`SETTINGS-AUDIT-TRK279-2026-11-03.md`](SETTINGS-AUDIT-TRK279-2026-11-03.md)、画面の物差しは [`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md)。
 >
@@ -99,15 +99,16 @@
 - **画面（UX）の手当ては、Web 標準のガイドを読んでから決めます**（trk274）。`GoogleChrome/modern-web-guidance-src` の `guides/<分類>/<名前>/guide.md` と `features/*.md` を読み、**採る／採らないと理由**を [`UX-GUIDANCE-TRK274-2026-11-03.md`](UX-GUIDANCE-TRK274-2026-11-03.md) に残します。採るのは「今日のブラウザで効き、効かないブラウザでは**黙って素通りする**」ものだけ（このアプリは file: でも動く）。**写しは同梱せず、実行時に取りに行きません**。版は sha で記録します（いま読んだ版は main `dbf45b9`）。
 - `js/fx.js`／`js/fx-presets.js` の凍結は **trk114で解除**しました（2026-10-11、空さんの判断。trk109でfx.jsに足したMIDI MIXの経路も追認）。ほかのファイルと同じく、変更時はテスト・文書・実音声で確認します。fx.jsが読むための互換名（`chartMeta`・`phase`・`prefs`・`stats`・`videoReady`、読み取り専用の `_trkStudyRoomOpen`）はまだ残っていて、fx.jsを書き換えれば外せます（`docs/ADDONS.md` §0、`docs/NAMESPACE-PLAN.md`）。
 
-## 1.5 このリポジトリ（trk-PWA）の今（2026-11-04）
+## 1.5 このリポジトリ（trk-PWA）の今（2026-11-27）
 
-このチェックアウトは **`trk-PWA`**＝上流 `trk` 1.1.8 を履歴ごと取り込み、**通信を行わない standalone PWA** として仕上げる系統です。配り方が上流と違う（ZIP ではなく Pages）ため、§9 は上流の話として読んでください。
+このチェックアウトは **`trk-PWA`**＝上流 `trk`（1.1.8／trk219 から続く系統）を履歴ごと取り込み、**通信を行わない standalone PWA** として仕上げる系統です。**開発版（本番）はここ**、**安定版は `/trk/`（いまの対応は trk328）** です。配り方が上流と違う（ZIP ではなく Pages）ため、§9 は上流の話として読んでください。
 
 | 項目 | 今の状態 |
 | --- | --- |
 | 目的 | iPhone のホーム画面から開く standalone PWA。0円・不特定多数・ストアなし・バックエンドなし・広告なし・端末内データ・GPL-3.0-or-later |
 | ミッションと決定事項 | [`HANDOFF-TRK-STANDALONE.md`](HANDOFF-TRK-STANDALONE.md)、配布URLの決定は [`ORIGIN.md`](ORIGIN.md) |
 | 配り方 | GitHub Pages（`.github/workflows/pages.yml`）＋ `manifest.webmanifest` ＋ `sw.js`。配布ZIPは作りません |
+| 安定版 `/trk/` | **trk-PWA の `main` を鏡で写したもの**（上流 [`trk`](https://github.com/Trk-Nexus/trk)・`https://trk-nexus.github.io/trk/`）。いまの対応は **trk328**（cache `trk-v2026.11.27-trk328`／実体 `trkPWA-…@trk`）。作り方は [`STABLE-RELEASE-INSTRUCTIONS-TRK328-2026-11-27.md`](STABLE-RELEASE-INSTRUCTIONS-TRK328-2026-11-27.md)、手順の期待値は [`TRK-STABLE-RUNBOOK-2026-11-02.md`](TRK-STABLE-RUNBOOK-2026-11-02.md)。**公開中の版は `/trk/` の `sw.js` の `CACHE` が正**（trk219 のままなら、まだ差し替えていません） |
 | 画面の形 | `settings.uiMode`（PC型／スマホ型の2択）＋❓謎設定「画面の形は、常に選んだものを使う」。詳しくは [`UI-MODE-AND-PLAYER-BAR.md`](UI-MODE-AND-PLAYER-BAR.md) |
 | trk222〜trk227・trk244・trk246 の設定 | `uiScale`（50/75/100/125）・`fixedIconSize`・`uiModeLock`・`fxInLibrary`・`playerBar`・`playerBarPos`・`playerBarLock`（trk225 まで**新しい保存キーなし**）・`playerBarSeekLock`（trk226、既定オフ）・`playerBarRepeatOneOnly`・`playerBarShuffleInList`（trk227、どちらも既定オフ）・**`uiDensity`（trk244・trk245、既定 `auto`＝窓の広さ）と `uiScaleCompact`（trk244、既定オン）**、**`typography`（trk246、既定 `null`＝使わない）**、**`swUpdateNotice`（trk255、既定 `true`）と `swUpdateSnooze`（trk255、既定 `0`＝眠らせていない）**。trk244・trk246・trk255 のどれも `core.settings` の中なので **localStorage のキーは増えていません** |
 | スキン | **291 種（本体 49＋ミク 4＋ウィザード 62＋巻別 176）**。trk274 で Skin 側の目録（`catalog/skins.json` の 291 種）を全部受け、棚に **📚 巻** の絞り込みを足した（既定は**「定番」だけ**（trk280 でウィザードを外し、trk281 で段のカテゴリに絞る＝スタンダード 44 種・マスター 53 種・ウィザードの段 114 種）／色を目録へ差し戻した 18 種は既定の棚から外し、ALL とその巻では見えます）。trk228 で**書体スキン 9 種**と、棚の **`type`（書体）** カテゴリ・カード内の見本の文字（`あア漢 Aa 12`）を追加（[`FONT-SKINS-TRK228-2026-10-31.md`](FONT-SKINS-TRK228-2026-10-31.md)）。trk229 で棚に**さがす（4言語・カテゴリ語も）／並べる（おすすめ・名前・よく使う・最近）／⭐お気に入り／🚫隠す／使用回数と最終使用日／「表示／全体」の件数**（[`SKIN-SHELF-TRK229-2026-10-31.md`](SKIN-SHELF-TRK229-2026-10-31.md)） |
