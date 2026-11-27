@@ -34,7 +34,25 @@
 
 案内文（`00-…`）と仕様書（`01-…`）では `R-REM-1`〜`R-REM-3` の割り当てが一部異なる。**検査 CLI の判定（`tools/check-pwa-receivers.mjs`）に合わせて仕様書の割り当てを正**とし、案内文が求める `re-modern` 作品の退避（`trk-re-modern-works-backup` v1）も M2 で併せて実装する（どちらも利用者のデータ保全のため）。
 
-## 3. 進め方
+## 4. 結果（2026-11-27 実装完了）
+
+| 受け子 | 状態 | 主な入口 |
+| --- | --- | --- |
+| `R-VOL-1` | **implemented** | `js/library-receiver.js`（検証・変換）／`js/custom.js` の「📚 取り込んだ巻」／`js/core.js` の棚の巻 `imported` |
+| `R-REM-1` | **implemented** | `js/title-font.js` の `applyForWork`／`js/remodern-ui.js` の `fontForWork`（全体設定 > 作品の指定） |
+| `R-REM-2` | **implemented** | `js/title-font.js` の `restoreWorks`／`importWorksBackup`（`trk-title-font-works-backup` v1・`state: "invalid"` は戻さない） |
+| `R-REM-3` | **implemented** | `js/remodern-regions.js` の `defaultOptIn`／`regionOptIn`（書斎・基地は既定オフ） |
+| `R-TYP-1` | **implemented** | `js/typography.js` の `pairingFromJson`／`missingPacks`／`importPairingFile`、`js/ui-prefs.js` の「📥 組み合わせの JSON」 |
+| `R-SKIN-1` | **implemented** | `tools/skin-holdback.mjs`（単一定義）・`legacyUi`（`js/core.js` の `settings.skinLegacy`）・`js/custom.js` の旧配色一覧 |
+| `R-WIZ-1` | **implemented** | `js/cli.js` の `importAdvancePrefs`／`js/pack-catalog.js` の `readLibraryManifest`（`futureSlots` は読み飛ばす） |
+
+- 検査：`node tools/check-pwa-receivers.mjs --trk=<このチェックアウト> --json` → `ok: true`・稼働契約 7/7・**受け子 7/7 implemented**。
+- 本体：`npm run check` → **2018 pass / 0 fail**（静的検査・セキュリティ 64 件・a11y 9 件・vendor・MMD・lite すべて合格）。
+- 凍結 `r10` の配布物（`release/`・`catalog/`・`skin-volumes/`・各 `.stpack`）は 1 バイトも変えていません。
+- **未確認**：実ブラウザ・実機での操作（ファイル選択・トグル・読み戻し）。Node と shim の検査は実機確認の代用ではありません。
+- 版：`trk326`（`index.html` の `trk-build` と `sw.js` の CACHE を同時に更新）。
+
+## 5. 進め方（実施済み）
 
 1. M1 から順に実装し、各段で `node tools/run-tests.mjs` と `node tools/check-pwa-receivers.mjs` を実行する。
 2. 凍結物（`release/first-set.json`・`catalog/*.json`・`skin-volumes/**`）には触らない。
