@@ -71,7 +71,7 @@ const hb = [...new Set(computed.concat(holdbackIds().filter(id => inFile.has(id)
 
 ## 5. 手順書の数字を直しました
 
-`docs/TRK-STABLE-RUNBOOK-2026-11-02.md` の期待値を 2026-11-27 の実測に差し替えました（**704 ファイル・追加 300／更新 56／同一 344・反転 93 ファイル 505 語・2069 pass**）。
+`docs/TRK-STABLE-RUNBOOK-2026-11-02.md` の期待値を 2026-11-27 の実測に差し替えました（**703 ファイル・追加 303／更新 56／同一 344・反転 95 ファイル 517 語・2069 pass**）。
 **合否の線は今までどおり「上流で `npm run check` が fail 0」だけ**で、件数が表と違っても止めない方針は変えていません。
 
 ## 6. Avatar 側へお願いすること
