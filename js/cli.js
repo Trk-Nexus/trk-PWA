@@ -795,6 +795,53 @@
   }
   function allSpells() { return Object.assign({}, BUILTIN_SPELLS, readSpells()); }
 
+  /* 📚 trk326（R-WIZ-1）：倉庫（trk-Avatar-Library）の Advance Wizard 設定の受け子。
+     `trk-avatar-library-advance-prefs` v1 を読み、使用禁止文字（` \ .. ~ C:）を含むキー・辞書語を**厳格に拒否**する。
+     読んだ値は settings.cliAdvance（辞書は辞書の上限まで・真偽は真偽だけ）に置く。自動では取りに行かない。
+     戻り値：{ ok, reason, advance, dictionary, rejected }（reason：parse／format／limit／""） */
+  const ADVANCE_FORMAT = "trk-avatar-library-advance-prefs";
+  function importAdvancePrefs(text) {
+    const LR = window.Trk && window.Trk.libraryReceiver;
+    let raw = text;
+    if (typeof raw === "string") { try { raw = JSON.parse(raw); } catch (_) { return { ok: false, reason: "parse", advance: {}, dictionary: [], rejected: 0 }; } }
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ok: false, reason: "format", advance: {}, dictionary: [], rejected: 0 };
+    if (raw.format !== ADVANCE_FORMAT || raw.version !== 1) return { ok: false, reason: "format", advance: {}, dictionary: [], rejected: 0 };
+    let checked = null;
+    if (LR && typeof LR.validateAdvancePrefs === "function") checked = LR.validateAdvancePrefs(raw);
+    else {
+      /* 受け子の道具が無いときは、ここでも同じ禁止文字で止める（道具の有無で穴を作らない） */
+      const BAD = /[`\\~]|\.\.|[A-Za-z]:/;
+      const dict = Array.isArray(raw.dictionary) ? raw.dictionary : [];
+      const bad = dict.some(w => typeof w !== "string" || BAD.test(w));
+      const keys = raw.advance && typeof raw.advance === "object" ? Object.keys(raw.advance) : [];
+      const badKey = keys.some(k => BAD.test(k));
+      checked = bad || badKey ? { ok: false, dictionary: [], advance: {}, errors: ["禁止文字"] } : { ok: true, dictionary: dict.filter(w => typeof w === "string").slice(0, 500), advance: raw.advance || {}, errors: [] };
+    }
+    if (!checked || !checked.ok) return { ok: false, reason: "format", advance: {}, dictionary: [], rejected: (checked && checked.errors ? checked.errors.length : 0) };
+    const dictionary = Array.isArray(checked.dictionary) ? checked.dictionary.slice(0, 500) : [];
+    const advance = {};
+    const src = checked.advance && typeof checked.advance === "object" ? checked.advance : {};
+    for (const [k, v] of Object.entries(src)) {
+      if (typeof v === "boolean" || (typeof v === "string" && v.length <= 40)) advance[k] = v;
+    }
+    core.settings.cliAdvance = { format: ADVANCE_FORMAT, version: 1, advance, dictionary };
+    const saved = typeof core.saveUserPrefs === "function" ? core.saveUserPrefs() : true;
+    return { ok: saved !== false, reason: saved === false ? "save" : "", advance, dictionary, rejected: 0 };
+  }
+  /* いま持っている設定（読んでいなければ空） */
+  function advancePrefs() {
+    const a = core.settings.cliAdvance;
+    if (!a || typeof a !== "object" || a.format !== ADVANCE_FORMAT) return { advance: {}, dictionary: [] };
+    return { advance: a.advance && typeof a.advance === "object" ? a.advance : {}, dictionary: Array.isArray(a.dictionary) ? a.dictionary : [] };
+  }
+  async function importAdvancePrefsFile(file) {
+    if (!file) return { ok: false, reason: "format", advance: {}, dictionary: [], rejected: 0 };
+    if (typeof file.size === "number" && file.size > 128 * 1024) return { ok: false, reason: "limit", advance: {}, dictionary: [], rejected: 0 };
+    let text = "";
+    try { text = await file.text(); } catch (_) { return { ok: false, reason: "parse", advance: {}, dictionary: [], rejected: 0 }; }
+    return importAdvancePrefs(text);
+  }
+
   function playTrack(it) {
     const mode = core.settings.cliPlay === "preview" ? "preview" : "media";
     if (mode === "preview") {
@@ -908,6 +955,8 @@
     repeat: setRepeat,
     shuffle: setShuffle,
     spells: allSpells,
+    /* 📚 trk326（R-WIZ-1）：Advance Wizard 設定の受け子 */
+    importAdvancePrefs, importAdvancePrefsFile, advancePrefs, ADVANCE_FORMAT,
     saveSpell,
     delSpell,
     listLimit: CLI_LIST_LIMIT,
@@ -1779,6 +1828,8 @@
     run: line => execute(line, deps),
     commands: () => CLI_COMMANDS.slice(),
     spells: allSpells,
+    /* 📚 trk326（R-WIZ-1）：Advance Wizard 設定の受け子 */
+    importAdvancePrefs, importAdvancePrefsFile, advancePrefs, ADVANCE_FORMAT,
     parseLine,
     parseClock,
     formatClock,

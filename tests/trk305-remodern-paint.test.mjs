@@ -109,8 +109,13 @@ test("読み込み順：remodern-paint.js は remodern-ui.js より前に読む�
   const ui = html.indexOf('<script src="js/remodern-ui.js">');
   assert.ok(paint > 0 && ui > 0);
   assert.ok(paint < ui, "paint は ui より前");
-  assert.match(html, /name="trk-build" content=\"trk324\"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk324";/);
+  {
+    /* 📚 trk326：版はラウンドごとに上がるので、固定の名前ではなく sw.js と揃っていることを見る */
+    const build = (read("sw.js").match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
+    assert.ok(build);
+    assert.match(html, new RegExp(`name="trk-build" content="${build}"`));
+  }
+  assert.match(read("sw.js"), /const CACHE = "trk-v[\d.]+-trk\d+";/);
 });
 
 test("設定の作品欄の文言：4 言語とも、題字だけに反映されると書く", () => {

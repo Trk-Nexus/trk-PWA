@@ -1241,6 +1241,7 @@ async function initSkinImports() {
     registerImported(shelfId, def);
   }
   ensureImportVolumeGroup();
+  renderSkinLegacyList();
   if (importedIds().length) {
     core.buildSkinGrid();
     /* 前回の終わりに取り込んだスキンを使っていたなら、その見た目へ戻す（見つからなければ shadow のまま） */
@@ -1316,6 +1317,39 @@ async function clearImported() {
   core.buildSkinGrid();
   renderImportedList();
   return removed;
+}
+
+/* ---------- 📚 trk326（R-SKIN-1）：旧配色（legacyColors）を使うスキンの一覧 ----------
+   目録の新配色が既定。旧配色を持つスキンだけを並べ、オンにしたスキルだけがこの端末で従来の色になる。
+   保存は settings.skinLegacy（知っている ID だけ・最大 300）。ほかの端末・書き出しには乗らない設定です。 */
+function renderSkinLegacyList() {
+  const box = core.$("skinLegacyBox"), list = core.$("skinLegacyList");
+  if (!box || !list) return;
+  const skins = window.Trk.data.SKINS || {};
+  const ids = Object.keys(skins).filter(id => skins[id] && skins[id].legacyUi).sort((a, b) => {
+    const A = skins[a].label || {}, B = skins[b].label || {};
+    return String(A[lang] || A.en || a).localeCompare(String(B[lang] || B.en || b), lang);
+  });
+  box.hidden = ids.length === 0;
+  list.textContent = "";
+  const chosen = Array.isArray(core.settings.skinLegacy) ? core.settings.skinLegacy : [];
+  for (const id of ids) {
+    const s = skins[id];
+    const label = core.el("label", "check");
+    const input = core.el("input"); input.type = "checkbox"; input.dataset.skinLegacy = id;
+    input.checked = chosen.includes(id);
+    input.addEventListener("change", () => {
+      const now = new Set(Array.isArray(core.settings.skinLegacy) ? core.settings.skinLegacy : []);
+      if (input.checked) now.add(id); else now.delete(id);
+      core.settings.skinLegacy = [...now].slice(0, 300);
+      core.saveUserPrefs();
+      core.applySkin(core.settings.skin, false);
+      core.setStatus("skinLegacyStatus", input.checked ? "skinLegacyOn" : "skinLegacyOff");
+    });
+    const name = core.el("span", "", String((s.label && (s.label[lang] || s.label.en)) || id));
+    label.append(input, name);
+    list.append(label);
+  }
 }
 
 /* ---------- 画面（設定 → 🎨 見た目 → 📚 取り込んだ巻） ---------- */
@@ -1425,6 +1459,7 @@ function wireSkinImports() {
     const errs = core.$("skinImportErrors"); if (errs) { errs.textContent = ""; errs.hidden = true; }
     importStatus("skinImportCancelled");
   });
+  on("language", renderSkinLegacyList);
   const clear = core.$("skinImportClear");
   if (clear) clear.addEventListener("click", async () => {
     if (!importedIds().length) return;
@@ -1500,7 +1535,7 @@ window.Trk.custom = Object.assign(window.Trk.custom || {}, { initPacks, noteImag
   packFontRows, listInstalledFonts });
 /* 📚 trk326：巻別スキンの受け子（R-VOL-1）。既存の公開名の並びは崩さず、あとから足す */
 Object.assign(window.Trk.custom, { initSkinImports, importVolumePayload: applyImport, planVolumeImport: importPlan,
-  importedSkins, removeImported, clearImported, VOLUME_FORMAT,
+  importedSkins, removeImported, clearImported, VOLUME_FORMAT, renderSkinLegacyList,
   validateVolumePayload: payload => (window.Trk.libraryReceiver ? window.Trk.libraryReceiver.validateVolumePayload(payload) : null) });
 Object.defineProperty(window.Trk.custom, "getPackSongs", { configurable:true, get:() => getPackSongs, set:v => { getPackSongs = v; } });
 Object.defineProperty(window.Trk.custom, "installPackFile", { configurable:true, get:() => installPackFile, set:v => { installPackFile = v; } });

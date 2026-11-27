@@ -841,5 +841,23 @@
   window.Trk.packCatalog.importSetFile = importSetFile;
   window.Trk.packCatalog.tryImportSet = tryImportSet;
   /* 🔤 trk238：入れている書体の索引（画面を開いたときに作り直す） */
-  window.Trk.packCatalog.renderFontIndex = renderFontIndex;
+    /* 📚 trk326（R-WIZ-1）：統合マニフェストを読む。{ ok, reason, counts, indices, futureSlots, pwaBaseline } */
+  function readLibraryManifest(textOrObj) {
+    const LR = window.Trk && window.Trk.libraryReceiver;
+    if (!LR || typeof LR.readLibraryManifest !== "function") return { ok: false, reason: "receiver" };
+    let raw = textOrObj;
+    if (typeof raw === "string") {
+      if (raw.length > 256 * 1024) return { ok: false, reason: "limit" };
+      try { raw = JSON.parse(raw); } catch (_) { return { ok: false, reason: "parse" }; }
+    }
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ok: false, reason: "format" };
+    return LR.readLibraryManifest(raw);
+  }
+
+window.Trk.packCatalog.renderFontIndex = renderFontIndex;
+  /* 📚 trk326（R-WIZ-1）：倉庫の統合マニフェスト（trk-avatar-library-manifest v1）の受け子。
+     未知の futureSlots（mascot の予約枠など）は**読み飛ばして**エラーにしない（前方互換）。
+     通信しない（渡された文字列・オブジェクトだけを見る）。 */
+  window.Trk.packCatalog.readLibraryManifest = readLibraryManifest;
+  window.Trk.packCatalog.LIBRARY_MANIFEST_FORMAT = "trk-avatar-library-manifest";
 })();

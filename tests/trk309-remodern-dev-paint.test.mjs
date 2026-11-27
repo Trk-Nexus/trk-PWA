@@ -53,6 +53,11 @@ test("文言：影響範囲の開発用の文言は 4 言語そろう", () => {
 });
 
 test("版：trk309（index.html・sw.js）", () => {
-  assert.match(read("index.html"), /name="trk-build" content=\"trk324\"/);
-  assert.match(read("sw.js"), /const CACHE = "trk-v2026\.11\.04-trk324";/);
+  {
+    /* 📚 trk326：版はラウンドごとに上がるので、固定の名前ではなく sw.js と揃っていることを見る */
+    const build = (read("sw.js").match(/const CACHE = "trk-v[\d.]+-(trk\d+)";/) || [])[1];
+    assert.ok(build);
+    assert.match(read("index.html"), new RegExp(`name="trk-build" content="${build}"`));
+  }
+  assert.match(read("sw.js"), /const CACHE = "trk-v[\d.]+-trk\d+";/);
 });

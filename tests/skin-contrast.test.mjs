@@ -150,7 +150,8 @@ describe("game UI contrast across the skin catalogue", () => {
     }
     for (const id of ["cbLight", "shojiLight", "morningKitchen"]) assert.notEqual(accentInk(SKINS[id].ui), SKINS[id].ui["--ui-accent"], `${id} needed a darker ink`);
     const core = fs.readFileSync(path.join(ROOT, "js/core.js"), "utf8");
-    assert.match(core, /root\.setProperty\("--ui-accent-ink", window\.Trk\.data\.accentInk\(s\.ui\)\)/, "applySkin sets the ink for every skin, custom ones included");
+    /* 📚 trk326：旧配色（legacyUi）を選んだときは、その ui から小さな文字の色を作る（uiSet） */
+    assert.match(core, /root\.setProperty\("--ui-accent-ink", window\.Trk\.data\.accentInk\(uiSet\)\)/, "applySkin sets the ink for every skin, custom ones included");
     assert.match(css, /\.subPanel>summary\{[^}]*color:var\(--ui-accent-ink,var\(--ui-accent\)\)/);
     const bareAccentText = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
       .filter(m => /(?:^|;)\s*color:\s*var\(--ui-accent\)\s*(?:;|$)/.test(m[2])).map(m => m[1].trim());

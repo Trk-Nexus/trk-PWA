@@ -2449,3 +2449,6 @@ body.trk-title-font-on .brand h1,body.trk-title-font-on #skinGrid .skinCard b{fo
 .hideSettingsList{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 12px;margin-top:8px}
 .hideSettingsList .check{margin:0}
 
+/* 📚 trk326（R-SKIN-1）：旧配色（legacyColors）を使うスキンの一覧。チェックはほかの設定と同じ見た目 */
+.skinLegacyList{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.skinLegacyList label.check{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
