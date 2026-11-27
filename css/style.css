@@ -2423,3 +2423,10 @@ body.trk-title-font-on .brand h1,body.trk-title-font-on #skinGrid .skinCard b{fo
 .titleFontLicenceText{white-space:pre-wrap;max-height:240px;overflow:auto;font-size:11px;margin:4px 0}
 .titleFontOffer{border:2px solid var(--ui-border);border-radius:8px;padding:8px;margin:6px 0}
 .titleFontOffer button{margin:6px 6px 0 0}
+/* 🛟 セーフモードの浮きボタン：既定は非表示（設定でオンのときだけ表示） */
+#floatingSafeBtn[hidden]{display:none!important}
+/* 🙈 設定を隠す：ユーザーがチェックした設定パネルを非表示にする */
+#settingsScreen details.panel.trk-user-hidden{display:none!important}
+.hideSettingsList{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 12px;margin-top:8px}
+.hideSettingsList .check{margin:0}
+

@@ -23,6 +23,7 @@ Object.assign(TEXT.ja, {
   videoMaxHint: "左右を長押し：巻き戻し／早送り（徐々に加速）　動画をクリック：再生／一時停止　←→：10秒　ホイール：ポインターの位置で拡大・縮小（100〜500%）　ドラッグ：表示位置を動かす　🔍：100%に戻す　⛶：ブラウザーの全画面　ESC か ✕ で閉じます",
   videoMaxZoomReset: "🔍 拡大率 {n}%（クリックで100%に戻す）",
   videoMaxSeek: "再生位置", videoMaxBack10: "10秒戻す", videoMaxForward10: "10秒進む",
+  videoMaxPrev: "前の曲", videoMaxNext: "次の曲",
   videoMaxChromeShown: "操作を表示（3秒）",
   videoMaxZoomHint: "ホイールで拡大・縮小（1回あたりの量は ⚙ 設定 → 🎨 見た目）"
 });
@@ -36,6 +37,7 @@ Object.assign(TEXT.en, {
   videoMaxHint: "Hold left / right: rewind / forward (accelerates) · Click the video: play / pause · ←→: 10 s · Wheel: zoom at the pointer (100–500%) · Drag: move the view · 🔍: back to 100% · ⛶: browser full screen · ESC or ✕ closes",
   videoMaxZoomReset: "🔍 Zoom {n}% (click to go back to 100%)",
   videoMaxSeek: "Position", videoMaxBack10: "Back 10 seconds", videoMaxForward10: "Forward 10 seconds",
+  videoMaxPrev: "Previous song", videoMaxNext: "Next song",
   videoMaxChromeShown: "Showing controls (3 s)",
   videoMaxZoomHint: "Wheel to zoom in and out (the step size is in Settings → 🎨 Appearance)"
 });
@@ -49,6 +51,7 @@ Object.assign(TEXT.zh, {
   videoMaxHint: "长按左侧／右侧：快退／快进（逐渐加速）　点击视频：播放／暂停　←→：10秒　滚轮：以指针位置为中心放大／缩小（100〜500%）　拖动：移动画面　🔍：回到100%　⛶：浏览器全屏　按 ESC 或 ✕ 关闭",
   videoMaxZoomReset: "🔍 缩放 {n}%（点击回到100%）",
   videoMaxSeek: "播放位置", videoMaxBack10: "后退 10 秒", videoMaxForward10: "前进 10 秒",
+  videoMaxPrev: "上一首", videoMaxNext: "下一首",
   videoMaxChromeShown: "显示操作（3 秒）",
   videoMaxZoomHint: "用滚轮放大／缩小（每次的量在 ⚙ 设置 → 🎨 外观）"
 });
@@ -62,6 +65,7 @@ Object.assign(TEXT.ko, {
   videoMaxHint: "왼쪽／오른쪽 길게 누르기: 되감기／빨리 감기 (점점 가속)　영상을 클릭: 재생／일시정지　←→: 10초　휠: 포인터 위치를 중심으로 확대·축소 (100〜500%)　드래그: 화면 이동　🔍: 100%로 되돌리기　⛶: 브라우저 전체 화면　ESC 또는 ✕ 로 닫습니다",
   videoMaxZoomReset: "🔍 확대율 {n}% (클릭하면 100%로)",
   videoMaxSeek: "재생 위치", videoMaxBack10: "10초 되감기", videoMaxForward10: "10초 빨리 감기",
+  videoMaxPrev: "이전 곡", videoMaxNext: "다음 곡",
   videoMaxChromeShown: "조작 표시 (3초)",
   videoMaxZoomHint: "휠로 확대·축소 (1회당 양은 ⚙ 설정 → 🎨 모양)"
 });
@@ -125,6 +129,20 @@ function seekBy(delta) {
   try {
     if (!Number.isFinite(videoEl.duration)) return;
     videoEl.currentTime = Math.max(0, Math.min(videoEl.duration, (videoEl.currentTime || 0) + delta));
+  } catch (_) {}
+}
+async function stepTrack(dir) {
+  try {
+    const mp = window.TrkMediaPlayer;
+    if (mp && typeof mp.isOpen === "function" && mp.isOpen() && typeof mp.step === "function") {
+      await mp.step(dir);
+      return;
+    }
+    const lib = window.Trk && window.Trk.library;
+    if (!lib) return;
+    const next = dir < 0 ? (typeof lib.prevSong === "function" ? lib.prevSong() : null)
+                         : (typeof lib.nextSong === "function" ? lib.nextSong() : null);
+    if (next && typeof lib.selectSong === "function") await lib.selectSong(next);
   } catch (_) {}
 }
 
@@ -621,8 +639,8 @@ function applyTexts() {
   setI18n(hintNode, "videoMaxHint");
   if (playNode) setI18n(playNode, videoEl.paused ? "videoMaxPlay" : "videoMaxPause");
   if (closeNode) { closeNode.title = tr("videoMaxClose"); closeNode.setAttribute("aria-label", closeNode.title); }
-  if (backNode) { backNode.title = tr("videoMaxBack10"); backNode.setAttribute("aria-label", backNode.title); }
-  if (fwdNode) { fwdNode.title = tr("videoMaxForward10"); fwdNode.setAttribute("aria-label", fwdNode.title); }
+  if (backNode) { backNode.title = tr("videoMaxPrev"); backNode.setAttribute("aria-label", backNode.title); }
+  if (fwdNode) { fwdNode.title = tr("videoMaxNext"); fwdNode.setAttribute("aria-label", fwdNode.title); }
   if (seekRange) seekRange.setAttribute("aria-label", tr("videoMaxSeek"));
   root.setAttribute("aria-label", tr("videoMaxTitle"));
   syncFsLabel();
@@ -705,8 +723,8 @@ function build() {
   });
   topBar.addEventListener("click", e => { if (e.target === topBar) closeMax(); });
   playNode.addEventListener("click", togglePlay);
-  backNode.addEventListener("click", () => { seekBy(-10); pokeChrome(); });
-  fwdNode.addEventListener("click", () => { seekBy(10); pokeChrome(); });
+  backNode.addEventListener("click", () => { stepTrack(-1); pokeChrome(); });
+  fwdNode.addEventListener("click", () => { stepTrack(1); pokeChrome(); });
   seekRange.addEventListener("pointerdown", () => { seekDragging = true; });
   seekRange.addEventListener("pointerup", () => { seekDragging = false; });
   seekRange.addEventListener("pointercancel", () => { seekDragging = false; });

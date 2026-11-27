@@ -393,7 +393,7 @@
        ほかの窓が開いているときだけ引っ込める（重なって押せないのを避ける）。
        プレイ中も消さない：壊れたときの逃げ道を残す。 */
     const floatingButton = document.getElementById("floatingSafeBtn");
-    if (floatingButton) floatingButton.hidden = blockingModal;
+    if (floatingButton) floatingButton.hidden = blockingModal || core.settings.showFloatingSafeBtn !== true;
     ensureMediaGame();
     const gameButton = document.getElementById("trkMediaGame");
     if (gameButton) gameButton.textContent = text.game;

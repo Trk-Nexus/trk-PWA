@@ -335,6 +335,8 @@ const settings = {
   difficulty: pick(prefs.difficulty, window.Trk.data.DIFF_IDS, "normal"),
   showMasterDiff: !!prefs.showMasterDiff,
   escNoReturn: prefs.escNoReturn === true,   /* ❓謎設定：Esc長押しで選曲へ戻らない（既定はオフ＝長押しで戻る） */
+  showFloatingSafeBtn: prefs.showFloatingSafeBtn === true,   /* 🛟 右下のセーフモードボタンを表示する（既定はオフ） */
+  hiddenSettingPanels: Array.isArray(prefs.hiddenSettingPanels) ? [...new Set(prefs.hiddenSettingPanels.filter(x => typeof x === "string" && x.length > 0 && x.length <= 80))].slice(0, 100) : [],   /* 🙈 ユーザーが隠す設定パネルのキー一覧 */
   /* 🚪 メディアプレイヤーを抜けたときに曲を読み込み直すか（trk206）。既定はオフ＝そのまま流れ続ける
      （メディアプレイヤーへ入るときと同じで、曲が途切れない。エフェクトを触っても音が消えない）。
      オンにすると昔の動き＝閉じたときに止めて、プレビューの開始位置から鳴らし直す（不具合の再現用）。 */
@@ -2593,6 +2595,98 @@ function renderStoragePersist(state) {
     setSt(() => "🛟 セーフモードにしました。映像OFF・ぼかし無し・TV初期化。ページを再読み込みします…（自動読み取り・プレビューなどは ?safe=1 のあいだだけ止めます）");
     setTimeout(()=> reloadInSafeMode(), 800);
   });
+  const applyFloatingSafeBtn = () => {
+    const fb = document.getElementById("floatingSafeBtn");
+    if (fb) fb.hidden = settings.showFloatingSafeBtn !== true;
+  };
+  applyFloatingSafeBtn();
+  const safeBtnChk = document.getElementById("showFloatingSafeBtn");
+  if (safeBtnChk) {
+    safeBtnChk.checked = settings.showFloatingSafeBtn === true;
+    safeBtnChk.addEventListener("change", () => {
+      settings.showFloatingSafeBtn = safeBtnChk.checked;
+      saveUserPrefs();
+      applyFloatingSafeBtn();
+    });
+  }
+
+  /* 🙈 設定を隠す（#hideSettingsPanel）：ユーザーが選んだ設定パネルを非表示にする */
+  const HIDE_EXEMPT = new Set(["hideSettingsPanel", "emergencyPanel"]);
+  const settingPanelKey = panel => {
+    if (!panel) return "";
+    if (panel.id) return panel.id;
+    const sum = [...panel.children].find(c => c.tagName === "SUMMARY");
+    const i18nKey = sum && (sum.dataset.i18n || (sum.querySelector("[data-i18n]") || {}).dataset?.i18n);
+    return i18nKey || (sum ? sum.textContent.trim().slice(0, 40) : "");
+  };
+  const settingPanelLabel = panel => {
+    const sum = [...panel.children].find(c => c.tagName === "SUMMARY");
+    return (sum ? sum.textContent.trim() : "") || panel.id || "";
+  };
+  const applyHiddenSettingPanels = () => {
+    const screen = document.getElementById("settingsScreen");
+    if (!screen) return;
+    const hiddenSet = new Set(Array.isArray(settings.hiddenSettingPanels) ? settings.hiddenSettingPanels : []);
+    for (const p of screen.querySelectorAll("details.panel")) {
+      const key = settingPanelKey(p);
+      p.classList.toggle("trk-user-hidden", !!key && !HIDE_EXEMPT.has(key) && hiddenSet.has(key));
+    }
+  };
+  const renderHideSettingsList = () => {
+    const screen = document.getElementById("settingsScreen");
+    const listEl = document.getElementById("hideSettingsList");
+    const statusEl = document.getElementById("hideSettingsStatus");
+    if (!screen || !listEl) return;
+    const hiddenSet = new Set(Array.isArray(settings.hiddenSettingPanels) ? settings.hiddenSettingPanels : []);
+    listEl.textContent = "";
+    const seen = new Set();
+    for (const p of screen.querySelectorAll("details.panel")) {
+      const key = settingPanelKey(p);
+      if (!key || HIDE_EXEMPT.has(key) || seen.has(key)) continue;
+      seen.add(key);
+      const label = document.createElement("label");
+      label.className = "check";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = hiddenSet.has(key);
+      cb.dataset.hidePanelKey = key;
+      cb.addEventListener("change", () => {
+        const next = new Set(Array.isArray(settings.hiddenSettingPanels) ? settings.hiddenSettingPanels : []);
+        if (cb.checked) next.add(key); else next.delete(key);
+        settings.hiddenSettingPanels = [...next];
+        saveUserPrefs();
+        applyHiddenSettingPanels();
+        if (statusEl) {
+          const n = settings.hiddenSettingPanels.length;
+          statusEl.textContent = n > 0 ? tr("hideSettingsCount", { n }) : tr("hideSettingsNone");
+        }
+      });
+      const span = document.createElement("span");
+      span.textContent = settingPanelLabel(p);
+      label.append(cb, span);
+      listEl.append(label);
+    }
+    if (statusEl) {
+      const n = settings.hiddenSettingPanels.length;
+      statusEl.textContent = n > 0 ? tr("hideSettingsCount", { n }) : tr("hideSettingsNone");
+    }
+  };
+  const hidePanel = document.getElementById("hideSettingsPanel");
+  const hideResetBtn = document.getElementById("hideSettingsResetBtn");
+  if (hideResetBtn) {
+    hideResetBtn.addEventListener("click", () => {
+      settings.hiddenSettingPanels = [];
+      saveUserPrefs();
+      applyHiddenSettingPanels();
+      renderHideSettingsList();
+    });
+  }
+  if (hidePanel) {
+    hidePanel.addEventListener("toggle", () => { if (hidePanel.open) renderHideSettingsList(); });
+  }
+  applyHiddenSettingPanels();
+  on("settings", () => { applyHiddenSettingPanels(); renderHideSettingsList(); });
+  on("language", () => { if (hidePanel && hidePanel.open) renderHideSettingsList(); });
   bind("emergencyTvResetBtn", () => {
     resetVideoPrefs(); saveUserPrefs();
     try { if (typeof view !== "undefined") view.style.filter = videoFilter(); } catch(_){}
