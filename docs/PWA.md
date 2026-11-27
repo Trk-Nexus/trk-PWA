@@ -1,13 +1,13 @@
 # trk-PWA の運用メモ
 
-最終更新：2026-11-27（trk328。Phase 2・3 の実装まで。実機確認は未実施）
+最終更新：2026-11-27（trk328 を `/trk/` に公開。実機確認は未実施）
 
 ## 1. このリポジトリは何か
 
 trk! を **PWA（Webアプリ）として配布する**ためのリポジトリです。iPhone／Androidのブラウザで開き、「ホーム画面に追加」して使う形を本線にしています。
 
 - アプリ本体：上流 [`trk`](https://github.com/Trk-Nexus/trk)（**2026-11-02 に組織 `Trk-Nexus` へ移籍**）の **1.1.8（trk219）** を取り込んで始めた系統で、いまは **trk328** です（このリポジトリ＝開発版／本番）。
-- **安定版 `/trk/`**（`https://trk-nexus.github.io/trk/`）は、このリポジトリの `main` を**鏡**で写したものです＝いまの対応は **trk328**。作り方は [統合版 trk を作る指示書](STABLE-RELEASE-INSTRUCTIONS-TRK328-2026-11-27.md)、**公開中の版は `/trk/` の `sw.js` の `CACHE` が正**（`trk-v2026.10.29-trk219` のままなら、まだ差し替えていません）。
+- **安定版 `/trk/`**（`https://trk-nexus.github.io/trk/`）は、このリポジトリの `main` を**鏡**で写したものです＝**trk328 を 2026-11-27 に公開**（`Trk-Nexus/trk` PR #103・merge `02d5fd3`・写した 704 ファイル）。**公開サイトの実測＝`sw.js` の `CACHE` が `trk-v2026.11.27-trk328`**（実体 `trkPWA-trk-v2026.11.27-trk328@trk`）。記録は [trk328 公開の記録](STABLE-RELEASE-TRK328-RECORD-2026-11-27.md)、作り方は [統合版 trk を作る指示書](STABLE-RELEASE-INSTRUCTIONS-TRK328-2026-11-27.md)。
 - 上流コミット（取り込みの起点）：`06cef87`（2026-10-29・trk219）。
 - **本番URL（GitHub Pages・組織 `Trk-Nexus`）：https://trk-nexus.github.io/trk-PWA/**（**2026-11-02 移籍済み・trk250**）
   - 移籍前は `https://tonbokiriraikirimuramasa-taikoubou.github.io/trk-PWA/`（試験用）。**リポジトリごと移したので、この旧URLの Pages は無くなりました**（まだ外部に案内していないので、利用者側の移行作業は要りません）。

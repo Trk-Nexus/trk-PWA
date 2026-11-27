@@ -2,7 +2,7 @@
 
 - これは **実行する人のための手順書**です（読むだけの記録ではありません）。所要 20〜30 分＋CI 待ち。
 - 作るもの：上流 **`Trk-Nexus/trk`**（利用者さんに配る安定版・公開 URL は `https://trk-nexus.github.io/trk/`）を、いまの **`trk-PWA` の `main`（trk328）** の中身にそろえる。
-- 前提：PWA は **trk328 が `main` に入っている**（`9b3169d`）。Avatar 側は **trk328 を固定して緑**（§2 の実測）。
+- 前提：PWA は **trk328 が `main` に入っている**（この版の作業時は `9b3169d`、実施時は `ac36bd9`）。Avatar 側は **trk328 を固定して緑**（§2 の実測）。
 - **`trk-PWA` の `main` が本番**です。上流 `trk` で直接開発しません（二重管理をなくすため）。だからこの作業は「写して・検査して・PR」だけです。
 
 ---
@@ -50,7 +50,8 @@ git -C trk pull --ff-only
 # 写す元（PWA）を main に
 cd trk-PWA
 git switch main && git pull --ff-only
-git log --oneline -1        # 9b3169d（trk328 のマージ）であること
+git log --oneline -1        # trk328 のマージが先頭にあること（版は index.html の trk-build で確認）
+grep -m1 'trk-build' index.html   # trk328 であること
 ```
 
 - 必要：**Node 22**・`gh` の認証（`gh auth status`）・`trk` への書き込み権限。
@@ -108,10 +109,10 @@ git diff --stat | tail -5
 ### 5) 枝・コミット・PR（**main へ直接 push しない**）
 
 ```bash
-git checkout -b trk-stable-2026-11-27
+git checkout -b trk-stable-<日付>        # 枝の名前は例。作業セッションの枝（arena/<id>-trk など）でもよい
 git add -A
 git commit -m "🏗 安定版を trk328 にそろえる（trk-PWA の鏡）"
-git push -u origin trk-stable-2026-11-27
+git push -u origin trk-stable-<日付>         # 実際に使った枝名
 gh pr create --repo Trk-Nexus/trk --base main --title "🏗 安定版 trk328（trk-PWA の鏡）" --fill
 ```
 
@@ -160,7 +161,7 @@ B を選ぶなら **同時に** ①`index.html` の `trk-build` を `1.2.0` に 
 
 ## 5. うまくいかないとき（巻き戻し）
 
-1. **PR をマージする前**：枝を消すだけ（`git push origin --delete trk-stable-2026-11-27`）。公開物は変わりません。
+1. **PR をマージする前**：枝を消すだけ（`git push origin --delete <使った枝>`）。公開物は変わりません。
 2. **マージしたあと**：`trk` で revert の PR を作る（`git revert -m 1 <merge の SHA>`）。`CACHE` が trk219 に戻るので、利用者には「もう一度更新」が届きます。
    - 注意：戻したあと、こちら（PWA）の `main` は trk328 のままなので、**次の鏡でまた trk328 に戻ります**。直すべき原因は PWA 側で直してから出し直してください。
 3. **一部の端末だけ古いまま**：SW の更新はタブを閉じるまで待つことがあります。告知の「変なら一度開き直す」で足ります。
@@ -195,7 +196,7 @@ B を選ぶなら **同時に** ①`index.html` の `trk-build` を `1.2.0` に 
 ## 8. こちらの実測ログ（2026-11-27・予行）
 
 ```
-# PWA main
+# PWA main（予行のとき）
 $ git log --oneline -1
 9b3169d Merge pull request #114 from Trk-Nexus/arena/58233b14-trk-pwa
 
@@ -214,3 +215,21 @@ $ node tools/check-repo.mjs → Static check: passed · 0 failure(s) · 0 warnin
 $ node tools/make-stable.mjs --repo=<別クローン> --apply --cache="trk-v2026.11.27-1.2.0"
 $ node --test tests/trk259-review.test.mjs  → 1 件だけ落ちる（cache と meta の不一致）
 ```
+
+---
+
+## 9. 実施の結果（2026-11-27・本番。この手順で出しました）
+
+| 項目 | 結果 |
+| --- | --- |
+| 枝 | `arena/ee8fc9ea-trk`（作業セッションの枝。`trk-stable-<日付>` でなくても問題ありませんでした） |
+| 写し元 | `trk-PWA` の `main` `ac36bd9`（trk328） |
+| 写した件数 | **704** ファイル（追加 304・更新 56・同一 344）／住所の反転 **96** ファイル・**529** 語 |
+| 検査 | `npm run check` **2069 pass / 0 fail**、`check-repo` **0 failure / 0 warning** |
+| PR・マージ | `Trk-Nexus/trk` **#103** → 2026-11-27 16:06:59Z に `--merge`（**`02d5fd3`**） |
+| 公開 | Deploy GitHub Pages **run `46030828778`** success |
+| 公開サイトの実測 | `https://trk-nexus.github.io/trk/sw.js` の **`CACHE` = `trk-v2026.11.27-trk328`**（＝trk328 が出ている） |
+
+- 予行（§8）は **703 ファイル**でした。本番の 704 との差 1 件は、予行のあとに写し元と上流の状態が進んだぶんと見られます（手順そのものの違いではありません）。
+- **`--prune` を使わなかったので削除は 0 件**でした。§4 の版名も既定（`trk-v2026.11.27-trk328`）のままで、検査は全部通りました。
+- 実機の確認は利用者さんの端末で行い、[`STABLE-RELEASE-TRK328-RECORD-2026-11-27.md`](STABLE-RELEASE-TRK328-RECORD-2026-11-27.md) §3 の表に残します。
